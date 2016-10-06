@@ -23,7 +23,7 @@ class Vision:
             self.cam = cv2.VideoCapture(cid)
 
         if not self.cam.isOpened():  # lint:ok
-            print "Error: Camera busy, can't be opened"
+            print "Error: Camera busy."
 
         return self.cam.isOpened()
 
@@ -34,11 +34,31 @@ class Vision:
             okay, self.raw_frame = self.cam.read()
             self.vision_frame = self.raw_frame.copy()
         else:
-            print "Open the camera first"
+            print "Error: Camera not open."
 
         return okay
 
-    def adjust_gamma(self, gamma=1.0):
+    def bilateral_blur(self, img=None, c1=9, c2=75, c3=75):
+        if img is None:
+            self.vision_frame = bilateralFilter(self.vision_frame, c1, c2, c3)
+            return
+        return cv2.bilateralFilter(img, c1, c2, c3)
+
+    def gauss_blur(self, img=None, kernel=(3, 3)):
+        if img is None:
+            self.vision_frame = cv2.GaussianBlur(self.vision_frame, kernel, 0)
+            return
+        return cv2.GaussianBlur(img, kernel, 0)
+
+    def equalize_histogram(self, frame=None):
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+
+        if frame is None:
+            self.vision_frame = clahe.apply(self.vision_frame)
+        else:
+            return clahe.apply(frame)
+
+    def adjust_gamma(self, gamma=1.0, img=None):
         # build a lookup table mapping the pixel values [0, 255] to
         # their adjusted gamma values
         invGamma = 1.0 / gamma
@@ -46,41 +66,55 @@ class Vision:
         # apply gamma correction using the lookup table
         for i in np.arange(0, 256)]).astype("uint8")
 
-        self.vision_frame = cv2.LUT(self.vision_frame, table)
+        if img is None:
+            self.vision_frame = cv2.LUT(self.vision_frame, table)
+        else:
+            return cv2.LUT(img, table)
 
-    def to_gray(self, img):
+    def to_gray(self, img=None):
+        if img is None:
+            self.vision_frame = cv2.cvtColor(self.vision_frame, cv2.COLOR_BGR2GRAY)
+            return
         grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         return grayImg
+
+    def to_hsv(self, img=None):
+        if img is None:
+            self.vision_frame = cv2.cvtColor(self.vision_frame, cv2.COLOR_BGR2HSV)
+            return
+        hsvImg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        return hsvImg
 
     def key_pressed(self, key=0):
         if key == 27:
             cv2.destroyAllWindows()
             self.cam.release()
 
-    def show(self, name, img):
-        img_tag = name
-        cv2.imshow(img_tag, img)
-        key = cv2.waitKey(2) & 0xFF
-        self.key_pressed(key)
-
-    def show_raw_vision(self):
-        cv2.imshow("Raw Vision", self.raw_frame)
-        key = cv2.waitKey(2) & 0xFF
-        self.key_pressed(key)
+    def show(self, name="Raw Vision", img=None):
+        if img is None:
+            cv2.imshow(name, self.raw_frame)
+            key = cv2.waitKey(2) & 0xFF
+            self.key_pressed(key)
+        else:
+            cv2.imshow(name, img)
+            key = cv2.waitKey(2) & 0xFF
+            self.key_pressed(key)
 
     def show_processed_vision(self):
         cv2.imshow("Processed Vision", self.vision_frame)
         key = cv2.waitKey(2) & 0xFF
         self.key_pressed(key)
 
-    def init_record(self, name='output.mp4', encoder='mp4v'):
+    def init_record(self, name='output.mp4', encoder='dm4v'):
         w = self.cam.get(cv2.CAP_PROP_FRAME_WIDTH)
         h = self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
         fourcc = cv2.VideoWriter_fourcc(*encoder)
         self.writer = cv2.VideoWriter(name, fourcc, 15.0, (int(w), int(h)))
 
     def record(self, frame=None):
-        if not frame:
+        if not self.writer:
+            print "Error: Video writer not initiated."
+        elif frame is None:
             self.writer.write(self.raw_frame)
             return
         self.writer.write(frame)
@@ -92,6 +126,9 @@ class Vision:
         else:
             cv2.imwrite(name, img)
             return
+
+    def set_vision_frame(self, frame):
+        self.vision_frame = frame
 
     def get_vision_frame(self):
         return self.vision_frame.copy()

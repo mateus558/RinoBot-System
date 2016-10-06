@@ -9,13 +9,22 @@ if not eye.open_camera(0):
     print "done"
 
 eye.init_record()
-
+i = 0
 while eye.get_new_frame():
-    eye.adjust_gamma(0.1)
+    if i == 100:
+        break
+    eye.adjust_gamma(0.7)
+    #eye.to_hsv()
+    #eye.to_gray()
+    #eye.equalize_histogram()
+    eye.gauss_blur()
+    #frame = eye.get_raw_frame()
+    #frame = eye.bilateral_blur(frame)
     eye.show_processed_vision()
-    eye.show("gray", eye.to_gray(eye.get_raw_frame()))
-    eye.show_raw_vision()
+    #eye.show("bilateral", frame)
+    eye.show()
     eye.save_image("teste.png", eye.get_raw_frame())
     eye.record()
+    i += 1
 print "done"
 
