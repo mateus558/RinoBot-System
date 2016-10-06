@@ -1,30 +1,61 @@
 # -*- coding: utf-8 -*-
 import sys
+import os
 from vision import Vision
 
-eye = Vision()
 
-if not eye.open_camera(0):
-    sys.exit()
-    print "done"
+def header():
+    print "*----------------------------------------------------------* "
+    print "*                      RinoBot Vision                      * "
+    print "*----------------------------------------------------------* "
+    print
 
-#eye.init_record()
-i = 0
-while eye.get_new_frame():
-    if i == 100:
-        break
-    eye.adjust_gamma(0.7)
-    eye.to_hsv()
-    #eye.to_gray()
-    #eye.equalize_histogram()
-    eye.gauss_blur()
-    #frame = eye.get_raw_frame()
-    #frame = eye.bilateral_blur(frame)
-    eye.show_processed_vision()
-    #eye.show("bilateral", frame)
-    eye.show()
-    #eye.save_image("teste.png", eye.get_raw_frame())
-    #eye.record()
-    i += 1
-print "done"
 
+def set_color_ranges():
+    header()
+    while True:
+        print "[1] Set ball HSV range"
+        print "[0] Back"
+        o = int(raw_input("> "))
+        color_range_opt(o)()
+
+
+def set_parameters():
+    header()
+    while True:
+        print "[1] Define color ranges"
+        print "[0] Back"
+        o = int(raw_input("> "))
+        param_opt(o)()
+
+
+def color_range_opt(x):
+    clear()
+    return color_range.get(x, 0)
+
+
+def param_opt(x):
+    clear()
+    return param.get(x, 0)
+
+
+def switch(x):
+    clear()
+    return opt.get(x, 9)
+
+
+def __init__():
+    clear()
+    header()
+    while True:
+        print "[1] Set parameters"
+        print "[0] Exit"
+        o = int(raw_input("> "))
+        switch(o)()
+
+color_range = {0: set_parameters, 1: None}
+opt = {0: sys.exit, 1: set_parameters}
+param = {0: __init__, 1: set_color_ranges}
+clear = lambda: os.system('clear')
+
+__init__()
