@@ -1,5 +1,18 @@
+'''  ***********************************************************************
+     *                            RinoBot - Vision                         *
+     *                                                                     *
+     * Pedro Henrique Teixeira <pedro.teixeira2011@engenharia.ufjf.br>     *
+     * Engenharia Elétrica Robótica - UFJF                                 *
+     * +55 (32) 99904 - 8695                                               *
+     *                                                                     *
+     * Mateus Coutinho Marim <mateus.marim@ice.ufjf.br>                    *
+     * Ciência da Computação - UFJF                                        *
+     * +55 (32) 99162 - 9402                                               *
+     *                                                                     *
+     ***********************************************************************'''
 import numpy as np
 import cv2
+from robot import Robot
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
@@ -12,6 +25,12 @@ class Vision:
         self.cam_id = cam_id
         self.cam = None
         self.writer = None
+        self.robots = [Robot(), Robot(), Robot()]
+        self.robots[0].set_ID("T1R1")
+        self.robots[1].set_ID("T1R2")
+        self.robots[2].set_ID("T1R3")
+        self.default = np.array([[0, 0, 0], [0, 0, 0]])
+        self.colors = {"Ball": self.default, "T1": self.default, "T1R1": self.default, "T1R2": self.default, "T1R3": self.default, "T2": self.default}
 
     def open_camera(self, cid=-1):
         if cid == -1:
@@ -22,10 +41,27 @@ class Vision:
         else:
             self.cam = cv2.VideoCapture(cid)
 
-        if not self.cam.isOpened():  # lint:ok
+        if not self.cam.isOpened():
             print "Error: Camera busy."
 
         return self.cam.isOpened()
+
+    def set_role(self, ID, role):
+        for robot in self.robots:
+            if robot.get_ID() == ID:
+                robot.set_role(role)
+                return
+        print "Channel not set: There's no robot with this ID"
+
+    def set_channel(self, ID, channel):
+        for robot in self.robots:
+            if robot.get_ID() == ID:
+                robot.set_channel(channel)
+                return
+        print "Channel not set: There's no robot with this ID"
+
+    def set_color(self, item, HSVmin, HSVmax):
+        self.color[item] = [HSVmin, HSVmax]
 
     def get_new_frame(self):
         okay = False
@@ -40,7 +76,7 @@ class Vision:
 
     def bilateral_blur(self, img=None, c1=9, c2=75, c3=75):
         if img is None:
-            self.vision_frame = bilateralFilter(self.vision_frame, c1, c2, c3)
+            self.vision_frame = cv2.bilateralFilter(self.vision_frame, c1, c2, c3)
             return
         return cv2.bilateralFilter(img, c1, c2, c3)
 
@@ -105,6 +141,18 @@ class Vision:
         key = cv2.waitKey(2) & 0xFF
         self.key_pressed(key)
 
+    def get_robots(self):
+        return self.robots
+
+    def set_vision_frame(self, frame):
+        self.vision_frame = frame
+
+    def get_vision_frame(self):
+        return self.vision_frame.copy()
+
+    def get_raw_frame(self):
+        return self.raw_frame.copy()
+
     def init_record(self, name='output.mp4', encoder='dm4v'):
         w = self.cam.get(cv2.CAP_PROP_FRAME_WIDTH)
         h = self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -127,14 +175,11 @@ class Vision:
             cv2.imwrite(name, img)
             return
 
-    def set_vision_frame(self, frame):
-        self.vision_frame = frame
+    def read_parameters(self, fname="parameters.pckl"):
+        print "to implement"
 
-    def get_vision_frame(self):
-        return self.vision_frame.copy()
-
-    def get_raw_frame(self):
-        return self.raw_frame.copy()
+    def write_parameters(self, fname="parameters.pckl"):
+        print "to implement"
 
     def __del__(self):
         cv2.destroyAllWindows()
