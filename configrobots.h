@@ -18,9 +18,9 @@ public:
     ~ConfigRobots();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_configColorRange_clicked();
 
-    void on_pushButton_2_clicked();
+    void on_save_clicked();
 
 private:
     int cam_id;

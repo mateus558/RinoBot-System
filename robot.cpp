@@ -35,11 +35,13 @@ void Robot::set_upper_color(vector<int> upper_color)
     this->upper_color = upper_color;
 }
 
-vector<int> Robot::get_low_color(){
+vector<int> Robot::get_low_color()
+{
     return low_color;
 }
 
-vector<int> Robot::get_upper_color(){
+vector<int> Robot::get_upper_color()
+{
     return upper_color;
 }
 

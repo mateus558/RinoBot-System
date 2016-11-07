@@ -25,21 +25,24 @@ SetColorRange::SetColorRange(QWidget *parent) :
     eye->set_mode(1);
 }
 
-void SetColorRange::closeEvent(QCloseEvent *event){
+void SetColorRange::closeEvent(QCloseEvent *event)
+{
     eye->Stop();
     eye->release_cam();
     eye->terminate();
     eye->wait();
 }
 
-void SetColorRange::updateVisionUI(QImage img){
+void SetColorRange::updateVisionUI(QImage img)
+{
     if(!img.isNull()){
         ui->label_7->setAlignment(Qt::AlignCenter);
         ui->label_7->setPixmap(QPixmap::fromImage(img).scaled(ui->label_7->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
     }
 }
 
-void SetColorRange::set_vision(Vision *eye, int cam_id){
+void SetColorRange::set_vision(Vision *eye, int cam_id)
+{
     if(!eye->is_open()){
         eye->open_camera(cam_id);
     }

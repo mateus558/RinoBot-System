@@ -5,7 +5,8 @@
 
 using namespace std;
 
-SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new Ui::SetParameters){
+SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new Ui::SetParameters)
+{
     eye = new Vision;
     conf = new ConfigRobots;
 
@@ -15,23 +16,27 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
 }
 
-SetParameters::~SetParameters(){
+SetParameters::~SetParameters()
+{
     delete eye;
     delete ui;
 }
 
-void SetParameters::updateVisionUI(QImage img){
+void SetParameters::updateVisionUI(QImage img)
+{
     if(!img.isNull()){
         ui->camera_video->setAlignment(Qt::AlignCenter);
         ui->camera_video->setPixmap(QPixmap::fromImage(img).scaled(ui->camera_video->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
     }
 }
 
-void SetParameters::updateFPS(double val){
+void SetParameters::updateFPS(double val)
+{
     ui->fps_number->display(val);
 }
 
-void SetParameters::on_initCapture_clicked(){
+void SetParameters::on_initCapture_clicked()
+{
     if(eye == NULL){
         eye = new Vision;
     }
@@ -44,7 +49,8 @@ void SetParameters::on_initCapture_clicked(){
     eye->Play();
 }
 
-void SetParameters::on_configRobots_clicked(){
+void SetParameters::on_configRobots_clicked()
+{
     eye->Stop();
     eye->release_cam();
     conf->show();

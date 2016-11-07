@@ -65,7 +65,7 @@
     <string>ID:</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBox">
+  <widget class="QComboBox" name="select_robot">
    <property name="geometry">
     <rect>
      <x>110</x>
@@ -75,7 +75,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QSpinBox" name="spinBox">
+  <widget class="QSpinBox" name="robot_channel">
    <property name="geometry">
     <rect>
      <x>80</x>
@@ -85,7 +85,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBox_2">
+  <widget class="QComboBox" name="robot_role">
    <property name="geometry">
     <rect>
      <x>80</x>
@@ -105,7 +105,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="configColorRange">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -118,7 +118,7 @@
     <string>Config Color Range</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="save">
    <property name="geometry">
     <rect>
      <x>20</x>

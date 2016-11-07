@@ -17,14 +17,15 @@ using namespace cv;
 class Vision: public QThread {  Q_OBJECT
 private:
     bool stop;
+    int mode;
+    double FPS;
     QMutex mutex;
     QWaitCondition condition;
     QImage img;
     Mat raw_frame;
     Mat vision_frame;
-    double FPS;
     VideoCapture cam;
-    int mode;
+
     vector<Robot> robots;
 signals:
     void processedImage(const QImage &image);
