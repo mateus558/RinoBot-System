@@ -35,6 +35,8 @@ void ConfigRobots::set_vision(Vision *eye, int cam_id){
 
 void ConfigRobots::on_pushButton_clicked()
 {
+    string robot = ui->comboBox->currentText().toUtf8().constData();
+    set_color->set_robot(robot);
     set_color->show();
 }
 

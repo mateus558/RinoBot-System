@@ -1,5 +1,12 @@
 #include "setcolorrange.h"
 #include "ui_setcolorrange.h"
+#include <QFile>
+#include <QTextStream>
+#include <QString>
+#include <iostream>
+#include <fstream>
+
+using namespace std;
 
 SetColorRange::SetColorRange(QWidget *parent) :
     QWidget(parent),
@@ -85,7 +92,34 @@ void SetColorRange::on_pushButton_2_clicked()
     eye->Play();
 }
 
+void SetColorRange::set_robot(string robot)
+{
+    this->robot = robot;
+}
+
 SetColorRange::~SetColorRange()
 {
     delete ui;
+}
+
+void SetColorRange::on_pushButton_clicked()
+{
+    string path = "Config/" + robot;
+    ofstream out(path.c_str());
+
+    if(!out){
+        cout << "File not open" << endl;
+    }
+
+    for(int i = 0; i < 3; ++i){
+        out << eye->low[i] << " ";
+    }
+
+    out << endl;
+
+    for(int i = 0; i < 3; ++i){
+        out << eye->upper[i] << " ";
+    }
+
+    out.close();
 }
