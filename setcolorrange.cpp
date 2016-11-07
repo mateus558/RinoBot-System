@@ -105,8 +105,9 @@ SetColorRange::~SetColorRange()
 void SetColorRange::on_pushButton_clicked()
 {
     string path = "Config/" + robot;
-    ofstream out(path.c_str());
+    ofstream out;
 
+    out.open(path.c_str(), ofstream::out | ofstream::trunc);
     if(!out){
         cout << "File not open" << endl;
     }
@@ -120,6 +121,7 @@ void SetColorRange::on_pushButton_clicked()
     for(int i = 0; i < 3; ++i){
         out << eye->upper[i] << " ";
     }
+    out << endl;
 
     out.close();
 }

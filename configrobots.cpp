@@ -1,6 +1,7 @@
 #include "configrobots.h"
 #include "ui_configrobots.h"
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -43,12 +44,21 @@ void ConfigRobots::on_pushButton_clicked()
 void ConfigRobots::on_pushButton_2_clicked()
 {
     string robot_nick = ui->comboBox->currentText().toUtf8().constData();
+    string path = "Config/" + robot_nick;
     int channel = ui->spinBox->value();
     string role = ui->comboBox_2->currentText().toUtf8().constData();
     string ID = ui->lineEdit->text().toUtf8().constData();
 
-    cout << robot_nick <<endl;
-    cout << channel << endl;
-    cout << role << endl;
-    cout << ID << endl;
+    ofstream out;
+    out.open(path.c_str(), ofstream::out | ofstream::app);
+
+    if(!out){
+        cout << "File could not be opened!" << endl;
+    }
+    cout << "ok" << endl;
+    out << channel << endl;
+    out << role << endl;
+    out << ID << endl;
+
+    out.close();
 }
