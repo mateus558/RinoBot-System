@@ -41,6 +41,8 @@ public:
     Mat setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper);
     Mat adjust_gamma(double gamma, Mat org);
     Mat CLAHE_algorithm(Mat org);
+    vector<Robot> get_robots();
+    void set_robots(vector<Robot> robots);
     bool open_camera(int camid = 0);
     void Play();
     void Stop();

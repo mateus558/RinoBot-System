@@ -23,8 +23,9 @@ public:
     ~SetParameters();
 
 private slots:
-    void on_pushButton_clicked();
-    void on_pushButton_2_clicked();
+    void on_initCapture_clicked();
+    void on_configRobots_clicked();
+    void on_readParameters_clicked();
 
 private:
     Ui::SetParameters *ui;

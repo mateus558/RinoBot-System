@@ -166,6 +166,15 @@ void Vision::run()
     }
 }
 
+vector<Robot> Vision::get_robots(){
+    return robots;
+}
+
+void Vision::set_robots(vector<Robot> robots){
+    this->robots = robots;
+    cout << this->robots[0].get_ID() << " " << this->robots[1].get_ID() << " " << this->robots[2].get_ID() << endl;
+}
+
 void Vision::set_mode(int m)
 {
     mode = m;
