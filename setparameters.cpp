@@ -1,6 +1,7 @@
 #include "setparameters.h"
 #include "ui_setparameters.h"
 #include <iostream>
+#include <utility>
 #include <fstream>
 
 using namespace std;
@@ -137,130 +138,45 @@ void SetParameters::on_T2_color_clicked()
     set_team_color->show();
 }
 
-void press(int event, int x, int y, int flags, void* userdata)
-{
-    vector<Point> *points = (vector<Point>*) userdata;
-
-    if(event == EVENT_LBUTTONDOWN){
-        points->push_back(Point(x, y));
-    }
-}
-
 void SetParameters::on_mapPoints_clicked()
 {
-    vector<Point> mapPoints;
-    VideoCapture cam;
-    Mat frame;
-    fstream write_points;
-    int n = 0, camid;
-
-    camid = eye->get_camID();
-    eye->Stop();
-    eye->release_cam();
-
-    if(!cam.isOpened()){
-        cam.open(camid);
-    }else cout << "Camera is already opened." << endl;
-
-    if(!cam.isOpened()) cout << "Camera could not be opened." << endl;
-
-    while(n != 18){
-        if(!cam.read(frame)){
-            cout << "Error getting frame!" << endl;
-            break;
-        }
-
-        if(frame.empty()){
-            cout << "Error reading the frame!" << endl;
-            break;
-        }
-
-        namedWindow("Click on the map points", 1);
-        setMouseCallback("Click on the map points", press, &mapPoints);
-
-        n = mapPoints.size();
-        for(Point p : mapPoints){
-            cout << p.x << " " << p.y << endl;
-            circle(frame, p, 2, Scalar(0, 0, 255), 5);
-        }
-
-        imshow("Click on the map points", frame);
-
-        waitKey(15);
-    }
-
-    cam.release();
-
-    write_points.open("Config/map", ofstream::out);
-
-    for(Point p : mapPoints){
-        write_points << p.x << " " << p.y << endl;
-    }
-
-    write_points.close();
+    set_points("map", "map", 18);
 }
 
 void SetParameters::on_attackArrea_btn_clicked()
 {
-    vector<Point> attackPoints;
-    VideoCapture cam;
-    Mat frame;
-    fstream write_points;
-    int n = 0, camid;
-
-    camid = eye->get_camID();
-    eye->Stop();
-    eye->release_cam();
-
-    if(!cam.isOpened()){
-        cam.open(camid);
-    }else cout << "Camera is already opened." << endl;
-
-    if(!cam.isOpened()) cout << "Camera could not be opened." << endl;
-
-    while(n != 8){
-        if(!cam.read(frame)){
-            cout << "Error getting frame!" << endl;
-            break;
-        }
-
-        if(frame.empty()){
-            cout << "Error reading the frame!" << endl;
-            break;
-        }
-
-        namedWindow("Click on the attack area points", 1);
-        setMouseCallback("Click on the attack area points", press, &attackPoints);
-
-        n = attackPoints.size();
-        for(Point p : attackPoints){
-            cout << p.x << " " << p.y << endl;
-            circle(frame, p, 2, Scalar(0, 0, 255), 5);
-        }
-
-        imshow("Click on the attack area points", frame);
-
-        waitKey(15);
-    }
-
-    cam.release();
-
-    write_points.open("Config/attack_area", ofstream::out);
-
-    for(Point p : attackPoints){
-        write_points << p.x << " " << p.y << endl;
-    }
-
-    write_points.close();
+    set_points("attack_area", "attack", 8);
 }
 
 void SetParameters::on_defenseArrea_btn_clicked()
+{
+    set_points("defense_area", "defense", 8);
+}
+
+void press(int event, int x, int y, int flags, void* userdata)
+{
+    vector<Point> *args = (vector<Point>*) userdata;
+
+    if(event == EVENT_LBUTTONDOWN){
+        for(int i = 0; i < args->size(); ++i)
+            if(args->at(i).x == x && args->at(i).y == y)
+                return;
+        args->push_back(Point(x, y));
+    }else if(event == EVENT_RBUTTONDOWN){
+        if(!args->empty())
+            args->pop_back();
+    }
+}
+
+void SetParameters::set_points(string fname, string area, int n_points)
 {
     vector<Point> defensePoints;
     VideoCapture cam;
     Mat frame;
     fstream write_points;
-    int n = 0, camid;
+    string wname = "Click on the " + area + " area points";
+    bool exit = false;
+    int n = 0, camid, key;
 
     camid = eye->get_camID();
     eye->Stop();
@@ -272,19 +188,19 @@ void SetParameters::on_defenseArrea_btn_clicked()
 
     if(!cam.isOpened()) cout << "Camera could not be opened." << endl;
 
-    while(n != 8){
+    while(n != n_points && !exit){
         if(!cam.read(frame)){
             cout << "Error getting frame!" << endl;
-            break;
+            return;
         }
 
         if(frame.empty()){
             cout << "Error reading the frame!" << endl;
-            break;
+            return;
         }
 
-        namedWindow("Click on the defense area points", 1);
-        setMouseCallback("Click on the defense area points", press, &defensePoints);
+        namedWindow(wname, 1);
+        setMouseCallback(wname, press, &defensePoints);
 
         n = defensePoints.size();
         for(Point p : defensePoints){
@@ -292,18 +208,23 @@ void SetParameters::on_defenseArrea_btn_clicked()
             circle(frame, p, 2, Scalar(0, 0, 255), 5);
         }
 
-        imshow("Click on the defense area points", frame);
+        imshow(wname, frame);
 
-        waitKey(15);
+        key = waitKey(15);
+        if(key == 1048603) exit = true;
     }
 
+    destroyAllWindows();
     cam.release();
 
-    write_points.open("Config/defense_area", ofstream::out);
+    if(!exit){
+        string path = "Config/" + fname;
+        write_points.open(path.c_str(), ofstream::out);
 
-    for(Point p : defensePoints){
-        write_points << p.x << " " << p.y << endl;
-    }
+        for(Point p : defensePoints){
+            write_points << p.x << " " << p.y << endl;
+        }
 
-    write_points.close();
+        write_points.close();
+     }
 }

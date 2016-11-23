@@ -14,6 +14,8 @@ class SetParameters : public QMainWindow
 {
     Q_OBJECT
 
+private:
+    void set_points(string fname, string area, int n_points);
 public slots:
     void updateVisionUI(QImage img);
     void updateFPS(double val);
