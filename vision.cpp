@@ -198,6 +198,8 @@ bool Vision::open_camera(int camid)
         return true;
     }
 
+    this->camid = camid;
+
     return false;
 }
 
@@ -250,6 +252,11 @@ void Vision::msleep(int ms)
 void Vision::release_cam()
 {
     cam.release();
+}
+
+int Vision::get_camID()
+{
+    return this->camid;
 }
 
 Vision::~Vision(){

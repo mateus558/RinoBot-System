@@ -136,3 +136,66 @@ void SetParameters::on_T2_color_clicked()
     set_team_color->set_robot("T2");
     set_team_color->show();
 }
+
+void press(int event, int x, int y, int flags, void* userdata)
+{
+    vector<Point> *points = (vector<Point>*) userdata;
+
+    if(event == EVENT_LBUTTONDOWN){
+        points->push_back(Point(x, y));
+    }
+}
+
+void SetParameters::on_mapPoints_clicked()
+{
+    vector<Point> mapPoints;
+    VideoCapture cam;
+    Mat frame;
+    fstream write_points;
+    int n = 0, camid;
+
+    camid = eye->get_camID();
+    eye->Stop();
+    eye->release_cam();
+
+    if(!cam.isOpened()){
+        cam.open(camid);
+    }else cout << "Camera is already opened." << endl;
+
+    if(!cam.isOpened()) cout << "Camera could not be opened." << endl;
+
+    while(n != 18){
+        if(!cam.read(frame)){
+            cout << "Error getting frame!" << endl;
+            break;
+        }
+
+        if(frame.empty()){
+            cout << "Error reading the frame!" << endl;
+            break;
+        }
+
+        namedWindow("Click on the map points", 1);
+        setMouseCallback("Click on the map points", press, &mapPoints);
+
+        n = mapPoints.size();
+        for(Point p : mapPoints){
+            cout << p.x << " " << p.y << endl;
+            circle(frame, p, 2, Scalar(0, 0, 255), 5);
+        }
+
+        imshow("Click on the map points", frame);
+
+        waitKey(15);
+    }
+
+    cam.release();
+
+    write_points.open("Config/map", ofstream::out);
+
+    for(Point p : mapPoints){
+        write_points << p.x << " " << p.y << endl;
+    }
+
+    write_points.close();
+}

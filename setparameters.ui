@@ -121,6 +121,19 @@
      <string>Set team 2 color</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="mapPoints">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>300</y>
+      <width>101</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set map points</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

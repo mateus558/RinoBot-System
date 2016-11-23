@@ -20,7 +20,7 @@ using namespace cv;
 class Vision: public QThread {  Q_OBJECT
 private:
     bool stop;
-    int mode, rows, cols;
+    int mode, rows, cols, camid;
     double FPS;
     QMutex mutex;
     QWaitCondition condition;
@@ -28,7 +28,7 @@ private:
     Mat raw_frame;
     Mat vision_frame;
     VideoCapture cam;
-    vector<Robot> robots;
+    vector<Robot> robots;    
 
     void add_adjacents(queue<Point> &pilha, Point u, bool **visited);
 signals:
@@ -41,12 +41,13 @@ public:
     vector<int> low;
     vector<int> upper;
     Vision(QObject *parent = 0);
-    void proccess_frame(Mat, Mat);
     Mat detect_colors(Mat vision_frame, vector<int> low, vector<int> upper);
     Mat setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper);
     Mat adjust_gamma(double gamma, Mat org);
     Mat CLAHE_algorithm(Mat org);
     vector<Robot> get_robots();
+    void proccess_frame(Mat, Mat);
+    int get_camID();
     void set_robots(vector<Robot> robots);
     void detect_robots(Mat frame, vector<Robot> robots);
     bool open_camera(int camid = 0);

@@ -31,6 +31,8 @@ private slots:
 
     void on_T2_color_clicked();
 
+    void on_mapPoints_clicked();
+
 private:
     Ui::SetParameters *ui;
     ConfigRobots *conf;
