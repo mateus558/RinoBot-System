@@ -160,7 +160,7 @@ void Vision::run()
 
         switch(mode){
             case 0: //Visualization mode
-                detect_robots(vision_frame, robots);
+               // detect_robots(vision_frame, robots);
                 cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
                 img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, QImage::Format_RGB888);
                 break;

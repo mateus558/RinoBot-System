@@ -134,6 +134,32 @@
      <string>Set map points</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="attackArrea_btn">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>300</y>
+      <width>101</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set attack area</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="defenseArrea_btn">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>300</y>
+      <width>111</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set defense area</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

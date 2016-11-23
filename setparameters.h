@@ -33,6 +33,10 @@ private slots:
 
     void on_mapPoints_clicked();
 
+    void on_attackArrea_btn_clicked();
+
+    void on_defenseArrea_btn_clicked();
+
 private:
     Ui::SetParameters *ui;
     ConfigRobots *conf;
