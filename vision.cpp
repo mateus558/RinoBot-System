@@ -1,6 +1,7 @@
 #include "vision.h"
 #include <time.h>
 #include <iostream>
+#include <queue>
 #include <vector>
 #include <cmath>
 #include <ctime>
@@ -12,37 +13,53 @@ Vision::Vision(QObject *parent): QThread(parent)
 {
     stop = true;
     mode = 0;
-    robots.resize(3);
+    robots.resize(6);
     robots[0].set_nick("Leona");
     robots[1].set_nick("Gandalf");
     robots[2].set_nick("Presto");
+    robots[3].set_nick("T2");
+    robots[4].set_nick("T2");
+    robots[5].set_nick("T2");
     low.resize(3);
     upper.resize(3);
     low = {0,0,0};
     upper = {255, 255, 255};
 }
 
-bool Vision::open_camera(int camid)
-{
-    if(!cam.isOpened()){
-        cam.open(camid);
-    }
-
-    if(cam.isOpened()){
-        FPS = 60;
-        return true;
-    }
-
-    return false;
+void Vision::add_adjacents(queue<Point> &pilha, Point u, bool **visited){
+    Point p1(int(u.x/2), int(u.y/2)), p2(int(u.x + u.x/2), int(u.y/2)), p3(int(u.x/2), int(u.y + u.y/2)), p4(int(u.x + u.x/2), int(u.y + u.y/2));
+    /*cout << p1.x << " " << p1.y << endl;
+    cout << p2.x << " " << p2.y << endl;
+    cout << p3.x << " " << p3.y << endl;
+    cout << p4.x << " " << p4.y << endl;*/
+    if(p1.x < rows && p1.y < cols && !visited[p1.x][p1.y])
+        pilha.push(p1);
+    if(p2.x < rows && p2.y < cols && !visited[p2.x][p2.y])
+        pilha.push(p2);
+    if(p3.x < rows && p3.y < cols && !visited[p3.x][p3.y])
+        pilha.push(p3);
+    if(p4.x < rows && p4.y < cols && !visited[p4.x][p4.y])
+        pilha.push(p4);
 }
 
-void Vision::Play()
-{
-    if(!isRunning()){
-        if(isStopped())
-            stop = false;
-        start(LowPriority);
+void Vision::detect_robots(Mat frame, vector<Robot> robots){
+    int i, j = 0;
+    Mat out_team1, out_team2, out_r[3];
+    vector<int> low, upper;
+
+    for(i = 0; i < robots.size()-3; ++i){
+        low = robots[i].get_low_color();
+        upper = robots[i].get_upper_color();
+        inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_r[i]);
     }
+
+    low = robots[0].get_team_low_color();
+    upper = robots[0].get_team_upper_color();
+    inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_team1);
+
+    low = robots[4].get_team_low_color();
+    upper = robots[4].get_team_upper_color();
+    inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_team2);
 }
 
 Mat Vision::adjust_gamma(double gamma, Mat org)
@@ -135,11 +152,15 @@ void Vision::run()
             continue;
         }
 
+        rows = raw_frame.rows;
+        cols = raw_frame.cols;
+
         vision_frame = raw_frame.clone();
         proccess_frame(raw_frame, vision_frame);
 
         switch(mode){
             case 0: //Visualization mode
+                detect_robots(vision_frame, robots);
                 cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
                 img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, QImage::Format_RGB888);
                 break;
@@ -166,6 +187,29 @@ void Vision::run()
     }
 }
 
+bool Vision::open_camera(int camid)
+{
+    if(!cam.isOpened()){
+        cam.open(camid);
+    }
+
+    if(cam.isOpened()){
+        FPS = 60;
+        return true;
+    }
+
+    return false;
+}
+
+void Vision::Play()
+{
+    if(!isRunning()){
+        if(isStopped())
+            stop = false;
+        start(LowPriority);
+    }
+}
+
 vector<Robot> Vision::get_robots()
 {
     return robots;
@@ -173,6 +217,7 @@ vector<Robot> Vision::get_robots()
 
 void Vision::set_robots(vector<Robot> robots)
 {
+    cout << robots[2].get_upper_color()[0] <<endl;
     this->robots = robots;
 }
 

@@ -16,10 +16,12 @@ private:
     string ID;
     string role;
     vector<Point> pos_hist;
+    vector<int> low_color_team;
+    vector<int> upper_color_team;
     vector<int> low_color;
     vector<int> upper_color;
 public:
-    Robot(): centroid(Point(-1, -1)),   channel(-1),    ID("None"),   role("None"), nick("None") {}
+    Robot(): centroid(Point(-1, -1)),   channel(-1), nick("None"),  ID("None"),   role("None") {}
     Point get_centroid();
     void set_centroid(Point p = Point(-1, -1));
     int get_channel();
@@ -30,6 +32,10 @@ public:
     void set_role(string role);
     string get_ID();
     void set_ID(string ID);
+    vector<int> get_team_low_color();
+    void set_team_low_color(vector<int> low_color);
+    vector<int> get_team_upper_color();
+    void set_team_upper_color(vector<int> upper_color);
     vector<int> get_low_color();
     void set_low_color(vector<int> low_color);
     vector<int> get_upper_color();

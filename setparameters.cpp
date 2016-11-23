@@ -9,6 +9,7 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
 {
     eye = new Vision;
     conf = new ConfigRobots;
+    set_team_color = new SetColorRange;
 
     ui->setupUi(this);
     connect(ui->configRobots, SIGNAL(clicked(bool)), this, SLOT(on_configRobots_clicked()));
@@ -59,11 +60,24 @@ void SetParameters::on_configRobots_clicked()
 void SetParameters::on_readParameters_clicked()
 {
     vector<Robot> robots = eye->get_robots();
-    vector<int> low_color(3, 0);
-    vector<int> upper_color(3, 0);
+    vector<int> low_color(3);
+    vector<int> upper_color(3);
+    vector<int> low_team_color(3);
+    vector<int> upper_team_color(3);
     int ch;
     string path, role, ID;
-    ifstream file;
+    ifstream file, t1_file, t2_file;
+
+    t1_file.open("Config/T1", fstream::in);
+
+    if(!t1_file){
+        cout << "Team 1 config could not be opened!" << endl;
+    }
+
+    t1_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
+    t1_file >> upper_team_color[0] >> upper_team_color[1] >> upper_team_color[2];
+    t1_file.close();
+    t1_file.clear();
 
     for(auto itr = robots.begin(); itr != robots.end(); ++itr){
         path = "Config/" + (*itr).get_nick();
@@ -75,6 +89,8 @@ void SetParameters::on_readParameters_clicked()
         file >> role;
         file >> ID;
 
+        (*itr).set_team_low_color(low_team_color);
+        (*itr).set_team_upper_color(upper_team_color);
         (*itr).set_low_color(low_color);
         (*itr).set_upper_color(upper_color);
         (*itr).set_ID(ID);
@@ -85,5 +101,38 @@ void SetParameters::on_readParameters_clicked()
         file.clear();
     }
 
+    t2_file.open("Config/T2", fstream::in);
+
+    if(!t2_file){
+        cout << "Team 2 config could not be opened!" << endl;
+    }
+
+    t2_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
+    t2_file >> upper_team_color[0] >> upper_team_color[1] >> upper_team_color[2];
+    cout << upper_team_color[0] << " " <<upper_team_color[1] << " " << upper_team_color[2] << endl;
+    t2_file.close();
+    t2_file.clear();
+
+    for(auto itr = robots.begin() + 3; itr != robots.end(); ++itr){
+        (*itr).set_team_low_color(low_team_color);
+        (*itr).set_team_upper_color(upper_team_color);
+    }
+
     eye->set_robots(robots);
+}
+
+void SetParameters::on_T1_color_clicked()
+{
+    eye->Stop();
+    eye->release_cam();
+    set_team_color->set_robot("T1");
+    set_team_color->show();
+}
+
+void SetParameters::on_T2_color_clicked()
+{
+    eye->Stop();
+    eye->release_cam();
+    set_team_color->set_robot("T2");
+    set_team_color->show();
 }

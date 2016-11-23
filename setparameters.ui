@@ -95,6 +95,32 @@
      <string>Configure Robots</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="T1_color">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>140</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set team 1 color</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="T2_color">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>100</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set team 2 color</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

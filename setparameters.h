@@ -27,10 +27,15 @@ private slots:
     void on_configRobots_clicked();
     void on_readParameters_clicked();
 
+    void on_T1_color_clicked();
+
+    void on_T2_color_clicked();
+
 private:
     Ui::SetParameters *ui;
     ConfigRobots *conf;
     Vision *eye;
+    SetColorRange *set_team_color;
 };
 
 #endif // SETPARAMETERS_H

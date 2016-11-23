@@ -17,7 +17,7 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="setParameters">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -56,7 +56,7 @@
      <string>Select Strategy:</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBox">
+   <widget class="QComboBox" name="strategy_choosen">
     <property name="geometry">
      <rect>
       <x>210</x>
@@ -66,7 +66,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="logo">
     <property name="geometry">
      <rect>
       <x>210</x>

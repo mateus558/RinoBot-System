@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include <QString>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 
 using namespace std;
@@ -27,6 +28,7 @@ SetColorRange::SetColorRange(QWidget *parent) :
 
 void SetColorRange::closeEvent(QCloseEvent *event)
 {
+    event->accept();
     eye->Stop();
     eye->release_cam();
     eye->terminate();
@@ -107,24 +109,47 @@ SetColorRange::~SetColorRange()
 
 void SetColorRange::on_pushButton_clicked()
 {
-    string path = "Config/" + robot;
-    ofstream out;
+    int i = 0;
+    string line, path = "Config/" + robot;
+    stringstream ss;
+    fstream file;
 
-    out.open(path.c_str(), ofstream::out | ofstream::trunc);
-    if(!out){
-        cout << "File not open" << endl;
+    file.open(path.c_str(), fstream::in);
+
+    if(!file){
+        cout << "File not open (1)" << endl;
     }
 
     for(int i = 0; i < 3; ++i){
-        out << eye->low[i] << " ";
+        ss << eye->low[i] << " ";
     }
 
-    out << endl;
+    ss << endl;
 
     for(int i = 0; i < 3; ++i){
-        out << eye->upper[i] << " ";
+        ss << eye->upper[i] << " ";
     }
-    out << endl;
 
-    out.close();
+    ss << endl;
+
+    while(getline(file, line)){
+        if(i >= 2){
+            ss << line << endl;
+        }
+
+        i++;
+    }
+
+    file.close();
+    file.clear();
+
+    file.open(path.c_str(), fstream::out);
+
+    if(!file){
+        cout << "File not open (2)" << endl;
+    }
+
+    file << ss.str();
+
+    file.close();
 }

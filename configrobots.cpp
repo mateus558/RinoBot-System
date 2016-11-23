@@ -1,6 +1,7 @@
 #include "configrobots.h"
 #include "ui_configrobots.h"
 #include <iostream>
+#include <sstream>
 #include <fstream>
 
 using namespace std;
@@ -44,22 +45,40 @@ void ConfigRobots::on_configColorRange_clicked()
 
 void ConfigRobots::on_save_clicked()
 {
+    int i = 0;
+    int channel = ui->robot_channel->value();
     string robot_nick = ui->select_robot->currentText().toUtf8().constData();
     string path = "Config/" + robot_nick;
-    int channel = ui->robot_channel->value();
     string role = ui->robot_role->currentText().toUtf8().constData();
     string ID = ui->robot_ID->text().toUtf8().constData();
+    string line;
 
-    ofstream out;
-    out.open(path.c_str(), ofstream::out | ofstream::app);
+    stringstream ss;
+    fstream file;
+    file.open(path.c_str(), fstream::in);
 
-    if(!out){
-        cout << "File could not be opened!" << endl;
+    if(!file){
+        cout << "File could not be opened! (1)" << endl;
     }
 
-    out << channel << endl;
-    out << role << endl;
-    out << ID << endl;
+    while(getline(file, line)){
+        if(i < 2){
+            cout << line << endl;
+            ss << line << endl;
+        }
+        i++;
+    }
 
-    out.close();
+    ss << channel << endl;
+    ss << role << endl;
+    ss << ID << endl;
+
+    file.close();
+    file.clear();
+
+    file.open(path.c_str(), fstream::out);
+
+    file << ss.str();
+
+    file.close();
 }

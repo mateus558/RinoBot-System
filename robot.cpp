@@ -25,6 +25,22 @@ void Robot::set_ID(string ID)
     this->ID = ID;
 }
 
+void Robot::set_team_low_color(vector<int> low_color){
+    this->low_color_team = low_color;
+}
+
+void Robot::set_team_upper_color(vector<int> upper_color){
+    this->upper_color_team = upper_color;
+}
+
+vector<int> Robot::get_team_low_color(){
+    return this->low_color_team;
+}
+
+vector<int> Robot::get_team_upper_color(){
+    return this->low_color_team;
+}
+
 void Robot::set_low_color(vector<int> low_color)
 {
     this->low_color = low_color;
@@ -37,17 +53,17 @@ void Robot::set_upper_color(vector<int> upper_color)
 
 vector<int> Robot::get_low_color()
 {
-    return low_color;
+    return this->low_color;
 }
 
 vector<int> Robot::get_upper_color()
 {
-    return upper_color;
+    return this->upper_color;
 }
 
 string Robot::get_nick()
 {
-    return nick;
+    return this->nick;
 }
 
 Point Robot::get_centroid()
