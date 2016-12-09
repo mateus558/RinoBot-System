@@ -26,22 +26,6 @@ Vision::Vision(QObject *parent): QThread(parent)
     upper = {255, 255, 255};
 }
 
-void Vision::add_adjacents(queue<Point> &pilha, Point u, bool **visited){
-    Point p1(int(u.x/2), int(u.y/2)), p2(int(u.x + u.x/2), int(u.y/2)), p3(int(u.x/2), int(u.y + u.y/2)), p4(int(u.x + u.x/2), int(u.y + u.y/2));
-    /*cout << p1.x << " " << p1.y << endl;
-    cout << p2.x << " " << p2.y << endl;
-    cout << p3.x << " " << p3.y << endl;
-    cout << p4.x << " " << p4.y << endl;*/
-    if(p1.x < rows && p1.y < cols && !visited[p1.x][p1.y])
-        pilha.push(p1);
-    if(p2.x < rows && p2.y < cols && !visited[p2.x][p2.y])
-        pilha.push(p2);
-    if(p3.x < rows && p3.y < cols && !visited[p3.x][p3.y])
-        pilha.push(p3);
-    if(p4.x < rows && p4.y < cols && !visited[p4.x][p4.y])
-        pilha.push(p4);
-}
-
 void Vision::detect_robots(Mat frame, vector<Robot> robots){
     int i, j = 0;
     Mat out_team1, out_team2, out_r[3];

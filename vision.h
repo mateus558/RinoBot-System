@@ -30,7 +30,6 @@ private:
     VideoCapture cam;
     vector<Robot> robots;
 
-    void add_adjacents(queue<Point> &pilha, Point u, bool **visited);
 signals:
     void processedImage(const QImage &image);
     void framesPerSecond(double FPS);
