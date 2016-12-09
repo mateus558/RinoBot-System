@@ -1,0 +1,8 @@
+Existe uma ordem nas configurações, primeiro setar os pontos do mapa e das áreas de ataque e defesa, depois o range das cores dos robôs e .
+
+Formato das configurações:
+1ª linha -> Lower color range
+2ª linha -> Upper color range
+3ª linha -> Robot channel
+4ª linha -> Robot role
+5ª linha -> Robot ID

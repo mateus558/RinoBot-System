@@ -28,7 +28,7 @@ private:
     Mat raw_frame;
     Mat vision_frame;
     VideoCapture cam;
-    vector<Robot> robots;    
+    vector<Robot> robots;
 
     void add_adjacents(queue<Point> &pilha, Point u, bool **visited);
 signals:
