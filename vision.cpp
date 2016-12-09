@@ -26,6 +26,18 @@ Vision::Vision(QObject *parent): QThread(parent)
     ball.second.assign(3, 255);
 }
 
+Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) //Detect colors in [low,upper] range
+{
+    Mat mask;
+    //Generate mask with the points in the range
+    inRange(vision_frame, Scalar(low[0],low[1],low[2]), Scalar(upper[0],upper[1],upper[2]), mask);
+    //Attempt to remove noise (or small objects)
+    morphologyEx(mask, mask, MORPH_OPEN, Mat(), Point(-1, -1), 2);
+    morphologyEx(mask, mask, MORPH_CLOSE, Mat(), Point(-1, -1), 2);
+
+    return mask;
+}
+
 void Vision::detect_robots(Mat frame, vector<Robot> robots){
     int i, rsize = robots.size();
     Mat out_team1, out_team2, out_r[3], out_ball;
@@ -34,24 +46,27 @@ void Vision::detect_robots(Mat frame, vector<Robot> robots){
     for(i = 0; i < rsize-3; ++i){
         low = robots[i].get_low_color();
         upper = robots[i].get_upper_color();
-        inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_r[i]);
+        out_r[i] = detect_colors(frame, low, upper);
     }
 
     low = robots[0].get_team_low_color();
     upper = robots[0].get_team_upper_color();
 
-    inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_team1);
+    out_team1 = detect_colors(frame, low, upper);
 
     low = robots[4].get_team_low_color();
     upper = robots[4].get_team_upper_color();
 
-    inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_team2);
+    out_team2 = detect_colors(frame, low, upper);
 
     low = ball.first;
     upper = ball.second;
 
-    inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_ball);
+    out_ball = detect_colors(frame, low, upper);
 
+    imshow("team1", out_team1);
+    imshow("team2", out_team2);
+    imshow("ball", out_ball);
 }
 
 Mat Vision::adjust_gamma(double gamma, Mat org)
@@ -103,18 +118,6 @@ void Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
     dest = CLAHE_algorithm(dest);
     //Apply gaussian blur
     GaussianBlur(dest, dest, Size(5,5), 2);
-}
-
-Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) //Detect colors in [low,upper] range
-{
-    Mat mask;
-    //Generate mask with the points in the range
-    inRange(vision_frame, Scalar(low[0],low[1],low[2]), Scalar(upper[0],upper[1],upper[2]), mask);
-    //Attempt to remove noise (or small objects)
-    morphologyEx(mask, mask, MORPH_OPEN, Mat(), Point(-1, -1), 2);
-    morphologyEx(mask, mask, MORPH_CLOSE, Mat(), Point(-1, -1), 2);
-
-    return mask;
 }
 
 Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper)   //Detect colors in [low,upper] range

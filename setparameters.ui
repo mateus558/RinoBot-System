@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>399</height>
+    <width>987</width>
+    <height>516</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,10 @@
    <widget class="QLabel" name="camera_video">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>20</y>
-      <width>381</width>
-      <height>271</height>
+      <x>20</x>
+      <y>10</y>
+      <width>771</width>
+      <height>451</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -33,8 +33,8 @@
    <widget class="QPushButton" name="initCapture">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>20</y>
+      <x>800</x>
+      <y>10</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -46,8 +46,8 @@
    <widget class="QLCDNumber" name="fps_number">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>350</y>
+      <x>870</x>
+      <y>430</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -59,8 +59,8 @@
    <widget class="QLabel" name="fps_label">
     <property name="geometry">
      <rect>
-      <x>670</x>
-      <y>350</y>
+      <x>840</x>
+      <y>440</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -72,8 +72,8 @@
    <widget class="QPushButton" name="readParameters">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>220</y>
+      <x>800</x>
+      <y>210</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -85,8 +85,8 @@
    <widget class="QPushButton" name="configRobots">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>60</y>
+      <x>800</x>
+      <y>50</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -98,8 +98,8 @@
    <widget class="QPushButton" name="T1_color">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>140</y>
+      <x>800</x>
+      <y>130</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -111,8 +111,8 @@
    <widget class="QPushButton" name="T2_color">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>100</y>
+      <x>800</x>
+      <y>90</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -124,8 +124,8 @@
    <widget class="QPushButton" name="mapPoints">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>300</y>
+      <x>20</x>
+      <y>470</y>
       <width>101</width>
       <height>21</height>
      </rect>
@@ -137,8 +137,8 @@
    <widget class="QPushButton" name="attackArrea_btn">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>300</y>
+      <x>130</x>
+      <y>470</y>
       <width>101</width>
       <height>21</height>
      </rect>
@@ -150,8 +150,8 @@
    <widget class="QPushButton" name="defenseArrea_btn">
     <property name="geometry">
      <rect>
-      <x>250</x>
-      <y>300</y>
+      <x>240</x>
+      <y>470</y>
       <width>111</width>
       <height>21</height>
      </rect>
@@ -163,8 +163,8 @@
    <widget class="QPushButton" name="ball_color">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>180</y>
+      <x>800</x>
+      <y>170</y>
       <width>181</width>
       <height>31</height>
      </rect>

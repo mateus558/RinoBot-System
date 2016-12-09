@@ -1,5 +1,17 @@
 #include "robot.h"
 
+Robot::Robot(){
+    channel = -1;
+    centroid = Point(-1, -1);
+    nick = "NULL";
+    role = "NULL";
+    ID = "NULL";
+    low_color_team.assign(3, 0);
+    upper_color_team.assign(3, 255);
+    low_color.assign(3, 0);
+    upper_color.assign(3, 255);
+}
+
 void Robot::set_centroid(Point p)
 {
     this->centroid = p;

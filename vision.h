@@ -51,7 +51,7 @@ public:
     void set_robots(vector<Robot> robots);
     void set_ball(pair<vector<int>, vector<int> > ball);
     void detect_robots(Mat frame, vector<Robot> robots);
-    bool open_camera(int camid = 0);
+    bool open_camera(int camid = CV_CAP_FIREWIRE);
     void Play();
     void Stop();
     void set_low(vector<int> low);

@@ -21,7 +21,7 @@ private:
     vector<int> low_color;
     vector<int> upper_color;
 public:
-    Robot(): centroid(Point(-1, -1)),   channel(-1), nick("None"),  ID("None"),   role("None") {}
+    Robot();
     Point get_centroid();
     void set_centroid(Point p = Point(-1, -1));
     int get_channel();
