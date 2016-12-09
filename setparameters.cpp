@@ -78,6 +78,7 @@ void SetParameters::on_readParameters_clicked()
 
     t1_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
     t1_file >> upper_team_color[0] >> upper_team_color[1] >> upper_team_color[2];
+    cout << low_team_color[0] << " " << upper_team_color[0] << endl;
     t1_file.close();
     t1_file.clear();
 
@@ -111,6 +112,7 @@ void SetParameters::on_readParameters_clicked()
 
     t2_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
     t2_file >> upper_team_color[0] >> upper_team_color[1] >> upper_team_color[2];
+    cout << low_team_color[0] << " " << upper_team_color[0] << endl;
     t2_file.close();
     t2_file.clear();
 

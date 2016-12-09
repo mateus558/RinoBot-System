@@ -38,7 +38,7 @@ vector<int> Robot::get_team_low_color(){
 }
 
 vector<int> Robot::get_team_upper_color(){
-    return this->low_color_team;
+    return this->upper_color_team;
 }
 
 void Robot::set_low_color(vector<int> low_color)

@@ -20,18 +20,18 @@ Vision::Vision(QObject *parent): QThread(parent)
     robots[3].set_nick("T2");
     robots[4].set_nick("T2");
     robots[5].set_nick("T2");
-    low.resize(3);
-    upper.resize(3);
-    low = {0,0,0};
-    upper = {255, 255, 255};
+    low.assign(3, 0);
+    upper.assign(3, 255);
+    ball.first.assign(3, 0);
+    ball.second.assign(3, 255);
 }
 
 void Vision::detect_robots(Mat frame, vector<Robot> robots){
-    int i, j = 0;
-    Mat out_team1, out_team2, out_r[3];
+    int i, rsize = robots.size();
+    Mat out_team1, out_team2, out_r[3], out_ball;
     vector<int> low, upper;
 
-    for(i = 0; i < robots.size()-3; ++i){
+    for(i = 0; i < rsize-3; ++i){
         low = robots[i].get_low_color();
         upper = robots[i].get_upper_color();
         inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_r[i]);
@@ -39,11 +39,19 @@ void Vision::detect_robots(Mat frame, vector<Robot> robots){
 
     low = robots[0].get_team_low_color();
     upper = robots[0].get_team_upper_color();
+
     inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_team1);
 
     low = robots[4].get_team_low_color();
     upper = robots[4].get_team_upper_color();
+
     inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_team2);
+
+    low = ball.first;
+    upper = ball.second;
+
+    inRange(frame, Scalar(low[0], low[1], low[2]), Scalar(upper[0], upper[1], upper[2]), out_ball);
+
 }
 
 Mat Vision::adjust_gamma(double gamma, Mat org)
@@ -144,7 +152,7 @@ void Vision::run()
 
         switch(mode){
             case 0: //Visualization mode
-               // detect_robots(vision_frame, robots);
+                detect_robots(vision_frame, robots);
                 cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
                 img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, QImage::Format_RGB888);
                 break;
