@@ -65,9 +65,10 @@ void SetParameters::on_readParameters_clicked()
     vector<int> upper_color(3);
     vector<int> low_team_color(3);
     vector<int> upper_team_color(3);
+    pair<vector<int>, vector<int> > ball_range;
     int ch;
     string path, role, ID;
-    ifstream file, t1_file, t2_file;
+    ifstream file, t1_file, t2_file, ball;
 
     t1_file.open("Config/T1", fstream::in);
 
@@ -110,7 +111,6 @@ void SetParameters::on_readParameters_clicked()
 
     t2_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
     t2_file >> upper_team_color[0] >> upper_team_color[1] >> upper_team_color[2];
-    cout << upper_team_color[0] << " " <<upper_team_color[1] << " " << upper_team_color[2] << endl;
     t2_file.close();
     t2_file.clear();
 
@@ -120,6 +120,20 @@ void SetParameters::on_readParameters_clicked()
     }
 
     eye->set_robots(robots);
+
+    ball.open("Config/ball", fstream::in);
+
+    if(!ball){
+        cout << "Ball config could not be opened!" << endl;
+    }
+    ball_range.first.resize(3);
+    ball_range.second.resize(3);
+    ball >> ball_range.first[0] >> ball_range.first[1] >> ball_range.first[2];
+    ball >> ball_range.second[0] >> ball_range.second[1] >> ball_range.second[2];
+    ball.close();
+    ball.clear();
+
+    eye->set_ball(ball_range);
 }
 
 void SetParameters::on_T1_color_clicked()
@@ -135,6 +149,14 @@ void SetParameters::on_T2_color_clicked()
     eye->Stop();
     eye->release_cam();
     set_team_color->set_robot("T2");
+    set_team_color->show();
+}
+
+void SetParameters::on_ball_color_clicked()
+{
+    eye->Stop();
+    eye->release_cam();
+    set_team_color->set_robot("ball");
     set_team_color->show();
 }
 

@@ -53,37 +53,49 @@ void SetColorRange::set_vision(Vision *eye, int cam_id)
 
 void SetColorRange::on_horizontalSlider_sliderMoved(int position)
 {
-    eye->low[0] = position;
+    vector<int> low = eye->get_low();
+    low[0] = position;
+    eye->set_low(low);
     ui->lcdNumber->display(position);
 }
 
 void SetColorRange::on_horizontalSlider_2_sliderMoved(int position)
 {
-    eye->low[1] = position;
+    vector<int> low = eye->get_low();
+    low[1] = position;
+    eye->set_low(low);
     ui->lcdNumber_2->display(position);
 }
 
 void SetColorRange::on_horizontalSlider_3_sliderMoved(int position)
 {
-    eye->low[2] = position;
+    vector<int> low = eye->get_low();
+    low[2] = position;
+    eye->set_low(low);
     ui->lcdNumber_3->display(position);
 }
 
 void SetColorRange::on_horizontalSlider_4_sliderMoved(int position)
 {
-    eye->upper[0] = position;
+    vector<int> upper = eye->get_upper();
+    upper[0] = position;
+    eye->set_upper(upper);
     ui->lcdNumber_4->display(position);
 }
 
 void SetColorRange::on_horizontalSlider_5_sliderMoved(int position)
 {
-    eye->upper[1] = position;
+    vector<int> upper = eye->get_upper();
+    upper[1] = position;
+    eye->set_upper(upper);
     ui->lcdNumber_5->display(position);
 }
 
 void SetColorRange::on_horizontalSlider_6_sliderMoved(int position)
 {
-    eye->upper[2] = position;
+    vector<int> upper = eye->get_upper();
+    upper[2] = position;
+    eye->set_upper(upper);
     ui->lcdNumber_6->display(position);
 }
 
@@ -121,13 +133,13 @@ void SetColorRange::on_pushButton_clicked()
     }
 
     for(int i = 0; i < 3; ++i){
-        ss << eye->low[i] << " ";
+        ss << eye->get_low()[i] << " ";
     }
 
     ss << endl;
 
     for(int i = 0; i < 3; ++i){
-        ss << eye->upper[i] << " ";
+        ss << eye->get_upper()[i] << " ";
     }
 
     ss << endl;

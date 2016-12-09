@@ -39,6 +39,8 @@ private slots:
 
     void on_defenseArrea_btn_clicked();
 
+    void on_ball_color_clicked();
+
 private:
     Ui::SetParameters *ui;
     ConfigRobots *conf;

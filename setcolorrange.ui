@@ -318,14 +318,14 @@
   <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>300</x>
      <y>230</y>
      <width>80</width>
      <height>22</height>
     </rect>
    </property>
    <property name="text">
-    <string>PushButton</string>
+    <string>Capture</string>
    </property>
   </widget>
  </widget>

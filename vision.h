@@ -6,12 +6,12 @@
 #include <QImage>
 #include <QWaitCondition>
 #include <QtConcurrent/QtConcurrent>
-//#include <QFuture>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <robot.h>
 #include <queue>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -28,6 +28,9 @@ private:
     Mat raw_frame;
     Mat vision_frame;
     VideoCapture cam;
+    vector<int> low;
+    vector<int> upper;
+    pair<vector<int>, vector<int> > ball;
     vector<Robot> robots;
 
 signals:
@@ -37,8 +40,6 @@ protected:
     void run();
     void msleep(int ms);
 public:
-    vector<int> low;
-    vector<int> upper;
     Vision(QObject *parent = 0);
     Mat detect_colors(Mat vision_frame, vector<int> low, vector<int> upper);
     Mat setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper);
@@ -48,10 +49,15 @@ public:
     void proccess_frame(Mat, Mat);
     int get_camID();
     void set_robots(vector<Robot> robots);
+    void set_ball(pair<vector<int>, vector<int> > ball);
     void detect_robots(Mat frame, vector<Robot> robots);
     bool open_camera(int camid = 0);
     void Play();
     void Stop();
+    void set_low(vector<int> low);
+    void set_upper(vector<int> upper);
+    vector<int> get_low();
+    vector<int> get_upper();
     void set_mode(int m = 0);
     bool isStopped() const;
     bool is_open();

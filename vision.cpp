@@ -203,8 +203,29 @@ vector<Robot> Vision::get_robots()
 
 void Vision::set_robots(vector<Robot> robots)
 {
-    cout << robots[2].get_upper_color()[0] <<endl;
     this->robots = robots;
+}
+
+void Vision::set_ball(pair<vector<int>, vector<int> > ball){
+    this->ball = ball;
+}
+
+void Vision::set_low(vector<int> low)
+{
+    this->low = low;
+}
+
+void Vision::set_upper(vector<int> upper)
+{
+    this->upper = upper;
+}
+
+vector<int> Vision::get_low(){
+    return low;
+}
+
+vector<int> Vision::get_upper(){
+    return upper;
 }
 
 void Vision::set_mode(int m)
