@@ -70,6 +70,9 @@ void SetParameters::on_readParameters_clicked()
     string path, role, ID;
     ifstream file, t1_file, t2_file, ball;
 
+    ball_range.first.resize(3);
+    ball_range.second.resize(3);
+
     t1_file.open("Config/T1", fstream::in);
 
     if(!t1_file){
@@ -128,8 +131,7 @@ void SetParameters::on_readParameters_clicked()
     if(!ball){
         cout << "Ball config could not be opened!" << endl;
     }
-    ball_range.first.resize(3);
-    ball_range.second.resize(3);
+
     ball >> ball_range.first[0] >> ball_range.first[1] >> ball_range.first[2];
     ball >> ball_range.second[0] >> ball_range.second[1] >> ball_range.second[2];
     ball.close();
