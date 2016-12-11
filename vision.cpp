@@ -47,9 +47,9 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     int i, j;
     double dista = 0.0, distb = 0.0;
     Moments ball_moment;
+    Point ball_cent(-1, -1);
     vector<Moments> r_m(3);
     vector<vector<Moments> > t_m(2, vector<Moments>(3));
-    Point ball_cent(-1, -1);
     vector<Point> r_col_cent(3);
     vector<vector<Point> > tirj_cent(2, vector<Point>(3));
 
@@ -121,6 +121,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         }
         robots[i].set_angle(angle_two_points(robots[i].get_color_cent(), robots[i].get_team_cent()));
     }
+
+    ball_pos = ball_cent;
 
     return robots;
 }
@@ -233,9 +235,12 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
 {
     int i, size = robots.size();
 
+    circle(frame, ball_pos, 20, Scalar(255, 0, 0), 5, 8);
+
     for(i = 0; i < size-3; ++i){
         Point cent = robots[i].get_centroid(), team_cent = robots[i].get_team_cent();
         Point end = team_cent*20/sqrt(team_cent.dot(team_cent));
+
         circle(frame, cent, 20, Scalar(0, 255, 0), 5, 8);
         line(frame, cent, end, Scalar(0, 255, 0), 5, 8);
     }
