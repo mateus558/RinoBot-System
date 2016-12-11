@@ -21,8 +21,8 @@ Vision::Vision(QObject *parent): QThread(parent)
     robots[5].set_nick("T2");
     low.assign(3, 0);
     upper.assign(3, 255);
-    ball.first.assign(3, 0);
-    ball.second.assign(3, 255);
+    ball_color.first.assign(3, 0);
+    ball_color.second.assign(3, 255);
 }
 
 Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) //Detect colors in [low,upper] range
@@ -35,6 +35,94 @@ Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) 
     morphologyEx(mask, mask, MORPH_CLOSE, Mat(), Point(-1, -1), 2);
 
     return mask;
+}
+
+bool sort_by_area(vector<Point> p0, vector<Point> p1)
+{
+    return contourArea(p0) < contourArea(p1);
+}
+
+void Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
+{
+    int i, j;
+    double dista = 0.0, distb = 0.0;
+    Moments ball_moment;
+    vector<Moments> r_m(3);
+    vector<vector<Moments> > t_m(2, vector<Moments>(3));
+    Point ball_cent(-1, -1);
+    vector<Point> r_col_cent(3);
+    vector<vector<Point> > tirj_cent(2, vector<Point>(3));
+
+    //Sort and select candidates by largest area
+    for(i = 0; i < 6; ++i){
+        sort(contours[i].begin(), contours[i].end(), sort_by_area);
+        if(i == 1 || i == 2){
+            contours[i].erase(contours[i].begin()+3, contours[i].end());
+        }else{
+            contours[i].erase(contours[i].begin()+1, contours[i].end());
+        }
+
+    }
+
+    //Get the ball moment from the contour
+    ball_moment = moments(contours[0][0]);
+
+    //Get the robots moments (their color half)
+    for(i = 0; i < 3; ++i){
+        r_m[i] = moments(contours[i + 3][0]);
+    }
+
+    //Get the robots moments (their team color half)
+    for(i = 0; i < 2; ++i){
+        for(j = 0; j < 3; ++j){
+            t_m[i][j] = moments(contours[i+1][j]);
+        }
+    }
+
+    //Get ball centroid
+    ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
+
+    //Get centroid from robot color half
+    for(i = 0; i < 3; ++i){
+        r_col_cent[i] = Point(r_m[i].m10/r_m[i].m00, r_m[i].m01/r_m[i].m00);
+    }
+
+    //Get centroid from robot team color half
+    for(i = 0; i < 2; ++i){
+        for(j = 0; j < 3; ++j){
+            tirj_cent[i][j] = Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00);;
+        }
+    }
+
+    //Define team 1 centroids and angles
+    for(i = 0, dista = INFINITY; i < 3; ++i){
+        robots[i].color_cent = r_col_cent[i];
+
+        for(j = 0; j < 3; ++j){ //Gets the closest team color centroid
+            distb = euclidean_dist(r_col_cent[i], tirj_cent[0][j]);
+            if(distb < dista){
+                robots[i].team_cent = tirj_cent[0][j];
+                dista = distb;
+            }
+        }
+        robots[i].angle = angle_two_points(robots[i].color_cent, robots[i].team_cent);
+    }
+
+    //Define team 2 centroids and angles
+    for(i = 3, dista = INFINITY; i < 6; ++i){
+        robots[i].color_cent = r_col_cent[i];
+        robots[i].team_cent = tirj_cent[1][0];
+        for(j = 0; j < 3; ++j){ //Gets the closest team color centroid
+            distb = euclidean_dist(r_col_cent[i], tirj_cent[1][j]);
+            if(distb < dista){
+                robots[i].team_cent = tirj_cent[1][j];
+                dista = distb;
+            }
+        }
+        robots[i].angle = angle_two_points(robots[i].color_cent, robots[i].team_cent);
+    }
+
+    return robots;
 }
 
 pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame, vector<Robot> robots){
@@ -61,8 +149,8 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
 
     out_team2 = detect_colors(frame, low, upper);
 
-    low = ball.first;
-    upper = ball.second;
+    low = ball_color.first;
+    upper = ball_color.second;
 
     out_ball = detect_colors(frame, low, upper);
 
@@ -170,6 +258,7 @@ void Vision::run()
                 /*for(pMatrix cont: obj_contours){
                     drawContours(vision_frame, cont, 0, Scalar(255,255,255), 2, 8);
                 }*/
+                fill_robots(obj_contours, robots);
                 cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
                 img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, QImage::Format_RGB888);
                 break;
@@ -232,7 +321,7 @@ void Vision::set_robots(vector<Robot> robots)
 }
 
 void Vision::set_ball(pair<vector<int>, vector<int> > ball){
-    this->ball = ball;
+    this->ball_color = ball;
 }
 
 void Vision::set_low(vector<int> low)

@@ -3,6 +3,8 @@
 Robot::Robot(){
     channel = -1;
     centroid = Point(-1, -1);
+    team_cent = Point(-1, -1);
+    color_cent = Point(-1, -1);
     nick = "NULL";
     role = "NULL";
     ID = "NULL";

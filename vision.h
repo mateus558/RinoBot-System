@@ -31,9 +31,9 @@ private:
     VideoCapture cam;
     vector<int> low;
     vector<int> upper;
-    pair<vector<int>, vector<int> > ball;
+    pair<vector<int>, vector<int> > ball_color;
+    Point ball_pos;
     vector<Robot> robots;
-
 signals:
     void processedImage(const QImage &image);
     void framesPerSecond(double FPS);
@@ -48,6 +48,7 @@ public:
     Mat adjust_gamma(double gamma, Mat org);
     Mat CLAHE_algorithm(Mat org);
     vector<Robot> get_robots();
+    void fill_robots(vector<pMatrix> contours, vector<Robot> robots);
     void proccess_frame(Mat, Mat);
     int get_camID();
     void set_robots(vector<Robot> robots);

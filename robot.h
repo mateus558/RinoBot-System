@@ -10,8 +10,10 @@ using namespace cv;
 
 class Robot{
 private:
-    Point centroid;
-    int channel;
+    int channel;    //Communication channel
+    double angle;   //Rotation angle
+    Point centroid; //Robot general centroid
+    Point color_cent, team_cent;    //Centroid from the half role color and from team color
     string nick;
     string ID;
     string role;
