@@ -14,9 +14,44 @@ Robot::Robot(){
     upper_color.assign(3, 255);
 }
 
+void Robot::set_angle(double angle)
+{
+    this->angle = angle;
+}
+
+double Robot::get_angle()
+{
+    return this->angle;
+}
+
 void Robot::set_centroid(Point p)
 {
     this->centroid = p;
+}
+
+Point Robot::get_centroid()
+{
+    return this->centroid;
+}
+
+void Robot::set_color_cent(Point p)
+{
+    this->color_cent = p;
+}
+
+Point Robot::get_color_cent()
+{
+    return this->color_cent;
+}
+
+void Robot::set_team_cent(Point p)
+{
+    this->team_cent = p;
+}
+
+Point Robot::get_team_cent()
+{
+    return this->team_cent;
 }
 
 void Robot::set_channel(int channel)
@@ -78,11 +113,6 @@ vector<int> Robot::get_upper_color()
 string Robot::get_nick()
 {
     return this->nick;
-}
-
-Point Robot::get_centroid()
-{
-    return this->centroid;
 }
 
 string Robot::get_role()

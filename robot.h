@@ -24,10 +24,16 @@ private:
     vector<int> upper_color;
 public:
     Robot();
-    Point get_centroid();
-    void set_centroid(Point p = Point(-1, -1));
     int get_channel();
     void set_channel(int channel = -1);
+    void set_angle(double angle);
+    double get_angle();
+    Point get_centroid();
+    void set_centroid(Point p = Point(-1, -1));
+    Point get_color_cent();
+    void set_color_cent(Point p);
+    Point get_team_cent();
+    void set_team_cent(Point p);
     string get_nick();
     void set_nick(string nick);
     string get_role();

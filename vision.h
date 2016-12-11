@@ -48,7 +48,7 @@ public:
     Mat adjust_gamma(double gamma, Mat org);
     Mat CLAHE_algorithm(Mat org);
     vector<Robot> get_robots();
-    void fill_robots(vector<pMatrix> contours, vector<Robot> robots);
+    vector<Robot> fill_robots(vector<pMatrix> contours, vector<Robot> robots);
     void proccess_frame(Mat, Mat);
     int get_camID();
     void set_robots(vector<Robot> robots);

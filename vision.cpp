@@ -42,7 +42,7 @@ bool sort_by_area(vector<Point> p0, vector<Point> p1)
     return contourArea(p0) < contourArea(p1);
 }
 
-void Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
+vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
 {
     int i, j;
     double dista = 0.0, distb = 0.0;
@@ -96,30 +96,30 @@ void Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
 
     //Define team 1 centroids and angles
     for(i = 0, dista = INFINITY; i < 3; ++i){
-        robots[i].color_cent = r_col_cent[i];
+        robots[i].set_color_cent(r_col_cent[i]);
 
         for(j = 0; j < 3; ++j){ //Gets the closest team color centroid
-            distb = euclidean_dist(r_col_cent[i], tirj_cent[0][j]);
+            distb = euclidean_dist(robots[i].get_color_cent(), tirj_cent[0][j]);
             if(distb < dista){
-                robots[i].team_cent = tirj_cent[0][j];
+                robots[i].set_team_cent(tirj_cent[0][j]);
                 dista = distb;
             }
         }
-        robots[i].angle = angle_two_points(robots[i].color_cent, robots[i].team_cent);
+        robots[i].set_angle(angle_two_points(robots[i].get_color_cent(), robots[i].get_team_cent()));
     }
 
     //Define team 2 centroids and angles
     for(i = 3, dista = INFINITY; i < 6; ++i){
-        robots[i].color_cent = r_col_cent[i];
-        robots[i].team_cent = tirj_cent[1][0];
+        robots[i].set_color_cent(r_col_cent[i]);
+
         for(j = 0; j < 3; ++j){ //Gets the closest team color centroid
-            distb = euclidean_dist(r_col_cent[i], tirj_cent[1][j]);
+            distb = euclidean_dist(robots[i].get_color_cent(), tirj_cent[1][j]);
             if(distb < dista){
-                robots[i].team_cent = tirj_cent[1][j];
+                robots[i].set_team_cent(tirj_cent[1][j]);
                 dista = distb;
             }
         }
-        robots[i].angle = angle_two_points(robots[i].color_cent, robots[i].team_cent);
+        robots[i].set_angle(angle_two_points(robots[i].get_color_cent(), robots[i].get_team_cent()));
     }
 
     return robots;
@@ -255,10 +255,7 @@ void Vision::run()
         switch(mode){
             case 0: //Visualization mode
                 obj_contours = detect_objects(vision_frame, robots).second;
-                /*for(pMatrix cont: obj_contours){
-                    drawContours(vision_frame, cont, 0, Scalar(255,255,255), 2, 8);
-                }*/
-                fill_robots(obj_contours, robots);
+                robots = fill_robots(obj_contours, robots);
                 cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
                 img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, QImage::Format_RGB888);
                 break;
