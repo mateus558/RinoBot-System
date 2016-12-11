@@ -229,6 +229,24 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
     return res;
 }
 
+Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
+{
+    int i, size = robots.size();
+
+    for(i = 0; i < size-3; ++i){
+        Point cent = robots[i].get_centroid(), team_cent = robots[i].get_team_cent();
+        Point end = team_cent*20/sqrt(team_cent.dot(team_cent));
+        circle(frame, cent, 20, Scalar(0, 255, 0), 5, 8);
+        line(frame, cent, end, Scalar(0, 255, 0), 5, 8);
+    }
+
+    for(i = size-3; i < size; ++i){
+        circle(frame, robots[i].get_centroid(), 20, Scalar(0, 0, 255), 5, 8);
+    }
+
+    return frame;
+}
+
 void Vision::run()
 {
     int delay = (1000/this->FPS);
@@ -256,6 +274,7 @@ void Vision::run()
             case 0: //Visualization mode
                 obj_contours = detect_objects(vision_frame, robots).second;
                 robots = fill_robots(obj_contours, robots);
+                vision_frame = draw_robots(vision_frame, robots);
                 cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
                 img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, QImage::Format_RGB888);
                 break;
