@@ -43,7 +43,7 @@ protected:
 public:
     Vision(QObject *parent = 0);
     Mat detect_colors(Mat vision_frame, vector<int> low, vector<int> upper);
-    vector<pMatrix> detect_objects(Mat frame, vector<Robot> robots);
+    pair<vector<vector<Vec4i> >, vector<pMatrix> > detect_objects(Mat frame, vector<Robot> robots);
     Mat setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper);
     Mat adjust_gamma(double gamma, Mat org);
     Mat CLAHE_algorithm(Mat org);

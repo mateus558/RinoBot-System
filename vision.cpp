@@ -37,12 +37,13 @@ Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) 
     return mask;
 }
 
-vector<pMatrix> Vision::detect_objects(Mat frame, vector<Robot> robots){
+pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame, vector<Robot> robots){
     int i, rsize = robots.size();
     Mat out_team1, out_team2, out_r[3], out_ball;
     vector<int> low, upper;
     vector<pMatrix> contours(6);
-    vector<Vec4i> hierarchy;
+    vector<vector<Vec4i> > hierarchy(6);
+    pair<vector<vector<Vec4i> >, vector<pMatrix> > ret;
 
     for(i = 0; i < rsize-3; ++i){
         low = robots[i].get_low_color();
@@ -65,14 +66,17 @@ vector<pMatrix> Vision::detect_objects(Mat frame, vector<Robot> robots){
 
     out_ball = detect_colors(frame, low, upper);
 
-    findContours(out_ball, contours[0], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
-    findContours(out_team1, contours[1], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
-    findContours(out_team2, contours[2], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
-    findContours(out_r[0], contours[3], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
-    findContours(out_r[1], contours[4], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
-    findContours(out_r[2], contours[5], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_ball, contours[0], hierarchy[0], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_team1, contours[1], hierarchy[1], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_team2, contours[2], hierarchy[2], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_r[0], contours[3], hierarchy[3], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_r[1], contours[4], hierarchy[4], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_r[2], contours[5], hierarchy[5], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-    return contours;
+    ret.first = hierarchy;
+    ret.second = contours;
+
+    return ret;
 }
 
 Mat Vision::adjust_gamma(double gamma, Mat org)
@@ -162,7 +166,7 @@ void Vision::run()
 
         switch(mode){
             case 0: //Visualization mode
-                obj_contours = detect_objects(vision_frame, robots);
+                obj_contours = detect_objects(vision_frame, robots).second;
                 /*for(pMatrix cont: obj_contours){
                     drawContours(vision_frame, cont, 0, Scalar(255,255,255), 2, 8);
                 }*/
