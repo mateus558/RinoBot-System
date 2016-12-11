@@ -20,6 +20,7 @@ class SetColorRange : public QWidget
 public:
     explicit SetColorRange(QWidget *parent = 0);
     void set_vision(Vision *eye, int cam_id = 0);
+    void set_camid(int cam_id);
     void set_robot(string robot);
     ~SetColorRange();
 
@@ -41,6 +42,7 @@ private slots:
 private:
     string robot;
     Vision *eye;
+    int cam_id;
     Ui::SetColorRange *ui;
 };
 

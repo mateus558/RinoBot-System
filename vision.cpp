@@ -1,11 +1,10 @@
-#include "vision.h"
-#include <time.h>
 #include <iostream>
 #include <queue>
 #include <vector>
 #include <cmath>
 #include <ctime>
 #include <QMessageBox>
+#include "vision.h"
 
 using namespace std;
 
@@ -38,10 +37,12 @@ Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) 
     return mask;
 }
 
-void Vision::detect_robots(Mat frame, vector<Robot> robots){
+vector<pMatrix> Vision::detect_objects(Mat frame, vector<Robot> robots){
     int i, rsize = robots.size();
     Mat out_team1, out_team2, out_r[3], out_ball;
     vector<int> low, upper;
+    vector<pMatrix> contours(6);
+    vector<Vec4i> hierarchy;
 
     for(i = 0; i < rsize-3; ++i){
         low = robots[i].get_low_color();
@@ -64,9 +65,14 @@ void Vision::detect_robots(Mat frame, vector<Robot> robots){
 
     out_ball = detect_colors(frame, low, upper);
 
-    imshow("team1", out_team1);
-    imshow("team2", out_team2);
-    imshow("ball", out_ball);
+    findContours(out_ball, contours[0], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_team1, contours[1], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_team2, contours[2], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_r[0], contours[3], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_r[1], contours[4], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(out_r[2], contours[5], hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+
+    return contours;
 }
 
 Mat Vision::adjust_gamma(double gamma, Mat org)
@@ -113,7 +119,7 @@ void Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
 {
     dest = orig.clone();
     //Gamma correction
-    dest = adjust_gamma(1.0, dest);
+    dest = adjust_gamma(1.0 , dest);
     //Apply histogram normalization
     dest = CLAHE_algorithm(dest);
     //Apply gaussian blur
@@ -138,6 +144,7 @@ void Vision::run()
     Mat res;
     double elapsed_secs;
     clock_t begin, end;
+    vector<pMatrix> obj_contours;
 
     while(!stop){
         begin = clock();
@@ -155,7 +162,10 @@ void Vision::run()
 
         switch(mode){
             case 0: //Visualization mode
-                detect_robots(vision_frame, robots);
+                obj_contours = detect_objects(vision_frame, robots);
+                /*for(pMatrix cont: obj_contours){
+                    drawContours(vision_frame, cont, 0, Scalar(255,255,255), 2, 8);
+                }*/
                 cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
                 img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, QImage::Format_RGB888);
                 break;

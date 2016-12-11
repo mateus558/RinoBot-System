@@ -101,12 +101,16 @@ void SetColorRange::on_horizontalSlider_6_sliderMoved(int position)
 
 void SetColorRange::on_pushButton_2_clicked()
 {
-    if(!eye->open_camera()){
+    if(!eye->open_camera(cam_id)){
         QMessageBox msgBox;
         msgBox.setText("The camera could not be opened!");
         msgBox.exec();
     }
     eye->Play();
+}
+
+void SetColorRange::set_camid(int cam_id){
+    this->cam_id = cam_id;
 }
 
 void SetColorRange::set_robot(string robot)

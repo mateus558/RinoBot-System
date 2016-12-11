@@ -28,6 +28,11 @@ ConfigRobots::~ConfigRobots()
     delete ui;
 }
 
+void ConfigRobots::set_camid(int cam_id)
+{
+    this->cam_id = cam_id;
+}
+
 void ConfigRobots::set_vision(Vision *eye, int cam_id)
 {
     if(!eye->is_open()){
@@ -40,6 +45,7 @@ void ConfigRobots::on_configColorRange_clicked()
 {
     string robot = ui->select_robot->currentText().toUtf8().constData();
     set_color->set_robot(robot);
+    set_color->set_camid(eye->get_camID());
     set_color->show();
 }
 

@@ -173,6 +173,29 @@
      <string>Set ball color</string>
     </property>
    </widget>
+   <widget class="QLabel" name="camera_label">
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>320</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select camera:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="camera_comboBox">
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>340</y>
+      <width>171</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

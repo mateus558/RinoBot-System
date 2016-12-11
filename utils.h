@@ -1,8 +1,11 @@
 #ifndef UTILS_H
 #define UTILS_H
+#include <vector>
 #include <opencv2/core/core.hpp>
 
 using namespace cv;
+
+typedef std::vector<std::vector<Point> > pMatrix; //Point matrix type
 
 double euclidean_dist(Point p, Point q);
 

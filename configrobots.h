@@ -14,6 +14,7 @@ class ConfigRobots : public QWidget
 
 public:
     explicit ConfigRobots(QWidget *parent = 0);
+    void set_camid(int cam_id);
     void set_vision(Vision *eye, int cam_id = 0);
     ~ConfigRobots();
 

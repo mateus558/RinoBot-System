@@ -9,10 +9,11 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <robot.h>
 #include <queue>
 #include <utility>
 #include <vector>
+#include "robot.h"
+#include "utils.h"
 
 using namespace std;
 using namespace cv;
@@ -42,6 +43,7 @@ protected:
 public:
     Vision(QObject *parent = 0);
     Mat detect_colors(Mat vision_frame, vector<int> low, vector<int> upper);
+    vector<pMatrix> detect_objects(Mat frame, vector<Robot> robots);
     Mat setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper);
     Mat adjust_gamma(double gamma, Mat org);
     Mat CLAHE_algorithm(Mat org);
@@ -50,7 +52,6 @@ public:
     int get_camID();
     void set_robots(vector<Robot> robots);
     void set_ball(pair<vector<int>, vector<int> > ball);
-    void detect_robots(Mat frame, vector<Robot> robots);
     bool open_camera(int camid = CV_CAP_FIREWIRE);
     void Play();
     void Stop();

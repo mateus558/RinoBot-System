@@ -13,6 +13,8 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
     set_team_color = new SetColorRange;
 
     ui->setupUi(this);
+    ui->camera_comboBox->addItem("Default Camera");
+    ui->camera_comboBox->addItem("Firewire Camera");
     connect(ui->configRobots, SIGNAL(clicked(bool)), this, SLOT(on_configRobots_clicked()));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
@@ -39,11 +41,18 @@ void SetParameters::updateFPS(double val)
 
 void SetParameters::on_initCapture_clicked()
 {
+    string cam;
+    int cam_id = 0;
+
+    cam = ui->camera_comboBox->currentText().toUtf8().constData();
+    if(cam == "Default Camera") cam_id = 0;
+    else if(cam == "Firewire Camera") cam_id = CV_CAP_FIREWIRE;
+
     if(eye == NULL){
         eye = new Vision;
     }
 
-    if(!eye->open_camera()){
+    if(!eye->open_camera(cam_id)){
         QMessageBox msgBox;
         msgBox.setText("The camera could not be opened!");
         msgBox.exec();
@@ -153,6 +162,7 @@ void SetParameters::on_T2_color_clicked()
     eye->Stop();
     eye->release_cam();
     set_team_color->set_robot("T2");
+    set_team_color->set_camid(eye->get_camID());
     set_team_color->show();
 }
 
@@ -161,6 +171,7 @@ void SetParameters::on_ball_color_clicked()
     eye->Stop();
     eye->release_cam();
     set_team_color->set_robot("ball");
+    set_team_color->set_camid(eye->get_camID());
     set_team_color->show();
 }
 
@@ -184,7 +195,7 @@ void press(int event, int x, int y, int flags, void* userdata)
     vector<Point> *args = (vector<Point>*) userdata;
 
     if(event == EVENT_LBUTTONDOWN){
-        for(int i = 0; i < args->size(); ++i)
+        for(int i = 0; i < int(args->size()); ++i)
             if(args->at(i).x == x && args->at(i).y == y)
                 return;
         args->push_back(Point(x, y));
