@@ -35,6 +35,8 @@ private:
     Point ball_pos;
     vector<Robot> robots;
 signals:
+    void ballPos(Point ball);
+    void robotsInfo(vector<Robot> robots);
     void processedImage(const QImage &image);
     void framesPerSecond(double FPS);
 protected:

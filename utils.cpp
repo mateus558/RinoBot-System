@@ -16,5 +16,5 @@ double angle_two_points(Point p, Point q)
 {
     double theta = p.ddot(q)/(sqrt(p.ddot(p)) * sqrt(q.ddot(q)));
 
-    return acos(theta);
+    return acos(theta) * 180.0 / PI;
 }

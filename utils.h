@@ -3,6 +3,8 @@
 #include <vector>
 #include <opencv2/core/core.hpp>
 
+#define PI 3.14159265
+
 using namespace cv;
 
 typedef std::vector<std::vector<Point> > pMatrix; //Point matrix type

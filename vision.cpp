@@ -39,45 +39,33 @@ Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) 
     return mask;
 }
 
-bool sort_by_area(vector<Point> p0, vector<Point> p1)
+bool sort_by_larger_area(vector<Point> p0, vector<Point> p1)
 {
     return contourArea(p0) < contourArea(p1);
 }
 
 vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
 {
-    int i, j;
+    int i, j, csize, k;
     double dista = 0.0, distb = 0.0;
     Moments ball_moment;
     Point ball_cent(-1, -1);
-    vector<Moments> r_m(3, Moments());
+    vector<vector<Moments> > r_m(3, vector<Moments>());
     vector<vector<Moments> > t_m(2, vector<Moments>(3, Moments()));
-    vector<Point> r_col_cent(3, Point(-1, -1));
+    vector<vector<Point> > r_col_cent(3, vector<Point>());
     vector<vector<Point> > tirj_cent(2, vector<Point>(3, Point(-1, -1)));
-
-    //Sort and select candidates by largest area
-    for(i = 0; i < 6; ++i){
-        if(contours[i].size() != 0)
-            sort(contours[i].begin(), contours[i].end(), sort_by_area);
-    }
 
     //Get the ball moment from the contour
     if(contours[0].size() != 0){
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
-    }else
+    }else{
         cout << "Ball not found!" << endl;
-
-    //Get the robots moments (their color half)
-    for(i = 0; i < 3; ++i){
-        if(contours[i + 3].size() > 0){
-            r_m[i] = moments(contours[i + 3][0]);
-            //Get centroid from robot color half
-            r_col_cent[i] = Point(r_m[i].m10/r_m[i].m00, r_m[i].m01/r_m[i].m00);
-        }else
-            cout << robots[i].get_nick() << " not found!" << endl;
+        ball_cent = null_point;
     }
+    sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
+    sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
 
     //Get the robots moments (their team color half)
     for(i = 0; i < 2; ++i){
@@ -86,32 +74,77 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                 t_m[i][j] = moments(contours[i+1][j]);
                 //Get centroid from robot team color half
                 tirj_cent[i][j] = Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00);
+            }else{
+                tirj_cent[i][j] = Point(-1, -1);
             }
         }
     }
 
+    //Get the robots moments (their color half)
+    for(i = 0; i < 3; ++i){
+        csize = contours[i + 3].size();
+        if(csize > 0){
+            r_m[i] = vector<Moments>(csize);
+            for(j = 0; j < csize; ++j)
+                r_m[i][j] = moments(contours[i + 3][j]);
+            //Get centroid from robot color half
+            r_col_cent[i] = vector<Point>(csize, Point(-1, -1));
+            for(j = 0; j < csize; ++j){
+                r_col_cent[i][j] = Point(r_m[i][j].m10/r_m[i][j].m00, r_m[i][j].m01/r_m[i][j].m00);
+            }
+        }else{
+            r_col_cent[i] = vector<Point>(1);
+            r_col_cent[i][0] = null_point;
+            cout << robots[i].get_nick() << " not found!" << endl;
+            robots[i].set_centroid(Point(-1, -1));
+        }
+    }
+
     vector<bool> visited(3, false);
-    int selected;
+    int tsize, r_label = 0, col_size, cand_size, min;
+    vector<Point> candidates;
+
+    tsize = (tirj_cent.size() > 3)?3:tirj_cent.size();
 
     //Define team 1 centroids and angles
-    for(i = 0, dista = INFINITY; i < 3; ++i){
-        robots[i].set_color_cent(r_col_cent[i]);
+    for(i = 0; i < tsize; ++i){
+        Point unk_robot = tirj_cent[0][i];
 
-        for(j = 0; j < 3; ++j){ //Gets the closest team color centroid
-            if(visited[j]) continue;
-            distb = euclidean_dist(robots[i].get_color_cent(), tirj_cent[0][j]);
-            //cout << j << " " << distb << " (" << tirj_cent[0][j].x << "," << tirj_cent[0][j].y << ")" << endl;
-            if(distb < dista){
-                robots[i].set_team_cent(tirj_cent[0][j]);
-                selected = j;
-                dista = distb;
+        col_size = r_col_cent.size();
+        candidates = vector<Point>(col_size);
+        cout << "aqui" << endl;
+        for(j = 0, dista = 200000; j < col_size; ++j){
+            cand_size = r_col_cent[i].size();
+            for(k = 0; k < cand_size; ++k){
+                distb = euclidean_dist(unk_robot, r_col_cent[j][k]);
+                cout << distb << endl;
+                if(distb < dista){
+                    dista = distb;
+                    candidates[j] = r_col_cent[j][k];
+                }
             }
         }
-        visited[selected] = true;
-       // cout << dista << endl;
-        robots[i].set_centroid((robots[i].get_team_cent()));
-        robots[i].set_angle(angle_two_points(robots[i].get_color_cent(), robots[i].get_team_cent()));
-        cout << robots[i].get_angle() << endl;
+        for(j = 0; j < col_size; ++j){
+            cout << candidates[j].x << " " << candidates[j].y << endl;
+        }
+        cout << "aqui1" << endl;
+        for(j = 0, dista = 20000; j < col_size; ++j){
+            distb = euclidean_dist(unk_robot, candidates[k]);
+            cout << distb << " " << unk_robot.x << " " << unk_robot.y <<  " " << candidates[k].x << " " << candidates[k].y << endl;
+            if(distb < dista){
+                distb = dista;
+                r_label = j;
+                cout << j << endl;
+            }
+        }
+        cout << "aqui2 " << r_label << endl;
+
+        robots[r_label].set_team_cent(unk_robot);
+        robots[r_label].set_color_cent(candidates[r_label]);
+        robots[r_label].set_centroid((unk_robot + candidates[r_label])/2);
+        robots[r_label].set_angle(angle_two_points(candidates[r_label], unk_robot));
+
+      //  cout << robots[i].get_angle() << endl;
     }
 
     visited = vector<bool>(3, false);
@@ -155,6 +188,7 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     upper = ball_color.second;
 
     out_ball = detect_colors(frame, low, upper);
+    imshow("t2", out_r[2]);
 
     findContours(out_ball, contours[0], hierarchy[0], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     findContours(out_team1, contours[1], hierarchy[1], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
@@ -166,7 +200,6 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     ret.first = hierarchy;
     ret.second = contours;
 
-    imshow("t2", out_ball);
    /* imshow("t1", out_team1);
     imshow("r2", out_r[1]);
     imshow("r3", out_r[2]);*/
@@ -246,15 +279,16 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         Point cent = robots[i].get_centroid(), team_cent = robots[i].get_team_cent();
 
         if(cent == null_point) continue;
-        circle(frame, team_cent, 5, Scalar(0, 255, 0), 1.5);
-        circle(frame, robots[i].get_color_cent(), 5, Scalar(0, 255, 0), 1.5);
+        circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
+        circle(frame, robots[i].get_color_cent(), 5, Scalar(0, 255, 0), 1*(i+1));
+        circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
-        line(frame, cent,Point(cent.x + 20 * cos((robots[i].get_angle()*3.1415)/180), cent.y - 20 * sin((robots[i].get_angle()*3.1415)/180)) , Scalar(0, 255, 0), 1);
+        line(frame, cent,Point(cent.x + 20 * cos((robots[i].get_angle()* PI) / 180), cent.y - 20 * sin((robots[i].get_angle() * PI)/180)) , Scalar(0, 255, 0), 1);
         putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
 
     for(i = size-3; i < size; ++i){
-        circle(frame, robots[i].get_centroid(), 20, Scalar(0, 0, 255), 1);
+        circle(frame, robots[i].get_centroid() + Point(5, 5), 20, Scalar(0, 0, 255), 1);
     }
 
     return frame;
@@ -304,6 +338,8 @@ void Vision::run()
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         FPS = 1/elapsed_secs;
 
+        emit robotsInfo(robots);
+        emit ballPos(ball_pos);
         emit processedImage(img);
         if(i%10 == 0){
             emit framesPerSecond(FPS);
