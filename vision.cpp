@@ -83,41 +83,44 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     for(i = 0; i < 2; ++i){
         for(j = 0; j < 3; ++j){
             if(contours[i+1].size() > 0){
-                t_m[i][j] = moments(contours[i+1][0]);
+                t_m[i][j] = moments(contours[i+1][j]);
                 //Get centroid from robot team color half
                 tirj_cent[i][j] = Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00);
             }
         }
     }
 
+    vector<bool> visited(3, false);
+    int selected;
+
     //Define team 1 centroids and angles
     for(i = 0, dista = INFINITY; i < 3; ++i){
         robots[i].set_color_cent(r_col_cent[i]);
 
         for(j = 0; j < 3; ++j){ //Gets the closest team color centroid
+            if(visited[j]) continue;
             distb = euclidean_dist(robots[i].get_color_cent(), tirj_cent[0][j]);
+            //cout << j << " " << distb << " (" << tirj_cent[0][j].x << "," << tirj_cent[0][j].y << ")" << endl;
             if(distb < dista){
                 robots[i].set_team_cent(tirj_cent[0][j]);
+                selected = j;
                 dista = distb;
             }
         }
-        robots[i].set_centroid((r_col_cent[i] + robots[i].get_team_cent())/2);
+        visited[selected] = true;
+       // cout << dista << endl;
+        robots[i].set_centroid((robots[i].get_team_cent()));
         robots[i].set_angle(angle_two_points(robots[i].get_color_cent(), robots[i].get_team_cent()));
+        cout << robots[i].get_angle() << endl;
     }
+
+    visited = vector<bool>(3, false);
 
     //Define team 2 centroids and angles
     for(i = 3, dista = INFINITY; i < 6; ++i){
-        robots[i].set_color_cent(r_col_cent[i]);
-
-        for(j = 0; j < 3; ++j){ //Gets the closest team color centroid
-            distb = euclidean_dist(robots[i].get_color_cent(), tirj_cent[1][j]);
-            if(distb < dista){
-                robots[i].set_team_cent(tirj_cent[1][j]);
-                dista = distb;
-            }
-        }
-        robots[i].set_centroid((r_col_cent[i] + robots[i].get_team_cent())/2);
-        robots[i].set_angle(angle_two_points(robots[i].get_color_cent(), robots[i].get_team_cent()));
+        robots[i].set_team_cent(tirj_cent[1][i-3]);
+        robots[i].set_centroid(robots[i].get_team_cent());
+       // robots[i].set_angle(angle_two_points(robots[i].get_color_cent(), robots[i].get_team_cent()));
     }
 
     ball_pos = ball_cent;
@@ -163,6 +166,10 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     ret.first = hierarchy;
     ret.second = contours;
 
+    imshow("t2", out_ball);
+   /* imshow("t1", out_team1);
+    imshow("r2", out_r[1]);
+    imshow("r3", out_r[2]);*/
     return ret;
 }
 
@@ -239,12 +246,15 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         Point cent = robots[i].get_centroid(), team_cent = robots[i].get_team_cent();
 
         if(cent == null_point) continue;
-        circle(frame, cent, 20, Scalar(0, 255, 0));
-        line(frame, cent,Point(cent.x + 20 * cos((robots[i].get_angle()*3.1415)/180), cent.y - 20 * sin((robots[i].get_angle()*3.1415)/180)) , Scalar(0, 255, 0));
+        circle(frame, team_cent, 5, Scalar(0, 255, 0), 1.5);
+        circle(frame, robots[i].get_color_cent(), 5, Scalar(0, 255, 0), 1.5);
+        circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
+        line(frame, cent,Point(cent.x + 20 * cos((robots[i].get_angle()*3.1415)/180), cent.y - 20 * sin((robots[i].get_angle()*3.1415)/180)) , Scalar(0, 255, 0), 1);
+        putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
 
     for(i = size-3; i < size; ++i){
-        circle(frame, robots[i].get_centroid(), 20, Scalar(0, 0, 255));
+        circle(frame, robots[i].get_centroid(), 20, Scalar(0, 0, 255), 1);
     }
 
     return frame;
