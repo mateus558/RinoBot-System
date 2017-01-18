@@ -8,6 +8,8 @@
 
 using namespace std;
 
+Point null_point = Point(-1, -1);
+
 Vision::Vision(QObject *parent): QThread(parent)
 {
     stop = true;
@@ -48,49 +50,43 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     double dista = 0.0, distb = 0.0;
     Moments ball_moment;
     Point ball_cent(-1, -1);
-    vector<Moments> r_m(3);
-    vector<vector<Moments> > t_m(2, vector<Moments>(3));
-    vector<Point> r_col_cent(3);
-    vector<vector<Point> > tirj_cent(2, vector<Point>(3));
+    vector<Moments> r_m(3, Moments());
+    vector<vector<Moments> > t_m(2, vector<Moments>(3, Moments()));
+    vector<Point> r_col_cent(3, Point(-1, -1));
+    vector<vector<Point> > tirj_cent(2, vector<Point>(3, Point(-1, -1)));
 
     //Sort and select candidates by largest area
     for(i = 0; i < 6; ++i){
-        sort(contours[i].begin(), contours[i].end(), sort_by_area);
-        if(i == 1 || i == 2){
-            contours[i].erase(contours[i].begin()+3, contours[i].end());
-        }else{
-            contours[i].erase(contours[i].begin()+1, contours[i].end());
-        }
-
+        if(contours[i].size() != 0)
+            sort(contours[i].begin(), contours[i].end(), sort_by_area);
     }
 
     //Get the ball moment from the contour
-    ball_moment = moments(contours[0][0]);
+    if(contours[0].size() != 0){
+        ball_moment = moments(contours[0][contours[0].size()-1]);
+        //Get ball centroid
+        ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
+    }else
+        cout << "Ball not found!" << endl;
 
     //Get the robots moments (their color half)
     for(i = 0; i < 3; ++i){
-        r_m[i] = moments(contours[i + 3][0]);
+        if(contours[i + 3].size() > 0){
+            r_m[i] = moments(contours[i + 3][0]);
+            //Get centroid from robot color half
+            r_col_cent[i] = Point(r_m[i].m10/r_m[i].m00, r_m[i].m01/r_m[i].m00);
+        }else
+            cout << robots[i].get_nick() << " not found!" << endl;
     }
 
     //Get the robots moments (their team color half)
     for(i = 0; i < 2; ++i){
         for(j = 0; j < 3; ++j){
-            t_m[i][j] = moments(contours[i+1][j]);
-        }
-    }
-
-    //Get ball centroid
-    ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
-
-    //Get centroid from robot color half
-    for(i = 0; i < 3; ++i){
-        r_col_cent[i] = Point(r_m[i].m10/r_m[i].m00, r_m[i].m01/r_m[i].m00);
-    }
-
-    //Get centroid from robot team color half
-    for(i = 0; i < 2; ++i){
-        for(j = 0; j < 3; ++j){
-            tirj_cent[i][j] = Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00);;
+            if(contours[i+1].size() > 0){
+                t_m[i][j] = moments(contours[i+1][0]);
+                //Get centroid from robot team color half
+                tirj_cent[i][j] = Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00);
+            }
         }
     }
 
@@ -105,6 +101,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                 dista = distb;
             }
         }
+        robots[i].set_centroid((r_col_cent[i] + robots[i].get_team_cent())/2);
         robots[i].set_angle(angle_two_points(robots[i].get_color_cent(), robots[i].get_team_cent()));
     }
 
@@ -119,11 +116,11 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                 dista = distb;
             }
         }
+        robots[i].set_centroid((r_col_cent[i] + robots[i].get_team_cent())/2);
         robots[i].set_angle(angle_two_points(robots[i].get_color_cent(), robots[i].get_team_cent()));
     }
 
     ball_pos = ball_cent;
-
     return robots;
 }
 
@@ -174,16 +171,15 @@ Mat Vision::adjust_gamma(double gamma, Mat org)
     if(gamma == 1.0)
         return org;
 
-    double inv_gamma = 1.0 / gamma;
+    double inverse_gamma = 1.0 / gamma;
 
-    Mat lut_matrix(1, 256, CV_8UC1);
-    uchar *ptr = lut_matrix.ptr();
+     Mat lut_matrix(1, 256, CV_8UC1);
+     uchar * ptr = lut_matrix.ptr();
+     for( int i = 0; i < 256; i++ )
+       ptr[i] = (int)( pow( (double) i / 255.0, inverse_gamma ) * 255.0 );
 
-    for(int i = 0; i < 256; i++)
-        ptr[i] = (int)(pow((double)i / 255.0, inv_gamma) * 255.0);
-
-    Mat result;
-    LUT(org, lut_matrix, result);
+     Mat result;
+     LUT( org, lut_matrix, result );
 
     return result;
 }
@@ -209,15 +205,17 @@ Mat Vision::CLAHE_algorithm(Mat org)    //Normalize frame histogram
     return dst;
 }
 
-void Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
+Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
 {
     dest = orig.clone();
     //Gamma correction
-    dest = adjust_gamma(1.0 , dest);
+    dest = adjust_gamma(1.5 , dest);
     //Apply histogram normalization
-    dest = CLAHE_algorithm(dest);
+    //dest = CLAHE_algorithm(dest);
     //Apply gaussian blur
-    GaussianBlur(dest, dest, Size(5,5), 2);
+     GaussianBlur(dest, dest, Size(5,5), 2);
+
+     return dest;
 }
 
 Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper)   //Detect colors in [low,upper] range
@@ -235,18 +233,18 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
 {
     int i, size = robots.size();
 
-    circle(frame, ball_pos, 20, Scalar(255, 0, 0), 5, 8);
+    circle(frame, ball_pos, 20, Scalar(255, 0, 0));
 
     for(i = 0; i < size-3; ++i){
         Point cent = robots[i].get_centroid(), team_cent = robots[i].get_team_cent();
-        Point end = team_cent*20/sqrt(team_cent.dot(team_cent));
 
-        circle(frame, cent, 20, Scalar(0, 255, 0), 5, 8);
-        line(frame, cent, end, Scalar(0, 255, 0), 5, 8);
+        if(cent == null_point) continue;
+        circle(frame, cent, 20, Scalar(0, 255, 0));
+        line(frame, cent,Point(cent.x + 20 * cos((robots[i].get_angle()*3.1415)/180), cent.y - 20 * sin((robots[i].get_angle()*3.1415)/180)) , Scalar(0, 255, 0));
     }
 
     for(i = size-3; i < size; ++i){
-        circle(frame, robots[i].get_centroid(), 20, Scalar(0, 0, 255), 5, 8);
+        circle(frame, robots[i].get_centroid(), 20, Scalar(0, 0, 255));
     }
 
     return frame;
@@ -273,13 +271,14 @@ void Vision::run()
         cols = raw_frame.cols;
 
         vision_frame = raw_frame.clone();
-        proccess_frame(raw_frame, vision_frame);
+        vision_frame = proccess_frame(raw_frame, vision_frame);
 
         switch(mode){
             case 0: //Visualization mode
                 obj_contours = detect_objects(vision_frame, robots).second;
                 robots = fill_robots(obj_contours, robots);
                 vision_frame = draw_robots(vision_frame, robots);
+
                 cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
                 img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, QImage::Format_RGB888);
                 break;
@@ -368,6 +367,10 @@ void Vision::set_mode(int m)
     mode = m;
 }
 
+void Vision::set_camid(int cam){
+    this->camid = cam;
+}
+
 void Vision::Stop()
 {
     stop = true;
@@ -396,7 +399,7 @@ void Vision::release_cam()
 
 int Vision::get_camID()
 {
-    return this->camid;
+    return camid;
 }
 
 Vision::~Vision(){

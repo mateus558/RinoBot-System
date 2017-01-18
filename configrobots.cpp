@@ -45,7 +45,7 @@ void ConfigRobots::on_configColorRange_clicked()
 {
     string robot = ui->select_robot->currentText().toUtf8().constData();
     set_color->set_robot(robot);
-    set_color->set_camid(eye->get_camID());
+    set_color->set_camid(cam_id);
     set_color->show();
 }
 

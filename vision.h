@@ -50,7 +50,7 @@ public:
     vector<Robot> get_robots();
     vector<Robot> fill_robots(vector<pMatrix> contours, vector<Robot> robots);
     Mat draw_robots(Mat frame, vector<Robot> robots);
-    void proccess_frame(Mat, Mat);
+    Mat proccess_frame(Mat, Mat);
     int get_camID();
     void set_robots(vector<Robot> robots);
     void set_ball(pair<vector<int>, vector<int> > ball);
@@ -59,6 +59,7 @@ public:
     void Stop();
     void set_low(vector<int> low);
     void set_upper(vector<int> upper);
+    void set_camid(int cam);
     vector<int> get_low();
     vector<int> get_upper();
     void set_mode(int m = 0);

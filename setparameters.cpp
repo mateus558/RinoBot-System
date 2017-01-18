@@ -3,6 +3,9 @@
 #include <iostream>
 #include <utility>
 #include <fstream>
+#include <unistd.h>
+#include <stdio.h>
+#include <errno.h>
 
 using namespace std;
 
@@ -12,9 +15,9 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
     conf = new ConfigRobots;
     set_team_color = new SetColorRange;
 
+    eye->set_mode(0);
     ui->setupUi(this);
-    ui->camera_comboBox->addItem("Default Camera");
-    ui->camera_comboBox->addItem("Firewire Camera");
+    eye->set_camid(ui->spinBox->value());
     connect(ui->configRobots, SIGNAL(clicked(bool)), this, SLOT(on_configRobots_clicked()));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
@@ -41,12 +44,7 @@ void SetParameters::updateFPS(double val)
 
 void SetParameters::on_initCapture_clicked()
 {
-    string cam;
-    int cam_id = 0;
-
-    cam = ui->camera_comboBox->currentText().toUtf8().constData();
-    if(cam == "Default Camera") cam_id = 0;
-    else if(cam == "Firewire Camera") cam_id = CV_CAP_FIREWIRE;
+    int cam_id = ui->spinBox->value();
 
     if(eye == NULL){
         eye = new Vision;
@@ -64,20 +62,27 @@ void SetParameters::on_configRobots_clicked()
 {
     eye->Stop();
     eye->release_cam();
+    conf->set_camid(eye->get_camID());
     conf->show();
 }
 
 void SetParameters::on_readParameters_clicked()
 {
+    int ch;
+    char cwd[1024];
     vector<Robot> robots = eye->get_robots();
     vector<int> low_color(3);
     vector<int> upper_color(3);
     vector<int> low_team_color(3);
     vector<int> upper_team_color(3);
     pair<vector<int>, vector<int> > ball_range;
-    int ch;
     string path, role, ID;
     ifstream file, t1_file, t2_file, ball;
+
+    if (getcwd(cwd, sizeof(cwd)) != NULL)
+        fprintf(stdout, "Current working dir: %s\n", cwd);
+    else
+        perror("getcwd() error");
 
     ball_range.first.resize(3);
     ball_range.second.resize(3);
@@ -97,6 +102,10 @@ void SetParameters::on_readParameters_clicked()
     for(auto itr = robots.begin(); itr != robots.end(); ++itr){
         path = "Config/" + (*itr).get_nick();
         file.open(path.c_str());
+
+        if(!file){
+            cout << (*itr).get_nick() << " config could not be opened!" << endl;
+        }
 
         file >> low_color[0] >> low_color[1] >> low_color[2];
         file >> upper_color[0] >> upper_color[1] >> upper_color[2];
@@ -168,10 +177,12 @@ void SetParameters::on_T2_color_clicked()
 
 void SetParameters::on_ball_color_clicked()
 {
+    int cam = eye->get_camID();
+
     eye->Stop();
     eye->release_cam();
     set_team_color->set_robot("ball");
-    set_team_color->set_camid(eye->get_camID());
+    set_team_color->set_camid(cam);
     set_team_color->show();
 }
 
