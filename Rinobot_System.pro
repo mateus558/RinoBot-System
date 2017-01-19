@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     robot.cpp \
     utils.cpp \
     configrobots.cpp \
-    setcolorrange.cpp
+    setcolorrange.cpp \
+    serial.cpp \
+    settingsdialog.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -27,12 +29,16 @@ HEADERS  += mainwindow.h \
     robot.h \
     utils.h \
     configrobots.h \
-    setcolorrange.h
+    setcolorrange.h \
+    serial.h \
+    settingsdialog.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \
     configrobots.ui \
-    setcolorrange.ui
+    setcolorrange.ui \
+    settingsdialog.ui
 
 INCLUDEPATH += "/usr/local/include/opencv2"
 LIBS += `pkg-config --cflags --libs opencv`
+QT += serialport

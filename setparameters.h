@@ -1,10 +1,10 @@
 #ifndef SETPARAMETERS_H
 #define SETPARAMETERS_H
-
 #include <QMainWindow>
 #include <QMessageBox>
 #include <vision.h>
 #include <configrobots.h>
+#include "settingsdialog.h"
 
 namespace Ui {
 class SetParameters;
@@ -19,6 +19,7 @@ private:
 public slots:
     void updateVisionUI(QImage img);
     void updateFPS(double val);
+    void updateSerialSettings(SettingsDialog::Settings settings);
 
 public:
     explicit SetParameters(QWidget *parent = 0);
@@ -41,10 +42,14 @@ private slots:
 
     void on_ball_color_clicked();
 
+    void on_config_serial_clicked();
+
 private:
     Ui::SetParameters *ui;
     ConfigRobots *conf;
     Vision *eye;
+    SettingsDialog *serial_settings_dialog;
+    SettingsDialog::Settings serial_settings;
     SetColorRange *set_team_color;
 };
 

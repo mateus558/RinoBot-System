@@ -1,11 +1,12 @@
-#include "setparameters.h"
-#include "ui_setparameters.h"
 #include <iostream>
 #include <utility>
 #include <fstream>
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
+#include "setparameters.h"
+#include "ui_setparameters.h"
+#include "settingsdialog.h"
 
 using namespace std;
 
@@ -14,11 +15,13 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
     eye = new Vision;
     conf = new ConfigRobots;
     set_team_color = new SetColorRange;
+    serial_settings_dialog = new SettingsDialog;
 
     eye->set_mode(0);
     ui->setupUi(this);
     eye->set_camid(ui->spinBox->value());
     connect(ui->configRobots, SIGNAL(clicked(bool)), this, SLOT(on_configRobots_clicked()));
+    connect(serial_settings_dialog, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
 }
@@ -27,6 +30,10 @@ SetParameters::~SetParameters()
 {
     delete eye;
     delete ui;
+}
+
+void SetParameters::updateSerialSettings(SettingsDialog::Settings settings){
+    this->serial_settings = settings;
 }
 
 void SetParameters::updateVisionUI(QImage img)
@@ -275,4 +282,9 @@ void SetParameters::set_points(string fname, string area, int n_points)
 
         write_points.close();
      }
+}
+
+void SetParameters::on_config_serial_clicked()
+{
+    serial_settings_dialog->show();
 }
