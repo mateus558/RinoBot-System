@@ -9,7 +9,7 @@ class Serial : public QThread
     Q_OBJECT
 private:
     int mode;
-    bool connected;
+    bool open;
     QSerialPort *serial;
     QString port_name;
     qint32 baud_rate;
@@ -26,6 +26,7 @@ private:
 public:
     Serial();
     void open_serial_port();
+    void close_serial_port();
     void write_data(const QByteArray &data);
     QByteArray read_data();
     void set_serial_settings(SettingsDialog::Settings);

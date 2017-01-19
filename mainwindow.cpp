@@ -3,6 +3,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :   QMainWindow(parent), ui(new Ui::MainWindow)
 {
+    soccer = new soccer_window;
+
     ui->setupUi(this);
     QPixmap pix("Untitled1.png");
     ui->logo->setPixmap(pix);
@@ -23,3 +25,8 @@ void MainWindow::openSetParameters()
 }
 
 
+
+void MainWindow::on_pushButton_5_clicked()
+{
+    soccer->show();
+}

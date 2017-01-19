@@ -4,7 +4,7 @@
 using namespace std;
 
 Serial::Serial(){
-    connected = false;
+    open = false;
     serial = new QSerialPort(this);
 
 }
@@ -16,14 +16,20 @@ void Serial::run(){
 void Serial::open_serial_port(){
     if(serial->open(QSerialPort::ReadWrite)){
         open = true;
-        cout << serial->portName() << " is open." << endl;
+        cout << serial->portName().toUtf8().constData() << " is open." << endl;
     }else{
         open = false;
-        cerr << "WARNING: Serial port " << serial->portName() << " could not be opened!" << endl;
+        cerr << "WARNING: Serial port " << serial->portName().toUtf8().constData() << " could not be opened!" << endl;
     }
 }
 
-void Serial::writeData(const QByteArray &data){
+void Serial::close_serial_port(){
+    if(serial->isOpen()){
+        serial->close();
+    }
+}
+
+void Serial::write_data(const QByteArray &data){
     serial->write(data);
 }
 

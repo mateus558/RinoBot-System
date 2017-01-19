@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     configrobots.cpp \
     setcolorrange.cpp \
     serial.cpp \
-    settingsdialog.cpp
+    settingsdialog.cpp \
+    soccer_window.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -31,13 +32,15 @@ HEADERS  += mainwindow.h \
     configrobots.h \
     setcolorrange.h \
     serial.h \
-    settingsdialog.h
+    settingsdialog.h \
+    soccer_window.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \
     configrobots.ui \
     setcolorrange.ui \
-    settingsdialog.ui
+    settingsdialog.ui \
+    soccer_window.ui
 
 INCLUDEPATH += "/usr/local/include/opencv2"
 LIBS += `pkg-config --cflags --libs opencv`
