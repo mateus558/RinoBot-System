@@ -6,6 +6,7 @@ soccer_window::soccer_window(QWidget *parent) :
     ui(new Ui::soccer_window)
 {
     ui->setupUi(this);
+
 }
 
 soccer_window::~soccer_window()
