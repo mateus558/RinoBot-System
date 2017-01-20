@@ -1,5 +1,6 @@
 #ifndef SERIAL_H
 #define SERIAL_H
+
 #include <QtCore>
 #include <QTimer>
 #include <QtSerialPort/QSerialPort>
@@ -29,7 +30,7 @@ public:
     Serial();
     void open_serial_port();
     void close_serial_port();
-    void write_data(string data_str);
+    void write_data(std::string data_str);
     QByteArray read_data();
     qint64 read_line(char *data, qint64 maxSize);
     qint64 bytes_available();

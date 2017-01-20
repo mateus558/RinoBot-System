@@ -1,6 +1,7 @@
+#include <iostream>
+#include <string>
 #include <sstream>
 #include "robot.h"
-#include "serial.h"
 
 using namespace std;
 
@@ -30,8 +31,8 @@ bool Robot::encoders_reading(Serial *serial, pair<double, double> &vels){
         data_read = string(data_read_bytes.constData(), data_read_bytes.length());
         serial_stream = stringstream(data_read);
 
-        linear_vel = getline(serial_stream, line, "\n");
-        angular_vel = getline(serial_stream, line, "\n");
+        getline(serial_stream, linear_vel, '\n');
+        getline(serial_stream, angular_vel, '\n');
 
         serial_stream.flush();
         serial->flush();

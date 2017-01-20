@@ -35,7 +35,7 @@ void Serial::close_serial_port(){
     }
 }
 
-void Serial::bytes_available(){
+qint64 Serial::bytes_available(){
     return serial->bytesAvailable();
 }
 

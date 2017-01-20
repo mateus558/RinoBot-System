@@ -39,44 +39,33 @@ void soccer_window::on_pushButton_2_clicked()
 
 void soccer_window::on_pushButton_3_clicked()
 {
-    QByteArray databuf;
-    unsigned char buf[1];
-
-    buf[0] = 'l';
-    databuf = QByteArray(reinterpret_cast<char*>(buf),1);
-    serial->write_data(databuf);
+    string com("l");
+    serial->write_data(com);
 }
 
 void soccer_window::on_pushButton_4_clicked()
 {
-    QByteArray databuf;
-    unsigned char buf[1];
-
-    buf[0] = 'd';
-    databuf = QByteArray(reinterpret_cast<char*>(buf),1);
-    serial->write_data(databuf);
+    string com("d");
+    serial->write_data(com);
 }
 
 void soccer_window::on_pushButton_5_clicked()
 {
-    QByteArray databuf, read;
-    unsigned char buf[1];
-    string str;
-    char* data;
-
-    buf[0] = 'f';
-    databuf = QByteArray(reinterpret_cast<char*>(buf),1);
-    serial->write_data(databuf);
-    //if(serial->can_read_line()){
-        //serial->read_line(data, 10000);
-        //cout << "entroou" << endl;
-    //}
-    read = serial->read_data();
-    str.append(read);
+    QByteArray data;
+    string com("f"), out;
+    serial->write_data(com);
+    if(serial->bytes_available() > 0){
+        data = serial->read_data();
+        out = string(data.constData(), data.length());
+        cout << out << endl;
+        serial->flush();
+    }
+    //read = serial->read_data();
+    //str.append(read);
     /*for(int i = 0; i < sizeof(data)/sizeof(char); ++i){
         cout << data[i] << endl;
     }*/
-    cout << str;
+    //cout << str;
 }
 
 void soccer_window::on_pushButton_6_clicked()
