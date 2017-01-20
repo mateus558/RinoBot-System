@@ -2,8 +2,9 @@
 #define ROBOT_H
 
 #include <vector>
+#include <utility>
 #include <opencv2/core.hpp>
-
+#include <QtSerialPort/QSerialPort>
 
 using namespace std;
 using namespace cv;
@@ -24,6 +25,7 @@ private:
     vector<int> upper_color;
 public:
     Robot();
+    pair<double, double> encoders_reading(QSerialPort serial);
     int get_channel();
     void set_channel(int channel = -1);
     void set_angle(double angle);

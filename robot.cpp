@@ -1,4 +1,8 @@
+#include <sstream>
 #include "robot.h"
+#include "serial.h"
+
+using namespace std;
 
 Robot::Robot(){
     channel = -1;
@@ -12,6 +16,32 @@ Robot::Robot(){
     upper_color_team.assign(3, 255);
     low_color.assign(3, 0);
     upper_color.assign(3, 255);
+}
+
+bool Robot::encoders_reading(Serial *serial, pair<double, double> &vels){
+    string command("v000w000"), data_read, line, linear_vel, angular_vel;
+    stringstream serial_stream;
+    QByteArray data_read_bytes;
+
+    serial->write_data(command);
+
+    if(serial->bytes_available() > 0){
+        data_read_bytes = serial->read_data();
+        data_read = string(data_read_bytes.constData(), data_read_bytes.length());
+        serial_stream = stringstream(data_read);
+
+        linear_vel = getline(serial_stream, line, "\n");
+        angular_vel = getline(serial_stream, line, "\n");
+
+        serial_stream.flush();
+        serial->flush();
+
+        vels.first = stod(linear_vel);
+        vels.second = stod(angular_vel);
+
+        return true;
+    }
+    return false;
 }
 
 void Robot::set_angle(double angle)
