@@ -1,4 +1,5 @@
 #include <iostream>
+#include <QMessageBox>
 #include "serial.h"
 
 using namespace std;
@@ -7,6 +8,10 @@ Serial::Serial(){
     open = false;
     serial = new QSerialPort(this);
 
+    connect(serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),
+            this, &Serial::handle_error);
+
+    timer.start(10);
 }
 
 void Serial::run(){
@@ -26,23 +31,71 @@ void Serial::open_serial_port(){
 void Serial::close_serial_port(){
     if(serial->isOpen()){
         serial->close();
+        clog << serial->portName().toUtf8().constData() << " closed." << endl;
     }
 }
 
-void Serial::write_data(const QByteArray &data){
+void Serial::bytes_available(){
+    return serial->bytesAvailable();
+}
+
+void Serial::write_data(string data_str){
+    QByteArray data(data_str.c_str(), data_str.length());
+
     serial->write(data);
+    timer.start(10);
 }
 
 QByteArray Serial::read_data(){
-    return serial->readAll();
+    QByteArray ret;
+
+    ret.append(serial->readAll());
+    if(!timer.isActive()){
+        timer.start(10);
+    }
+
+    if(ret.isEmpty()){
+        cout << "No data available." << endl;
+    }else{
+        cout << "Data received." << endl;
+    }
+
+    return ret;
 }
+
+qint64 Serial::read_line(char *data, qint64 maxSize){
+    qint64 ret;
+
+    ret = serial->readLine(data, maxSize);
+    if(!timer.isActive()){
+        timer.start(10);
+    }
+
+    return ret;
+}
+
+bool Serial::flush(){
+    return serial->flush();
+}
+
 
 void Serial::listen_port(){
 
 }
 
+void Serial::handle_error(QSerialPort::SerialPortError error){
+    if (error == QSerialPort::ResourceError) {
+        cerr << serial->errorString().toUtf8().constData() << endl;
+        close_serial_port();
+    }
+}
+
 bool Serial::is_open(){
     return this->open;
+}
+
+bool Serial::can_read_line(){
+    return serial->canReadLine();
 }
 
 void Serial::set_serial_settings(SettingsDialog::Settings settings){
