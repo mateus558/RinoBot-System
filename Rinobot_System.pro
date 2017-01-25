@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     setcolorrange.cpp \
     serial.cpp \
     settingsdialog.cpp \
-    soccer_window.cpp
+    soccer_window.cpp \
+    cph.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -33,7 +34,8 @@ HEADERS  += mainwindow.h \
     setcolorrange.h \
     serial.h \
     settingsdialog.h \
-    soccer_window.h
+    soccer_window.h \
+    cph.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

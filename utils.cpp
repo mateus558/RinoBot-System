@@ -22,7 +22,7 @@ double angle_two_points(Point p, Point q)
 }
 
 pair<Matrix3d, Vector3d> kalman_filter(Vector3d pos_cam, Vector2d v_w, Vector3d last_pos , double dt, Matrix3d last_P){
-    double v = v_w[0], w = v_w[1], ds = v * dt, dw = w * dt;
+    double v = 1.14 * v_w[0], w = 1.14 * v_w[1], ds = v * dt, dw = w * dt;
     double b = 0.055; //Distância entre eixos do carrinho 'CHECK'
     double dsr = (ds + b)/(2 * dw), dsl = (ds - b)/(2 * dw);
     double kr = 9, kl = 9;

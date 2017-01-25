@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "settingsdialog.h"
+#include "vision.h"
 #include "serial.h"
 
 namespace Ui {
@@ -18,6 +19,7 @@ public:
     ~soccer_window();
 public slots:
     void updateSerialSettings(SettingsDialog::Settings settings);
+    void updateVisionUI(QImage img);
 
 private slots:
     void on_pushButton_clicked();
@@ -32,8 +34,11 @@ private slots:
 
     void on_pushButton_6_clicked();
 
+    void on_start_game_clicked();
+
 private:
     Ui::soccer_window *ui;
+    Vision *eye;
     SettingsDialog *serial_sett;
     Serial *serial;
     SettingsDialog::Settings settings;

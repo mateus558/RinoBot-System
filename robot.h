@@ -31,6 +31,10 @@ public:
     void set_channel(int channel = -1);
     void set_angle(double angle);
     double get_angle();
+    void set_lin_vel(double vel);
+    double get_lin_vel(double vel);
+    void set_ang_vel(double vel);   //
+    double get_ang_vel(double vel); //angular velocity w
     Point get_centroid();
     void set_centroid(Point p = Point(-1, -1));
     Point get_color_cent();
