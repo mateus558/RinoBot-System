@@ -170,6 +170,7 @@ void SetParameters::on_T1_color_clicked()
     eye->Stop();
     eye->release_cam();
     set_team_color->set_robot("T1");
+    set_team_color->set_camid(eye->get_camID());
     set_team_color->show();
 }
 

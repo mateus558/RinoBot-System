@@ -9,16 +9,16 @@ using namespace Eigen;
 
 double euclidean_dist(Point p, Point q)
 {
-    Point diff = p - q;
-
-    return sqrt(diff.x*diff.x - diff.y*diff.y);
+    return sqrt((q.x-p.x)*(q.x-p.x) + (q.y-p.y)*(q.y-p.y));
 }
 
 double angle_two_points(Point p, Point q)
 {
-    double theta = p.ddot(q)/(sqrt(p.ddot(p)) * sqrt(q.ddot(q)));
+    double theta;
 
-    return acos(theta) * 180.0 / PI;
+    theta = atan2((q.y - p.y),(q.x - p.x));
+
+    return theta * 180.0 / PI;
 }
 
 pair<Matrix3d, Vector3d> kalman_filter(Vector3d pos_cam, Vector2d v_w, Vector3d last_pos , double dt, Matrix3d last_P){

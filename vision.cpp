@@ -1,6 +1,7 @@
 #include <iostream>
 #include <queue>
 #include <vector>
+#include <utility>
 #include <cmath>
 #include <ctime>
 #include <QMessageBox>
@@ -47,9 +48,9 @@ bool sort_by_larger_area(vector<Point> p0, vector<Point> p1)
 vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
 {
     int i, j, csize, k;
-    double dista = 0.0, distb = 0.0;
+    double dista = 0.0, distb = 0.0, radius = 100;
     Moments ball_moment;
-    Point ball_cent(-1, -1);
+    Point ball_cent(-1, -1), unk_robot, centroid;
     vector<vector<Moments> > r_m(3, vector<Moments>());
     vector<vector<Moments> > t_m(2, vector<Moments>(3, Moments()));
     vector<vector<Point> > r_col_cent(3, vector<Point>());
@@ -69,7 +70,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Get the robots moments (their team color half)
     for(i = 0; i < 2; ++i){
-        for(j = 0; j < 3; ++j){
+        for(j = 0; j < contours[i+1].size(); ++j){
             if(contours[i+1].size() > 0){
                 t_m[i][j] = moments(contours[i+1][j]);
                 //Get centroid from robot team color half
@@ -79,7 +80,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             }
         }
     }
-
+    cout << contours[2].size() << " robots found on team 2" << endl;
+    cout << contours[1].size() << " robots found on team 1" << endl;
     //Get the robots moments (their color half)
     for(i = 0; i < 3; ++i){
         csize = contours[i + 3].size();
@@ -100,60 +102,51 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         }
     }
 
-    vector<bool> visited(3, false);
+    vector<bool> r_set(r_col_cent.size(), false);
     int tsize, r_label = 0, col_size, cand_size, min;
-    vector<Point> candidates;
+    pair<Point, pair<int, int> > col_select;
 
-    tsize = (tirj_cent.size() > 3)?3:tirj_cent.size();
-
+    tsize = tirj_cent[0].size();
+    cout << tsize << endl;
     //Define team 1 centroids and angles
     for(i = 0; i < tsize; ++i){
-        Point unk_robot = tirj_cent[0][i];
+        unk_robot = tirj_cent[0][i];
 
-        col_size = r_col_cent.size();
-        candidates = vector<Point>(col_size);
-        cout << "aqui" << endl;
-        for(j = 0, dista = 200000; j < col_size; ++j){
-            cand_size = r_col_cent[i].size();
-            for(k = 0; k < cand_size; ++k){
-                distb = euclidean_dist(unk_robot, r_col_cent[j][k]);
-                cout << distb << endl;
-                if(distb < dista){
-                    dista = distb;
-                    candidates[j] = r_col_cent[j][k];
+        for(j = 0, min = 20000; j < r_col_cent.size(); ++j){
+            if(r_set[j]) continue;
+            for(k = 0; k < r_col_cent[j].size(); ++k){
+                dista = euclidean_dist(unk_robot, r_col_cent[j][k]);
+
+                if(dista < min){
+                    min = dista;
+                    cout << dista << " " << j << " " <<r_col_cent[j][k].x << "," << r_col_cent[j][k].y << " " <<unk_robot.x << "," <<unk_robot.y << endl;
+
+                    col_select = make_pair(r_col_cent[j][k], make_pair(j, k));
                 }
             }
         }
-        for(j = 0; j < col_size; ++j){
-            cout << candidates[j].x << " " << candidates[j].y << endl;
-        }
-        cout << "aqui1" << endl;
-        for(j = 0, dista = 20000; j < col_size; ++j){
-            distb = euclidean_dist(unk_robot, candidates[k]);
-            cout << distb << " " << unk_robot.x << " " << unk_robot.y <<  " " << candidates[k].x << " " << candidates[k].y << endl;
-            if(distb < dista){
-                distb = dista;
-                r_label = j;
-                cout << j << endl;
-            }
-        }
-        cout << "aqui2 " << r_label << endl;
+        cout << col_select.second.first << "," << col_select.second.second << endl;
 
+        r_label = col_select.second.first;
+        centroid = (unk_robot + col_select.first)/2;
         robots[r_label].set_team_cent(unk_robot);
-        robots[r_label].set_color_cent(candidates[r_label]);
-        robots[r_label].set_centroid((unk_robot + candidates[r_label])/2);
-        robots[r_label].set_angle(angle_two_points(candidates[r_label], unk_robot));
+        robots[r_label].set_color_cent(col_select.first);
+        centroid = Point((unk_robot.x + col_select.first.x)/2, (unk_robot.y + col_select.first.y)/2);
+        robots[r_label].set_centroid(centroid);
+        robots[r_label].set_angle(angle_two_points(centroid, col_select.first));
+        r_set[col_select.second.first] = true;
+        cout << "Robo " << r_label << ", team cent = (" << unk_robot.x << "," <<unk_robot.y << "), "
+             << "color cent= (" << centroid.x << "," << centroid.y << "), angle=" <<robots[i].get_angle() << endl;
 
-      //  cout << robots[i].get_angle() << endl;
     }
 
-    visited = vector<bool>(3, false);
-
+    for(i = 0; i < r_set.size(); ++i){
+       if(!r_set[i]) cout << robots[i].get_nick() << " was not found!" << endl;
+    }
     //Define team 2 centroids and angles
     for(i = 3, dista = INFINITY; i < 6; ++i){
         robots[i].set_team_cent(tirj_cent[1][i-3]);
         robots[i].set_centroid(robots[i].get_team_cent());
-       // robots[i].set_angle(angle_two_points(robots[i].get_color_cent(), robots[i].get_team_cent()));
     }
 
     ball_pos = ball_cent;
@@ -188,7 +181,6 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     upper = ball_color.second;
 
     out_ball = detect_colors(frame, low, upper);
-    imshow("t2", out_r[2]);
 
     findContours(out_ball, contours[0], hierarchy[0], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     findContours(out_team1, contours[1], hierarchy[1], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
@@ -196,11 +188,12 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     findContours(out_r[0], contours[3], hierarchy[3], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     findContours(out_r[1], contours[4], hierarchy[4], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     findContours(out_r[2], contours[5], hierarchy[5], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    imshow("t1", out_team1);
 
     ret.first = hierarchy;
     ret.second = contours;
 
-   /* imshow("t1", out_team1);
+  /*imshow("t1", out_team1);
     imshow("r2", out_r[1]);
     imshow("r3", out_r[2]);*/
     return ret;
@@ -272,23 +265,30 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
 Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
 {
     int i, size = robots.size();
+    Point cent, team_cent, color_cent;
 
-    circle(frame, ball_pos, 20, Scalar(255, 0, 0));
+    if(ball_pos != null_point)
+        circle(frame, ball_pos, 20, Scalar(255, 0, 0));
 
     for(i = 0; i < size-3; ++i){
-        Point cent = robots[i].get_centroid(), team_cent = robots[i].get_team_cent();
+        cent = robots[i].get_centroid();
+        team_cent = robots[i].get_team_cent();
+        color_cent = robots[i].get_color_cent();
 
         if(cent == null_point) continue;
         circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
-        circle(frame, robots[i].get_color_cent(), 5, Scalar(0, 255, 0), 1*(i+1));
+        circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
         circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
-        circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
+        circle(frame, color_cent, 20, Scalar(0, 255, 0), 1.5);
         line(frame, cent,Point(cent.x + 20 * cos((robots[i].get_angle()* PI) / 180), cent.y - 20 * sin((robots[i].get_angle() * PI)/180)) , Scalar(0, 255, 0), 1);
         putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
 
     for(i = size-3; i < size; ++i){
-        circle(frame, robots[i].get_centroid() + Point(5, 5), 20, Scalar(0, 0, 255), 1);
+        cent = robots[i].get_centroid();
+        if(cent == null_point) continue;
+        else cent += Point(2,2);
+        circle(frame, cent , 20, Scalar(0, 0, 255), 1);
     }
 
     return frame;
