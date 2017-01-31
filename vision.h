@@ -20,29 +20,31 @@ using namespace cv;
 
 class Vision: public QThread {  Q_OBJECT
 private:
-    bool stop;
+    bool stop, showArea, sentPoints;
     int mode, rows, cols, camid, x_offset, y_offset;
     double FPS;
-    bool showArea;
     QMutex mutex;
     QWaitCondition condition;
     QImage img;
-    Mat raw_frame;
+    Mat raw_frame, transf_matrix;
     Mat vision_frame;
     VideoCapture cam;
     vector<int> low;
     vector<int> upper;
     pair<vector<int>, vector<int> > ball_color;
     Point ball_pos;
-    vector<Point> map_points, tmap_points;
-    vector<Point> atk_points, tatk_points;
-    vector<Point> def_points, tdef_points;
+    pVector map_points, tmap_points;
+    pVector atk_points, tatk_points;
+    pVector def_points, tdef_points;
     vector<Robot> robots;
 signals:
     void ballPos(Point ball);
-    void robotsInfo(vector<Robot> robots);
+    void robotsInfo(const rVector &robots);
     void processedImage(const QImage &image);
     void framesPerSecond(double FPS);
+    void mapPoints(const pVector &map_points);
+    void atkPoints(const pVector &atk_points);
+    void defPoints(const pVector &def_points);
 protected:
     void run();
     void msleep(int ms);
@@ -65,8 +67,8 @@ public:
     void Play();
     void Stop();
     void set_low(vector<int> low);
-    void set_def_area(vector<Point> def_points);
-    void set_atk_area(vector<Point> atk_points);
+    void set_def_area(pVector def_points);
+    void set_atk_area(pVector atk_points);
     void show_area(bool show);
     void set_upper(vector<int> upper);
     void set_camid(int cam);

@@ -29,10 +29,7 @@ SetColorRange::SetColorRange(QWidget *parent) :
 void SetColorRange::closeEvent(QCloseEvent *event)
 {
     event->accept();
-    eye->Stop();
-    eye->release_cam();
-    eye->terminate();
-    eye->wait();
+    delete eye;
 }
 
 void SetColorRange::updateVisionUI(QImage img)

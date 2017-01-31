@@ -58,11 +58,23 @@ double Robot::get_angle()
 void Robot::set_centroid(Point p)
 {
     this->centroid = p;
+    add_pos_hist(p);
 }
 
 Point Robot::get_centroid()
 {
     return this->centroid;
+}
+
+void Robot::add_pos_hist(Point p){
+    if(pos_hist.size() == 5){
+        pos_hist.pop_back();
+    }
+    pos_hist.push_back(p);
+}
+
+Point Robot::get_from_pos_hist(int rank){
+    return pos_hist[pos_hist.size() - (rank + 1)];
 }
 
 void Robot::set_color_cent(Point p)

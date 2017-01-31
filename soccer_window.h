@@ -21,19 +21,12 @@ public slots:
     void updateSerialSettings(SettingsDialog::Settings settings);
     void updateVisionUI(QImage img);
     void updateFPS(double fps);
+    void updateMapPoints(const pVector &map_area);
+    void updateAtkPoints(const pVector &atk_area);
+    void updateDefPoints(const pVector &def_area);
+    void updateRobotsInfo(const rVector &robots);
 
 private slots:
-    void on_pushButton_clicked();
-
-    void on_pushButton_2_clicked();
-
-    void on_pushButton_3_clicked();
-
-    void on_pushButton_4_clicked();
-
-    void on_pushButton_5_clicked();
-
-    void on_pushButton_6_clicked();
 
     void on_start_game_clicked();
 
@@ -41,12 +34,15 @@ private slots:
 
     void on_showAreasRadioButton_toggled(bool checked);
 
+    void on_read_parameters_clicked();
+
 private:
     Ui::soccer_window *ui;
     Vision *eye;
     SettingsDialog *serial_sett;
     Serial *serial;
     SettingsDialog::Settings settings;
+    std::vector<Robot> robots;
     std::vector<cv::Point> map_area;
     std::vector<cv::Point> def_area;
     std::vector<cv::Point> atk_area;

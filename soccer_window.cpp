@@ -1,6 +1,10 @@
 #include <iostream>
+#include <fstream>
 #include <QMessageBox>
 #include <QDebug>
+#include <unistd.h>
+#include <stdio.h>
+#include <errno.h>
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
 #include "serial.h"
@@ -17,23 +21,18 @@ soccer_window::soccer_window(QWidget *parent) :
     serial_sett = new SettingsDialog;
     serial = new Serial;
     eye = new Vision;
-    eye->set_mode(1);
+    eye->set_mode(0);
 
-    if(!read_points("Config/map", map_area)){
-        cerr << "The map points could not be read!" << endl;
-    }
-
-    if(!read_points("Config/defense_area", def_area)){
-        cerr << "The defense area points could not be read!" << endl;
-    }
-
-    if(!read_points("Config/attack_area", atk_area)){
-        cerr << "The attack area points could not be read!" << endl;
-    }
+    qRegisterMetaType<pVector>("pVector");
+    qRegisterMetaType<rVector>("rVector");
 
     connect(serial_sett, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
+    connect(eye, SIGNAL(mapPoints(pVector)), this, SLOT(updateMapPoints(pVector)), Qt::QueuedConnection);
+    connect(eye, SIGNAL(atkPoints(pVector)), this, SLOT(updateAtkPoints(pVector)), Qt::QueuedConnection);
+    connect(eye, SIGNAL(defPoints(pVector)), this, SLOT(updateDefPoints(pVector)), Qt::QueuedConnection);
+    connect(eye, SIGNAL(robotsInfo(rVector)), this, SLOT(updateRobotsInfo(rVector)), Qt::QueuedConnection);
 }
 
 void soccer_window::updateVisionUI(QImage img){
@@ -43,59 +42,29 @@ void soccer_window::updateVisionUI(QImage img){
     }
 }
 
+void soccer_window::updateRobotsInfo(const rVector &robots){
+    this->robots = robots;
+}
+
 void soccer_window::updateFPS(double fps){
     ui->fps_lcd->display(fps);
+}
+
+void soccer_window::updateMapPoints(const pVector &map_area){
+    this->map_area = map_area;
+}
+
+void soccer_window::updateAtkPoints(const pVector &atk_area){
+    this->atk_area = atk_area;
+}
+
+void soccer_window::updateDefPoints(const pVector &def_area){
+    this->def_area = def_area;
 }
 
 void soccer_window::updateSerialSettings(SettingsDialog::Settings settings){
     this->settings = settings;
     serial->set_serial_settings(settings);
-}
-
-void soccer_window::on_pushButton_clicked()
-{
-    serial_sett->show();
-}
-
-void soccer_window::on_pushButton_2_clicked()
-{
-    serial->open_serial_port();
-}
-
-void soccer_window::on_pushButton_3_clicked()
-{
-    string com("l");
-    serial->write_data(com);
-}
-
-void soccer_window::on_pushButton_4_clicked()
-{
-    string com("d");
-    serial->write_data(com);
-}
-
-void soccer_window::on_pushButton_5_clicked()
-{
-    QByteArray data;
-    string com("f"), out;
-    serial->write_data(com);
-    if(serial->bytes_available() > 0){
-        data = serial->read_data();
-        out = string(data.constData(), data.length());
-        cout << out << endl;
-        serial->flush();
-    }
-    //read = serial->read_data();
-    //str.append(read);
-    /*for(int i = 0; i < sizeof(data)/sizeof(char); ++i){
-        cout << data[i] << endl;
-    }*/
-    //cout << str;
-}
-
-void soccer_window::on_pushButton_6_clicked()
-{
-    serial->close_serial_port();
 }
 
 void soccer_window::on_start_game_clicked()
@@ -119,7 +88,7 @@ void soccer_window::on_start_game_clicked()
 
 void soccer_window::on_switch_fields_clicked()
 {
-    vector<Point> aux;
+    pVector aux;
 
     aux = atk_area;
     atk_area = def_area;
@@ -143,5 +112,98 @@ soccer_window::~soccer_window()
     delete eye;
     delete serial;
     delete serial_sett;
-    delete ui;
+   // delete ui;
+}
+
+void soccer_window::on_read_parameters_clicked()
+{
+    int ch;
+    char cwd[1024];
+    vector<Robot> robots = eye->get_robots();
+    vector<int> low_color(3);
+    vector<int> upper_color(3);
+    vector<int> low_team_color(3);
+    vector<int> upper_team_color(3);
+    pair<vector<int>, vector<int> > ball_range;
+    string path, role, ID;
+    ifstream file, t1_file, t2_file, ball;
+
+    if (getcwd(cwd, sizeof(cwd)) != NULL)
+        fprintf(stdout, "Current working dir: %s\n", cwd);
+    else
+        perror("getcwd() error");
+
+    ball_range.first.resize(3);
+    ball_range.second.resize(3);
+
+    t1_file.open("Config/T1", fstream::in);
+
+    if(!t1_file){
+        cout << "Team 1 config could not be opened!" << endl;
+    }
+
+    t1_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
+    t1_file >> upper_team_color[0] >> upper_team_color[1] >> upper_team_color[2];
+    cout << low_team_color[0] << " " << upper_team_color[0] << endl;
+    t1_file.close();
+    t1_file.clear();
+
+    for(auto itr = robots.begin(); itr != robots.end(); ++itr){
+        path = "Config/" + (*itr).get_nick();
+        file.open(path.c_str());
+
+        if(!file){
+            cout << (*itr).get_nick() << " config could not be opened!" << endl;
+        }
+
+        file >> low_color[0] >> low_color[1] >> low_color[2];
+        file >> upper_color[0] >> upper_color[1] >> upper_color[2];
+        file >> ch;
+        file >> role;
+        file >> ID;
+
+        (*itr).set_team_low_color(low_team_color);
+        (*itr).set_team_upper_color(upper_team_color);
+        (*itr).set_low_color(low_color);
+        (*itr).set_upper_color(upper_color);
+        (*itr).set_ID(ID);
+        (*itr).set_channel(ch);
+        (*itr).set_role(role);
+
+        file.close();
+        file.clear();
+    }
+
+    t2_file.open("Config/T2", fstream::in);
+
+    if(!t2_file){
+        cout << "Team 2 config could not be opened!" << endl;
+    }
+
+    t2_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
+    t2_file >> upper_team_color[0] >> upper_team_color[1] >> upper_team_color[2];
+    t2_file.close();
+    t2_file.clear();
+
+    for(auto itr = robots.begin() + 3; itr != robots.end(); ++itr){
+        (*itr).set_team_low_color(low_team_color);
+        (*itr).set_team_upper_color(upper_team_color);
+    }
+
+    eye->set_robots(robots);
+    ui->label->setText(QString::fromStdString(robots[0].get_role()));
+    ui->label_2->setText(QString::fromStdString(robots[1].get_role()));
+    ui->label_3->setText(QString::fromStdString(robots[2].get_role()));
+    ball.open("Config/ball", fstream::in);
+
+    if(!ball){
+        cout << "Ball config could not be opened!" << endl;
+    }
+
+    ball >> ball_range.first[0] >> ball_range.first[1] >> ball_range.first[2];
+    ball >> ball_range.second[0] >> ball_range.second[1] >> ball_range.second[2];
+    ball.close();
+    ball.clear();
+
+    eye->set_ball(ball_range);
 }

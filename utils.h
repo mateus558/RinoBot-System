@@ -5,12 +5,15 @@
 #include <Eigen/Dense>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
+#include "robot.h"
 
 #define PI 3.14159265
 
 using namespace cv;
 using namespace Eigen;
 
+typedef std::vector<Robot> rVector;
+typedef std::vector<Point> pVector;
 typedef std::vector<std::vector<Point> > pMatrix; //Point matrix type
 
 double euclidean_dist(Point p, Point q);

@@ -37,6 +37,8 @@ public:
     double get_ang_vel(double vel); //angular velocity w
     Point get_centroid();
     void set_centroid(Point p = Point(-1, -1));
+    void add_pos_hist(Point p);
+    Point get_from_pos_hist(int rank);
     Point get_color_cent();
     void set_color_cent(Point p);
     Point get_team_cent();

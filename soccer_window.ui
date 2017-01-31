@@ -253,84 +253,6 @@
     <string>Presto:</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>730</x>
-     <y>510</y>
-     <width>80</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>config serial</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_2">
-   <property name="geometry">
-    <rect>
-     <x>730</x>
-     <y>530</y>
-     <width>80</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>open serial</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_3">
-   <property name="geometry">
-    <rect>
-     <x>730</x>
-     <y>550</y>
-     <width>80</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>liga led</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_4">
-   <property name="geometry">
-    <rect>
-     <x>820</x>
-     <y>510</y>
-     <width>80</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>desliga led</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_5">
-   <property name="geometry">
-    <rect>
-     <x>820</x>
-     <y>530</y>
-     <width>80</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>read info</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_6">
-   <property name="geometry">
-    <rect>
-     <x>820</x>
-     <y>550</y>
-     <width>80</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>close serial</string>
-   </property>
-  </widget>
   <widget class="QRadioButton" name="showAreasRadioButton">
    <property name="geometry">
     <rect>
@@ -357,6 +279,19 @@
     <string>Options:</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="read_parameters">
+   <property name="geometry">
+    <rect>
+     <x>730</x>
+     <y>130</y>
+     <width>171</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Read Parameters</string>
+   </property>
+  </widget>
   <zorder>optionsGroupBox</zorder>
   <zorder>game_view</zorder>
   <zorder>start_game</zorder>
@@ -369,13 +304,8 @@
   <zorder>gandalf_label</zorder>
   <zorder>leona_label</zorder>
   <zorder>presto_label</zorder>
-  <zorder>pushButton</zorder>
-  <zorder>pushButton_2</zorder>
-  <zorder>pushButton_3</zorder>
-  <zorder>pushButton_4</zorder>
-  <zorder>pushButton_5</zorder>
-  <zorder>pushButton_6</zorder>
   <zorder>showAreasRadioButton</zorder>
+  <zorder>read_parameters</zorder>
  </widget>
  <resources/>
  <connections/>
