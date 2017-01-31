@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <Eigen/Dense>
+#include <fstream>
 #include "utils.h"
 
 using namespace std;
@@ -19,6 +19,22 @@ double angle_two_points(Point p, Point q)
     theta = atan2((q.y - p.y),(q.x - p.x));
 
     return theta * 180.0 / PI;
+}
+
+bool read_points(string fname, vector<Point> &points){
+    ifstream input(fname.c_str());
+    int x, y;
+
+    if(!input){
+        cerr << "The file could not be opened! (Utils)" << endl;
+        return false;
+    }
+
+    while(input >> x >> y){
+        points.push_back(Point(x, y));
+    }
+
+    return true;
 }
 
 pair<Matrix3d, Vector3d> kalman_filter(Vector3d pos_cam, Vector2d v_w, Vector3d last_pos , double dt, Matrix3d last_P){
@@ -68,4 +84,25 @@ pair<Matrix3d, Vector3d> kalman_filter(Vector3d pos_cam, Vector2d v_w, Vector3d 
     res.second = pos_current;
 
     return res;
+}
+
+bool sort_by_smallest_x(Point a, Point b){
+    return a.x < b.x;
+}
+
+bool sort_by_smallest_y(Point a, Point b){
+    return a.y < b.y;
+}
+
+bool sort_by_largest_x(Point a, Point b){
+    return a.x > b.x;
+}
+
+bool sort_by_largest_y(Point a, Point b){
+    return a.y > b.y;
+}
+
+bool sort_by_larger_area(vector<Point> p0, vector<Point> p1)
+{
+    return contourArea(p0) < contourArea(p1);
 }

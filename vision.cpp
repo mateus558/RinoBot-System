@@ -14,6 +14,7 @@ Point null_point = Point(-1, -1);
 Vision::Vision(QObject *parent): QThread(parent)
 {
     stop = true;
+    showArea = false;
     mode = 0;
     robots.resize(6);
     robots[0].set_nick("Leona");
@@ -26,6 +27,20 @@ Vision::Vision(QObject *parent): QThread(parent)
     upper.assign(3, 255);
     ball_color.first.assign(3, 0);
     ball_color.second.assign(3, 255);
+    if(map_points.empty())
+        if(!read_points("Config/map", map_points)){
+            cerr << "The map could not be read from the file!" << endl;
+        }
+    if(!read_points("Config/attack_area", atk_points)){
+        cerr << "The attack area could not be read from the file!" << endl;
+    }
+    if(!read_points("Config/defense_area", def_points)){
+        cerr << "The defense area could not be read from the file!" << endl;
+    }
+    /*for( Point p : map_points)
+        cout << p.x << " " << p.y << endl;
+    cout << map_points.size() << endl;
+    */
 }
 
 Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) //Detect colors in [low,upper] range
@@ -33,16 +48,11 @@ Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) 
     Mat mask;
     //Generate mask with the points in the range
     inRange(vision_frame, Scalar(low[0],low[1],low[2]), Scalar(upper[0],upper[1],upper[2]), mask);
-    //Attempt to remove noise (or small objects)
+    //Attempt to removelibgtk2.0-dev noise (or small objects)
     morphologyEx(mask, mask, MORPH_OPEN, Mat(), Point(-1, -1), 2);
     morphologyEx(mask, mask, MORPH_CLOSE, Mat(), Point(-1, -1), 2);
 
     return mask;
-}
-
-bool sort_by_larger_area(vector<Point> p0, vector<Point> p1)
-{
-    return contourArea(p0) < contourArea(p1);
 }
 
 vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
@@ -80,8 +90,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             }
         }
     }
-    cout << contours[2].size() << " robots found on team 2" << endl;
-    cout << contours[1].size() << " robots found on team 1" << endl;
+    //cout << contours[2].size() << " robots found on team 2" << endl;
+    //cout << contours[1].size() << " robots found on team 1" << endl;
     //Get the robots moments (their color half)
     for(i = 0; i < 3; ++i){
         csize = contours[i + 3].size();
@@ -107,7 +117,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     pair<Point, pair<int, int> > col_select;
 
     tsize = tirj_cent[0].size();
-    cout << tsize << endl;
+    //cout << tsize << endl;
     //Define team 1 centroids and angles
     for(i = 0; i < tsize; ++i){
         unk_robot = tirj_cent[0][i];
@@ -119,13 +129,13 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
                 if(dista < min){
                     min = dista;
-                    cout << dista << " " << j << " " <<r_col_cent[j][k].x << "," << r_col_cent[j][k].y << " " <<unk_robot.x << "," <<unk_robot.y << endl;
+                    //cout << dista << " " << j << " " <<r_col_cent[j][k].x << "," << r_col_cent[j][k].y << " " <<unk_robot.x << "," <<unk_robot.y << endl;
 
                     col_select = make_pair(r_col_cent[j][k], make_pair(j, k));
                 }
             }
         }
-        cout << col_select.second.first << "," << col_select.second.second << endl;
+        //cout << col_select.second.first << "," << col_select.second.second << endl;
 
         r_label = col_select.second.first;
         centroid = (unk_robot + col_select.first)/2;
@@ -135,8 +145,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         robots[r_label].set_centroid(centroid);
         robots[r_label].set_angle(angle_two_points(centroid, col_select.first));
         r_set[col_select.second.first] = true;
-        cout << "Robo " << r_label << ", team cent = (" << unk_robot.x << "," <<unk_robot.y << "), "
-             << "color cent= (" << centroid.x << "," << centroid.y << "), angle=" <<robots[i].get_angle() << endl;
+        //cout << "Robo " << r_label << ", team cent = (" << unk_robot.x << "," <<unk_robot.y << "), "
+        //    << "color cent= (" << centroid.x << "," << centroid.y << "), angle=" <<robots[i].get_angle() << endl;
 
     }
 
@@ -188,7 +198,6 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     findContours(out_r[0], contours[3], hierarchy[3], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     findContours(out_r[1], contours[4], hierarchy[4], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     findContours(out_r[2], contours[5], hierarchy[5], RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
-    imshow("t1", out_team1);
 
     ret.first = hierarchy;
     ret.second = contours;
@@ -238,6 +247,48 @@ Mat Vision::CLAHE_algorithm(Mat org)    //Normalize frame histogram
     return dst;
 }
 
+Mat Vision::crop_image(Mat org){
+    Mat M, cropped;
+    Size size;
+    Point2f pts[4], pts1[3], pts2[3];
+    RotatedRect box;
+    vector<Point> roi(4), aux_y;
+    vector<Point2f> vec;
+
+    pts2[0] = Point(0, 0);
+    pts2[1] = Point(0, size.height-1);
+    pts2[2] = Point(size.width-1, 0);
+
+    aux_y = map_points;
+    sort(map_points.begin(), map_points.end(), sort_by_smallest_x);
+    sort(aux_y.begin(), aux_y.end(), sort_by_smallest_y);
+
+    roi[0] = Point(map_points[0].x, aux_y[aux_y.size()-1].y);
+    roi[3] = Point(map_points[map_points.size()-1].x, aux_y[0].y);
+    roi[1] = Point(roi[0].x, roi[3].y);
+    roi[2] = Point(roi[3].x, roi[0].y);
+
+    box = minAreaRect(Mat(roi));
+    box.points(pts);
+
+    pts1[0] = pts[0];
+    pts1[1] = pts[1];
+    pts1[2] = pts[3];
+
+    pts2[0] = Point(0, 0);
+    pts2[1] = Point(box.boundingRect().width-1, 0);
+    pts2[2] = Point(0, box.boundingRect().height-1);
+    size = Size(box.boundingRect().width, box.boundingRect().height);
+
+    M = getAffineTransform(pts1, pts2);
+    warpAffine(org, cropped, M, size, INTER_LINEAR, BORDER_CONSTANT);
+    transform(map_points, tmap_points, M);
+    transform(def_points, tdef_points, M);
+    transform(atk_points, tatk_points, M);
+  //  imshow("crop", cropped);
+    return cropped;
+}
+
 Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
 {
     dest = orig.clone();
@@ -276,10 +327,10 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         color_cent = robots[i].get_color_cent();
 
         if(cent == null_point) continue;
-        circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
-        circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
-        circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
-        circle(frame, color_cent, 20, Scalar(0, 255, 0), 1.5);
+        //circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
+        //circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
+        //circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
+        circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
         line(frame, cent,Point(cent.x + 20 * cos((robots[i].get_angle()* PI) / 180), cent.y - 20 * sin((robots[i].get_angle() * PI)/180)) , Scalar(0, 255, 0), 1);
         putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
@@ -297,11 +348,11 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
 void Vision::run()
 {
     int delay = (1000/this->FPS);
-    int i = 0;
-    Mat res;
+    int i = 0, atk_size = atk_points.size(), map_size = map_points.size(), def_size = def_points.size();
     double elapsed_secs;
     clock_t begin, end;
     vector<pMatrix> obj_contours;
+    Point def_cent, atk_cent;
 
     while(!stop){
         begin = clock();
@@ -310,6 +361,8 @@ void Vision::run()
             stop = true;
             continue;
         }
+
+        raw_frame = crop_image(raw_frame);
 
         rows = raw_frame.rows;
         cols = raw_frame.cols;
@@ -324,16 +377,36 @@ void Vision::run()
                 vision_frame = draw_robots(vision_frame, robots);
 
                 cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
-                img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, QImage::Format_RGB888);
                 break;
             case 1: //Set color mode
-                res = setting_mode(raw_frame, vision_frame, low, upper);
-                img = QImage((uchar*)(res.data), res.cols, res.rows, QImage::Format_RGB888);
+                vision_frame = setting_mode(raw_frame, vision_frame, low, upper);
+
                 break;
             default:
                 break;
          }
 
+        if(showArea && map_size > 0){
+            for(i = 0; i < map_size; ++i){
+                circle(vision_frame, tmap_points[i], 1, Scalar(0,255,0), 2);
+            }
+            for(i = 0; i < atk_size; ++i){
+                circle(vision_frame, tatk_points[i], 1, Scalar(255,0,0), 2);
+                atk_cent = atk_cent + tatk_points[i];
+            }
+            atk_cent = Point(atk_cent.x/tatk_points.size(), atk_cent.y/tatk_points.size());
+            //cout << atk_cent.x << " " << atk_cent.y << endl;
+            putText(vision_frame, "ATK Area", atk_cent, FONT_HERSHEY_PLAIN, 1, Scalar(255, 0, 0), 2);
+            for(i = 0; i < def_size; ++i){
+                circle(vision_frame, tdef_points[i], 1, Scalar(0,0,255), 2);
+                def_cent = def_cent + tdef_points[i];
+            }
+            def_cent = Point(def_cent.x/tdef_points.size(), def_cent.y/tdef_points.size());
+           //cout << def_cent.x << " " << def_cent.y << endl;
+            putText(vision_frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 0, 255), 2);
+        }
+
+        img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         FPS = 1/elapsed_secs;
@@ -446,6 +519,18 @@ void Vision::release_cam()
 int Vision::get_camID()
 {
     return camid;
+}
+
+void Vision::show_area(bool show){
+    showArea = show;
+}
+
+void Vision::set_def_area(vector<Point> def_points){
+    this->def_points = def_points;
+}
+
+void Vision::set_atk_area(vector<Point> atk_points){
+    this->atk_points = atk_points;
 }
 
 Vision::~Vision(){

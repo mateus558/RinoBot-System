@@ -49,7 +49,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Start/Stop Game</string>
+    <string>Start Game</string>
    </property>
   </widget>
   <widget class="QPushButton" name="switch_fields">
@@ -331,6 +331,51 @@
     <string>close serial</string>
    </property>
   </widget>
+  <widget class="QRadioButton" name="showAreasRadioButton">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>500</y>
+     <width>100</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Show Areas</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="optionsGroupBox">
+   <property name="geometry">
+    <rect>
+     <x>409</x>
+     <y>479</y>
+     <width>141</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Options:</string>
+   </property>
+  </widget>
+  <zorder>optionsGroupBox</zorder>
+  <zorder>game_view</zorder>
+  <zorder>start_game</zorder>
+  <zorder>switch_fields</zorder>
+  <zorder>iterate</zorder>
+  <zorder>fps_lcd</zorder>
+  <zorder>fps_label</zorder>
+  <zorder>battery_level_group</zorder>
+  <zorder>robots_roles_group</zorder>
+  <zorder>gandalf_label</zorder>
+  <zorder>leona_label</zorder>
+  <zorder>presto_label</zorder>
+  <zorder>pushButton</zorder>
+  <zorder>pushButton_2</zorder>
+  <zorder>pushButton_3</zorder>
+  <zorder>pushButton_4</zorder>
+  <zorder>pushButton_5</zorder>
+  <zorder>pushButton_6</zorder>
+  <zorder>showAreasRadioButton</zorder>
  </widget>
  <resources/>
  <connections/>

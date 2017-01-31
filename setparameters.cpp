@@ -19,17 +19,12 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
 
     eye->set_mode(0);
     ui->setupUi(this);
+    setAttribute(Qt::WA_DeleteOnClose);
     eye->set_camid(ui->spinBox->value());
     connect(ui->configRobots, SIGNAL(clicked(bool)), this, SLOT(on_configRobots_clicked()));
     connect(serial_settings_dialog, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
-}
-
-SetParameters::~SetParameters()
-{
-    delete eye;
-    delete ui;
 }
 
 void SetParameters::updateSerialSettings(SettingsDialog::Settings settings){
@@ -140,7 +135,6 @@ void SetParameters::on_readParameters_clicked()
 
     t2_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
     t2_file >> upper_team_color[0] >> upper_team_color[1] >> upper_team_color[2];
-    cout << low_team_color[0] << " " << upper_team_color[0] << endl;
     t2_file.close();
     t2_file.clear();
 
@@ -260,7 +254,6 @@ void SetParameters::set_points(string fname, string area, int n_points)
 
         n = defensePoints.size();
         for(Point p : defensePoints){
-            cout << p.x << " " << p.y << endl;
             circle(frame, p, 2, Scalar(0, 0, 255), 5);
         }
 
@@ -288,4 +281,13 @@ void SetParameters::set_points(string fname, string area, int n_points)
 void SetParameters::on_config_serial_clicked()
 {
     serial_settings_dialog->show();
+}
+
+
+SetParameters::~SetParameters()
+{
+    delete eye;
+    delete conf;
+    delete serial_settings_dialog;
+    delete ui;
 }

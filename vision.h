@@ -21,8 +21,9 @@ using namespace cv;
 class Vision: public QThread {  Q_OBJECT
 private:
     bool stop;
-    int mode, rows, cols, camid;
+    int mode, rows, cols, camid, x_offset, y_offset;
     double FPS;
+    bool showArea;
     QMutex mutex;
     QWaitCondition condition;
     QImage img;
@@ -33,6 +34,9 @@ private:
     vector<int> upper;
     pair<vector<int>, vector<int> > ball_color;
     Point ball_pos;
+    vector<Point> map_points, tmap_points;
+    vector<Point> atk_points, tatk_points;
+    vector<Point> def_points, tdef_points;
     vector<Robot> robots;
 signals:
     void ballPos(Point ball);
@@ -48,6 +52,7 @@ public:
     pair<vector<vector<Vec4i> >, vector<pMatrix> > detect_objects(Mat frame, vector<Robot> robots);
     Mat setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper);
     Mat adjust_gamma(double gamma, Mat org);
+    Mat crop_image(Mat org);
     Mat CLAHE_algorithm(Mat org);
     vector<Robot> get_robots();
     vector<Robot> fill_robots(vector<pMatrix> contours, vector<Robot> robots);
@@ -60,6 +65,9 @@ public:
     void Play();
     void Stop();
     void set_low(vector<int> low);
+    void set_def_area(vector<Point> def_points);
+    void set_atk_area(vector<Point> atk_points);
+    void show_area(bool show);
     void set_upper(vector<int> upper);
     void set_camid(int cam);
     vector<int> get_low();

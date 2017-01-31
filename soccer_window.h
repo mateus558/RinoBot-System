@@ -1,6 +1,6 @@
 #ifndef SOCCER_WINDOW_H
 #define SOCCER_WINDOW_H
-
+#include <QMainWindow>
 #include <QWidget>
 #include "settingsdialog.h"
 #include "vision.h"
@@ -20,6 +20,7 @@ public:
 public slots:
     void updateSerialSettings(SettingsDialog::Settings settings);
     void updateVisionUI(QImage img);
+    void updateFPS(double fps);
 
 private slots:
     void on_pushButton_clicked();
@@ -36,12 +37,20 @@ private slots:
 
     void on_start_game_clicked();
 
+    void on_switch_fields_clicked();
+
+    void on_showAreasRadioButton_toggled(bool checked);
+
 private:
     Ui::soccer_window *ui;
     Vision *eye;
     SettingsDialog *serial_sett;
     Serial *serial;
     SettingsDialog::Settings settings;
+    std::vector<cv::Point> map_area;
+    std::vector<cv::Point> def_area;
+    std::vector<cv::Point> atk_area;
+    bool started;
 };
 
 #endif // SOCCER_WINDOW_H
