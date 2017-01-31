@@ -33,6 +33,7 @@ private:
     vector<int> upper;
     pair<vector<int>, vector<int> > ball_color;
     Point ball_pos;
+    Point ball_last_pos;
     pVector map_points, tmap_points;
     pVector atk_points, tatk_points;
     pVector def_points, tdef_points;

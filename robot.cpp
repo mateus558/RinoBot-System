@@ -47,12 +47,18 @@ bool Robot::encoders_reading(Serial *serial, pair<double, double> &vels){
 
 void Robot::set_angle(double angle)
 {
+    last_angle = this->angle;
     this->angle = angle;
 }
 
 double Robot::get_angle()
 {
     return this->angle;
+}
+
+double Robot::get_last_angle()
+{
+    return this->last_angle;
 }
 
 void Robot::set_centroid(Point p)

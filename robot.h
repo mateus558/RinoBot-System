@@ -14,12 +14,13 @@ class Robot{
 private:
     int channel;    //Communication channel
     double angle;   //Rotation angle
+    double last_angle;
     Point centroid; //Robot general centroid
     Point color_cent, team_cent;    //Centroid from the half role color and from team color
     string nick;
     string ID;
     string role;
-    vector<Point> pos_hist;
+    vector<Point> pos_hist;    
     vector<int> low_color_team;
     vector<int> upper_color_team;
     vector<int> low_color;
@@ -31,6 +32,7 @@ public:
     void set_channel(int channel = -1);
     void set_angle(double angle);
     double get_angle();
+    double get_last_angle();
     void set_lin_vel(double vel);
     double get_lin_vel(double vel);
     void set_ang_vel(double vel);   //
