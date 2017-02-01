@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include "utils.h"
 #include "robot.h"
 
 using namespace std;
@@ -70,6 +71,19 @@ void Robot::set_centroid(Point p)
 Point Robot::get_centroid()
 {
     return this->centroid;
+}
+
+
+Point2d Robot::get_pos(){
+    return Point2d(centroid.x * X_CONV_CONST, centroid.y * Y_CONV_CONST);
+}
+
+void Robot::set_line_slope(Point p){
+    this->line_slope = p;
+}
+
+Point Robot::get_line_slope(){
+    return line_slope;
 }
 
 void Robot::add_pos_hist(Point p){

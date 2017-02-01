@@ -25,10 +25,13 @@ soccer_window::soccer_window(QWidget *parent) :
 
     qRegisterMetaType<pVector>("pVector");
     qRegisterMetaType<rVector>("rVector");
+    qRegisterMetaType<Point2d>("Point2d");
+
 
     connect(serial_sett, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
+    connect(eye, SIGNAL(ballPos(Point2d)), this, SLOT(updateBallPos(Point2d)), Qt::QueuedConnection);
     connect(eye, SIGNAL(mapPoints(pVector)), this, SLOT(updateMapPoints(pVector)), Qt::QueuedConnection);
     connect(eye, SIGNAL(atkPoints(pVector)), this, SLOT(updateAtkPoints(pVector)), Qt::QueuedConnection);
     connect(eye, SIGNAL(defPoints(pVector)), this, SLOT(updateDefPoints(pVector)), Qt::QueuedConnection);
@@ -44,6 +47,10 @@ void soccer_window::updateVisionUI(QImage img){
 
 void soccer_window::updateRobotsInfo(const rVector &robots){
     this->robots = robots;
+}
+
+void soccer_window::updateBallPos(const Point2d &ball_pos){
+    this->ball_pos = ball_pos;
 }
 
 void soccer_window::updateFPS(double fps){
@@ -206,4 +213,31 @@ void soccer_window::on_read_parameters_clicked()
     ball.clear();
 
     eye->set_ball(ball_range);
+}
+
+void soccer_window::on_iterate_clicked()
+{
+    vector<Point2d> enemy_pos(3);
+    pVector enemy_pos_grid(3);
+    Point  ball_pos_grid;
+    int i = 0;
+    cph = new CPH(5, 5);
+
+    enemy_pos[0] = robots[3].get_pos();
+    enemy_pos[1] = robots[4].get_pos();
+    enemy_pos[2] = robots[5].get_pos();
+    cph->init_grid();
+
+    for(i = 0; i < 3; ++i){
+        enemy_pos_grid[i] = cph->convert_C_to_G(enemy_pos[i]);
+        cph->set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+    }
+
+    ball_pos_grid = cph->convert_C_to_G(ball_pos);
+    cph->set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+
+    while(cph->iterator() > 1E-6);
+
+    cph->set_direction();
+    cph->print_grid();
 }

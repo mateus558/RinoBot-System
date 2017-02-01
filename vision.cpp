@@ -5,6 +5,7 @@
 #include <cmath>
 #include <ctime>
 #include <QMessageBox>
+#include "utils.h"
 #include "vision.h"
 
 using namespace std;
@@ -13,6 +14,9 @@ Point null_point = Point(-1, -1);
 
 Vision::Vision(QObject *parent): QThread(parent)
 {
+    int i = 0, j = 0;
+    Point2d temp;
+
     stop = true;
     showArea = false;
     sentPoints = false;
@@ -28,16 +32,19 @@ Vision::Vision(QObject *parent): QThread(parent)
     upper.assign(3, 255);
     ball_color.first.assign(3, 0);
     ball_color.second.assign(3, 255);
-    if(map_points.empty())
-        if(!read_points("Config/map", map_points)){
-            cerr << "The map could not be read from the file!" << endl;
-        }
+
+    if(!read_points("Config/map", map_points)){
+        cerr << "The map could not be read from the file!" << endl;
+    }
     if(!read_points("Config/attack_area", atk_points)){
         cerr << "The attack area could not be read from the file!" << endl;
     }
     if(!read_points("Config/defense_area", def_points)){
         cerr << "The defense area could not be read from the file!" << endl;
     }
+    x_axis_slope = map_points[0] - map_points[9];
+    cout << map_points[0].x << " " << map_points[0].y << endl;
+    cout << map_points[9].x << " " << map_points[9].y << endl;
     /*for( Point p : map_points)
         cout << p.x << " " << p.y << endl;
     cout << map_points.size() << endl;
@@ -62,14 +69,15 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     double dista = 0.0;
     bool not_t1;
     Moments ball_moment, temp_moment;
-    Point ball_cent(-1, -1), unk_robot, centroid;
+    Point ball_cent(-1, -1), unk_robot, centroid, line_slope;
+    Point2f pos;
     vector<vector<Moments> > r_m(3, vector<Moments>());
     vector<vector<Moments> > t_m(2, vector<Moments>());
     vector<pVector > r_col_cent(3, pVector());
     vector<pVector > tirj_cent(2, pVector());
     pair<Point, pair<int, int> > col_select;
 
-
+//cout << 1 << endl;
     //Get the ball moment from the contour
     if(contours[0].size() != 0){
         ball_moment = moments(contours[0][contours[0].size()-1]);
@@ -82,7 +90,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     }
     sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
     sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
-
+    //cout << 2 << endl;
     //Get the robots moments (their team color half)
     for(i = 0; i < 2; ++i){
         for(j = 0; j < contours[i+1].size(); ++j){
@@ -155,14 +163,26 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         r_label = col_select.second.first;
         if(!not_t1){
             centroid = (unk_robot + col_select.first)/2;
+            line_slope = col_select.first - unk_robot;
 
             robots[r_label].set_team_cent(unk_robot);
             robots[r_label].set_color_cent(col_select.first);
+            robots[r_label].set_line_slope(line_slope);
 
             centroid = Point((unk_robot.x + col_select.first.x)/2, (unk_robot.y + col_select.first.y)/2);
-
+            //cout << "line slope = (" << line_slope.x << ", " << line_slope.y << ")" <<endl;
+            //cout << "x axis slope = (" << x_axis_slope.x << ", " << x_axis_slope.y << ")" <<endl;
             robots[r_label].set_centroid(centroid);
-            robots[r_label].set_angle(angle_two_points(centroid, col_select.first));
+            //robots[r_label].set_pos(coords[centroid.x][centroid.y]);
+            robots[r_label].set_angle(angle_two_points(line_slope, x_axis_slope));
+            /*cout << robots[r_label].get_nick() << " angle = " << robots[r_label].get_angle() << endl;
+            cout << robots[r_label].get_nick() << " CENTROID = (" << centroid.x << ", " << centroid.y << ") " << endl;
+            cout << robots[r_label].get_nick() << " color CENTROID = (" << col_select.first.x << ", " << col_select.first.y << ") " << endl;
+            cout << robots[r_label].get_nick() << " team CENTROID = (" << unk_robot.x << ", " << unk_robot.y << ") " << endl;
+            cout<< "map[0] = (" << x_axis_slope.x << ", " << x_axis_slope.y << ") " << endl;
+            cout<< "map[9] = (" << line_slope.x << ", " << line_slope.y << ") " << endl;*/
+            //pos = robots[r_label].get_pos();
+            //cout << robots[r_label].get_nick() << "pos in cm = (" << pos.x << ", " << pos.y << ") " << endl;
         }else{
             robots[r_label].set_centroid(robots[r_label].get_from_pos_hist(0));
             robots[r_label].set_angle(robots[r_label].get_last_angle());
@@ -170,7 +190,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         r_set[col_select.second.first] = true;
 
         //cout << "Robo " << r_label << ", team cent = (" << unk_robot.x << "," <<unk_robot.y << "), "
-        //    << "color cent= (" << centroid.x << "," << centroid.y << "), angle=" <<robots[i].get_angle() << endl;
+          //  << "color cent= (" << centroid.x << "," << centroid.y << "), angle=" <<robots[i].get_angle() << endl;
 
     }
 
@@ -185,7 +205,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         //cout << tirj_cent[1][i-3].x << " " << tirj_cent[1][i-3].y << endl;
         robots[i].set_centroid(robots[i].get_team_cent());
     }
-
+    ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
+    ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
     ball_pos = ball_cent;
     return robots;
 }
@@ -364,7 +385,8 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         //circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
         //circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
-        line(frame, cent,Point(cent.x + 20 * cos((robots[i].get_angle()* PI) / 180), cent.y - 20 * sin((robots[i].get_angle() * PI)/180)) , Scalar(0, 255, 0), 1);
+        line(frame, cent,Point(cent.x + 20 * cos((robots[i].get_angle()* PI/ 180)), cent.y - 20 * sin((robots[i].get_angle() * PI/ 180))) , Scalar(0, 255, 0), 1);
+        //line(frame, cent, color_cent, Scalar(0, 255, 0), 1);
         putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
 
@@ -399,7 +421,6 @@ void Vision::run()
 
         rows = raw_frame.rows;
         cols = raw_frame.cols;
-
         vision_frame = raw_frame.clone();
         vision_frame = proccess_frame(raw_frame, vision_frame);
 
@@ -444,8 +465,8 @@ void Vision::run()
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         FPS = 1/elapsed_secs;
 
+        emit ballPos(ball_pos_cm);
         emit robotsInfo(robots);
-        emit ballPos(ball_pos);
         emit processedImage(img);
         if(i%10 == 0){
             emit framesPerSecond(FPS);

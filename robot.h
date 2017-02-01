@@ -17,6 +17,7 @@ private:
     double last_angle;
     Point centroid; //Robot general centroid
     Point color_cent, team_cent;    //Centroid from the half role color and from team color
+    Point line_slope;
     string nick;
     string ID;
     string role;
@@ -38,7 +39,10 @@ public:
     void set_ang_vel(double vel);   //
     double get_ang_vel(double vel); //angular velocity w
     Point get_centroid();
+    Point2d get_pos();
     void set_centroid(Point p = Point(-1, -1));
+    void set_line_slope(Point p);
+    Point get_line_slope();
     void add_pos_hist(Point p);
     Point get_from_pos_hist(int rank);
     Point get_color_cent();

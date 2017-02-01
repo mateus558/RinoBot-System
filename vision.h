@@ -33,13 +33,15 @@ private:
     vector<int> upper;
     pair<vector<int>, vector<int> > ball_color;
     Point ball_pos;
+    Point2d ball_pos_cm;
     Point ball_last_pos;
+    Point x_axis_slope;
     pVector map_points, tmap_points;
     pVector atk_points, tatk_points;
     pVector def_points, tdef_points;
     vector<Robot> robots;
 signals:
-    void ballPos(Point ball);
+    void ballPos(const Point2d &ball);
     void robotsInfo(const rVector &robots);
     void processedImage(const QImage &image);
     void framesPerSecond(double FPS);

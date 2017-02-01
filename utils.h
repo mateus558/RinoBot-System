@@ -7,14 +7,26 @@
 #include <opencv2/core/core.hpp>
 #include "robot.h"
 
+#define FIELD_WIDTH 132
+#define FIELD_HEIGHT 175
+#define DEFAULT_NROWS 424   //Default number of the rows of the frame
+#define DEFAULT_NCOLS 555   //Default number of the columns of the frame
+#define X_CONV_CONST 0.311320755    //Conversion constant for the X axis
+#define Y_CONV_CONST 0.315315315   //Conversion constant for the Y axis
+#define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
+#define INF 2000000
 
 using namespace cv;
 using namespace Eigen;
 
-typedef std::vector<Robot> rVector;
-typedef std::vector<Point> pVector;
-typedef std::vector<std::vector<Point> > pMatrix; //Point matrix type
+typedef std::vector<Robot> rVector; //Robots vector
+typedef std::vector<Point> pVector; //Point vector
+typedef std::vector<std::vector<int> > iMatrix; //int matrix template
+typedef std::vector<std::vector<double> > dMatrix;  //Double Matrix template
+typedef std::vector<std::vector<Point> > pMatrix; //Point matrix template
+typedef std::vector<std::vector<Point2d> > p2dMatrix; //Point matrix template
+
 
 double euclidean_dist(Point p, Point q);
 double angle_two_points(Point p, Point q);

@@ -15,15 +15,22 @@ double euclidean_dist(Point p, Point q)
 double angle_two_points(Point p, Point q)
 {
     double theta;
+    double dot, pnorm, qnorm;
 
-    theta = atan2((q.y - p.y),(q.x - p.x));
-
+    dot = p.x * q.x + p.y * q.y;
+   // cout << dot << endl;
+    pnorm = sqrt(p.x * p.x + p.y * p.y);
+    //cout << pnorm << endl;
+    qnorm = sqrt(q.x * q.x + q.y * q.y);
+    //cout << qnorm << endl;
+    theta = acos(dot/(pnorm*qnorm));
+    //cout << theta << endl;
     return theta * 180.0 / PI;
 }
 
 bool read_points(string fname, vector<Point> &points){
     ifstream input(fname.c_str());
-    int x, y;
+    int x, y, size = 0, i;
 
     if(!input){
         cerr << "The file could not be opened! (Utils)" << endl;
@@ -31,7 +38,16 @@ bool read_points(string fname, vector<Point> &points){
     }
 
     while(input >> x >> y){
-        points.push_back(Point(x, y));
+        size++;
+    }
+
+    points.resize(size);
+
+    input.clear();
+    input.seekg(0, ios::beg);
+
+    for(i = 0; i < size; ++i){
+        input >> points[i].x >> points[i].y;
     }
 
     return true;

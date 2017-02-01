@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "settingsdialog.h"
 #include "vision.h"
+#include "cph.h"
 #include "serial.h"
 
 namespace Ui {
@@ -19,13 +20,13 @@ public:
     ~soccer_window();
 public slots:
     void updateSerialSettings(SettingsDialog::Settings settings);
+    void updateBallPos(const Point2d &ball_pos);
     void updateVisionUI(QImage img);
     void updateFPS(double fps);
     void updateMapPoints(const pVector &map_area);
     void updateAtkPoints(const pVector &atk_area);
     void updateDefPoints(const pVector &def_area);
     void updateRobotsInfo(const rVector &robots);
-
 private slots:
 
     void on_start_game_clicked();
@@ -36,6 +37,8 @@ private slots:
 
     void on_read_parameters_clicked();
 
+    void on_iterate_clicked();
+
 private:
     Ui::soccer_window *ui;
     Vision *eye;
@@ -43,9 +46,11 @@ private:
     Serial *serial;
     SettingsDialog::Settings settings;
     std::vector<Robot> robots;
+    Point2d ball_pos;
     std::vector<cv::Point> map_area;
     std::vector<cv::Point> def_area;
     std::vector<cv::Point> atk_area;
+    CPH *cph;
     bool started;
 };
 
