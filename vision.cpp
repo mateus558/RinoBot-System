@@ -18,8 +18,7 @@ Vision::Vision(QObject *parent): QThread(parent)
     Point2d temp;
 
     stop = true;
-    showArea = false;
-    sentPoints = false;
+    showArea = sentPoints = teamsChanged = false;
     mode = 0;
     robots.resize(6);
     robots[0].set_nick("Leona");
@@ -66,7 +65,7 @@ Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) 
 vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
 {
     int i, j, csize, k, tsize, r_label = 0, min, t1size, tmin;
-    double dista = 0.0;
+    double dista = 0.0, angle;
     bool not_t1;
     Moments ball_moment, temp_moment;
     Point ball_cent(-1, -1), unk_robot, centroid, line_slope;
@@ -174,13 +173,15 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             //cout << "x axis slope = (" << x_axis_slope.x << ", " << x_axis_slope.y << ")" <<endl;
             robots[r_label].set_centroid(centroid);
             //robots[r_label].set_pos(coords[centroid.x][centroid.y]);
-            robots[r_label].set_angle(angle_two_points(line_slope, x_axis_slope));
-            /*cout << robots[r_label].get_nick() << " angle = " << robots[r_label].get_angle() << endl;
+            angle = (col_select.first.x >= unk_robot.x)?angle_two_points(line_slope, x_axis_slope):-angle_two_points(line_slope, x_axis_slope);
+            if(teamsChanged) angle = angle * -1;
+            robots[r_label].set_angle(angle);
+            cout << robots[r_label].get_nick() << " angle = " << robots[r_label].get_angle() << endl;
             cout << robots[r_label].get_nick() << " CENTROID = (" << centroid.x << ", " << centroid.y << ") " << endl;
-            cout << robots[r_label].get_nick() << " color CENTROID = (" << col_select.first.x << ", " << col_select.first.y << ") " << endl;
-            cout << robots[r_label].get_nick() << " team CENTROID = (" << unk_robot.x << ", " << unk_robot.y << ") " << endl;
-            cout<< "map[0] = (" << x_axis_slope.x << ", " << x_axis_slope.y << ") " << endl;
-            cout<< "map[9] = (" << line_slope.x << ", " << line_slope.y << ") " << endl;*/
+            //cout << robots[r_label].get_nick() << " color CENTROID = (" << col_select.first.x << ", " << col_select.first.y << ") " << endl;
+            //cout << robots[r_label].get_nick() << " team CENTROID = (" << unk_robot.x << ", " << unk_robot.y << ") " << endl;
+            //cout<< "map[0] = (" << x_axis_slope.x << ", " << x_axis_slope.y << ") " << endl;
+            //cout<< "map[9] = (" << line_slope.x << ", " << line_slope.y << ") " << endl;
             //pos = robots[r_label].get_pos();
             //cout << robots[r_label].get_nick() << "pos in cm = (" << pos.x << ", " << pos.y << ") " << endl;
         }else{
@@ -370,7 +371,7 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
 Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
 {
     int i, size = robots.size();
-    Point cent, team_cent, color_cent;
+    Point cent, team_cent, color_cent, inter;
 
     if(ball_pos != null_point)
         circle(frame, ball_pos, 20, Scalar(255, 0, 0));
@@ -382,10 +383,12 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
 
         if(cent == null_point) continue;
         //circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
-        //circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
+        circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
         //circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
-        line(frame, cent,Point(cent.x + 20 * cos((robots[i].get_angle()* PI/ 180)), cent.y - 20 * sin((robots[i].get_angle() * PI/ 180))) , Scalar(0, 255, 0), 1);
+        inter = Point(cent.x + 20 * cos(((robots[i].get_angle()* PI)/ 180)), cent.y + 20 * sin(((robots[i].get_angle() * PI)/ 180)));
+        //circle(frame, inter, 5, Scalar(0, 0, 255), 1*(i+1));
+        line(frame, cent, inter, Scalar(0, 255, 0), 1);
         //line(frame, cent, color_cent, Scalar(0, 255, 0), 1);
         putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
@@ -501,6 +504,10 @@ void Vision::Play()
             stop = false;
         start(LowPriority);
     }
+}
+
+void Vision::switch_teams_areas(){
+    teamsChanged = (teamsChanged)?false:true;
 }
 
 vector<Robot> Vision::get_robots()

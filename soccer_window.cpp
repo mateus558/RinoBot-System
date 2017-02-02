@@ -101,6 +101,7 @@ void soccer_window::on_switch_fields_clicked()
     atk_area = def_area;
     def_area = aux;
 
+    eye->switch_teams_areas();
     eye->set_atk_area(atk_area);
     eye->set_def_area(def_area);
 }

@@ -20,7 +20,7 @@ using namespace cv;
 
 class Vision: public QThread {  Q_OBJECT
 private:
-    bool stop, showArea, sentPoints;
+    bool stop, showArea, sentPoints, teamsChanged;
     int mode, rows, cols, camid, x_offset, y_offset;
     double FPS;
     QMutex mutex;
@@ -69,6 +69,7 @@ public:
     bool open_camera(int camid = CV_CAP_FIREWIRE);
     void Play();
     void Stop();
+    void switch_teams_areas();
     void set_low(vector<int> low);
     void set_def_area(pVector def_points);
     void set_atk_area(pVector atk_points);
