@@ -50,6 +50,7 @@ private:
     std::vector<cv::Point> map_area;
     std::vector<cv::Point> def_area;
     std::vector<cv::Point> atk_area;
+    void closeEvent(QCloseEvent *event);
     CPH *cph;
     bool started;
 };

@@ -15,6 +15,9 @@ SetColorRange::SetColorRange(QWidget *parent) :
 {
     eye = new Vision;
     ui->setupUi(this);
+
+
+    //setAttribute(Qt::WA_DeleteOnClose);
     connect(ui->horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_sliderMoved(int)));
     connect(ui->horizontalSlider_2, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_2_sliderMoved(int)));
     connect(ui->horizontalSlider_3, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_3_sliderMoved(int)));
@@ -26,10 +29,49 @@ SetColorRange::SetColorRange(QWidget *parent) :
     eye->set_mode(1);
 }
 
-void SetColorRange::closeEvent(QCloseEvent *event)
-{
-    event->accept();
-    delete eye;
+void SetColorRange::showEvent(QShowEvent *event){
+    QWidget::showEvent(event);
+
+    string file = "Config/" + this->robot;
+    fstream input(file, fstream::in);
+    int low[3], upper[3];
+
+    if(!input){
+        ui->horizontalSlider->setValue(0);
+        ui->horizontalSlider_2->setValue(0);
+        ui->horizontalSlider_3->setValue(0);
+        ui->horizontalSlider_4->setValue(255);
+        ui->horizontalSlider_5->setValue(255);
+        ui->horizontalSlider_6->setValue(255);
+        clog << "Values set to default." << endl;
+        return;
+    }
+
+    input >> low[0] >> low[1] >> low[2];
+    input >> upper[0] >> upper[1] >> upper[2];
+
+    input.close();
+
+    ui->horizontalSlider->setValue(low[0]);
+    ui->horizontalSlider_2->setValue(low[1]);
+    ui->horizontalSlider_3->setValue(low[2]);
+    ui->horizontalSlider_4->setValue(upper[0]);
+    ui->horizontalSlider_5->setValue(upper[1]);
+    ui->horizontalSlider_6->setValue(upper[2]);
+    cout << 1 << endl;
+    if(eye == NULL){
+        eye = new Vision;
+        eye->set_mode(1);
+    }
+    cout << 2 << endl;
+}
+
+void SetColorRange::closeEvent(QCloseEvent *event){
+    QWidget::closeEvent(event);
+
+    eye->Stop();
+    eye->wait();
+    eye->release_cam();
 }
 
 void SetColorRange::updateVisionUI(QImage img)
@@ -118,7 +160,7 @@ void SetColorRange::set_robot(string robot)
 
 SetColorRange::~SetColorRange()
 {
-    delete ui;
+    delete eye;
 }
 
 void SetColorRange::on_pushButton_clicked()

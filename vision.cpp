@@ -14,9 +14,6 @@ Point null_point = Point(-1, -1);
 
 Vision::Vision(QObject *parent): QThread(parent)
 {
-    int i = 0, j = 0;
-    Point2d temp;
-
     stop = true;
     showArea = sentPoints = teamsChanged = false;
     mode = 0;
@@ -42,8 +39,7 @@ Vision::Vision(QObject *parent): QThread(parent)
         cerr << "The defense area could not be read from the file!" << endl;
     }
     x_axis_slope = map_points[0] - map_points[9];
-    cout << map_points[0].x << " " << map_points[0].y << endl;
-    cout << map_points[9].x << " " << map_points[9].y << endl;
+
     /*for( Point p : map_points)
         cout << p.x << " " << p.y << endl;
     cout << map_points.size() << endl;
@@ -69,7 +65,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     bool not_t1;
     Moments ball_moment, temp_moment;
     Point ball_cent(-1, -1), unk_robot, centroid, line_slope;
-    Point2f pos;
+    //Point2f pos;
     vector<vector<Moments> > r_m(3, vector<Moments>());
     vector<vector<Moments> > t_m(2, vector<Moments>());
     vector<pVector > r_col_cent(3, pVector());
@@ -176,8 +172,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             angle = (col_select.first.x >= unk_robot.x)?angle_two_points(line_slope, x_axis_slope):-angle_two_points(line_slope, x_axis_slope);
             if(teamsChanged) angle = angle * -1;
             robots[r_label].set_angle(angle);
-            cout << robots[r_label].get_nick() << " angle = " << robots[r_label].get_angle() << endl;
-            cout << robots[r_label].get_nick() << " CENTROID = (" << centroid.x << ", " << centroid.y << ") " << endl;
+            //cout << robots[r_label].get_nick() << " angle = " << robots[r_label].get_angle() << endl;
+            //cout << robots[r_label].get_nick() << " CENTROID = (" << centroid.x << ", " << centroid.y << ") " << endl;
             //cout << robots[r_label].get_nick() << " color CENTROID = (" << col_select.first.x << ", " << col_select.first.y << ") " << endl;
             //cout << robots[r_label].get_nick() << " team CENTROID = (" << unk_robot.x << ", " << unk_robot.y << ") " << endl;
             //cout<< "map[0] = (" << x_axis_slope.x << ", " << x_axis_slope.y << ") " << endl;
@@ -191,7 +187,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         r_set[col_select.second.first] = true;
 
         //cout << "Robo " << r_label << ", team cent = (" << unk_robot.x << "," <<unk_robot.y << "), "
-          //  << "color cent= (" << centroid.x << "," << centroid.y << "), angle=" <<robots[i].get_angle() << endl;
+        //    << "color cent= (" << col_select.first.x << "," << col_select.first.y << "), angle=" <<robots[i].get_angle() << endl;
 
     }
 
@@ -209,6 +205,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
     ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
     ball_pos = ball_cent;
+    //cout << "OK!" << endl;
     return robots;
 }
 
@@ -383,10 +380,10 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
 
         if(cent == null_point) continue;
         //circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
-        circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
+        //circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
         //circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
-        inter = Point(cent.x + 20 * cos(((robots[i].get_angle()* PI)/ 180)), cent.y + 20 * sin(((robots[i].get_angle() * PI)/ 180)));
+        inter = Point(cent.x + 20 * cos(robots[i].get_angle() * PI / 180.0), cent.y + 20 * sin(robots[i].get_angle() * PI / 180.0));
         //circle(frame, inter, 5, Scalar(0, 0, 255), 1*(i+1));
         line(frame, cent, inter, Scalar(0, 255, 0), 1);
         //line(frame, cent, color_cent, Scalar(0, 255, 0), 1);
@@ -417,7 +414,8 @@ void Vision::run()
 
         if(!cam.read(raw_frame)){
             stop = true;
-            continue;
+            cerr << "A frame could not be read! (Vision)" << endl;
+            return;
         }
 
         raw_frame = crop_image(raw_frame);
@@ -599,7 +597,8 @@ void Vision::set_atk_area(pVector atk_points){
 Vision::~Vision(){
     mutex.lock();
     stop = true;
-    cam.release();
+    if(cam.isOpened())
+        cam.release();
     condition.wakeOne();
     mutex.unlock();
     wait();

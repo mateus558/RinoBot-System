@@ -17,7 +17,6 @@ soccer_window::soccer_window(QWidget *parent) :
     ui(new Ui::soccer_window)
 {
     ui->setupUi(this);
-    setAttribute(Qt::WA_DeleteOnClose);
     serial_sett = new SettingsDialog;
     serial = new Serial;
     eye = new Vision;
@@ -36,6 +35,14 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(eye, SIGNAL(atkPoints(pVector)), this, SLOT(updateAtkPoints(pVector)), Qt::QueuedConnection);
     connect(eye, SIGNAL(defPoints(pVector)), this, SLOT(updateDefPoints(pVector)), Qt::QueuedConnection);
     connect(eye, SIGNAL(robotsInfo(rVector)), this, SLOT(updateRobotsInfo(rVector)), Qt::QueuedConnection);
+}
+
+void soccer_window::closeEvent(QCloseEvent *event){
+    QWidget::closeEvent(event);
+
+    eye->Stop();
+    eye->wait();
+    eye->release_cam();
 }
 
 void soccer_window::updateVisionUI(QImage img){
@@ -89,6 +96,8 @@ void soccer_window::on_start_game_clicked()
         ui->start_game->setText("Stop Game");
     }else{
         eye->Stop();
+        eye->wait();
+        eye->release_cam();
         ui->start_game->setText("Start Game");
     }
 }

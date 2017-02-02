@@ -34,6 +34,7 @@ private slots:
     void on_horizontalSlider_4_sliderMoved(int position);
     void on_horizontalSlider_5_sliderMoved(int position);
     void on_horizontalSlider_6_sliderMoved(int position);
+    void showEvent(QShowEvent *event);
     void closeEvent(QCloseEvent *event);
     void on_pushButton_2_clicked();
 

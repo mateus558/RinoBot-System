@@ -19,7 +19,7 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
 
     eye->set_mode(0);
     ui->setupUi(this);
-    setAttribute(Qt::WA_DeleteOnClose);
+    //setAttribute(Qt::WA_DeleteOnClose);
     eye->set_camid(ui->spinBox->value());
     connect(ui->configRobots, SIGNAL(clicked(bool)), this, SLOT(on_configRobots_clicked()));
     connect(serial_settings_dialog, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
@@ -47,25 +47,20 @@ void SetParameters::updateFPS(double val)
 void SetParameters::on_initCapture_clicked()
 {
     int cam_id = ui->spinBox->value();
-
-    if(eye == NULL){
-        eye = new Vision;
+    if(eye->isStopped()){
+        if(!eye->open_camera(cam_id)){
+            QMessageBox msgBox;
+            msgBox.setText("The camera could not be opened!");
+            msgBox.exec();
+        }
+        eye->Play();
+        ui->initCapture->setText(QString("Stop Capture"));
+    }else{
+        eye->Stop();
+        eye->wait();
+        eye->release_cam();
+        ui->initCapture->setText(QString("Init Capture"));
     }
-
-    if(!eye->open_camera(cam_id)){
-        QMessageBox msgBox;
-        msgBox.setText("The camera could not be opened!");
-        msgBox.exec();
-    }
-    eye->Play();
-}
-
-void SetParameters::on_configRobots_clicked()
-{
-    eye->Stop();
-    eye->release_cam();
-    conf->set_camid(eye->get_camID());
-    conf->show();
 }
 
 void SetParameters::on_readParameters_clicked()
@@ -159,10 +154,23 @@ void SetParameters::on_readParameters_clicked()
     eye->set_ball(ball_range);
 }
 
+void SetParameters::on_configRobots_clicked()
+{
+    if(!eye->isStopped()){
+        eye->Stop();
+        eye->release_cam();
+    }
+    conf->set_camid(eye->get_camID());
+    conf->show();
+}
+
+
 void SetParameters::on_T1_color_clicked()
 {
-    eye->Stop();
-    eye->release_cam();
+    if(!eye->isStopped()){
+        eye->Stop();
+        eye->release_cam();
+    }
     set_team_color->set_robot("T1");
     set_team_color->set_camid(eye->get_camID());
     set_team_color->show();
@@ -170,8 +178,10 @@ void SetParameters::on_T1_color_clicked()
 
 void SetParameters::on_T2_color_clicked()
 {
-    eye->Stop();
-    eye->release_cam();
+    if(!eye->isStopped()){
+        eye->Stop();
+        eye->release_cam();
+    }
     set_team_color->set_robot("T2");
     set_team_color->set_camid(eye->get_camID());
     set_team_color->show();
@@ -181,8 +191,10 @@ void SetParameters::on_ball_color_clicked()
 {
     int cam = eye->get_camID();
 
-    eye->Stop();
-    eye->release_cam();
+    if(!eye->isStopped()){
+        eye->Stop();
+        eye->release_cam();
+    }
     set_team_color->set_robot("ball");
     set_team_color->set_camid(cam);
     set_team_color->show();
