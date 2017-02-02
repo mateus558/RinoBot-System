@@ -460,7 +460,9 @@ void Vision::run()
            //cout << def_cent.x << " " << def_cent.y << endl;
             putText(vision_frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
         }
+        //cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
 
+        //img = QImage((uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
         img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;

@@ -1,12 +1,12 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include "cph.h"
+#include "cpo.h"
 
 using namespace std;
 
 
-CPH::CPH(int a, int b){
+CPO::CPO(int a, int b){
     dx = a;
     dy = b;
     pGrid = dMatrix(28, vector<double>(36, 0.0));
@@ -14,89 +14,100 @@ CPH::CPH(int a, int b){
     cout<<"\n\nAMBIENTE CRIADO!\n";
 }
 
-double CPH::iterator(){
+double CPO::iterator(){
     double erro = 0;
     double top, botton, left, right;
     double newPotencial, oldPotencial;
-    int i,j;
-    for(i=0;i<28;i++)
-    {
-        for(j=0;j<36;j++)
-        {
-            if(get_occupancy(i,j))
-            {
+    double vec[2], e, h, lambda;
+    int i,j,orientation;
+
+    orientation = -45;
+    vec[0] = cos(orientation*PI/180);
+    vec[1] = sin(orientation*PI/180);
+
+    h = dx/dy;
+    e = 1;
+    lambda = e*h/2;
+
+     for(i=0;i<28;i++)
+     {
+         for(j=0;j<36;j++)
+         {
+             if(get_occupancy(i,j)==1)
+             {
                 oldPotencial = get_potential(i,j);
                 top = get_neighborhood(i,j,0);
-                botton = get_neighborhood(i,j,1);
-                left = get_neighborhood(i,j,2);
-                right = get_neighborhood(i,j,3);
-                newPotencial = (top+botton+left+right)/4;
-                newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
-                erro = erro + pow((newPotencial - oldPotencial),2);
-                set_potential(i,j,newPotencial);
-            }
+                 botton = get_neighborhood(i,j,1);
+                 left = get_neighborhood(i,j,2);
+                 right = get_neighborhood(i,j,3);
+                 newPotencial = ((1+lambda*vec[0])*right+(1-lambda*vec[0])*left+(1+lambda*vec[1])*top+(1-lambda*vec[1])*botton)/4;
+                 //newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
+                 erro = erro + pow((newPotencial - oldPotencial),2);
+                 set_potential(i,j,newPotencial);
+             }
+         }
+     }
+     return erro;
+}
+
+double CPO::get_neighborhood(int i, int j, int k){
+    double top,botton,left,right;
+    if(i==0)
+    {
+        top=1;
+        botton=get_potential(i+1,j);
+    }
+    else
+    {
+        if(i==27)
+        {
+            botton=1;
+            top=get_potential(i-1,j);
+        }
+        else
+        {
+            top=get_potential(i-1,j);
+            botton=get_potential(i+1,j);
         }
     }
-    return erro;
-}
+    if(j==0)
+    {
+        left=1;
+        right=get_potential(i,j+1);
+    }
+    else
+    {
+        if(j==35)
+        {
+            right=1;
+            left=get_potential(i,j-1);
+        }
+        else
+        {
+            left=get_potential(i,j-1);
+            right=get_potential(i,j+1);
+        }
+    }
+    switch (k) {
+    case 0:
+        return top;
+        break;
+    case 1:
+        return botton;
+        break;
+    case 2:
+        return left;
+        break;
+    case 3:
+        return right;
+        break;
+    default:
+        break;
+    }
+ }
 
-double CPH::get_neighborhood(int i, int j, int k){
-   double top,botton,left,right;
-   if(i==0)
-   {
-       top=1;
-       botton=get_potential(i+1,j);
-   }
-   else
-   {
-       if(i==27)
-       {
-           botton=1;
-           top=get_potential(i-1,j);
-       }
-       else
-       {
-           top=get_potential(i-1,j);
-           botton=get_potential(i+1,j);
-       }
-   }
-   if(j==0)
-   {
-       left=1;
-       right=get_potential(i,j+1);
-   }
-   else
-   {
-       if(j==35)
-       {
-           right=1;
-           left=get_potential(i,j-1);
-       }
-       else
-       {
-           left=get_potential(i,j-1);
-           right=get_potential(i,j+1);
-       }
-   }
-   switch (k) {
-   case 0:
-       return top;
-       break;
-   case 1:
-       return botton;
-       break;
-   case 2:
-       return left;
-       break;
-   case 3:
-       return right;
-       break;
-   default:
-       break;
-   }
-}
 
-int CPH::get_occupancy(int i, int j){
+int CPO::get_occupancy(int i, int j){
     if(get_potential(i,j)==1 || get_potential(i,j)==0)
     {
         return 0;
@@ -107,11 +118,11 @@ int CPH::get_occupancy(int i, int j){
     }
 }
 
-double CPH::get_potential(int i, int j){
+double CPO::get_potential(int i, int j){
     return pGrid[i][j];
 }
 
-void CPH::set_direction(){
+void CPO::set_direction(){
     int i,j;
 
     for(i=0;i<28;i++)
@@ -127,11 +138,11 @@ void CPH::set_direction(){
     }
 }
 
-void CPH::set_potential(int i, int j, double aux){
+void CPO::set_potential(int i, int j, double aux){
     pGrid[i][j]= aux;
 }
 
-void CPH::init_grid(){
+void CPO::init_grid(){
     int i,j;
     for(i=0;i<28;i++)
     {
@@ -147,7 +158,7 @@ void CPH::init_grid(){
     }
 }
 
-void CPH::print_grid(){
+void CPO::print_grid(){
     cout<<"\n\n\nGrid:\n\n";;
     int i,j;
     for(i=0;i<28;i++)
@@ -176,7 +187,7 @@ void CPH::print_grid(){
     cout<<"\n\n\n";
 }
 
-Point CPH::convert_C_to_G(Point2d coord){
+Point CPO::convert_C_to_G(Point2d coord){
     Point i;
 
     coord.x = int(coord.x) + 5;
@@ -197,16 +208,16 @@ Point CPH::convert_C_to_G(Point2d coord){
     return i;
 }
 
-void CPH::run(){
+void CPO::run(){
 
 }
 
-bool CPH::isStopped() const
+bool CPO::isStopped() const
 {
     return this->stop;
 }
 
-void CPH::Play(){
+void CPO::Play(){
     if(!isRunning()){
         if(isStopped())
             stop = false;
@@ -214,11 +225,11 @@ void CPH::Play(){
     }
 }
 
-void CPH::Stop(){
+void CPO::Stop(){
 
 }
 
-void CPH::msleep(int ms){
+void CPO::msleep(int ms){
     struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
     nanosleep(&ts, NULL);
 }

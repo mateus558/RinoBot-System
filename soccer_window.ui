@@ -65,7 +65,7 @@
     <string>Switch ATK/DEF Area</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="iterate">
+  <widget class="QPushButton" name="CPH">
    <property name="geometry">
     <rect>
      <x>760</x>
@@ -75,7 +75,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Iterator</string>
+    <string>CPH</string>
    </property>
   </widget>
   <widget class="QLCDNumber" name="fps_lcd">
@@ -292,11 +292,24 @@
     <string>Read Parameters</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="CPO">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>270</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CPO</string>
+   </property>
+  </widget>
   <zorder>optionsGroupBox</zorder>
   <zorder>game_view</zorder>
   <zorder>start_game</zorder>
   <zorder>switch_fields</zorder>
-  <zorder>iterate</zorder>
+  <zorder>CPH</zorder>
   <zorder>fps_lcd</zorder>
   <zorder>fps_label</zorder>
   <zorder>battery_level_group</zorder>
@@ -306,6 +319,7 @@
   <zorder>presto_label</zorder>
   <zorder>showAreasRadioButton</zorder>
   <zorder>read_parameters</zorder>
+  <zorder>CPO</zorder>
  </widget>
  <resources/>
  <connections/>

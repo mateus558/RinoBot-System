@@ -5,6 +5,7 @@
 #include "settingsdialog.h"
 #include "vision.h"
 #include "cph.h"
+#include "cpo.h"
 #include "serial.h"
 
 namespace Ui {
@@ -39,6 +40,10 @@ private slots:
 
     void on_iterate_clicked();
 
+    void on_CPO_clicked();
+
+    void on_CPH_clicked();
+
 private:
     Ui::soccer_window *ui;
     Vision *eye;
@@ -52,6 +57,7 @@ private:
     std::vector<cv::Point> atk_area;
     void closeEvent(QCloseEvent *event);
     CPH *cph;
+    CPO *cpo;
     bool started;
 };
 

@@ -11,8 +11,8 @@
 #define FIELD_HEIGHT 175
 #define DEFAULT_NROWS 424   //Default number of the rows of the frame
 #define DEFAULT_NCOLS 555   //Default number of the columns of the frame
-#define X_CONV_CONST 0.311320755    //Conversion constant for the X axis
-#define Y_CONV_CONST 0.315315315   //Conversion constant for the Y axis
+#define X_CONV_CONST 0.309009009   //Conversion constant for the X axis
+#define Y_CONV_CONST 0.307075472   //Conversion constant for the Y axis
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000

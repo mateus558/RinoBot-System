@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     serial.cpp \
     settingsdialog.cpp \
     soccer_window.cpp \
-    cph.cpp
+    cph.cpp \
+    cpo.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -35,7 +36,8 @@ HEADERS  += mainwindow.h \
     serial.h \
     settingsdialog.h \
     soccer_window.h \
-    cph.h
+    cph.h \
+    cpo.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

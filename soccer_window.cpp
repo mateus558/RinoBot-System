@@ -225,7 +225,38 @@ void soccer_window::on_read_parameters_clicked()
     eye->set_ball(ball_range);
 }
 
-void soccer_window::on_iterate_clicked()
+void soccer_window::on_CPO_clicked()
+{
+    vector<Point2d> enemy_pos(3);
+    pVector enemy_pos_grid(3);
+    Point  ball_pos_grid;
+    int i = 0;
+    cpo = new CPO(5, 5);
+
+    enemy_pos[0] = robots[3].get_pos();
+    enemy_pos[1] = robots[4].get_pos();
+    enemy_pos[2] = robots[5].get_pos();
+    cpo->init_grid();
+    cout << enemy_pos[0] << endl;
+    cout << enemy_pos[1] << endl;
+    cout << enemy_pos[2] << endl;
+
+    for(i = 0; i < 3; ++i){
+        enemy_pos_grid[i] = cpo->convert_C_to_G(enemy_pos[i]);
+        cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+        cpo->set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+    }
+
+    ball_pos_grid = cpo->convert_C_to_G(ball_pos);
+    cpo->set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+
+    while(cpo->iterator() > 1E-6);
+
+    cpo->set_direction();
+    //cpo->print_grid();
+}
+
+void soccer_window::on_CPH_clicked()
 {
     vector<Point2d> enemy_pos(3);
     pVector enemy_pos_grid(3);
@@ -237,9 +268,13 @@ void soccer_window::on_iterate_clicked()
     enemy_pos[1] = robots[4].get_pos();
     enemy_pos[2] = robots[5].get_pos();
     cph->init_grid();
+    cout << enemy_pos[0] << endl;
+    cout << enemy_pos[1] << endl;
+    cout << enemy_pos[2] << endl;
 
     for(i = 0; i < 3; ++i){
         enemy_pos_grid[i] = cph->convert_C_to_G(enemy_pos[i]);
+        cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
         cph->set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
     }
 
@@ -249,5 +284,5 @@ void soccer_window::on_iterate_clicked()
     while(cph->iterator() > 1E-6);
 
     cph->set_direction();
-    cph->print_grid();
+    //cph->print_grid();
 }
