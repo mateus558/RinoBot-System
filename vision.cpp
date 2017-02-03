@@ -168,7 +168,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                 }
             }
         }
-        if(col_select.first == null_point) break;   //If the robot could'nt be identified break
+       // if(col_select.first == null_point) break;   //If the robot could'nt be identified break
         for(k = 3; k < t1size; ++k){    //Verify if the color assigned is not from the other team
             dista = euclidean_dist(tirj_cent[1][k-3], col_select.first);
             if(dista < tmin){
@@ -189,20 +189,22 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             angle = (col_select.first.x >= unk_robot.x)?angle_two_points(line_slope, x_axis_slope):-angle_two_points(line_slope, x_axis_slope);
             if(teamsChanged) angle = angle * -1;
 
-            /*pos_cam << centroid.x / 100,
-                       centroid.y / 100,
+            pos_cam << centroid.x * X_CONV_CONST / 100,
+                       centroid.y * Y_CONV_CONST / 100,
                        angle;
-            last_pos << last_cent.x / 100,
-                        last_cent.y / 100,
+            last_pos << last_cent.x * X_CONV_CONST / 100,
+                        last_cent.y * Y_CONV_CONST / 100,
                         last_angle;
-            v_w << 5,
-                   4;
+            v_w << 0,
+                   0;
 
             kalman_res = kalman_filter(pos_cam, v_w, last_pos, 9, last_P);
             last_P = kalman_res.first;
-            centroid.x = kalman_res.second(0) * 100;
-            centroid.y = kalman_res.second(1) * 100;
-            angle = kalman_res.second(2);*/
+            //cout << kalman_res.second(1,0) * 100 << " " << kalman_res.second(2,0) * 100 << endl;
+            //centroid.x = kalman_res.second(0) * 100;
+            //centroid.y = kalman_res.second(1) * 100;
+
+            //angle = kalman_res.second(2);
             robots[r_label].set_team_cent(unk_robot);
             robots[r_label].set_color_cent(col_select.first);
             robots[r_label].set_line_slope(line_slope);
@@ -421,8 +423,10 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         angle = (teamsChanged)?(angle*-1)-90:angle-90;
 
         if(cent == null_point) continue;
-        //circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
-        //circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
+        if(showCenters){
+            circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
+            circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
+        }
         //circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
         inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y + 20 * sin(angle * PI / 180.0));
@@ -630,6 +634,10 @@ void Vision::show_area(bool show){
 
 void Vision::show_names(bool show){
     showNames = show;
+}
+
+void Vision::show_centers(bool show){
+    showCenters = show;
 }
 
 void Vision::save_image(){

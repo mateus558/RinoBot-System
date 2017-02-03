@@ -289,3 +289,8 @@ void soccer_window::on_checkBox_2_toggled(bool checked)
 {
     eye->show_names(checked);
 }
+
+void soccer_window::on_checkBox_3_toggled(bool checked)
+{
+    eye->show_centers(checked);
+}

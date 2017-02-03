@@ -21,7 +21,7 @@ using namespace cv;
 
 class Vision: public QThread {  Q_OBJECT
 private:
-    bool stop, showArea, sentPoints, teamsChanged, showNames;
+    bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters;
     int mode, rows, cols, camid, x_offset, y_offset;
     double FPS;
     QMutex mutex;
@@ -78,6 +78,7 @@ public:
     void set_def_area(pVector def_points);
     void set_atk_area(pVector atk_points);
     void show_area(bool show);
+    void show_centers(bool show);
     void show_names(bool show);
     void save_image();
     void set_upper(vector<int> upper);
