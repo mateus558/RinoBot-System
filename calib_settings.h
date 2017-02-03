@@ -1,4 +1,0 @@
-#ifndef CALIB_SETTINGS_H
-#define CALIB_SETTINGS_H
-
-#endif // CALIB_SETTINGS_H
