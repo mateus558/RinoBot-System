@@ -16,6 +16,7 @@ soccer_window::soccer_window(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::soccer_window)
 {
+
     ui->setupUi(this);
     serial_sett = new SettingsDialog;
     serial = new Serial;
@@ -129,7 +130,7 @@ soccer_window::~soccer_window()
     delete eye;
     delete serial;
     delete serial_sett;
-   // delete ui;
+    delete ui;
 }
 
 void soccer_window::on_read_parameters_clicked()

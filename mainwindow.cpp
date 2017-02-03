@@ -1,10 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :   QMainWindow(parent), ui(new Ui::MainWindow)
-{
-    soccer = new soccer_window;
+using namespace std;
 
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
     ui->setupUi(this);
     QPixmap pix("Untitled1.png");
     ui->logo->setPixmap(pix);
@@ -28,5 +30,7 @@ void MainWindow::openSetParameters()
 
 void MainWindow::on_pushButton_5_clicked()
 {
+    soccer = new soccer_window;
+    soccer->setAttribute( Qt::WA_DeleteOnClose );
     soccer->show();
 }

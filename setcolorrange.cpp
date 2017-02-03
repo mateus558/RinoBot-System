@@ -69,9 +69,11 @@ void SetColorRange::showEvent(QShowEvent *event){
 void SetColorRange::closeEvent(QCloseEvent *event){
     QWidget::closeEvent(event);
 
-    eye->Stop();
-    eye->wait();
-    eye->release_cam();
+    if(!eye->isStopped()){
+        eye->Stop();
+        eye->wait();
+        eye->release_cam();
+    }
 }
 
 void SetColorRange::updateVisionUI(QImage img)

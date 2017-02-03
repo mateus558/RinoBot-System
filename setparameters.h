@@ -26,6 +26,7 @@ public:
     ~SetParameters();
 
 private slots:
+    void closeEvent(QCloseEvent *event);
     void on_initCapture_clicked();
     void on_configRobots_clicked();
     void on_readParameters_clicked();
@@ -43,6 +44,10 @@ private slots:
     void on_ball_color_clicked();
 
     void on_config_serial_clicked();
+
+    void on_calibrate_camera_clicked();
+
+    void on_save_image_clicked();
 
 private:
     Ui::SetParameters *ui;

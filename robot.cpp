@@ -18,6 +18,8 @@ Robot::Robot(){
     upper_color_team.assign(3, 255);
     low_color.assign(3, 0);
     upper_color.assign(3, 255);
+    pos_hist.push_back(Point(-1, -1));
+    last_angle = 0;
 }
 
 bool Robot::encoders_reading(Serial *serial, pair<double, double> &vels){

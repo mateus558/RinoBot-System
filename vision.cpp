@@ -4,6 +4,7 @@
 #include <utility>
 #include <cmath>
 #include <ctime>
+#include <cstdlib>
 #include <QMessageBox>
 #include "utils.h"
 #include "vision.h"
@@ -40,6 +41,8 @@ Vision::Vision(QObject *parent): QThread(parent)
     }
     x_axis_slope = map_points[0] - map_points[9];
 
+    last_P = MatrixXd::Identity(3,3);
+
     /*for( Point p : map_points)
         cout << p.x << " " << p.y << endl;
     cout << map_points.size() << endl;
@@ -61,16 +64,19 @@ Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) 
 vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
 {
     int i, j, csize, k, tsize, r_label = 0, min, t1size, tmin;
-    double dista = 0.0, angle;
+    double dista = 0.0, angle, last_angle;
     bool not_t1;
     Moments ball_moment, temp_moment;
-    Point ball_cent(-1, -1), unk_robot, centroid, line_slope;
+    Point ball_cent(-1, -1), unk_robot, centroid, line_slope, last_cent;
     //Point2f pos;
     vector<vector<Moments> > r_m(3, vector<Moments>());
     vector<vector<Moments> > t_m(2, vector<Moments>());
     vector<pVector > r_col_cent(3, pVector());
     vector<pVector > tirj_cent(2, pVector());
     pair<Point, pair<int, int> > col_select;
+    Vector3d pos_cam, last_pos;
+    Vector2d v_w;
+    pair<Matrix3d, Vector3d> kalman_res;
 
 //cout << 1 << endl;
     //Get the ball moment from the contour
@@ -156,8 +162,10 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         //cout << col_select.second.first << "," << col_select.second.second << endl;
 
         r_label = col_select.second.first;
+        last_cent = robots[r_label].get_from_pos_hist(0);
+        last_angle = robots[r_label].get_last_angle();
+
         if(!not_t1){
-            centroid = (unk_robot + col_select.first)/2;
             line_slope = col_select.first - unk_robot;
 
             robots[r_label].set_team_cent(unk_robot);
@@ -165,13 +173,29 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             robots[r_label].set_line_slope(line_slope);
 
             centroid = Point((unk_robot.x + col_select.first.x)/2, (unk_robot.y + col_select.first.y)/2);
-            //cout << "line slope = (" << line_slope.x << ", " << line_slope.y << ")" <<endl;
-            //cout << "x axis slope = (" << x_axis_slope.x << ", " << x_axis_slope.y << ")" <<endl;
-            robots[r_label].set_centroid(centroid);
-            //robots[r_label].set_pos(coords[centroid.x][centroid.y]);
             angle = (col_select.first.x >= unk_robot.x)?angle_two_points(line_slope, x_axis_slope):-angle_two_points(line_slope, x_axis_slope);
             if(teamsChanged) angle = angle * -1;
+
+            /*pos_cam << centroid.x / 100,
+                       centroid.y / 100,
+                       angle;
+            last_pos << last_cent.x / 100,
+                        last_cent.y / 100,
+                        last_angle;
+            v_w << 5,
+                   4;
+
+            kalman_res = kalman_filter(pos_cam, v_w, last_pos, 9, last_P);
+            last_P = kalman_res.first;
+            centroid.x = kalman_res.second(0) * 100;
+            centroid.y = kalman_res.second(1) * 100;
+            angle = kalman_res.second(2);*/
+
             robots[r_label].set_angle(angle);
+            robots[r_label].set_centroid(centroid);
+            //robots[r_label].set_pos(coords[centroid.x][centroid.y]);
+            //cout << "line slope = (" << line_slope.x << ", " << line_slope.y << ")" <<endl;
+            //cout << "x axis slope = (" << x_axis_slope.x << ", " << x_axis_slope.y << ")" <<endl;
             //cout << robots[r_label].get_nick() << " angle = " << robots[r_label].get_angle() << endl;
             //cout << robots[r_label].get_nick() << " CENTROID = (" << centroid.x << ", " << centroid.y << ") " << endl;
             //cout << robots[r_label].get_nick() << " color CENTROID = (" << col_select.first.x << ", " << col_select.first.y << ") " << endl;
@@ -181,8 +205,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             //pos = robots[r_label].get_pos();
             //cout << robots[r_label].get_nick() << "pos in cm = (" << pos.x << ", " << pos.y << ") " << endl;
         }else{
-            robots[r_label].set_centroid(robots[r_label].get_from_pos_hist(0));
-            robots[r_label].set_angle(robots[r_label].get_last_angle());
+            robots[r_label].set_centroid(last_cent);
+            robots[r_label].set_angle(last_angle);
         }
         r_set[col_select.second.first] = true;
 
@@ -460,7 +484,8 @@ void Vision::run()
            //cout << def_cent.x << " " << def_cent.y << endl;
             putText(vision_frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
         }
-
+        //cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
+        //img = QImage((uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
         img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
@@ -582,6 +607,20 @@ int Vision::get_camID()
 
 void Vision::show_area(bool show){
     showArea = show;
+}
+
+void Vision::save_image(){
+    time_t t;
+    string fname, path;
+    Mat to_save;
+
+    srand((unsigned) time(&t));
+    fname = to_string(rand() % 100000);
+    fname = fname + "_img.jpg";
+    path = "Img/" + fname;
+
+    cvtColor(raw_frame, to_save, CV_BGR2RGB);
+    imwrite(path.c_str(), to_save);
 }
 
 void Vision::set_def_area(pVector def_points){

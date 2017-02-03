@@ -7,11 +7,13 @@
 #include "setparameters.h"
 #include "ui_setparameters.h"
 #include "settingsdialog.h"
+#include "camera_calibration.cpp"
 
 using namespace std;
 
 SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new Ui::SetParameters)
 {
+
     eye = new Vision;
     conf = new ConfigRobots;
     set_team_color = new SetColorRange;
@@ -25,6 +27,16 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
     connect(serial_settings_dialog, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
+}
+
+void SetParameters::closeEvent(QCloseEvent *event){
+    QWidget::closeEvent(event);
+
+    if(!eye->isStopped()){
+        eye->Stop();
+        eye->wait();
+        eye->release_cam();
+    }
 }
 
 void SetParameters::updateSerialSettings(SettingsDialog::Settings settings){
@@ -302,4 +314,19 @@ SetParameters::~SetParameters()
     delete conf;
     delete serial_settings_dialog;
     delete ui;
+}
+
+
+
+void SetParameters::on_calibrate_camera_clicked()
+{
+    vector<vector<Point3f> > object_points;
+    vector<vector<Point2f> > image_points;
+    vector<Point2f> corners;
+
+}
+
+void SetParameters::on_save_image_clicked()
+{
+    //eye->save_image();
 }

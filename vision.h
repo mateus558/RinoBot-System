@@ -12,6 +12,7 @@
 #include <queue>
 #include <utility>
 #include <vector>
+//#include <Eigen/Dense>
 #include "robot.h"
 #include "utils.h"
 
@@ -39,6 +40,7 @@ private:
     pVector map_points, tmap_points;
     pVector atk_points, tatk_points;
     pVector def_points, tdef_points;
+    Matrix3d last_P;
     vector<Robot> robots;
 signals:
     void ballPos(const Point2d &ball);
@@ -74,6 +76,7 @@ public:
     void set_def_area(pVector def_points);
     void set_atk_area(pVector atk_points);
     void show_area(bool show);
+    void save_image();
     void set_upper(vector<int> upper);
     void set_camid(int cam);
     vector<int> get_low();
