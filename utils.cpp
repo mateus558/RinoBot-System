@@ -122,3 +122,8 @@ bool sort_by_larger_area(vector<Point> p0, vector<Point> p1)
 {
     return contourArea(p0) < contourArea(p1);
 }
+
+bool area_limit(vector<Point> p){
+    //cout << contourArea(p) << endl;
+    return contourArea(p) < MIN_ROBOT_AREA;
+}

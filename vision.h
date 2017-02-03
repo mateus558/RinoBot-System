@@ -12,7 +12,7 @@
 #include <queue>
 #include <utility>
 #include <vector>
-//#include <Eigen/Dense>
+#include <Eigen/Dense>
 #include "robot.h"
 #include "utils.h"
 

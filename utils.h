@@ -9,6 +9,8 @@
 
 #define FIELD_WIDTH 132
 #define FIELD_HEIGHT 175
+#define MIN_ROBOT_AREA 50
+#define MAX_CENT_DIST 20
 #define DEFAULT_NROWS 424   //Default number of the rows of the frame
 #define DEFAULT_NCOLS 555   //Default number of the columns of the frame
 #define X_CONV_CONST 0.311320755    //Conversion constant for the X axis
@@ -37,5 +39,6 @@ bool sort_by_smallest_y(Point a, Point b);
 bool sort_by_smallest_x(Point a, Point b);
 bool sort_by_largest_y(Point a, Point b);
 bool sort_by_largest_x(Point a, Point b);
+bool area_limit(vector<Point> p);
 
 #endif // UTILS_H

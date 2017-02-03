@@ -7,7 +7,6 @@
 #include "setparameters.h"
 #include "ui_setparameters.h"
 #include "settingsdialog.h"
-#include "camera_calibration.cpp"
 
 using namespace std;
 
@@ -320,13 +319,13 @@ SetParameters::~SetParameters()
 
 void SetParameters::on_calibrate_camera_clicked()
 {
-    vector<vector<Point3f> > object_points;
+    /*vector<vector<Point3f> > object_points;
     vector<vector<Point2f> > image_points;
     vector<Point2f> corners;
-
+*/
 }
 
 void SetParameters::on_save_image_clicked()
 {
-    //eye->save_image();
+    eye->save_image();
 }
