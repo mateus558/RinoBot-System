@@ -13,13 +13,13 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -44,9 +44,22 @@ public:
     QLabel *gandalf_label;
     QLabel *leona_label;
     QLabel *presto_label;
-    QRadioButton *showAreasRadioButton;
     QGroupBox *optionsGroupBox;
+    QCheckBox *checkBox;
+    QCheckBox *checkBox_2;
     QPushButton *read_parameters;
+    QGroupBox *robots_roles_group_2;
+    QLabel *gandalf_detec_label;
+    QLabel *leona_detec_label;
+    QLabel *presto_detec_label;
+    QLabel *gandalf_detec_col_label;
+    QLabel *leona_detec_col_label;
+    QLabel *presto_detec_col_label;
+    QLabel *gandalf_loss_rate;
+    QLabel *leona_loss_rate;
+    QLabel *presto_loss_rate;
+    QLabel *ball_detec_label;
+    QLabel *ball_detec_col_label;
 
     void setupUi(QWidget *soccer_window)
     {
@@ -73,11 +86,11 @@ public:
         iterate->setGeometry(QRect(760, 220, 111, 31));
         fps_lcd = new QLCDNumber(soccer_window);
         fps_lcd->setObjectName(QStringLiteral("fps_lcd"));
-        fps_lcd->setGeometry(QRect(810, 440, 64, 23));
+        fps_lcd->setGeometry(QRect(820, 550, 64, 23));
         fps_lcd->setStyleSheet(QStringLiteral("Background-color: #000;"));
         fps_label = new QLabel(soccer_window);
         fps_label->setObjectName(QStringLiteral("fps_label"));
-        fps_label->setGeometry(QRect(770, 440, 31, 20));
+        fps_label->setGeometry(QRect(780, 550, 31, 20));
         battery_level_group = new QGroupBox(soccer_window);
         battery_level_group->setObjectName(QStringLiteral("battery_level_group"));
         battery_level_group->setGeometry(QRect(80, 480, 181, 101));
@@ -116,15 +129,58 @@ public:
         presto_label = new QLabel(soccer_window);
         presto_label->setObjectName(QStringLiteral("presto_label"));
         presto_label->setGeometry(QRect(20, 550, 59, 14));
-        showAreasRadioButton = new QRadioButton(soccer_window);
-        showAreasRadioButton->setObjectName(QStringLiteral("showAreasRadioButton"));
-        showAreasRadioButton->setGeometry(QRect(420, 500, 100, 20));
         optionsGroupBox = new QGroupBox(soccer_window);
         optionsGroupBox->setObjectName(QStringLiteral("optionsGroupBox"));
-        optionsGroupBox->setGeometry(QRect(409, 479, 141, 101));
+        optionsGroupBox->setGeometry(QRect(740, 290, 141, 101));
+        checkBox = new QCheckBox(optionsGroupBox);
+        checkBox->setObjectName(QStringLiteral("checkBox"));
+        checkBox->setGeometry(QRect(10, 30, 85, 20));
+        checkBox_2 = new QCheckBox(optionsGroupBox);
+        checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
+        checkBox_2->setGeometry(QRect(10, 50, 101, 20));
         read_parameters = new QPushButton(soccer_window);
         read_parameters->setObjectName(QStringLiteral("read_parameters"));
         read_parameters->setGeometry(QRect(730, 130, 171, 41));
+        robots_roles_group_2 = new QGroupBox(soccer_window);
+        robots_roles_group_2->setObjectName(QStringLiteral("robots_roles_group_2"));
+        robots_roles_group_2->setGeometry(QRect(400, 480, 141, 101));
+        gandalf_detec_label = new QLabel(robots_roles_group_2);
+        gandalf_detec_label->setObjectName(QStringLiteral("gandalf_detec_label"));
+        gandalf_detec_label->setGeometry(QRect(40, 30, 81, 20));
+        leona_detec_label = new QLabel(robots_roles_group_2);
+        leona_detec_label->setObjectName(QStringLiteral("leona_detec_label"));
+        leona_detec_label->setGeometry(QRect(40, 50, 91, 20));
+        presto_detec_label = new QLabel(robots_roles_group_2);
+        presto_detec_label->setObjectName(QStringLiteral("presto_detec_label"));
+        presto_detec_label->setGeometry(QRect(40, 70, 81, 20));
+        gandalf_detec_col_label = new QLabel(robots_roles_group_2);
+        gandalf_detec_col_label->setObjectName(QStringLiteral("gandalf_detec_col_label"));
+        gandalf_detec_col_label->setGeometry(QRect(10, 30, 21, 16));
+        gandalf_detec_col_label->setStyleSheet(QStringLiteral("background-color : red"));
+        leona_detec_col_label = new QLabel(robots_roles_group_2);
+        leona_detec_col_label->setObjectName(QStringLiteral("leona_detec_col_label"));
+        leona_detec_col_label->setGeometry(QRect(10, 50, 21, 16));
+        leona_detec_col_label->setStyleSheet(QStringLiteral("background-color : red"));
+        presto_detec_col_label = new QLabel(robots_roles_group_2);
+        presto_detec_col_label->setObjectName(QStringLiteral("presto_detec_col_label"));
+        presto_detec_col_label->setGeometry(QRect(10, 70, 21, 16));
+        presto_detec_col_label->setStyleSheet(QStringLiteral("background-color : red"));
+        gandalf_loss_rate = new QLabel(robots_roles_group_2);
+        gandalf_loss_rate->setObjectName(QStringLiteral("gandalf_loss_rate"));
+        gandalf_loss_rate->setGeometry(QRect(130, 30, 31, 16));
+        leona_loss_rate = new QLabel(robots_roles_group_2);
+        leona_loss_rate->setObjectName(QStringLiteral("leona_loss_rate"));
+        leona_loss_rate->setGeometry(QRect(130, 50, 31, 16));
+        presto_loss_rate = new QLabel(robots_roles_group_2);
+        presto_loss_rate->setObjectName(QStringLiteral("presto_loss_rate"));
+        presto_loss_rate->setGeometry(QRect(130, 70, 31, 16));
+        ball_detec_label = new QLabel(soccer_window);
+        ball_detec_label->setObjectName(QStringLiteral("ball_detec_label"));
+        ball_detec_label->setGeometry(QRect(780, 410, 91, 20));
+        ball_detec_col_label = new QLabel(soccer_window);
+        ball_detec_col_label->setObjectName(QStringLiteral("ball_detec_col_label"));
+        ball_detec_col_label->setGeometry(QRect(750, 410, 21, 16));
+        ball_detec_col_label->setStyleSheet(QStringLiteral("background-color : red"));
         optionsGroupBox->raise();
         game_view->raise();
         start_game->raise();
@@ -137,8 +193,10 @@ public:
         gandalf_label->raise();
         leona_label->raise();
         presto_label->raise();
-        showAreasRadioButton->raise();
         read_parameters->raise();
+        robots_roles_group_2->raise();
+        ball_detec_label->raise();
+        ball_detec_col_label->raise();
 
         retranslateUi(soccer_window);
 
@@ -161,9 +219,22 @@ public:
         gandalf_label->setText(QApplication::translate("soccer_window", "Gandalf:", 0));
         leona_label->setText(QApplication::translate("soccer_window", "Leona:", 0));
         presto_label->setText(QApplication::translate("soccer_window", "Presto:", 0));
-        showAreasRadioButton->setText(QApplication::translate("soccer_window", "Show Areas", 0));
         optionsGroupBox->setTitle(QApplication::translate("soccer_window", "Options:", 0));
+        checkBox->setText(QApplication::translate("soccer_window", "Show Areas", 0));
+        checkBox_2->setText(QApplication::translate("soccer_window", "Show Names", 0));
         read_parameters->setText(QApplication::translate("soccer_window", "Read Parameters", 0));
+        robots_roles_group_2->setTitle(QApplication::translate("soccer_window", "Detection:", 0));
+        gandalf_detec_label->setText(QApplication::translate("soccer_window", "Not Detected", 0));
+        leona_detec_label->setText(QApplication::translate("soccer_window", "Not Detected", 0));
+        presto_detec_label->setText(QApplication::translate("soccer_window", "Not Detected", 0));
+        gandalf_detec_col_label->setText(QString());
+        leona_detec_col_label->setText(QString());
+        presto_detec_col_label->setText(QString());
+        gandalf_loss_rate->setText(QString());
+        leona_loss_rate->setText(QString());
+        presto_loss_rate->setText(QString());
+        ball_detec_label->setText(QApplication::translate("soccer_window", "Ball not found", 0));
+        ball_detec_col_label->setText(QString());
     } // retranslateUi
 
 };

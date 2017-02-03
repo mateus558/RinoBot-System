@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Vision_t {
-    QByteArrayData data[19];
-    char stringdata0[167];
+    QByteArrayData data[20];
+    char stringdata0[177];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -47,14 +47,15 @@ QT_MOC_LITERAL(14, 114, 10), // "map_points"
 QT_MOC_LITERAL(15, 125, 9), // "atkPoints"
 QT_MOC_LITERAL(16, 135, 10), // "atk_points"
 QT_MOC_LITERAL(17, 146, 9), // "defPoints"
-QT_MOC_LITERAL(18, 156, 10) // "def_points"
+QT_MOC_LITERAL(18, 156, 10), // "def_points"
+QT_MOC_LITERAL(19, 167, 9) // "ballFound"
 
     },
     "Vision\0ballPos\0\0Point2d\0ball\0robotsInfo\0"
     "rVector\0robots\0processedImage\0image\0"
     "framesPerSecond\0FPS\0mapPoints\0pVector\0"
     "map_points\0atkPoints\0atk_points\0"
-    "defPoints\0def_points"
+    "defPoints\0def_points\0ballFound"
 };
 #undef QT_MOC_LITERAL
 
@@ -64,21 +65,22 @@ static const uint qt_meta_data_Vision[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       7,       // signalCount
+       8,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   49,    2, 0x06 /* Public */,
-       5,    1,   52,    2, 0x06 /* Public */,
-       8,    1,   55,    2, 0x06 /* Public */,
-      10,    1,   58,    2, 0x06 /* Public */,
-      12,    1,   61,    2, 0x06 /* Public */,
-      15,    1,   64,    2, 0x06 /* Public */,
-      17,    1,   67,    2, 0x06 /* Public */,
+       1,    1,   54,    2, 0x06 /* Public */,
+       5,    1,   57,    2, 0x06 /* Public */,
+       8,    1,   60,    2, 0x06 /* Public */,
+      10,    1,   63,    2, 0x06 /* Public */,
+      12,    1,   66,    2, 0x06 /* Public */,
+      15,    1,   69,    2, 0x06 /* Public */,
+      17,    1,   72,    2, 0x06 /* Public */,
+      19,    1,   75,    2, 0x06 /* Public */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    4,
@@ -88,6 +90,7 @@ static const uint qt_meta_data_Vision[] = {
     QMetaType::Void, 0x80000000 | 13,   14,
     QMetaType::Void, 0x80000000 | 13,   16,
     QMetaType::Void, 0x80000000 | 13,   18,
+    QMetaType::Void, QMetaType::Bool,    2,
 
        0        // eod
 };
@@ -105,6 +108,7 @@ void Vision::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 4: _t->mapPoints((*reinterpret_cast< const pVector(*)>(_a[1]))); break;
         case 5: _t->atkPoints((*reinterpret_cast< const pVector(*)>(_a[1]))); break;
         case 6: _t->defPoints((*reinterpret_cast< const pVector(*)>(_a[1]))); break;
+        case 7: _t->ballFound((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -159,6 +163,13 @@ void Vision::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
                 return;
             }
         }
+        {
+            typedef void (Vision::*_t)(bool );
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Vision::ballFound)) {
+                *result = 7;
+                return;
+            }
+        }
     }
 }
 
@@ -187,13 +198,13 @@ int Vision::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 8;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 8)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 7;
+        _id -= 8;
     }
     return _id;
 }
@@ -245,5 +256,12 @@ void Vision::defPoints(const pVector & _t1)
 {
     void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 6, _a);
+}
+
+// SIGNAL 7
+void Vision::ballFound(bool _t1)
+{
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 7, _a);
 }
 QT_END_MOC_NAMESPACE

@@ -16,7 +16,7 @@ Point null_point = Point(-1, -1);
 Vision::Vision(QObject *parent): QThread(parent)
 {
     stop = true;
-    showArea = sentPoints = teamsChanged = false;
+    showArea = sentPoints = teamsChanged = ball_found = false;
     mode = 0;
     robots.resize(6);
     robots[0].set_nick("Leona");
@@ -84,13 +84,17 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Get the ball moment from the contour
     if(contours[0].size() != 0){
+        remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
+        remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
         ball_last_pos = ball_cent;
+        ball_found = true;
     }else{
         cerr << "Ball not found!" << endl;
         ball_cent = ball_last_pos;
+        ball_found = false;
     }
 
     remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
@@ -204,10 +208,12 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             robots[r_label].set_line_slope(line_slope);
             robots[r_label].set_angle(angle);
             robots[r_label].set_centroid(centroid);
+            robots[r_label].was_detected(true);
             r_set[r_label] = true;
        }else if(r_label != -1){
             robots[r_label].set_centroid(last_cent);
             robots[r_label].set_angle(last_angle);
+            robots[r_label].was_detected(false);
             r_set[r_label] = true;
         }
 
@@ -223,6 +229,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             cerr << robots[i].get_nick() << " was not found!" << endl;
             robots[i].set_angle(robots[i].get_last_angle());
             robots[i].set_centroid(robots[i].get_from_pos_hist(0));
+            robots[i].was_detected(false);
         }
     }
 
@@ -230,6 +237,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     for(i = 3, dista = INFINITY; i < t1size; ++i){
         robots[i].set_team_cent(tirj_cent[1][i-3]);
         robots[i].set_centroid(robots[i].get_team_cent());
+        robots[i].was_detected(true);
     }
 
     ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
@@ -380,7 +388,7 @@ Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
     //Apply histogram normalization
     //dest = CLAHE_algorithm(dest);
     //Apply gaussian blur
-     GaussianBlur(dest, dest, Size(7,7), 1.8);
+     GaussianBlur(dest, dest, Size(5,5), 1.8);
 
      return dest;
 }
@@ -409,7 +417,8 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         cent = robots[i].get_centroid();
         team_cent = robots[i].get_team_cent();
         color_cent = robots[i].get_color_cent();
-        angle = robots[i].get_angle() - 90;
+        angle = robots[i].get_angle();
+        angle = (teamsChanged)?(angle*-1)-90:angle-90;
 
         if(cent == null_point) continue;
         //circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
@@ -417,10 +426,10 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         //circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
         inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y + 20 * sin(angle * PI / 180.0));
-        //circle(frame, inter, 5, Scalar(0, 0, 255), 1*(i+1));
         line(frame, cent, inter, Scalar(0, 255, 0), 1);
         //line(frame, cent, color_cent, Scalar(0, 255, 0), 1);
-        putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
+        if(showNames)
+            putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
 
     for(i = size-3; i < size; ++i){
@@ -501,6 +510,7 @@ void Vision::run()
         FPS = 1/elapsed_secs;
 
         emit ballPos(ball_pos_cm);
+        emit ballFound(ball_found);
         emit robotsInfo(robots);
         emit processedImage(img);
         if(i%10 == 0){
@@ -616,6 +626,10 @@ int Vision::get_camID()
 
 void Vision::show_area(bool show){
     showArea = show;
+}
+
+void Vision::show_names(bool show){
+    showNames = show;
 }
 
 void Vision::save_image(){

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <QMessageBox>
 #include <QDebug>
+#include <string>
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
@@ -31,6 +32,7 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(serial_sett, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
+    connect(eye, SIGNAL(ballFound(bool)), this, SLOT(isBallFound(bool)));
     connect(eye, SIGNAL(ballPos(Point2d)), this, SLOT(updateBallPos(Point2d)), Qt::QueuedConnection);
     connect(eye, SIGNAL(mapPoints(pVector)), this, SLOT(updateMapPoints(pVector)), Qt::QueuedConnection);
     connect(eye, SIGNAL(atkPoints(pVector)), this, SLOT(updateAtkPoints(pVector)), Qt::QueuedConnection);
@@ -53,8 +55,41 @@ void soccer_window::updateVisionUI(QImage img){
     }
 }
 
+void soccer_window::isBallFound(bool ball_found){
+    if(ball_found){
+        ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
+        ui->ball_detec_label->setText("Ball found");
+        return;
+    }
+    ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
+    ui->ball_detec_label->setText("Ball not found");
+}
+
 void soccer_window::updateRobotsInfo(const rVector &robots){
+    string percent;
     this->robots = robots;
+    if(this->robots[1].is_detected()){
+        ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
+        ui->gandalf_detec_label->setText("Detected");
+    }else{
+        ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
+        ui->gandalf_detec_label->setText("Not Detected");
+    }
+    if(this->robots[0].is_detected()){
+        ui->leona_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
+        ui->leona_detec_label->setText("Detected");
+    }else{
+        ui->leona_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
+        ui->leona_detec_label->setText("Not Detected");
+    }
+    if(this->robots[2].is_detected()){
+        ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
+        ui->presto_detec_label->setText("Detected");
+    }else{
+        ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
+        ui->presto_detec_label->setText("Not Detected");
+    }
+
 }
 
 void soccer_window::updateBallPos(const Point2d &ball_pos){
@@ -114,15 +149,6 @@ void soccer_window::on_switch_fields_clicked()
     eye->switch_teams_areas();
     eye->set_atk_area(atk_area);
     eye->set_def_area(def_area);
-}
-
-void soccer_window::on_showAreasRadioButton_toggled(bool checked)
-{
-    if(checked){
-        eye->show_area(true);
-    }else{
-        eye->show_area(false);
-    }
 }
 
 soccer_window::~soccer_window()
@@ -251,4 +277,15 @@ void soccer_window::on_iterate_clicked()
 
     cph->set_direction();
     cph->print_grid();
+}
+
+
+void soccer_window::on_checkBox_toggled(bool checked)
+{
+    eye->show_area(checked);
+}
+
+void soccer_window::on_checkBox_2_toggled(bool checked)
+{
+    eye->show_names(checked);
 }

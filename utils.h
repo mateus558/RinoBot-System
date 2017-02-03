@@ -10,6 +10,8 @@
 #define FIELD_WIDTH 132
 #define FIELD_HEIGHT 175
 #define MIN_ROBOT_AREA 50
+#define MIN_BALL_AREA 50
+#define MAX_BALL_AREA 100
 #define MAX_CENT_DIST 20
 #define DEFAULT_NROWS 424   //Default number of the rows of the frame
 #define DEFAULT_NCOLS 555   //Default number of the columns of the frame
@@ -40,5 +42,7 @@ bool sort_by_smallest_x(Point a, Point b);
 bool sort_by_largest_y(Point a, Point b);
 bool sort_by_largest_x(Point a, Point b);
 bool area_limit(vector<Point> p);
+bool ball_area_limit(vector<Point> p);
+
 
 #endif // UTILS_H

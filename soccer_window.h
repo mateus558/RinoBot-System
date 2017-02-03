@@ -22,6 +22,7 @@ public slots:
     void updateSerialSettings(SettingsDialog::Settings settings);
     void updateBallPos(const Point2d &ball_pos);
     void updateVisionUI(QImage img);
+    void isBallFound(bool ball_found);
     void updateFPS(double fps);
     void updateMapPoints(const pVector &map_area);
     void updateAtkPoints(const pVector &atk_area);
@@ -33,11 +34,13 @@ private slots:
 
     void on_switch_fields_clicked();
 
-    void on_showAreasRadioButton_toggled(bool checked);
-
     void on_read_parameters_clicked();
 
     void on_iterate_clicked();
+
+    void on_checkBox_toggled(bool checked);
+
+    void on_checkBox_2_toggled(bool checked);
 
 private:
     Ui::soccer_window *ui;
