@@ -399,6 +399,7 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
 Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
 {
     int i, size = robots.size();
+    double angle;
     Point cent, team_cent, color_cent, inter;
 
     if(ball_pos != null_point)
@@ -408,13 +409,14 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         cent = robots[i].get_centroid();
         team_cent = robots[i].get_team_cent();
         color_cent = robots[i].get_color_cent();
+        angle = robots[i].get_angle() - 90;
 
         if(cent == null_point) continue;
-        circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
-        circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
+        //circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
+        //circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
         //circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
-        inter = Point(cent.x + 20 * cos(robots[i].get_angle() * PI / 180.0), cent.y + 20 * sin(robots[i].get_angle() * PI / 180.0));
+        inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y + 20 * sin(angle * PI / 180.0));
         //circle(frame, inter, 5, Scalar(0, 0, 255), 1*(i+1));
         line(frame, cent, inter, Scalar(0, 255, 0), 1);
         //line(frame, cent, color_cent, Scalar(0, 255, 0), 1);
