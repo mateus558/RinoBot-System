@@ -15,6 +15,7 @@ Point null_point = Point(-1, -1);
 
 Vision::Vision(QObject *parent): QThread(parent)
 {
+    Point a, b;
     stop = true;
     showArea = sentPoints = teamsChanged = ball_found = false;
     mode = 0;
@@ -39,7 +40,9 @@ Vision::Vision(QObject *parent): QThread(parent)
     if(!read_points("Config/defense_area", def_points)){
         cerr << "The defense area could not be read from the file!" << endl;
     }
-    x_axis_slope = map_points[0] - map_points[9];
+    a = (map_points[4] + map_points[5])/2;
+    b = (map_points[14] + map_points[13])/2;
+    x_axis_slope = b - a;
 
     last_P = MatrixXd::Identity(3,3);
 
@@ -184,10 +187,12 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         }
 
         if(!not_t1 && r_label != -1){   //If the robot is from team 1 and he could be identified by the color half
-            line_slope = col_select.first - unk_robot;
+            line_slope =  unk_robot - col_select.first;
             centroid = Point((unk_robot.x + col_select.first.x)/2, (unk_robot.y + col_select.first.y)/2);
-            angle = (col_select.first.x >= unk_robot.x)?angle_two_points(line_slope, x_axis_slope):-angle_two_points(line_slope, x_axis_slope);
-            if(teamsChanged) angle = angle * -1;
+            angle = fabs(angle_two_points(line_slope, x_axis_slope));
+            //if(angle > 180)
+            angle = (col_select.first.y <= unk_robot.y)?angle:-angle;
+            //if(teamsChanged) angle = angle * -1;
 
             pos_cam << centroid.x * X_CONV_CONST / 100,
                        centroid.y * Y_CONV_CONST / 100,
@@ -195,12 +200,11 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             last_pos << last_cent.x * X_CONV_CONST / 100,
                         last_cent.y * Y_CONV_CONST / 100,
                         last_angle;
-            v_w << 0,
-                   0;
+            v_w << 2,
+                   2;
 
             kalman_res = kalman_filter(pos_cam, v_w, last_pos, 9, last_P);
             last_P = kalman_res.first;
-            //cout << kalman_res.second(1,0) * 100 << " " << kalman_res.second(2,0) * 100 << endl;
             //centroid.x = kalman_res.second(0) * 100;
             //centroid.y = kalman_res.second(1) * 100;
 
@@ -420,7 +424,6 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         team_cent = robots[i].get_team_cent();
         color_cent = robots[i].get_color_cent();
         angle = robots[i].get_angle();
-        angle = (teamsChanged)?(angle*-1)-90:angle-90;
 
         if(cent == null_point) continue;
         if(showCenters){
@@ -429,7 +432,7 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         }
         //circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
-        inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y + 20 * sin(angle * PI / 180.0));
+        inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y - 20 * sin(angle * PI / 180.0));
         line(frame, cent, inter, Scalar(0, 255, 0), 1);
         //line(frame, cent, color_cent, Scalar(0, 255, 0), 1);
         if(showNames)
@@ -464,12 +467,11 @@ void Vision::run()
             return;
         }
 
-        raw_frame = crop_image(raw_frame);
 
         rows = raw_frame.rows;
         cols = raw_frame.cols;
-        vision_frame = raw_frame.clone();
-        vision_frame = proccess_frame(raw_frame, vision_frame);
+        vision_frame = crop_image(raw_frame.clone());
+        vision_frame = proccess_frame(vision_frame, vision_frame);
 
         switch(mode){
             case 0: //Visualization mode
@@ -650,8 +652,8 @@ void Vision::save_image(){
     fname = fname + "_img.jpg";
     path = "Img/" + fname;
 
-    cvtColor(raw_frame, to_save, CV_BGR2RGB);
-    imwrite(path.c_str(), to_save);
+    //cvtColor(raw_frame, to_save, CV_BGR2RGB);
+    imwrite(path.c_str(), raw_frame);
 }
 
 void Vision::set_def_area(pVector def_points){
