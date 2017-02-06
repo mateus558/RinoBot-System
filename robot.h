@@ -13,8 +13,10 @@ using namespace cv;
 class Robot{
 private:
     int channel;    //Communication channel
-    double angle;   //Rotation angle
-    double last_angle;
+    int n_loss, n_detected;
+    double angle, last_angle;   //Rotation angle
+    double loss_rate;
+    bool detected;
     Point centroid; //Robot general centroid
     Point color_cent, team_cent;    //Centroid from the half role color and from team color
     Point line_slope;
@@ -26,6 +28,7 @@ private:
     vector<int> upper_color_team;
     vector<int> low_color;
     vector<int> upper_color;
+
 public:
     Robot();
     bool encoders_reading(Serial *serial, pair<double, double> &vels);
@@ -35,8 +38,11 @@ public:
     double get_angle();
     double get_last_angle();
     void set_lin_vel(double vel);
+    bool is_detected();
+    void was_detected(bool detected);
+    double get_loss_rate();
     double get_lin_vel(double vel);
-    void set_ang_vel(double vel);   //
+    void set_ang_vel(double vel);
     double get_ang_vel(double vel); //angular velocity w
     Point get_centroid();
     Point2d get_pos();

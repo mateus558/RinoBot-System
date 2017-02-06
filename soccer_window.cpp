@@ -2,11 +2,13 @@
 #include <fstream>
 #include <QMessageBox>
 #include <QDebug>
+#include <string>
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
+#include "cpo.h"
 #include "serial.h"
 #include "utils.h"
 
@@ -16,10 +18,13 @@ soccer_window::soccer_window(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::soccer_window)
 {
+
     ui->setupUi(this);
+    thread = new QThread;
     serial_sett = new SettingsDialog;
     serial = new Serial;
     eye = new Vision;
+    cph = new CPH;
     eye->set_mode(0);
 
     qRegisterMetaType<pVector>("pVector");
@@ -28,8 +33,13 @@ soccer_window::soccer_window(QWidget *parent) :
 
 
     connect(serial_sett, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
+    connect(thread, SIGNAL(started()), cph, SLOT(process()));
+    connect(cph, SIGNAL(finished()), thread, SLOT(quit()));
+    connect(cph, SIGNAL(finished()), cph, SLOT(deleteLater()));
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
+    connect(eye, SIGNAL(ballFound(bool)), this, SLOT(isBallFound(bool)));
     connect(eye, SIGNAL(ballPos(Point2d)), this, SLOT(updateBallPos(Point2d)), Qt::QueuedConnection);
     connect(eye, SIGNAL(mapPoints(pVector)), this, SLOT(updateMapPoints(pVector)), Qt::QueuedConnection);
     connect(eye, SIGNAL(atkPoints(pVector)), this, SLOT(updateAtkPoints(pVector)), Qt::QueuedConnection);
@@ -52,8 +62,54 @@ void soccer_window::updateVisionUI(QImage img){
     }
 }
 
+void soccer_window::isBallFound(bool ball_found){
+    if(ball_found){
+        ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
+        ui->ball_detec_label->setText("Ball found");
+        cph->set_ball_pos(ball_pos);
+        return;
+    }
+    ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
+    ui->ball_detec_label->setText("Ball not found");
+}
+
 void soccer_window::updateRobotsInfo(const rVector &robots){
+    string percent;
     this->robots = robots;
+    p2dVector enemy_pos(3), team_pos(3);
+
+    enemy_pos[0] = this->robots[3].get_pos();
+    enemy_pos[1] = this->robots[4].get_pos();
+    enemy_pos[2] = this->robots[5].get_pos();
+
+    team_pos[0] = this->robots[0].get_pos();
+    team_pos[1] = this->robots[1].get_pos();
+    team_pos[2] = this->robots[2].get_pos();
+
+    cph->set_enemy_pos(enemy_pos);
+    cph->set_team_pos(team_pos);
+    if(this->robots[1].is_detected()){
+        ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
+        ui->gandalf_detec_label->setText("Detected");
+    }else{
+        ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
+        ui->gandalf_detec_label->setText("Not Detected");
+    }
+    if(this->robots[0].is_detected()){
+        ui->leona_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
+        ui->leona_detec_label->setText("Detected");
+    }else{
+        ui->leona_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
+        ui->leona_detec_label->setText("Not Detected");
+    }
+    if(this->robots[2].is_detected()){
+        ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
+        ui->presto_detec_label->setText("Detected");
+    }else{
+        ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
+        ui->presto_detec_label->setText("Not Detected");
+    }
+
 }
 
 void soccer_window::updateBallPos(const Point2d &ball_pos){
@@ -93,6 +149,7 @@ void soccer_window::on_start_game_clicked()
         }
 
         eye->Play();
+
         ui->start_game->setText("Stop Game");
     }else{
         eye->Stop();
@@ -115,21 +172,12 @@ void soccer_window::on_switch_fields_clicked()
     eye->set_def_area(def_area);
 }
 
-void soccer_window::on_showAreasRadioButton_toggled(bool checked)
-{
-    if(checked){
-        eye->show_area(true);
-    }else{
-        eye->show_area(false);
-    }
-}
-
 soccer_window::~soccer_window()
 {
     delete eye;
     delete serial;
     delete serial_sett;
-   // delete ui;
+    delete ui;
 }
 
 void soccer_window::on_read_parameters_clicked()
@@ -225,64 +273,39 @@ void soccer_window::on_read_parameters_clicked()
     eye->set_ball(ball_range);
 }
 
-void soccer_window::on_CPO_clicked()
-{
-    vector<Point2d> enemy_pos(3);
-    pVector enemy_pos_grid(3);
-    Point  ball_pos_grid;
-    int i = 0;
-    cpo = new CPO(5, 5);
-
-    enemy_pos[0] = robots[3].get_pos();
-    enemy_pos[1] = robots[4].get_pos();
-    enemy_pos[2] = robots[5].get_pos();
-    cpo->init_grid();
-    cout << enemy_pos[0] << endl;
-    cout << enemy_pos[1] << endl;
-    cout << enemy_pos[2] << endl;
-
-    for(i = 0; i < 3; ++i){
-        enemy_pos_grid[i] = cpo->convert_C_to_G(enemy_pos[i]);
-        cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-        cpo->set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
-    }
-
-    ball_pos_grid = cpo->convert_C_to_G(ball_pos);
-    cpo->set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
-
-    while(cpo->iterator() > 1E-6);
-
-    cpo->set_direction();
-    //cpo->print_grid();
-}
-
 void soccer_window::on_CPH_clicked()
 {
-    vector<Point2d> enemy_pos(3);
-    pVector enemy_pos_grid(3);
-    Point  ball_pos_grid;
-    int i = 0;
-    cph = new CPH(5, 5);
+    //cph->print_grid();
+    p2dVector enemy_pos(3);
 
     enemy_pos[0] = robots[3].get_pos();
     enemy_pos[1] = robots[4].get_pos();
     enemy_pos[2] = robots[5].get_pos();
-    cph->init_grid();
-    cout << enemy_pos[0] << endl;
-    cout << enemy_pos[1] << endl;
-    cout << enemy_pos[2] << endl;
-
-    for(i = 0; i < 3; ++i){
-        enemy_pos_grid[i] = cph->convert_C_to_G(enemy_pos[i]);
-        cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-        cph->set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+    if(cph->isStopped()){
+        cph->set_enemy_pos(enemy_pos);
+        cph->set_ball_pos(ball_pos);
+        cph->moveToThread(thread);
+        thread->start();
+        //if(cph->is_running()) cout << "hey monkey" << endl;
+    }else{
+        thread->exit();
+        //cph->Stop();
+        //cph->wait();
     }
+}
 
-    ball_pos_grid = cph->convert_C_to_G(ball_pos);
-    cph->set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
 
-    while(cph->iterator() > 1E-6);
+void soccer_window::on_checkBox_toggled(bool checked)
+{
+    eye->show_area(checked);
+}
 
-    cph->set_direction();
-    //cph->print_grid();
+void soccer_window::on_checkBox_2_toggled(bool checked)
+{
+    eye->show_names(checked);
+}
+
+void soccer_window::on_checkBox_3_toggled(bool checked)
+{
+    eye->show_centers(checked);
 }

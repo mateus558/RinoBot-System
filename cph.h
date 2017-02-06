@@ -7,35 +7,47 @@
 #include "utils.h" //Utils library
 
 
-class CPH : QThread
+class CPH : public QObject
 {
     Q_OBJECT
 private:
-    bool stop;
-protected:
     int dx;
     int dy;
+    QMutex mutex;
     dMatrix pGrid;
     iMatrix tGrid;
-
-    void run();
+    p2dVector enemy_pos;
+    p2dVector team_pos;
+    Point2d ball_pos;
+    bool stop;
+protected:
     void msleep(int ms);
+public slots:
+    void process();
+
 signals:
+    void finished();
+    void error(QString err);
 
 public:
-    CPH(int, int);
+    CPH();
     double iterator();
     double get_neighborhood(int, int, int);
     void set_potential(int, int, double);
     double get_potential(int, int);
     int get_occupancy(int, int);
     Point convert_C_to_G(Point2d);
+    void set_enemy_pos(p2dVector);
+    void set_team_pos(p2dVector);
+    void set_ball_pos(Point2d);
     void set_direction();
     void init_grid();
     void print_grid();
     void Play();
+    bool is_running();
     void Stop();
     bool isStopped() const;
+    ~CPH();
 };
 
 #endif // CPH_H

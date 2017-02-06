@@ -12,6 +12,7 @@
 #include <queue>
 #include <utility>
 #include <vector>
+#include <Eigen/Dense>
 #include "robot.h"
 #include "utils.h"
 
@@ -20,7 +21,7 @@ using namespace cv;
 
 class Vision: public QThread {  Q_OBJECT
 private:
-    bool stop, showArea, sentPoints, teamsChanged;
+    bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters;
     int mode, rows, cols, camid, x_offset, y_offset;
     double FPS;
     QMutex mutex;
@@ -33,12 +34,14 @@ private:
     vector<int> upper;
     pair<vector<int>, vector<int> > ball_color;
     Point ball_pos;
+    bool ball_found;
     Point2d ball_pos_cm;
     Point ball_last_pos;
     Point x_axis_slope;
     pVector map_points, tmap_points;
     pVector atk_points, tatk_points;
     pVector def_points, tdef_points;
+    Matrix3d last_P;
     vector<Robot> robots;
 signals:
     void ballPos(const Point2d &ball);
@@ -48,6 +51,7 @@ signals:
     void mapPoints(const pVector &map_points);
     void atkPoints(const pVector &atk_points);
     void defPoints(const pVector &def_points);
+    void ballFound(bool);
 protected:
     void run();
     void msleep(int ms);
@@ -74,6 +78,9 @@ public:
     void set_def_area(pVector def_points);
     void set_atk_area(pVector atk_points);
     void show_area(bool show);
+    void show_centers(bool show);
+    void show_names(bool show);
+    void save_image();
     void set_upper(vector<int> upper);
     void set_camid(int cam);
     vector<int> get_low();

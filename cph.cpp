@@ -6,9 +6,10 @@
 using namespace std;
 
 
-CPH::CPH(int a, int b){
-    dx = a;
-    dy = b;
+CPH::CPH(){
+    dx = 5;
+    dy = 5;
+    stop = true;
     pGrid = dMatrix(28, vector<double>(36, 0.0));
     tGrid = iMatrix(28, vector<int>(36, 0));
     cout<<"\n\nAMBIENTE CRIADO!\n";
@@ -197,8 +198,44 @@ Point CPH::convert_C_to_G(Point2d coord){
     return i;
 }
 
-void CPH::run(){
+void CPH::process(){
+    pVector enemy_pos_grid(3);
+    Point  ball_pos_grid;
+    int i = 0;
+    stop = false;
+    while(!stop){
+        init_grid();
+        //cout << enemy_pos[0] << endl;
+        //cout << enemy_pos[1] << endl;
+        //cout << enemy_pos[2] << endl;
 
+        for(i = 0; i < 3; ++i){
+            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+            //cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+        }
+
+        ball_pos_grid = convert_C_to_G(ball_pos);
+        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+
+        while(iterator() > 1E-6);
+
+        set_direction();
+        qDebug("Hello World!");
+    }
+    emit finished();
+}
+
+void CPH::set_enemy_pos(p2dVector enemy_pos){
+    this->enemy_pos = enemy_pos;
+}
+
+void CPH::set_team_pos(p2dVector team_pos){
+    this->team_pos = team_pos;
+}
+
+void CPH::set_ball_pos(Point2d ball_pos){
+    this->ball_pos = ball_pos;
 }
 
 bool CPH::isStopped() const
@@ -207,18 +244,26 @@ bool CPH::isStopped() const
 }
 
 void CPH::Play(){
-    if(!isRunning()){
-        if(isStopped())
-            stop = false;
-        start(LowPriority);
-    }
+    if(isStopped())
+        stop = false;
+    process();
 }
 
 void CPH::Stop(){
+    stop = true;
+}
 
+bool CPH::is_running(){
+    return stop;
 }
 
 void CPH::msleep(int ms){
-    struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
-    nanosleep(&ts, NULL);
+    /*struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
+    nanosleep(&ts, NULL);*/
 }
+
+CPH::~CPH(){
+
+}
+
+

@@ -23,7 +23,7 @@ protected:
 signals:
 
 public:
-    CPO(int, int);
+    CPO();
     double iterator();
     double get_neighborhood(int, int, int);
     void set_potential(int, int, double);

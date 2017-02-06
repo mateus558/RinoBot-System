@@ -18,6 +18,9 @@ Robot::Robot(){
     upper_color_team.assign(3, 255);
     low_color.assign(3, 0);
     upper_color.assign(3, 255);
+    pos_hist.push_back(Point(-1, -1));
+    last_angle = loss_rate = 0.0;
+    detected = false;
 }
 
 bool Robot::encoders_reading(Serial *serial, pair<double, double> &vels){
@@ -95,6 +98,26 @@ void Robot::add_pos_hist(Point p){
 
 Point Robot::get_from_pos_hist(int rank){
     return pos_hist[pos_hist.size() - (rank + 1)];
+}
+
+void Robot::was_detected(bool detected){
+    this->detected = detected;
+
+    if((n_loss + n_detected)%500 == 0){
+        loss_rate = n_loss / 500;
+    }
+
+    if(!detected){
+        n_loss++;
+    }else n_detected++;
+}
+
+bool Robot::is_detected(){
+    return this->detected;
+}
+
+double Robot::get_loss_rate(){
+    return loss_rate;
 }
 
 void Robot::set_color_cent(Point p)

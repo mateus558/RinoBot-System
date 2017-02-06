@@ -6,9 +6,9 @@
 using namespace std;
 
 
-CPO::CPO(int a, int b){
-    dx = a;
-    dy = b;
+CPO::CPO(){
+    dx = 5;
+    dy = 5;
     pGrid = dMatrix(28, vector<double>(36, 0.0));
     tGrid = iMatrix(28, vector<int>(36, 0));
     cout<<"\n\nAMBIENTE CRIADO!\n";
