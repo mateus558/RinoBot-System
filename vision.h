@@ -20,10 +20,19 @@ using namespace std;
 using namespace cv;
 
 class Vision: public QThread {  Q_OBJECT
+public:
+    struct Perception{
+        bool ball_found;
+        Point ball_pos, ball_last_pos;
+        Point2d ball_pos_cm;
+        rVector enemy_robots, team_robots;
+        pVector map_area, atk_area, def_area;
+    };
 private:
     bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters;
     int mode, rows, cols, camid, x_offset, y_offset;
     double FPS;
+    Perception info;
     QMutex mutex;
     QWaitCondition condition;
     QImage img;
@@ -44,14 +53,9 @@ private:
     Matrix3d last_P;
     vector<Robot> robots;
 signals:
-    void ballPos(const Point2d &ball);
-    void robotsInfo(const rVector &robots);
+    void infoPercepted(Perception);
     void processedImage(const QImage &image);
     void framesPerSecond(double FPS);
-    void mapPoints(const pVector &map_points);
-    void atkPoints(const pVector &atk_points);
-    void defPoints(const pVector &def_points);
-    void ballFound(bool);
 protected:
     void run();
     void msleep(int ms);

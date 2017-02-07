@@ -20,17 +20,13 @@ soccer_window::soccer_window(QWidget *parent) :
 {
 
     ui->setupUi(this);
+    area_read = false;
     thread = new QThread;
     serial_sett = new SettingsDialog;
     serial = new Serial;
     eye = new Vision;
     cph = new CPH;
     eye->set_mode(0);
-
-    qRegisterMetaType<pVector>("pVector");
-    qRegisterMetaType<rVector>("rVector");
-    qRegisterMetaType<Point2d>("Point2d");
-
 
     connect(serial_sett, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
     connect(thread, SIGNAL(started()), cph, SLOT(process()));
@@ -39,12 +35,7 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
-    connect(eye, SIGNAL(ballFound(bool)), this, SLOT(isBallFound(bool)));
-    connect(eye, SIGNAL(ballPos(Point2d)), this, SLOT(updateBallPos(Point2d)), Qt::QueuedConnection);
-    connect(eye, SIGNAL(mapPoints(pVector)), this, SLOT(updateMapPoints(pVector)), Qt::QueuedConnection);
-    connect(eye, SIGNAL(atkPoints(pVector)), this, SLOT(updateAtkPoints(pVector)), Qt::QueuedConnection);
-    connect(eye, SIGNAL(defPoints(pVector)), this, SLOT(updateDefPoints(pVector)), Qt::QueuedConnection);
-    connect(eye, SIGNAL(robotsInfo(rVector)), this, SLOT(updateRobotsInfo(rVector)), Qt::QueuedConnection);
+    connect(eye, SIGNAL(infoPercepted(Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)));
 }
 
 void soccer_window::closeEvent(QCloseEvent *event){
@@ -62,74 +53,64 @@ void soccer_window::updateVisionUI(QImage img){
     }
 }
 
-void soccer_window::isBallFound(bool ball_found){
-    if(ball_found){
-        ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
-        ui->ball_detec_label->setText("Ball found");
-        cph->set_ball_pos(ball_pos);
-        return;
-    }
-    ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
-    ui->ball_detec_label->setText("Ball not found");
-}
-
-void soccer_window::updateRobotsInfo(const rVector &robots){
-    string percent;
-    this->robots = robots;
+void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     p2dVector enemy_pos(3), team_pos(3);
 
-    enemy_pos[0] = this->robots[3].get_pos();
-    enemy_pos[1] = this->robots[4].get_pos();
-    enemy_pos[2] = this->robots[5].get_pos();
+    percep = percep_info;
 
-    team_pos[0] = this->robots[0].get_pos();
-    team_pos[1] = this->robots[1].get_pos();
-    team_pos[2] = this->robots[2].get_pos();
+    if(!area_read){
+        map_area = percep.map_area;
+        atk_area = percep.atk_area;
+        def_area = percep.def_area;
+        area_read = true;
+    }
 
+    if(percep.ball_found){
+        ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
+        ui->ball_detec_label->setText("Ball found");
+        ball_pos = percep.ball_pos_cm;
+    }else{
+        ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
+        ui->ball_detec_label->setText("Ball not found");
+    }
+
+    enemy_pos[0] = percep.enemy_robots[0].get_pos();
+    enemy_pos[1] = percep.enemy_robots[1].get_pos();
+    enemy_pos[2] = percep.enemy_robots[2].get_pos();
+
+    team_pos[0] = percep.team_robots[0].get_pos();
+    team_pos[1] = percep.team_robots[1].get_pos();
+    team_pos[2] = percep.team_robots[2].get_pos();
+
+    cph->set_ball_pos(ball_pos);
     cph->set_enemy_pos(enemy_pos);
     cph->set_team_pos(team_pos);
-    if(this->robots[1].is_detected()){
+
+    if(percep.team_robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->gandalf_detec_label->setText("Detected");
     }else{
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->gandalf_detec_label->setText("Not Detected");
     }
-    if(this->robots[0].is_detected()){
+    if(percep.team_robots[0].is_detected()){
         ui->leona_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->leona_detec_label->setText("Detected");
     }else{
         ui->leona_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->leona_detec_label->setText("Not Detected");
     }
-    if(this->robots[2].is_detected()){
+    if(percep.team_robots[2].is_detected()){
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->presto_detec_label->setText("Detected");
     }else{
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->presto_detec_label->setText("Not Detected");
     }
-
-}
-
-void soccer_window::updateBallPos(const Point2d &ball_pos){
-    this->ball_pos = ball_pos;
 }
 
 void soccer_window::updateFPS(double fps){
     ui->fps_lcd->display(fps);
-}
-
-void soccer_window::updateMapPoints(const pVector &map_area){
-    this->map_area = map_area;
-}
-
-void soccer_window::updateAtkPoints(const pVector &atk_area){
-    this->atk_area = atk_area;
-}
-
-void soccer_window::updateDefPoints(const pVector &def_area){
-    this->def_area = def_area;
 }
 
 void soccer_window::updateSerialSettings(SettingsDialog::Settings settings){
