@@ -45,19 +45,16 @@ Vision::Vision(QObject *parent): QThread(parent)
     x_axis_slope = b - a;
 
     last_P = MatrixXd::Identity(3,3);
-
-    /*for( Point p : map_points)
-        cout << p.x << " " << p.y << endl;
-    cout << map_points.size() << endl;
-    */
 }
 
 Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) //Detect colors in [low,upper] range
 {
     Mat mask;
+
     //Generate mask with the points in the range
     inRange(vision_frame, Scalar(low[0],low[1],low[2]), Scalar(upper[0],upper[1],upper[2]), mask);
-    //Attempt to removelibgtk2.0-dev noise (or small objects)
+
+    //Attempt to remove noise (or small objects)
     morphologyEx(mask, mask, MORPH_OPEN, Mat(), Point(-1, -1), 2);
     morphologyEx(mask, mask, MORPH_CLOSE, Mat(), Point(-1, -1), 2);
 
@@ -75,7 +72,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     bool not_t1, error;
     Moments ball_moment, temp_moment;
     Point ball_cent(-1, -1), unk_robot, centroid, line_slope, last_cent;
-    //Point2f pos;
+    vector<bool> r_set(r_col_cent.size(), false);
     vector<vector<Moments> > r_m(3, vector<Moments>());
     vector<vector<Moments> > t_m(2, vector<Moments>());
     vector<pVector > r_col_cent(3, pVector());
@@ -147,7 +144,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             robots[i].set_centroid(robots[i].get_from_pos_hist(0));
         }
     }
-    vector<bool> r_set(r_col_cent.size(), false);
 
     tsize = tirj_cent[0].size();
     t1size = (tirj_cent[1].size() < 3)?3+tirj_cent[1].size():6;
@@ -171,7 +167,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                 }
             }
         }
-       // if(col_select.first == null_point) break;   //If the robot could'nt be identified break
+
         for(k = 3; k < t1size; ++k){    //Verify if the color assigned is not from the other team
             dista = euclidean_dist(tirj_cent[1][k-3], col_select.first);
             if(dista < tmin){
@@ -190,9 +186,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             line_slope =  unk_robot - col_select.first;
             centroid = Point((unk_robot.x + col_select.first.x)/2, (unk_robot.y + col_select.first.y)/2);
             angle = fabs(angle_two_points(line_slope, x_axis_slope));
-            //if(angle > 180)
             angle = (col_select.first.y <= unk_robot.y)?angle:-angle;
-            //if(teamsChanged) angle = angle * -1;
 
             pos_cam << centroid.x * X_CONV_CONST / 100,
                        centroid.y * Y_CONV_CONST / 100,
@@ -253,8 +247,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
     ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
     ball_pos = ball_cent;
-    //cout << "OK!" << endl;
     if(error) cerr << endl;
+
     return robots;
 }
 
@@ -297,9 +291,6 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     ret.first = hierarchy;
     ret.second = contours;
 
-  /*imshow("t1", out_team1);
-    imshow("r2", out_r[1]);
-    imshow("r3", out_r[2]);*/
     return ret;
 }
 
@@ -348,7 +339,6 @@ Mat Vision::crop_image(Mat org){
     Point2f pts[4], pts1[3], pts2[3];
     RotatedRect box;
     pVector roi(4), aux_y;
-    vector<Point2f> vec;
 
     pts2[0] = Point(0, 0);
     pts2[1] = Point(0, size.height-1);
@@ -386,7 +376,7 @@ Mat Vision::crop_image(Mat org){
         sentPoints = true;
     }
     warpAffine(org, cropped, transf_matrix, size, INTER_LINEAR, BORDER_CONSTANT);
-    //  imshow("crop", cropped);
+
     return cropped;
 }
 
@@ -434,11 +424,11 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
             circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
             circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
         }
-        //circle(frame, cent, 5, Scalar(0, 255, 0), 1*(i+1));
+
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
         inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y - 20 * sin(angle * PI / 180.0));
         line(frame, cent, inter, Scalar(0, 255, 0), 1);
-        //line(frame, cent, color_cent, Scalar(0, 255, 0), 1);
+
         if(showNames)
             putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
@@ -494,26 +484,28 @@ void Vision::run()
          }
 
         if(showArea && map_size > 0){
+            //Draw map area points
             for(i = 0; i < map_size; ++i){
                 circle(vision_frame, tmap_points[i], 1, Scalar(0,0,255), 2);
             }
+
+            //Draw attack area points
             for(i = 0; i < atk_size; ++i){
                 circle(vision_frame, tatk_points[i], 1, Scalar(255,0,0), 2);
-                //cout << tatk_points[i].x * X_CONV_CONST << " " << tatk_points[i].y * Y_CONV_CONST << endl;
             }
+
             atk_cent = (tatk_points[0]+tatk_points[7])/2;
-            //cout << atk_cent.x << " " << atk_cent.y << endl;
             putText(vision_frame, "ATK Area", atk_cent, FONT_HERSHEY_PLAIN, 1, Scalar(255, 0, 0), 2);
+
+            //Draw defense area points
             for(i = 0; i < def_size; ++i){
                 circle(vision_frame, tdef_points[i], 1, Scalar(0,255,0), 2);
-                def_cent = def_cent + tdef_points[i];
             }
-            def_cent = (tdef_points[0]+tdef_points[7])/2;;
-           //cout << def_cent.x << " " << def_cent.y << endl;
+
+            def_cent = (tdef_points[0]+tdef_points[7])/2;
             putText(vision_frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
         }
         //cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
-        //img = QImage((uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
         //img = QImage((uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
         img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
         end = clock();
