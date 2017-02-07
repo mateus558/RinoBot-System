@@ -30,6 +30,8 @@ Vision::Vision(QObject *parent): QThread(parent)
     upper.assign(3, 255);
     ball_color.first.assign(3, 0);
     ball_color.second.assign(3, 255);
+    info.enemy_robots.resize(3);
+    info.team_robots.resize(3);
 
     if(!read_points("Config/map", map_points)){
         cerr << "The map could not be read from the file!" << endl;
@@ -72,7 +74,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     bool not_t1, error;
     Moments ball_moment, temp_moment;
     Point ball_cent(-1, -1), unk_robot, centroid, line_slope, last_cent;
-    vector<bool> r_set(r_col_cent.size(), false);
+    vector<bool> r_set;
     vector<vector<Moments> > r_m(3, vector<Moments>());
     vector<vector<Moments> > t_m(2, vector<Moments>());
     vector<pVector > r_col_cent(3, pVector());
@@ -90,11 +92,12 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
         ball_last_pos = ball_cent;
-        ball_found = true;
+        info.ball_last_pos = ball_cent;
+        info.ball_found = true;
     }else{
         cerr << "Ball not found!" << endl;
         ball_cent = ball_last_pos;
-        ball_found = false;
+        info.ball_found = false;
     }
 
     remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
@@ -145,6 +148,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         }
     }
 
+    r_set = vector<bool>(r_col_cent.size(), false);
     tsize = tirj_cent[0].size();
     t1size = (tirj_cent[1].size() < 3)?3+tirj_cent[1].size():6;
 
@@ -246,7 +250,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
     ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
-    ball_pos = ball_cent;
+    info.ball_pos_cm = ball_pos_cm;
+    info.ball_pos = ball_cent;
     if(error) cerr << endl;
 
     return robots;
@@ -370,9 +375,11 @@ Mat Vision::crop_image(Mat org){
         transform(map_points, tmap_points, transf_matrix);
         transform(def_points, tdef_points, transf_matrix);
         transform(atk_points, tatk_points, transf_matrix);
-        emit mapPoints(tmap_points);
-        emit atkPoints(tatk_points);
-        emit defPoints(tdef_points);
+
+        info.map_area = tmap_points;
+        info.atk_area = tatk_points;
+        info.def_area = tdef_points;
+
         sentPoints = true;
     }
     warpAffine(org, cropped, transf_matrix, size, INTER_LINEAR, BORDER_CONSTANT);
@@ -512,9 +519,14 @@ void Vision::run()
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         FPS = 1/elapsed_secs;
 
-        emit ballPos(ball_pos_cm);
-        emit ballFound(ball_found);
-        emit robotsInfo(robots);
+        info.enemy_robots[0] = robots[3];
+        info.enemy_robots[1] = robots[4];
+        info.enemy_robots[2] = robots[5];
+        info.team_robots[0] = robots[0];
+        info.team_robots[1] = robots[1];
+        info.team_robots[2] = robots[2];
+
+        emit infoPercepted(info);
         emit processedImage(img);
         if(i%10 == 0){
             emit framesPerSecond(FPS);
