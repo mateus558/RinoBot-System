@@ -7,7 +7,7 @@
 #include "utils.h" //Utils library
 
 
-class CPH : public QObject
+class CPH : public QThread
 {
     Q_OBJECT
 private:
@@ -20,14 +20,10 @@ private:
     p2dVector team_pos;
     Point2d ball_pos;
     bool stop;
+
 protected:
     void msleep(int ms);
-public slots:
-    void process();
-
-signals:
-    void finished();
-    void error(QString err);
+    void run();
 
 public:
     CPH();

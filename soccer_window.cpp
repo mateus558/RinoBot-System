@@ -20,7 +20,6 @@ soccer_window::soccer_window(QWidget *parent) :
 {
 
     ui->setupUi(this);
-    thread = new QThread;
     serial_sett = new SettingsDialog;
     serial = new Serial;
     eye = new Vision;
@@ -33,10 +32,6 @@ soccer_window::soccer_window(QWidget *parent) :
 
 
     connect(serial_sett, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
-    connect(thread, SIGNAL(started()), cph, SLOT(process()));
-    connect(cph, SIGNAL(finished()), thread, SLOT(quit()));
-    connect(cph, SIGNAL(finished()), cph, SLOT(deleteLater()));
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
     connect(eye, SIGNAL(ballFound(bool)), this, SLOT(isBallFound(bool)));
@@ -88,6 +83,7 @@ void soccer_window::updateRobotsInfo(const rVector &robots){
 
     cph->set_enemy_pos(enemy_pos);
     cph->set_team_pos(team_pos);
+
     if(this->robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->gandalf_detec_label->setText("Detected");
@@ -278,18 +274,19 @@ void soccer_window::on_CPH_clicked()
     //cph->print_grid();
     p2dVector enemy_pos(3);
 
+    int i = 0;
+
     enemy_pos[0] = robots[3].get_pos();
     enemy_pos[1] = robots[4].get_pos();
     enemy_pos[2] = robots[5].get_pos();
+
     if(cph->isStopped()){
         cph->set_enemy_pos(enemy_pos);
         cph->set_ball_pos(ball_pos);
-        cph->moveToThread(thread);
-        thread->start();
-        //if(cph->is_running()) cout << "hey monkey" << endl;
+        cph->Play();
+        if(cph->is_running()) cout << "hey monkey" << endl;
     }else{
-        thread->exit();
-        //cph->Stop();
+        cph->Stop();
         //cph->wait();
     }
 }

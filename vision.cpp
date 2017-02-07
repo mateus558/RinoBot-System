@@ -475,6 +475,7 @@ void Vision::run()
         rows = raw_frame.rows;
         cols = raw_frame.cols;
         vision_frame = crop_image(raw_frame.clone());
+        raw_frame = crop_image(raw_frame);
         vision_frame = proccess_frame(vision_frame, vision_frame);
 
         switch(mode){
