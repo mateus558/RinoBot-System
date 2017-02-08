@@ -40,6 +40,8 @@ private slots:
 
     void on_CPH_clicked();
 
+    void on_checkBox_4_clicked(bool checked);
+
 private:
     QThread* thread;
     CPH *cph;
@@ -57,7 +59,7 @@ private:
     std::vector<cv::Point> atk_area;
     void closeEvent(QCloseEvent *event);
 
-    bool started, area_read;
+    bool started, area_read, run_cph;
 };
 
 #endif // SOCCER_WINDOW_H

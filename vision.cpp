@@ -17,7 +17,7 @@ Vision::Vision(QObject *parent): QThread(parent)
 {
     Point a, b;
     stop = true;
-    showArea = sentPoints = teamsChanged = showNames = ball_found = showCenters= false;
+    showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters= false;
     mode = 0;
     robots.resize(6);
     robots[0].set_nick("Leona");
@@ -32,6 +32,10 @@ Vision::Vision(QObject *parent): QThread(parent)
     ball_color.second.assign(3, 255);
     info.enemy_robots.resize(3);
     info.team_robots.resize(3);
+    info.ball_pos_cm = Point2d(0.0, 0.0);
+    info.ball_pos = Point(0, 0);
+    info.ball_last_pos = Point(0, 0);
+    info.ball_found = false;
 
     if(!read_points("Config/map", map_points)){
         cerr << "The map could not be read from the file!" << endl;
@@ -45,6 +49,8 @@ Vision::Vision(QObject *parent): QThread(parent)
     a = (map_points[4] + map_points[5])/2;
     b = (map_points[14] + map_points[13])/2;
     x_axis_slope = b - a;
+    ball_pos = null_point;
+    ball_last_pos = null_point;
 
     last_P = MatrixXd::Identity(3,3);
 }
@@ -73,7 +79,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     double dista = 0.0, angle, last_angle;
     bool not_t1, error;
     Moments ball_moment, temp_moment;
-    Point ball_cent(-1, -1), unk_robot, centroid, line_slope, last_cent;
+    Point ball_cent = null_point, unk_robot, centroid, line_slope, last_cent;
     vector<bool> r_set;
     vector<vector<Moments> > r_m(3, vector<Moments>());
     vector<vector<Moments> > t_m(2, vector<Moments>());
@@ -92,12 +98,11 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
         ball_last_pos = ball_cent;
-        info.ball_last_pos = ball_cent;
-        info.ball_found = true;
+        ball_found = true;
     }else{
-        cerr << "Ball not found!" << endl;
+        if(showErrors) cerr << "Ball not found!" << endl;
         ball_cent = ball_last_pos;
-        info.ball_found = false;
+        ball_found = false;
     }
 
     remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
@@ -143,7 +148,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
         }else{
             r_col_cent[i].push_back(null_point);
-            cout << robots[i].get_nick() << " not found!" << endl;
+            //cout << robots[i].get_nick() << " not found!" << endl;
             robots[i].set_centroid(robots[i].get_from_pos_hist(0));
         }
     }
@@ -230,7 +235,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     for(i = 0; i < r_set.size(); ++i){
         if(!r_set[i]){
             error = true;
-            cerr << robots[i].get_nick() << " was not found!" << endl;
+            if(showErrors) cerr << robots[i].get_nick() << " was not found!" << endl;
             robots[i].set_angle(robots[i].get_last_angle());
             robots[i].set_centroid(robots[i].get_from_pos_hist(0));
             robots[i].was_detected(false);
@@ -238,7 +243,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     }
 
     //Define team 2 centroids and angles
-    for(i = 3, dista = INFINITY; i < t1size; ++i){
+    for(i = 3, j = 0, dista = INFINITY; i < 6; ++i, ++j){
         robots[i].set_team_cent(tirj_cent[1][i-3]);
         robots[i].set_centroid(robots[i].get_team_cent());
         robots[i].was_detected(true);
@@ -250,9 +255,9 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
     ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
-    info.ball_pos_cm = ball_pos_cm;
-    info.ball_pos = ball_cent;
-    if(error) cerr << endl;
+    ball_pos_cm = ball_pos_cm;
+    ball_pos = ball_cent;
+    if(error && showErrors) cerr << endl;
 
     return robots;
 }
@@ -526,6 +531,16 @@ void Vision::run()
         info.team_robots[0] = robots[0];
         info.team_robots[1] = robots[1];
         info.team_robots[2] = robots[2];
+        info.ball_found = ball_found;
+        if(ball_pos != null_point){
+            info.ball_pos_cm = ball_pos_cm;
+            info.ball_pos = ball_pos;
+            info.ball_last_pos = ball_last_pos;
+        }else{
+            info.ball_pos_cm = Point2d(0.0, 0.0);
+            info.ball_pos = Point(0, 0);
+            info.ball_last_pos = Point(0, 0);
+        }
 
         emit infoPercepted(info);
         emit processedImage(img);
@@ -650,6 +665,10 @@ void Vision::show_names(bool show){
 
 void Vision::show_centers(bool show){
     showCenters = show;
+}
+
+void Vision::show_errors(bool show){
+    showErrors = show;
 }
 
 void Vision::save_image(){

@@ -18,6 +18,7 @@ private:
     double loss_rate;
     bool detected;
     Point centroid; //Robot general centroid
+    Point2d centroid_cm;
     Point color_cent, team_cent;    //Centroid from the half role color and from team color
     Point line_slope;
     string nick;
