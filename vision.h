@@ -29,7 +29,7 @@ public:
         pVector map_area, atk_area, def_area;
     };
 private:
-    bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters;
+    bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters, showErrors;
     int mode, rows, cols, camid, x_offset, y_offset;
     double FPS;
     Perception info;
@@ -84,6 +84,7 @@ public:
     void show_area(bool show);
     void show_centers(bool show);
     void show_names(bool show);
+    void show_errors(bool show);
     void save_image();
     void set_upper(vector<int> upper);
     void set_camid(int cam);

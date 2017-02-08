@@ -294,3 +294,8 @@ void soccer_window::on_checkBox_3_toggled(bool checked)
 {
     eye->show_centers(checked);
 }
+
+void soccer_window::on_checkBox_4_clicked(bool checked)
+{
+    eye->show_errors(checked);
+}

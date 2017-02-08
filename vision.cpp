@@ -17,7 +17,7 @@ Vision::Vision(QObject *parent): QThread(parent)
 {
     Point a, b;
     stop = true;
-    showArea = sentPoints = teamsChanged = showNames = ball_found = showCenters= false;
+    showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters= false;
     mode = 0;
     robots.resize(6);
     robots[0].set_nick("Leona");
@@ -100,7 +100,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         ball_last_pos = ball_cent;
         ball_found = true;
     }else{
-        //cerr << "Ball not found!" << endl;
+        if(showErrors) cerr << "Ball not found!" << endl;
         ball_cent = ball_last_pos;
         ball_found = false;
     }
@@ -235,7 +235,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     for(i = 0; i < r_set.size(); ++i){
         if(!r_set[i]){
             error = true;
-            //cerr << robots[i].get_nick() << " was not found!" << endl;
+            if(showErrors) cerr << robots[i].get_nick() << " was not found!" << endl;
             robots[i].set_angle(robots[i].get_last_angle());
             robots[i].set_centroid(robots[i].get_from_pos_hist(0));
             robots[i].was_detected(false);
@@ -257,7 +257,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
     ball_pos_cm = ball_pos_cm;
     ball_pos = ball_cent;
-   // if(error) cerr << endl;
+    if(error && showErrors) cerr << endl;
 
     return robots;
 }
@@ -665,6 +665,10 @@ void Vision::show_names(bool show){
 
 void Vision::show_centers(bool show){
     showCenters = show;
+}
+
+void Vision::show_errors(bool show){
+    showErrors = show;
 }
 
 void Vision::save_image(){

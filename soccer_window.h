@@ -40,6 +40,8 @@ private slots:
 
     void on_CPH_clicked();
 
+    void on_checkBox_4_clicked(bool checked);
+
 private:
     QThread* thread;
     CPH *cph;
