@@ -194,18 +194,20 @@ Point CPH::convert_C_to_G(Point2d coord){
     }else{
         i.y = coord.y / dy - 1;
     }
-    cout << "i.x = " << i.x << " i.y = " << i.y << endl;
     return i;
 }
 
-void CPH::process(){
+void CPH::run(){
     pVector enemy_pos_grid(3);
     Point  ball_pos_grid;
+
     int i = 0;
-    stop = false;
-    while(!stop){
-        init_grid();
-        //cout << enemy_pos[0] << endl;
+
+    init_grid();
+
+    do{
+
+        cout << ball_pos << endl;
         //cout << enemy_pos[1] << endl;
         //cout << enemy_pos[2] << endl;
 
@@ -218,13 +220,12 @@ void CPH::process(){
         ball_pos_grid = convert_C_to_G(ball_pos);
         set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
 
-        while(iterator() > 1E-6);
-
+        iterator();
         set_direction();
-        qDebug("Hello World!");
-    }
-    emit finished();
+
+    }while(!stop);
 }
+
 
 void CPH::set_enemy_pos(p2dVector enemy_pos){
     this->enemy_pos = enemy_pos;
@@ -246,7 +247,7 @@ bool CPH::isStopped() const
 void CPH::Play(){
     if(isStopped())
         stop = false;
-    process();
+   start();
 }
 
 void CPH::Stop(){
@@ -254,7 +255,7 @@ void CPH::Stop(){
 }
 
 bool CPH::is_running(){
-    return stop;
+    return !stop;
 }
 
 void CPH::msleep(int ms){

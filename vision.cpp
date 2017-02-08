@@ -472,6 +472,7 @@ void Vision::run()
         rows = raw_frame.rows;
         cols = raw_frame.cols;
         vision_frame = crop_image(raw_frame.clone());
+        raw_frame = crop_image(raw_frame);
         vision_frame = proccess_frame(vision_frame, vision_frame);
 
         switch(mode){
@@ -488,7 +489,7 @@ void Vision::run()
                 break;
             default:
                 break;
-         }
+        }
 
         if(showArea && map_size > 0){
             //Draw map area points
@@ -654,7 +655,6 @@ void Vision::show_centers(bool show){
 void Vision::save_image(){
     time_t t;
     string fname, path;
-    Mat to_save;
 
     srand((unsigned) time(&t));
     fname = to_string(rand() % 100000);
