@@ -32,24 +32,22 @@ private slots:
 
     void on_read_parameters_clicked();
 
-    void on_checkBox_toggled(bool checked);
-
-    void on_checkBox_2_toggled(bool checked);
-
-    void on_checkBox_3_toggled(bool checked);
-
     void on_CPH_clicked();
 
-    void on_checkBox_4_clicked(bool checked);
+    void on_show_field_areas_checkbox_toggled(bool checked);
+
+    void on_show_rnames_checkBox_toggled(bool checked);
+
+    void on_show_rcentroids_checkbox_toggled(bool checked);
+
+    void on_show_visionlogs_checkbox_toggled(bool checked);
 
 private:
-    QThread* thread;
     CPH *cph;
     CPO *cpo;
     Vision *eye;
     Vision::Perception percep;
     Serial *serial;
-    SettingsDialog *serial_sett;
     Ui::soccer_window *ui;
     SettingsDialog::Settings settings;
     std::vector<Robot> robots;
