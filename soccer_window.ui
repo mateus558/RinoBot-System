@@ -69,7 +69,7 @@
    <property name="geometry">
     <rect>
      <x>760</x>
-     <y>220</y>
+     <y>190</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -174,7 +174,7 @@
    <property name="title">
     <string>Robots Roles:</string>
    </property>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="gandalf_role_label">
     <property name="geometry">
      <rect>
       <x>8</x>
@@ -187,7 +187,7 @@
      <string>     -- None --</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="leona_role_label">
     <property name="geometry">
      <rect>
       <x>8</x>
@@ -200,7 +200,7 @@
      <string>     -- None --</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="presto_role_label">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -265,7 +265,7 @@
    <property name="title">
     <string>Options:</string>
    </property>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="show_field_areas_checkbox">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -278,7 +278,7 @@
      <string>Show Areas</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_2">
+   <widget class="QCheckBox" name="show_rnames_checkBox">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -291,7 +291,7 @@
      <string>Show Names</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_3">
+   <widget class="QCheckBox" name="show_rcentroids_checkbox">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -304,17 +304,17 @@
      <string>Show Centroids</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_4">
+   <widget class="QCheckBox" name="show_visionlogs_checkbox">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>90</y>
-      <width>121</width>
+      <width>131</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Show Logs</string>
+     <string>Show Vision Logs</string>
     </property>
    </widget>
   </widget>
@@ -331,7 +331,7 @@
     <string>Read Parameters</string>
    </property>
   </widget>
-  <widget class="QGroupBox" name="robots_roles_group_2">
+  <widget class="QGroupBox" name="detection_status_group">
    <property name="geometry">
     <rect>
      <x>400</x>
@@ -499,6 +499,135 @@
     <string/>
    </property>
   </widget>
+  <widget class="QLabel" name="cam_id_label">
+   <property name="geometry">
+    <rect>
+     <x>740</x>
+     <y>250</y>
+     <width>59</width>
+     <height>14</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cam ID:</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="cam_id_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>800</x>
+     <y>250</y>
+     <width>47</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>999</number>
+   </property>
+   <property name="value">
+    <number>300</number>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="serial_status_group">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>480</y>
+     <width>101</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Serial Status:</string>
+   </property>
+   <widget class="QLabel" name="gandalf_serial_label">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>30</y>
+      <width>51</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Closed</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="leona_serial_label">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>50</y>
+      <width>51</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Closed</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="presto_serial_label">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>70</y>
+      <width>51</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Closed</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gandalf_serial_col">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>21</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color : red</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="leona_detec_col">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>21</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color : red</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="presto_detec_col">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>21</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color : red</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+  </widget>
   <zorder>optionsGroupBox</zorder>
   <zorder>game_view</zorder>
   <zorder>start_game</zorder>
@@ -512,9 +641,12 @@
   <zorder>leona_label</zorder>
   <zorder>presto_label</zorder>
   <zorder>read_parameters</zorder>
-  <zorder>robots_roles_group_2</zorder>
+  <zorder>detection_status_group</zorder>
   <zorder>ball_detec_label</zorder>
   <zorder>ball_detec_col_label</zorder>
+  <zorder>cam_id_label</zorder>
+  <zorder>cam_id_spinBox</zorder>
+  <zorder>serial_status_group</zorder>
  </widget>
  <resources/>
  <connections/>

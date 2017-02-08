@@ -150,6 +150,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             r_col_cent[i].push_back(null_point);
             //cout << robots[i].get_nick() << " not found!" << endl;
             robots[i].set_centroid(robots[i].get_from_pos_hist(0));
+            robots[i].was_detected(false);
         }
     }
 
