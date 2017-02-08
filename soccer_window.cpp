@@ -18,6 +18,7 @@ soccer_window::soccer_window(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::soccer_window)
 {
+    qRegisterMetaType<Vision::Perception>("Vision::Perception");
 
     ui->setupUi(this);
     area_read = false;
@@ -26,12 +27,13 @@ soccer_window::soccer_window(QWidget *parent) :
     serial = new Serial;
     eye = new Vision;
     cph = new CPH;
+    run_cph = false;
     eye->set_mode(0);
 
     connect(serial_sett, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
-    connect(eye, SIGNAL(infoPercepted(Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)));
+    connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);
 }
 
 void soccer_window::closeEvent(QCloseEvent *event){
@@ -103,6 +105,14 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->presto_detec_label->setText("Not Detected");
     }
+
+    if(run_cph){
+        if(cph->is_running()){
+            cph->wait();
+        }
+
+        cph->Play();
+     }
 }
 
 void soccer_window::updateFPS(double fps){
@@ -116,13 +126,14 @@ void soccer_window::updateSerialSettings(SettingsDialog::Settings settings){
 
 void soccer_window::on_start_game_clicked()
 {
-    int cam_id = CV_CAP_FIREWIRE;
+    int cam_id = 0;
 
     if(eye->isStopped()){
         if(!eye->open_camera(cam_id)){
             QMessageBox msgBox;
             msgBox.setText("The camera could not be opened!");
             msgBox.exec();
+            return;
         }
 
         eye->Play();
@@ -186,7 +197,7 @@ void soccer_window::on_read_parameters_clicked()
 
     t1_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
     t1_file >> upper_team_color[0] >> upper_team_color[1] >> upper_team_color[2];
-    cout << low_team_color[0] << " " << upper_team_color[0] << endl;
+
     t1_file.close();
     t1_file.clear();
 
@@ -252,23 +263,10 @@ void soccer_window::on_read_parameters_clicked()
 
 void soccer_window::on_CPH_clicked()
 {
-    //cph->print_grid();
-    p2dVector enemy_pos(3);
-
-    int i = 0;
-
-    enemy_pos[0] = robots[3].get_pos();
-    enemy_pos[1] = robots[4].get_pos();
-    enemy_pos[2] = robots[5].get_pos();
-
-    if(cph->isStopped()){
-        cph->set_enemy_pos(enemy_pos);
-        cph->set_ball_pos(ball_pos);
-        cph->Play();
-        if(cph->is_running()) cout << "hey monkey" << endl;
+    if(!run_cph){
+        run_cph = true;
     }else{
-        cph->Stop();
-        //cph->wait();
+        run_cph = false;
     }
 }
 

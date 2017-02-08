@@ -7,9 +7,11 @@ using namespace std;
 
 
 CPH::CPH(){
-    dx = 5;
-    dy = 5;
+    dx = dy = 5;
+    i = 0;
     stop = true;
+    grid_initialized = false;
+    enemy_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
     tGrid = iMatrix(28, vector<int>(36, 0));
     cout<<"\n\nAMBIENTE CRIADO!\n";
@@ -134,6 +136,7 @@ void CPH::set_potential(int i, int j, double aux){
 
 void CPH::init_grid(){
     int i,j;
+
     for(i=0;i<28;i++)
     {
         for(j=0;j<36;j++)
@@ -198,32 +201,25 @@ Point CPH::convert_C_to_G(Point2d coord){
 }
 
 void CPH::run(){
-    pVector enemy_pos_grid(3);
-    Point  ball_pos_grid;
+    if(!grid_initialized){
+        init_grid();
+        grid_initialized = true;
+    }
 
-    int i = 0;
+    //cout << enemy_pos[1] << endl;
+    //cout << enemy_pos[2] << endl;
 
-    init_grid();
+    for(i = 0; i < 3; ++i){
+        enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+        //cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+        set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+    }
 
-    do{
+    ball_pos_grid = convert_C_to_G(ball_pos);
+    set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
 
-        cout << ball_pos << endl;
-        //cout << enemy_pos[1] << endl;
-        //cout << enemy_pos[2] << endl;
-
-        for(i = 0; i < 3; ++i){
-            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
-            //cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-            set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
-        }
-
-        ball_pos_grid = convert_C_to_G(ball_pos);
-        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
-
-        iterator();
-        set_direction();
-
-    }while(!stop);
+    iterator();
+    set_direction();
 }
 
 
@@ -255,7 +251,7 @@ void CPH::Stop(){
 }
 
 bool CPH::is_running(){
-    return !stop;
+    return isRunning();
 }
 
 void CPH::msleep(int ms){

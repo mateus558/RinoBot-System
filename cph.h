@@ -13,13 +13,16 @@ class CPH : public QThread
 private:
     int dx;
     int dy;
+    int i;
     QMutex mutex;
     dMatrix pGrid;
     iMatrix tGrid;
+    pVector enemy_pos_grid;
     p2dVector enemy_pos;
     p2dVector team_pos;
+    Point  ball_pos_grid;
     Point2d ball_pos;
-    bool stop;
+    bool stop, grid_initialized;
 
 protected:
     void msleep(int ms);

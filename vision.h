@@ -53,7 +53,7 @@ private:
     Matrix3d last_P;
     vector<Robot> robots;
 signals:
-    void infoPercepted(Perception);
+    void infoPercepted(Vision::Perception);
     void processedImage(const QImage &image);
     void framesPerSecond(double FPS);
 protected:
