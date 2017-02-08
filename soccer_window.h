@@ -20,15 +20,10 @@ public:
     explicit soccer_window(QWidget *parent = 0);
     ~soccer_window();
 public slots:
-    void updateSerialSettings(SettingsDialog::Settings settings);
-    void updateBallPos(const Point2d &ball_pos);
-    void updateVisionUI(QImage img);
-    void isBallFound(bool ball_found);
-    void updateFPS(double fps);
-    void updateMapPoints(const pVector &map_area);
-    void updateAtkPoints(const pVector &atk_area);
-    void updateDefPoints(const pVector &def_area);
-    void updateRobotsInfo(const rVector &robots);
+    void updatePerceptionInfo(Vision::Perception);
+    void updateSerialSettings(SettingsDialog::Settings);
+    void updateVisionUI(QImage);
+    void updateFPS(double);
 private slots:
 
     void on_start_game_clicked();
@@ -50,6 +45,7 @@ private:
     CPH *cph;
     CPO *cpo;
     Vision *eye;
+    Vision::Perception percep;
     Serial *serial;
     SettingsDialog *serial_sett;
     Ui::soccer_window *ui;
@@ -61,7 +57,7 @@ private:
     std::vector<cv::Point> atk_area;
     void closeEvent(QCloseEvent *event);
 
-    bool started;
+    bool started, area_read;
 };
 
 #endif // SOCCER_WINDOW_H

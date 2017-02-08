@@ -20,8 +20,11 @@ soccer_window::soccer_window(QWidget *parent) :
 {
 
     ui->setupUi(this);
+<<<<<<< HEAD
+=======
     area_read = false;
     thread = new QThread;
+>>>>>>> Vision
     serial_sett = new SettingsDialog;
     serial = new Serial;
     eye = new Vision;
@@ -82,7 +85,11 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     cph->set_enemy_pos(enemy_pos);
     cph->set_team_pos(team_pos);
 
+<<<<<<< HEAD
+    if(this->robots[1].is_detected()){
+=======
     if(percep.team_robots[1].is_detected()){
+>>>>>>> Vision
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->gandalf_detec_label->setText("Detected");
     }else{
