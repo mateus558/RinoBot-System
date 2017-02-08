@@ -16,6 +16,10 @@
   <property name="windowTitle">
    <string>Rinobot - IEEE Very Small Size Soccer</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../Untitled1.png</normaloff>../../Untitled1.png</iconset>
+  </property>
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>

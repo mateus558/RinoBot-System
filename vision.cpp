@@ -92,12 +92,11 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
         ball_last_pos = ball_cent;
-        info.ball_last_pos = ball_cent;
-        info.ball_found = true;
+        ball_found = true;
     }else{
         //cerr << "Ball not found!" << endl;
         ball_cent = ball_last_pos;
-        info.ball_found = false;
+        ball_found = false;
     }
 
     remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
@@ -250,8 +249,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
     ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
-    info.ball_pos_cm = ball_pos_cm;
-    info.ball_pos = ball_cent;
+    ball_pos_cm = ball_pos_cm;
+    ball_pos = ball_cent;
    // if(error) cerr << endl;
 
     return robots;
@@ -526,6 +525,10 @@ void Vision::run()
         info.team_robots[0] = robots[0];
         info.team_robots[1] = robots[1];
         info.team_robots[2] = robots[2];
+        info.ball_found = ball_found;
+        info.ball_pos_cm = ball_pos_cm;
+        info.ball_pos = ball_pos;
+        info.ball_last_pos = ball_last_pos;
 
         emit infoPercepted(info);
         emit processedImage(img);
