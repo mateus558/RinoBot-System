@@ -488,7 +488,7 @@ void Vision::run()
                 break;
             default:
                 break;
-         }
+        }
 
         if(showArea && map_size > 0){
             //Draw map area points
@@ -654,7 +654,6 @@ void Vision::show_centers(bool show){
 void Vision::save_image(){
     time_t t;
     string fname, path;
-    Mat to_save;
 
     srand((unsigned) time(&t));
     fname = to_string(rand() % 100000);
