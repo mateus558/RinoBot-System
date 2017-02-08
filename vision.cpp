@@ -244,7 +244,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Define team 2 centroids and angles
     for(i = 3, j = 0, dista = INFINITY; i < 6; ++i, ++j){
-        cout << "j = " << j << endl;
         robots[i].set_team_cent(tirj_cent[1][i-3]);
         robots[i].set_centroid(robots[i].get_team_cent());
         robots[i].was_detected(true);
