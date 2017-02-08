@@ -207,17 +207,28 @@ void CPH::run(){
         grid_initialized = true;
     }
 
-    //cout << enemy_pos[1] << endl;
-    //cout << enemy_pos[2] << endl;
-
     for(i = 0; i < 3; ++i){
-        enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
-        cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-        set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+        if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+            cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+        }else{
+            //tratar posição dos inimigos aqui
+        }
+
+        if(team_pos[i].x > 0 && team_pos[i].y > 0){
+            team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+        }else{
+            //tratar posição dos miguxos aqui
+        }
     }
 
-    ball_pos_grid = convert_C_to_G(ball_pos);
-    set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+    if(ball_pos.x > 0 || ball_pos.y > 0){
+        ball_pos_grid = convert_C_to_G(ball_pos);
+        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+    }else{
+        //tratar a bola aqui
+    }
 
     iterator();
     set_direction();

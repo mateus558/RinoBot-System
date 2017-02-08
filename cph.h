@@ -18,6 +18,7 @@ private:
     dMatrix pGrid;
     iMatrix tGrid;
     pVector enemy_pos_grid;
+    pVector team_pos_grid;
     p2dVector enemy_pos;
     p2dVector team_pos;
     Point  ball_pos_grid;

@@ -71,7 +71,14 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->ball_detec_label->setText("Ball not found");
     }
-
+    cout << "enemy" << endl;
+    cout << percep.enemy_robots[0].get_centroid() << endl;
+    cout << percep.enemy_robots[1].get_centroid() << endl;
+    cout << percep.enemy_robots[2].get_centroid() << endl;
+    cout << "team" << endl;
+    cout << percep.team_robots[0].get_centroid() << endl;
+    cout << percep.team_robots[1].get_centroid() << endl;
+    cout << percep.team_robots[2].get_centroid() << endl;
     enemy_pos[0] = percep.enemy_robots[0].get_pos();
     enemy_pos[1] = percep.enemy_robots[1].get_pos();
     enemy_pos[2] = percep.enemy_robots[2].get_pos();

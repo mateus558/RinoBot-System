@@ -9,6 +9,7 @@ using namespace std;
 Robot::Robot(){
     channel = -1;
     centroid = Point(-1, -1);
+    centroid_cm = Point2d(0.0, 0.0);
     team_cent = Point(-1, -1);
     color_cent = Point(-1, -1);
     nick = "NULL";
@@ -68,6 +69,9 @@ double Robot::get_last_angle()
 void Robot::set_centroid(Point p)
 {
     this->centroid = p;
+    centroid_cm.x = centroid.x * X_CONV_CONST;
+    centroid_cm.y = centroid.y * Y_CONV_CONST;
+
     add_pos_hist(p);
 }
 
@@ -78,7 +82,7 @@ Point Robot::get_centroid()
 
 
 Point2d Robot::get_pos(){
-    return Point2d(centroid.x * X_CONV_CONST, centroid.y * Y_CONV_CONST);
+    return centroid_cm;
 }
 
 void Robot::set_line_slope(Point p){

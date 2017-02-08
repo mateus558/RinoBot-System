@@ -32,6 +32,10 @@ Vision::Vision(QObject *parent): QThread(parent)
     ball_color.second.assign(3, 255);
     info.enemy_robots.resize(3);
     info.team_robots.resize(3);
+    info.ball_pos_cm = Point2d(0.0, 0.0);
+    info.ball_pos = Point(0, 0);
+    info.ball_last_pos = Point(0, 0);
+    info.ball_found = false;
 
     if(!read_points("Config/map", map_points)){
         cerr << "The map could not be read from the file!" << endl;
@@ -45,6 +49,8 @@ Vision::Vision(QObject *parent): QThread(parent)
     a = (map_points[4] + map_points[5])/2;
     b = (map_points[14] + map_points[13])/2;
     x_axis_slope = b - a;
+    ball_pos = null_point;
+    ball_last_pos = null_point;
 
     last_P = MatrixXd::Identity(3,3);
 }
@@ -73,7 +79,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     double dista = 0.0, angle, last_angle;
     bool not_t1, error;
     Moments ball_moment, temp_moment;
-    Point ball_cent(-1, -1), unk_robot, centroid, line_slope, last_cent;
+    Point ball_cent = null_point, unk_robot, centroid, line_slope, last_cent;
     vector<bool> r_set;
     vector<vector<Moments> > r_m(3, vector<Moments>());
     vector<vector<Moments> > t_m(2, vector<Moments>());
@@ -237,7 +243,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     }
 
     //Define team 2 centroids and angles
-    for(i = 3, dista = INFINITY; i < t1size; ++i){
+    for(i = 3, j = 0, dista = INFINITY; i < 6; ++i, ++j){
+        cout << "j = " << j << endl;
         robots[i].set_team_cent(tirj_cent[1][i-3]);
         robots[i].set_centroid(robots[i].get_team_cent());
         robots[i].was_detected(true);
@@ -526,13 +533,14 @@ void Vision::run()
         info.team_robots[1] = robots[1];
         info.team_robots[2] = robots[2];
         info.ball_found = ball_found;
-        info.ball_pos_cm = ball_pos_cm;
-        info.ball_pos = ball_pos;
-        info.ball_last_pos = ball_last_pos;
-
-        for(i = 0; i < 3; ++i){
-            if(info.enemy_robots[i].get_centroid() == null_point)
-                info.enemy_robots[i].set_centroid(Point(0, 0));
+        if(ball_pos != null_point){
+            info.ball_pos_cm = ball_pos_cm;
+            info.ball_pos = ball_pos;
+            info.ball_last_pos = ball_last_pos;
+        }else{
+            info.ball_pos_cm = Point2d(0.0, 0.0);
+            info.ball_pos = Point(0, 0);
+            info.ball_last_pos = Point(0, 0);
         }
 
         emit infoPercepted(info);
