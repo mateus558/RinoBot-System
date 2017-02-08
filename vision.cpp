@@ -530,6 +530,11 @@ void Vision::run()
         info.ball_pos = ball_pos;
         info.ball_last_pos = ball_last_pos;
 
+        for(i = 0; i < 3; ++i){
+            if(info.enemy_robots[i].get_centroid() == null_point)
+                info.enemy_robots[i].set_centroid(Point(0, 0));
+        }
+
         emit infoPercepted(info);
         emit processedImage(img);
         if(i%10 == 0){
