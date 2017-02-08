@@ -40,6 +40,7 @@ double CPH::iterator(){
             }
         }
     }
+    cout << "Erro" << " " << erro << endl;
     return erro;
 }
 
@@ -211,7 +212,7 @@ void CPH::run(){
 
     for(i = 0; i < 3; ++i){
         enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
-        //cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+        cout<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
         set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
     }
 
