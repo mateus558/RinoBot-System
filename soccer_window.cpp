@@ -22,15 +22,12 @@ soccer_window::soccer_window(QWidget *parent) :
 
     ui->setupUi(this);
     area_read = false;
-    thread = new QThread;
-    serial_sett = new SettingsDialog;
     serial = new Serial;
     eye = new Vision;
     cph = new CPH;
     run_cph = false;
     eye->set_mode(0);
 
-    connect(serial_sett, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
     connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);
@@ -71,15 +68,6 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->ball_detec_label->setText("Ball not found");
     }
-    /*
-    cout << "enemy" << endl;
-    cout << percep.enemy_robots[0].get_centroid() << endl;
-    cout << percep.enemy_robots[1].get_centroid() << endl;
-    cout << percep.enemy_robots[2].get_centroid() << endl;
-    cout << "team" << endl;
-    cout << percep.team_robots[0].get_centroid() << endl;
-    cout << percep.team_robots[1].get_centroid() << endl;
-    cout << percep.team_robots[2].get_centroid() << endl;*/
 
     enemy_pos[0] = percep.enemy_robots[0].get_pos();
     enemy_pos[1] = percep.enemy_robots[1].get_pos();
@@ -135,7 +123,7 @@ void soccer_window::updateSerialSettings(SettingsDialog::Settings settings){
 
 void soccer_window::on_start_game_clicked()
 {
-    int cam_id = 0;
+    int cam_id = ui->cam_id_spinBox->value();
 
     if(eye->isStopped()){
         if(!eye->open_camera(cam_id)){
@@ -173,7 +161,6 @@ soccer_window::~soccer_window()
 {
     delete eye;
     delete serial;
-    delete serial_sett;
     delete ui;
 }
 
@@ -201,7 +188,7 @@ void soccer_window::on_read_parameters_clicked()
     t1_file.open("Config/T1", fstream::in);
 
     if(!t1_file){
-        cout << "Team 1 config could not be opened!" << endl;
+        cerr << "Team 1 config could not be opened!" << endl;
     }
 
     t1_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
@@ -215,7 +202,7 @@ void soccer_window::on_read_parameters_clicked()
         file.open(path.c_str());
 
         if(!file){
-            cout << (*itr).get_nick() << " config could not be opened!" << endl;
+            cerr << (*itr).get_nick() << " config could not be opened!" << endl;
         }
 
         file >> low_color[0] >> low_color[1] >> low_color[2];
@@ -239,7 +226,7 @@ void soccer_window::on_read_parameters_clicked()
     t2_file.open("Config/T2", fstream::in);
 
     if(!t2_file){
-        cout << "Team 2 config could not be opened!" << endl;
+        cerr << "Team 2 config could not be opened!" << endl;
     }
 
     t2_file >> low_team_color[0] >> low_team_color[1] >> low_team_color[2];
@@ -253,9 +240,9 @@ void soccer_window::on_read_parameters_clicked()
     }
 
     eye->set_robots(robots);
-    ui->label->setText(QString::fromStdString(robots[0].get_role()));
-    ui->label_2->setText(QString::fromStdString(robots[1].get_role()));
-    ui->label_3->setText(QString::fromStdString(robots[2].get_role()));
+    ui->gandalf_role_label->setText(QString::fromStdString(robots[1].get_role()));
+    ui->leona_role_label->setText(QString::fromStdString(robots[0].get_role()));
+    ui->presto_role_label->setText(QString::fromStdString(robots[2].get_role()));
     ball.open("Config/ball", fstream::in);
 
     if(!ball){
@@ -279,23 +266,22 @@ void soccer_window::on_CPH_clicked()
     }
 }
 
-
-void soccer_window::on_checkBox_toggled(bool checked)
+void soccer_window::on_show_field_areas_checkbox_toggled(bool checked)
 {
     eye->show_area(checked);
 }
 
-void soccer_window::on_checkBox_2_toggled(bool checked)
+void soccer_window::on_show_rnames_checkBox_toggled(bool checked)
 {
     eye->show_names(checked);
 }
 
-void soccer_window::on_checkBox_3_toggled(bool checked)
+void soccer_window::on_show_rcentroids_checkbox_toggled(bool checked)
 {
     eye->show_centers(checked);
 }
 
-void soccer_window::on_checkBox_4_clicked(bool checked)
+void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 {
     eye->show_errors(checked);
 }
