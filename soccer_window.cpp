@@ -41,6 +41,10 @@ void soccer_window::closeEvent(QCloseEvent *event){
     eye->release_cam();
 }
 
+void soccer_window::receiveSerialSettings(SettingsDialog::Settings serial_config){
+    this->serial->set_serial_settings(serial_config);
+}
+
 void soccer_window::updateVisionUI(QImage img){
     if(!img.isNull()){
         ui->game_view->setAlignment(Qt::AlignCenter);
@@ -117,7 +121,7 @@ void soccer_window::updateFPS(double fps){
 }
 
 void soccer_window::updateSerialSettings(SettingsDialog::Settings settings){
-    this->settings = settings;
+    //this->settings = settings;
     serial->set_serial_settings(settings);
 }
 
@@ -284,4 +288,9 @@ void soccer_window::on_show_rcentroids_checkbox_toggled(bool checked)
 void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 {
     eye->show_errors(checked);
+}
+
+void soccer_window::on_pushButton_clicked()
+{
+    serial->listen_robots();
 }

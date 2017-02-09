@@ -1,17 +1,45 @@
 #include <iostream>
 #include <QMessageBox>
 #include "serial.h"
+#include "robot.h"
 
 using namespace std;
 
 Serial::Serial(){
     open = false;
-    serial = new QSerialPort(this);
+    serial = new QSerialPort;
+    timer_delay = 100;
 
     connect(serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),
             this, &Serial::handle_error);
+    connect(serial, &QSerialPort::readyRead, this, &Serial::handle_readyRead);
+    connect(&timer, SIGNAL(timeout()), SLOT(handle_timeOut()));
+}
 
-    timer.start(10);
+void Serial::listen_robots(){
+    if(!timer.isActive()){
+        timer.start(timer_delay);
+    }
+}
+
+void Serial::handle_readyRead(){
+    Encoder info;
+
+    Robot::encoders_reading(this, info.robot, info.vel, info.battery);
+    emit encoderReading(info);
+
+    if(!timer.isActive()){
+        timer.start(timer_delay);
+    }
+}
+
+void Serial::handle_timeOut(){
+    if(data.isEmpty()) {
+        standardOutput << QObject::tr("No data was currently available for reading from port %1").arg(serial->portName()) << endl;
+    }else{
+        standardOutput << QObject::tr("Data successfully received from port %1").arg(serial->portName()) << endl;
+        standardOutput << data << endl;
+    }
 }
 
 void Serial::open_serial_port(){
@@ -39,12 +67,12 @@ void Serial::write_data(string data_str){
     QByteArray data(data_str.c_str(), data_str.length());
 
     serial->write(data);
-    timer.start(10);
+    timer.start(timer_delay);
 }
 
 void Serial::write_data(QByteArray data){
     serial->write(data);
-    timer.start(10);
+    timer.start(timer_delay);
 }
 
 void Serial::read(char *b, int i){
@@ -56,7 +84,7 @@ QByteArray Serial::read_data(){
 
     ret.append(serial->readAll());
     if(!timer.isActive()){
-        timer.start(10);
+        timer.start(timer_delay);
     }
 
     if(ret.isEmpty()){
@@ -73,7 +101,7 @@ qint64 Serial::read_line(char *data, qint64 maxSize){
 
     ret = serial->readLine(data, maxSize);
     if(!timer.isActive()){
-        timer.start(10);
+        timer.start(timer_delay);
     }
 
     return ret;

@@ -10,6 +10,14 @@
 using namespace std;
 using namespace cv;
 
+class Serial;
+
+struct Encoder{
+    int robot;
+    double battery;
+    pair<double, double> vel;
+};
+
 class Robot{
 private:
     int channel;    //Communication channel

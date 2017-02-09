@@ -23,6 +23,7 @@ public slots:
     void updatePerceptionInfo(Vision::Perception);
     void updateSerialSettings(SettingsDialog::Settings);
     void updateVisionUI(QImage);
+    void receiveSerialSettings(SettingsDialog::Settings);
     void updateFPS(double);
 private slots:
 
@@ -42,6 +43,8 @@ private slots:
 
     void on_show_visionlogs_checkbox_toggled(bool checked);
 
+    void on_pushButton_clicked();
+
 private:
     CPH *cph;
     CPO *cpo;
@@ -49,7 +52,6 @@ private:
     Vision::Perception percep;
     Serial *serial;
     Ui::soccer_window *ui;
-    SettingsDialog::Settings settings;
     std::vector<Robot> robots;
     Point2d ball_pos;
     std::vector<cv::Point> map_area;
