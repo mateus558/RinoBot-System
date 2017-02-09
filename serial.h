@@ -6,8 +6,19 @@
 #include <QtSerialPort/QSerialPort>
 #include "settingsdialog.h"
 
-class Serial : public QThread
-{
+//union usado para converter float em byte e vice versa
+typedef union{
+    float  Float;
+    unsigned char Bytes[4];
+}Float2Char;
+
+//union usado para converter short em byte e vice versa
+typedef union{
+    unsigned short Short;
+    unsigned char Bytes[2];
+}Short2Char;
+
+class Serial: public QThread {
     Q_OBJECT
 private:
     int mode;
@@ -22,15 +33,13 @@ private:
     QSerialPort::FlowControl flowControl;
     SettingsDialog::Settings settings;
     QMutex mutex;
-
-    void listen_port();
-    void run();
-
 public:
     Serial();
     void open_serial_port();
     void close_serial_port();
     void write_data(std::string data_str);
+    void write_data(QByteArray data);
+    void read(char *b, int i);
     QByteArray read_data();
     qint64 read_line(char *data, qint64 maxSize);
     qint64 bytes_available();

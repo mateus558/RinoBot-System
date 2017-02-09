@@ -14,10 +14,6 @@ Serial::Serial(){
     timer.start(10);
 }
 
-void Serial::run(){
-
-}
-
 void Serial::open_serial_port(){
     if(serial->open(QSerialPort::ReadWrite)){
         open = true;
@@ -44,6 +40,15 @@ void Serial::write_data(string data_str){
 
     serial->write(data);
     timer.start(10);
+}
+
+void Serial::write_data(QByteArray data){
+    serial->write(data);
+    timer.start(10);
+}
+
+void Serial::read(char *b, int i){
+    serial->read(&(*b), i);
 }
 
 QByteArray Serial::read_data(){
@@ -76,11 +81,6 @@ qint64 Serial::read_line(char *data, qint64 maxSize){
 
 bool Serial::flush(){
     return serial->flush();
-}
-
-
-void Serial::listen_port(){
-
 }
 
 void Serial::handle_error(QSerialPort::SerialPortError error){
