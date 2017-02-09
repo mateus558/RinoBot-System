@@ -21,6 +21,9 @@ public slots:
     void updateFPS(double val);
     void updateSerialSettings(SettingsDialog::Settings settings);
 
+signals:
+    void serialSettings(SettingsDialog::Settings);
+
 public:
     explicit SetParameters(QWidget *parent = 0);
     ~SetParameters();

@@ -10,6 +10,14 @@
 using namespace std;
 using namespace cv;
 
+class Serial;
+
+struct Encoder{
+    int robot;
+    double battery;
+    pair<double, double> vel;
+};
+
 class Robot{
 private:
     int channel;    //Communication channel
@@ -32,7 +40,8 @@ private:
 
 public:
     Robot();
-    bool encoders_reading(Serial *serial, pair<double, double> &vels);
+    static bool encoders_reading(Serial *serial, int &robot, pair<double, double> &vels, double &battery);
+    bool send_velocities(Serial *serial, pair<double, double> vels);
     int get_channel();
     void set_channel(int channel = -1);
     void set_angle(double angle);
