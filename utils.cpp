@@ -18,13 +18,10 @@ double angle_two_points(Point p, Point q)
     double dot, pnorm, qnorm;
 
     dot = p.x * q.x + p.y * q.y;
-   // cout << dot << endl;
     pnorm = sqrt(p.x * p.x + p.y * p.y);
-    //cout << pnorm << endl;
     qnorm = sqrt(q.x * q.x + q.y * q.y);
-    //cout << qnorm << endl;
     theta = acos(dot/(pnorm*qnorm));
-    //cout << theta << endl;
+
     return theta * 180.0 / PI;
 }
 
@@ -124,7 +121,6 @@ bool sort_by_larger_area(vector<Point> p0, vector<Point> p1)
 }
 
 bool area_limit(vector<Point> p){
-    //cout << contourArea(p) << endl;
     if(contourArea(p) < MIN_ROBOT_AREA || contourArea(p) > MAX_ROBOT_AREA){
         return 1;
     }

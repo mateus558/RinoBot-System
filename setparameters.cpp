@@ -40,6 +40,7 @@ void SetParameters::closeEvent(QCloseEvent *event){
 
 void SetParameters::updateSerialSettings(SettingsDialog::Settings settings){
     this->serial_settings = settings;
+    emit serialSettings(this->serial_settings);
 }
 
 void SetParameters::updateVisionUI(QImage img)

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <setparameters.h>
 #include <soccer_window.h>
+#include "settingsdialog.h"
 
 namespace Ui {
 class MainWindow;
