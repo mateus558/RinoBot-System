@@ -8,8 +8,9 @@
 #include <errno.h>
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
-#include "cpo.h"
+#include "cph.h"
 #include "serial.h"
+#include "fuzzy.h"
 #include "utils.h"
 
 using namespace std;
@@ -25,7 +26,9 @@ soccer_window::soccer_window(QWidget *parent) :
     serial = new Serial;
     eye = new Vision;
     cph = new CPH;
+    fuzzy = new Fuzzy;
     run_cph = false;
+    run_fuzzy = false;
     eye->set_mode(0);
 
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
@@ -39,6 +42,10 @@ void soccer_window::closeEvent(QCloseEvent *event){
     eye->Stop();
     eye->wait();
     eye->release_cam();
+}
+
+void soccer_window::receiveSerialSettings(SettingsDialog::Settings serial_config){
+    this->serial->set_serial_settings(serial_config);
 }
 
 void soccer_window::updateVisionUI(QImage img){
@@ -58,6 +65,17 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         atk_area = percep.atk_area;
         def_area = percep.def_area;
         area_read = true;
+        centroid_atk = (atk_area[2] + atk_area[3] + atk_area[4] + atk_area[5])/4;
+        centroid_def = (def_area[2] + def_area[3] + def_area[4] + def_area[5])/4;
+
+        centroid_atk.x = centroid_atk.x * X_CONV_CONST;
+        centroid_atk.y = centroid_atk.y * Y_CONV_CONST;
+
+        centroid_def.x = centroid_def.x * X_CONV_CONST;
+        centroid_def.y = centroid_def.y * Y_CONV_CONST;
+
+        fuzzy->set_centroid_atk(centroid_atk);
+        fuzzy->set_centroid_def(centroid_def);
     }
 
     if(percep.ball_found){
@@ -80,6 +98,10 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     cph->set_ball_pos(ball_pos);
     cph->set_enemy_pos(enemy_pos);
     cph->set_team_pos(team_pos);
+
+    fuzzy->set_ball_pos(ball_pos);
+    fuzzy->set_enemy_pos(enemy_pos);
+    fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2]);
 
     if(percep.team_robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -117,7 +139,7 @@ void soccer_window::updateFPS(double fps){
 }
 
 void soccer_window::updateSerialSettings(SettingsDialog::Settings settings){
-    this->settings = settings;
+    //this->settings = settings;
     serial->set_serial_settings(settings);
 }
 
@@ -284,4 +306,9 @@ void soccer_window::on_show_rcentroids_checkbox_toggled(bool checked)
 void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 {
     eye->show_errors(checked);
+}
+
+void soccer_window::on_pushButton_clicked()
+{
+    serial->listen_robots();
 }

@@ -628,6 +628,19 @@
     </property>
    </widget>
   </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>460</y>
+     <width>80</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
   <zorder>optionsGroupBox</zorder>
   <zorder>game_view</zorder>
   <zorder>start_game</zorder>
@@ -647,6 +660,7 @@
   <zorder>cam_id_label</zorder>
   <zorder>cam_id_spinBox</zorder>
   <zorder>serial_status_group</zorder>
+  <zorder>pushButton</zorder>
  </widget>
  <resources/>
  <connections/>
