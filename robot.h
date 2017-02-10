@@ -32,7 +32,7 @@ private:
 
 public:
     Robot();
-    bool encoders_reading(Serial *serial, pair<double, double> &vels);
+    bool encoders_reading(Serial *serial, pair<double, double> &vels); //leituras do encoder
     int get_channel();
     void set_channel(int channel = -1);
     void set_angle(double angle);
