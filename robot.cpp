@@ -23,6 +23,7 @@ Robot::Robot(){
     pos_hist.push_back(Point(-1, -1));
     last_angle = loss_rate = 0.0;
     detected = false;
+    flag_fuzzy = 0;
 }
 
 bool Robot::send_velocities(Serial *serial, pair<double, double> vels){
@@ -330,3 +331,10 @@ string Robot::get_ID()
     return this->ID;
 }
 
+void Robot::set_flag_fuzzy(double output){
+
+}
+
+int Robot::get_flag_fuzzy(){
+
+}

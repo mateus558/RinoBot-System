@@ -22,6 +22,7 @@ class Robot{
 private:
     int channel;    //Communication channel
     int n_loss, n_detected;
+    int flag_fuzzy;
     double angle, last_angle;   //Rotation angle
     double loss_rate;
     bool detected;
@@ -42,6 +43,8 @@ public:
     Robot();
     static bool encoders_reading(Serial *serial, int &robot, pair<double, double> &vels, double &battery);
     bool send_velocities(Serial *serial, pair<double, double> vels);
+    void set_flag_fuzzy(double);
+    int get_flag_fuzzy();
     int get_channel();
     void set_channel(int channel = -1);
     void set_angle(double angle);
