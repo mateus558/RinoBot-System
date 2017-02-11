@@ -6,6 +6,7 @@
 #include "vision.h"
 #include "cph.h"
 #include "cpo.h"
+#include "fuzzy.h"
 #include "serial.h"
 
 namespace Ui {
@@ -23,6 +24,7 @@ public slots:
     void updatePerceptionInfo(Vision::Perception);
     void updateSerialSettings(SettingsDialog::Settings);
     void updateVisionUI(QImage);
+    void receiveSerialSettings(SettingsDialog::Settings);
     void updateFPS(double);
 private slots:
 
@@ -42,22 +44,26 @@ private slots:
 
     void on_show_visionlogs_checkbox_toggled(bool checked);
 
+    void on_pushButton_clicked();
+
 private:
     CPH *cph;
     CPO *cpo;
+    Fuzzy *fuzzy;
     Vision *eye;
     Vision::Perception percep;
     Serial *serial;
     Ui::soccer_window *ui;
-    SettingsDialog::Settings settings;
     std::vector<Robot> robots;
     Point2d ball_pos;
     std::vector<cv::Point> map_area;
     std::vector<cv::Point> def_area;
     std::vector<cv::Point> atk_area;
+    Point centroid_atk;
+    Point centroid_def;
     void closeEvent(QCloseEvent *event);
 
-    bool started, area_read, run_cph;
+    bool started, area_read, run_cph, run_fuzzy;
 };
 
 #endif // SOCCER_WINDOW_H

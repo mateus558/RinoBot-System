@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     settingsdialog.cpp \
     soccer_window.cpp \
     cph.cpp \
-    cpo.cpp
+    cpo.cpp \
+    fuzzy.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -37,7 +38,8 @@ HEADERS  += mainwindow.h \
     settingsdialog.h \
     soccer_window.h \
     cph.h \
-    cpo.h
+    cpo.h \
+    fuzzy.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

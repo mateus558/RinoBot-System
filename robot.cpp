@@ -3,6 +3,7 @@
 #include <sstream>
 #include "utils.h"
 #include "robot.h"
+#include "serial.h"
 
 using namespace std;
 
@@ -22,32 +23,147 @@ Robot::Robot(){
     pos_hist.push_back(Point(-1, -1));
     last_angle = loss_rate = 0.0;
     detected = false;
+    flag_fuzzy = 0;
 }
 
-bool Robot::encoders_reading(Serial *serial, pair<double, double> &vels){
-    string command("v000w000"), data_read, line, linear_vel, angular_vel;
-    stringstream serial_stream;
-    QByteArray data_read_bytes;
+bool Robot::send_velocities(Serial *serial, pair<double, double> vels){
+    float left_vel = vels.first, right_vel = vels.second;
 
-    serial->write_data(command);
+    if(serial->is_open()){
+        //Inicializamos o vetor de bytes a ser transferido
+        QByteArray bytes(13, 0x0);
+        bytes[0] = 18;
+        //Setamos o byte 1 como o número do robô selecionado
+        bytes[1] = (char)this->channel;
+        bytes[12] = 19;
 
-    if(serial->bytes_available() > 0){
-        data_read_bytes = serial->read_data();
-        data_read = string(data_read_bytes.constData(), data_read_bytes.length());
-        serial_stream = stringstream(data_read);
+        //Criamos uma variável para converter a soma dos bytes de velocidade
+        Short2Char cont;
+        cont.Short = 0;
 
-        getline(serial_stream, linear_vel, '\n');
-        getline(serial_stream, angular_vel, '\n');
+        //Criamos uma variável para converter as velocidades em bytes
+        Float2Char valor;
+        //Fazemos com que o valor float da nossa variável Union seja a velocidade informada
+        valor.Float = left_vel;
+        // Como o valor da variável Union ocupa a mesma posição de memória dos valores em byte dessa variável, setamos os bytes correspondentes da velocidade no vetor de saída como os bytes da variável Union
+        bytes[2] = valor.Bytes[0];
+        bytes[3] = valor.Bytes[1];
+        bytes[4] = valor.Bytes[2];
+        bytes[5] = valor.Bytes[3];
+        // Adicionamos a soma dos bytes da velocidade a variável de contagem de bytes
+        cont.Short += valor.Bytes[0] + valor.Bytes[1] + valor.Bytes[2] + valor.Bytes[3];
 
-        serial_stream.flush();
+        valor.Float = right_vel;
+        bytes[6] = valor.Bytes[0];
+        bytes[7] = valor.Bytes[1];
+        bytes[8] = valor.Bytes[2];
+        bytes[9] = valor.Bytes[3];
+        cont.Short += valor.Bytes[0] + valor.Bytes[1] + valor.Bytes[2] + valor.Bytes[3];
+
+        //Setamos os bytes de contagemno vetor de saída como os bytes da variável de contagem
+        bytes[10] = cont.Bytes[0];
+        bytes[11] = cont.Bytes[1];
+
+        //Escrevemos os bytes na porta serial
+        serial->write_data(bytes);
+        //Finalizamos a transferência dos dados a serial
         serial->flush();
+    }else{
+        cerr << nick << ": (Serial closed) Couldn't write wheels velocities at serial port." << endl;
 
-        vels.first = stod(linear_vel);
-        vels.second = stod(angular_vel);
-
-        return true;
+        return false;
     }
-    return false;
+    return true;
+}
+
+bool Robot::encoders_reading(Serial *serial, int &robot, pair<double, double> &vels, double &battery){
+    //Array de bytes lidos da serial
+    QByteArray *dados;
+    //Armazena a quantidade de bytes lidos da serial
+    unsigned char PosDados;
+    char b;
+
+    if(!serial || !serial->is_open()){
+        cerr << "Couldn't read information from serial. (Serial closed)" << endl;
+        return false;
+    }
+
+    // Executamos a leitura de bytes enquanto houver um byte disponível na serial
+    while (serial->bytes_available() > 0){
+        //Lemos um byte da serial para a variável b
+        serial->read(&b, 1);
+        //Adicionamos b ao array de entrada de bytes
+        dados->data()[PosDados] = b;
+        //Incrementamos a quantidade de bytes recebidos
+        PosDados++;
+
+        //Obtemos o número do robô
+        int NumRobo = (int)dados->at(1);
+        robot = NumRobo;
+
+        if (PosDados == 9){
+            //Se 9 bytes forem recebidos e o primeiro e o último byte são respectivamente 20 e 21. então esta é uma mensagem leitura da bateria
+            if (dados->at(0) ==20 && dados->at(8)==21){
+                unsigned short cont = 0;
+                unsigned char i = 0;
+
+                //Somamos os bytes do valor da bateria
+                for (i=0x2; i <= 0x5; i+=0x1 ){
+                    cont += (unsigned char)dados->at(i);
+                }
+                Short2Char conversor;
+                //Obtemos a contagem de bytes enviada pelo robô
+                conversor.Bytes[0] = dados->at(6);
+                conversor.Bytes[1] = dados->at(7);
+                //Se a contagem enviada pelo robô for igual a contagem feita acima, então os bytes chegaram corretamente
+                if (cont == conversor.Short){
+                    //Convertemos os bytes recebidos da bateria em um float
+                    Float2Char bateria;
+                    bateria.Bytes[0] = dados->at(2);
+                    bateria.Bytes[1] = dados->at(3);
+                    bateria.Bytes[2] = dados->at(4);
+                    bateria.Bytes[3] = dados->at(5);
+                    //Processamos o valor de bateria recebido
+                    battery = bateria.Float;
+                }
+                //Informamos que a contagem atual de bytes recebidos é igual a zero
+                PosDados = 0;
+            }
+
+        }else if (PosDados == 13){
+            //Se 13 bytes forem recebidos e o primeiro e o último são respectivamente 18 e 19 então esta é uma mensagem de leitura das velocidades das rodas
+             if (dados->at(0) ==18 && dados->at(12)==19){
+                unsigned short cont =0;
+                unsigned char i = 0;
+                for (i=0x2; i <= 0x9; i+=0x1 )
+                {
+                  cont += (unsigned char)dados->at(i);
+                }
+                Short2Char conversor;
+                conversor.Bytes[0] = dados->at(10);
+                conversor.Bytes[1] = dados->at(11);
+                if (cont == conversor.Short){
+                    //Convertemos os bytes das velocidades em float
+                    Float2Char velEsquerda, velDireita;
+                    velEsquerda.Bytes[0] = dados->at(2);
+                    velEsquerda.Bytes[1] = dados->at(3);
+                    velEsquerda.Bytes[2] = dados->at(4);
+                    velEsquerda.Bytes[3] = dados->at(5);
+                    velDireita.Bytes[0] = dados->at(6);
+                    velDireita.Bytes[1] = dados->at(7);
+                    velDireita.Bytes[2] = dados->at(8);
+                    velDireita.Bytes[3] = dados->at(9);
+
+                    //Processamos os valores de velocidade recebidos
+                    vels.first  = (double) velEsquerda.Float;
+                    vels.second = (double) velDireita.Float;
+                }
+                PosDados = 0;
+            }
+        }
+    }
+
+    return true;
 }
 
 void Robot::set_angle(double angle)
@@ -215,3 +331,10 @@ string Robot::get_ID()
     return this->ID;
 }
 
+void Robot::set_flag_fuzzy(double output){
+
+}
+
+int Robot::get_flag_fuzzy(){
+
+}
