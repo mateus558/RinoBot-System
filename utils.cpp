@@ -7,12 +7,12 @@
 using namespace std;
 using namespace Eigen;
 
-double euclidean_dist(Point p, Point q)
+double euclidean_dist(Point2d p, Point2d q)
 {
     return sqrt((q.x-p.x)*(q.x-p.x) + (q.y-p.y)*(q.y-p.y));
 }
 
-double angle_two_points(Point p, Point q)
+double angle_two_points(Point2d p, Point2d q)
 {
     double theta;
     double dot, pnorm, qnorm;

@@ -25,10 +25,10 @@ soccer_window::soccer_window(QWidget *parent) :
     area_read = false;
     serial = new Serial;
     eye = new Vision;
-    cph = new CPH;
-    fuzzy = new Fuzzy;
-    run_cph = false;
-    run_fuzzy = false;
+    cph = new CPH; //instancia o objeto cph na rotina do sistema
+    fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
+    run_cph = false; //flag da thread do cph
+    run_fuzzy = false; //flag da thread do fuzzy
     eye->set_mode(0);
 
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
@@ -74,8 +74,8 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         centroid_def.x = centroid_def.x * X_CONV_CONST;
         centroid_def.y = centroid_def.y * Y_CONV_CONST;
 
-        fuzzy->set_centroid_atk(centroid_atk);
-        fuzzy->set_centroid_def(centroid_def);
+        fuzzy->set_centroid_atk(centroid_atk); //salva a area de atk para o fuzzy
+        fuzzy->set_centroid_def(centroid_def); //salva a area de def para o fuzzy
     }
 
     if(percep.ball_found){
@@ -95,13 +95,13 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     team_pos[1] = percep.team_robots[1].get_pos();
     team_pos[2] = percep.team_robots[2].get_pos();
 
-    cph->set_ball_pos(ball_pos);
-    cph->set_enemy_pos(enemy_pos);
-    cph->set_team_pos(team_pos);
+    cph->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
+    cph->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph
+    cph->set_team_pos(team_pos); //Salva a posicao do time para o cph
 
-    fuzzy->set_ball_pos(ball_pos);
-    fuzzy->set_enemy_pos(enemy_pos);
-    fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2]);
+    fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2]); //Gandalf e Presto nesta ordem
+    fuzzy->set_ball_pos(ball_pos); //Salva a posicao da bola para o fuzzy
+    fuzzy->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o fuzzy
 
     if(percep.team_robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -125,6 +125,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->presto_detec_label->setText("Not Detected");
     }
 
+    //inicia a thread do cph caso ela nao esteja em execucao
     if(run_cph){
         if(cph->is_running()){
             cph->wait();
