@@ -25,6 +25,24 @@ double angle_two_points(Point2d p, Point2d q)
     return theta * 180.0 / PI;
 }
 
+double min_function(double p, double q){
+    if(p <= q)
+    {
+        return p;
+    }
+    else
+        return q;
+}
+
+double max_function(double p, double q){
+    if(p >= q)
+    {
+        return p;
+    }
+    else
+        return q;
+}
+
 bool read_points(string fname, vector<Point> &points){
     ifstream input(fname.c_str());
     int x, y, size = 0, i;

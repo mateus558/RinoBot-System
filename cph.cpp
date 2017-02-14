@@ -41,7 +41,7 @@ double CPH::iterator(){
             }
         }
     }
-    cout << "Erro" << " " << erro << endl;
+    //cout << "Erro" << " " << erro << endl;
     return erro;
 }
 
@@ -171,10 +171,6 @@ void CPH::print_grid(){
     {
         for(j=0;j<36;j++)
         {
-            while (tGrid[i][j]>180)
-                tGrid[i][j] = tGrid[i][j] - 360;
-            while (tGrid[i][j]<-180)
-                tGrid[i][j] = tGrid[i][j] + 360;
             cout<<tGrid[i][j]<<setw(7);
         }
         cout<<"\n\n";
@@ -211,7 +207,7 @@ void CPH::run(){
     for(i = 0; i < 3; ++i){
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
             enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
-            cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
             set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
         }else{
             //tratar posição dos inimigos aqui
@@ -219,7 +215,7 @@ void CPH::run(){
 
         if(team_pos[i].x > 0 && team_pos[i].y > 0){
             team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-            cout<<"Amigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
         }else{
             //tratar posição dos miguxos aqui
         }
@@ -227,7 +223,7 @@ void CPH::run(){
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
         ball_pos_grid = convert_C_to_G(ball_pos);
-         cout<<"Bola "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
         set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
     }else{
         //tratar a bola aqui

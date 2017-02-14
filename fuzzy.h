@@ -36,7 +36,7 @@ private:
     vector<double> input; //vetor de entrada para calculo de decisao do fuzzy (FD,FC,FA)
 
     double output; //saida do fuzzy
-    bool stop; //variavel de controle de thread
+    bool stop, duniverse_initialized; //variavel de controle de thread
 
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
 
@@ -50,13 +50,12 @@ public:
     Fuzzy();
 
     void init_duniverse();
-    void init_funcao_pertinencia(int);
+    void init_funcao_pertinencia();
     void fuzzification();
     void calcula_input(Robot);
     double defuzzification();
     double min_function(double, double);
     double max_function(double, double);
-    void decision();
     void Play();
     bool is_running();
     void Stop();

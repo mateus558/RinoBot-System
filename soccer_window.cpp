@@ -91,9 +91,16 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     enemy_pos[1] = percep.enemy_robots[1].get_pos();
     enemy_pos[2] = percep.enemy_robots[2].get_pos();
 
-    team_pos[0] = percep.team_robots[0].get_pos();
-    team_pos[1] = percep.team_robots[1].get_pos();
-    team_pos[2] = percep.team_robots[2].get_pos();
+   /* cout << "Bola :" << "em x: "<< ball_pos.x << " em y: "<< ball_pos.y << endl;
+    cout << "Inimigo 1: " << "em x: "<< enemy_pos[0].x << " em y: "<< enemy_pos[0].y << endl;
+    cout << "Inimigo 2: " << "em x: "<< enemy_pos[1].x << " em y: "<< enemy_pos[1].y << endl;
+    cout << "Inimigo 3: " << "em x: "<< enemy_pos[2].x << " em y: "<< enemy_pos[2].y << endl;*/
+
+    team_pos[0] = percep.team_robots[0].get_pos(); //Leona
+    team_pos[1] = percep.team_robots[1].get_pos(); //Gandalf
+    team_pos[2] = percep.team_robots[2].get_pos(); //Presto
+
+    cout << "Gandalf " << team_pos[1] << endl;
 
     cph->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
     cph->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph
@@ -132,6 +139,15 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         }
 
         cph->Play();
+     }
+
+    //inicia a thread do fuzzy caso ela nao esteja em ececucao
+    if(run_fuzzy){
+        if(fuzzy->is_running()){
+            fuzzy->wait();
+        }
+
+        fuzzy->Play();
      }
 }
 
@@ -286,6 +302,11 @@ void soccer_window::on_CPH_clicked()
         run_cph = true;
     }else{
         run_cph = false;
+    }
+    if(!run_fuzzy){
+        run_fuzzy = true;
+    }else{
+        run_fuzzy = false;
     }
 }
 

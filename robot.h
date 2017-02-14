@@ -7,6 +7,7 @@
 #include <QtSerialPort/QSerialPort>
 #include "serial.h"
 
+
 using namespace std;
 using namespace cv;
 
@@ -45,6 +46,8 @@ public:
     bool send_velocities(Serial *serial, pair<double, double> vels);
     void set_flag_fuzzy(double);
     int get_flag_fuzzy();
+    double min_function(double, double);
+    double max_function(double, double);
     int get_channel();
     void set_channel(int channel = -1);
     void set_angle(double angle);

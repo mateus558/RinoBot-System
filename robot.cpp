@@ -332,9 +332,58 @@ string Robot::get_ID()
 }
 
 void Robot::set_flag_fuzzy(double output){
+    double prox_zero, prox_meio, prox_um , aux;
+    prox_zero = 0 - output;
+    prox_meio = 0.5 - output;
+    prox_um = 1.0 - output;
+
+    if(prox_zero < 0)
+        prox_zero = -prox_zero;
+    if(prox_meio < 0)
+        prox_meio = -prox_meio;
+    if(prox_um < 0)
+        prox_um = -prox_um;
+
+    aux = min_function(prox_zero,prox_meio);
+    aux = min_function(aux,prox_um);
+
+    if(aux == prox_zero)
+    {
+        flag_fuzzy = 0;
+        cout << "Robo deve Defender Arduamente!"<< endl;
+    }
+    else if(aux == prox_meio)
+    {
+        flag_fuzzy = 1;
+        cout << "Robo deve ser Um bom Meia!"<< endl;
+    }
+    else
+    {
+        flag_fuzzy = 2;
+        cout << "Robo deve Atacar Ferozmente!"<< endl;
+    }
 
 }
 
 int Robot::get_flag_fuzzy(){
+    return  this->flag_fuzzy;
 
+}
+
+double Robot::min_function(double p, double q){
+    if(p <= q)
+    {
+        return p;
+    }
+    else
+        return q;
+}
+
+double Robot::max_function(double p, double q){
+    if(p >= q)
+    {
+        return p;
+    }
+    else
+        return q;
 }
