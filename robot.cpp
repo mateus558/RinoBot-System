@@ -331,28 +331,14 @@ string Robot::get_ID()
     return this->ID;
 }
 
-void Robot::set_flag_fuzzy(double output){
-    double prox_zero, prox_meio, prox_um , aux;
-    prox_zero = 0 - output;
-    prox_meio = 0.5 - output;
-    prox_um = 1.0 - output;
+void Robot::set_flag_fuzzy(int output){
 
-    if(prox_zero < 0)
-        prox_zero = -prox_zero;
-    if(prox_meio < 0)
-        prox_meio = -prox_meio;
-    if(prox_um < 0)
-        prox_um = -prox_um;
-
-    aux = min_function(prox_zero,prox_meio);
-    aux = min_function(aux,prox_um);
-
-    if(aux == prox_zero)
+    if(output == 0)
     {
         flag_fuzzy = 0;
         cout << "Robo deve Defender Arduamente!"<< endl;
     }
-    else if(aux == prox_meio)
+    else if(output == 1)
     {
         flag_fuzzy = 1;
         cout << "Robo deve ser Um bom Meia!"<< endl;

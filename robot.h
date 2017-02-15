@@ -44,7 +44,7 @@ public:
     Robot();
     static bool encoders_reading(Serial *serial, int &robot, pair<double, double> &vels, double &battery);
     bool send_velocities(Serial *serial, pair<double, double> vels);
-    void set_flag_fuzzy(double);
+    void set_flag_fuzzy(int);
     int get_flag_fuzzy();
     double min_function(double, double);
     double max_function(double, double);

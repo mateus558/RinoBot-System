@@ -28,6 +28,7 @@ Fuzzy::Fuzzy(){
     y_alto.resize(101);
     d_universe.resize(101);
     input.resize(3);
+    mi_output.resize(3);
 
     mi = dMatrix(3, vector<double>(3, 0.0));
     limite = dMatrix(27, vector<double>(101, 0.0));
@@ -71,7 +72,6 @@ void Fuzzy::run(){
 
     //Pro primeiro robô
     calcula_input(selec_robot.r1);
-    cout << "Vai sua Puta!" << endl;
     fuzzification();
     selec_robot.r1.set_flag_fuzzy(defuzzification());
 
@@ -100,32 +100,9 @@ void Fuzzy::calcula_input(Robot r){
     input[0] = (round(input[0]*100))/100;
     cout << "FD: "<< input[0] << endl;
 
-    //Calculo FC - distBallTeam, distBallEnemy, AngBallAliado, RangeAng
-
-    ball_pos.y = -ball_pos.y;
-    robot_pos.y = -robot_pos.y;
-
-    //Calcula angulo entre robo e bola
-    Point2d vec_ball_robot = ball_pos-robot_pos;
-    double ang_vec_eixox = angle_two_points(vec_ball_robot,eixo_x);
-
-    if (robot_pos.y > ball_pos.y)
-            ang_vec_eixox = -ang_vec_eixox;
-
-    double ang_ball_robot = ang_vec_eixox - angle;
-
-    if(ang_ball_robot < 0)
-        ang_ball_robot = -ang_ball_robot;
-    if(ang_ball_robot >= 90 && ang_ball_robot <= 180)
-        ang_ball_robot = 180 - ang_ball_robot;
-
-    cout << "Angulo entre bola e robo: "<< ang_ball_robot << endl;
-    cout << "Angulo vetor bola robo: "<< ang_vec_eixox << endl;
-    cout << "Angulo de orientacao robo: "<< angle << endl;
+    //Calculo FC - distBallTeam, distBallEnemy
 
     //Define Inimigo mais prox
-    ball_pos.y = -ball_pos.y;
-    robot_pos.y = -robot_pos.y;
 
     Point2d enemy_prox;
     if ((euclidean_dist(ball_pos,enemy_pos[0]) <= euclidean_dist(ball_pos,enemy_pos[1])) && (euclidean_dist(ball_pos,enemy_pos[0]) <= euclidean_dist(ball_pos,enemy_pos[2])))
@@ -142,13 +119,36 @@ void Fuzzy::calcula_input(Robot r){
     cout << "Inimigo mais prox bola: " << endl;
     cout << "Em x: " << enemy_prox.x << " Em y: " << enemy_prox.y << endl;*/
 
-    input[1] = 0.5*(pow(2.7183,-0.6931*(euclidean_dist(ball_pos,robot_pos)/euclidean_dist(ball_pos,enemy_prox))) + pow(2.7183,-0.6931*(ang_ball_robot/30)));
+    input[1] =pow(2.7183,-0.6931*(euclidean_dist(ball_pos,robot_pos)/euclidean_dist(ball_pos,enemy_prox)));
     input[1] = (round(input[1]*100))/100;
     cout << "FC: "<< input[1] << endl;
 
 
     //Calculo FA - AngBallAliado
-    input[2] = (90 - ang_ball_robot)/90;
+
+    //Corrige Posicionamento
+    ball_pos.y = -ball_pos.y;
+    robot_pos.y = -robot_pos.y;
+
+    //Calcula angulo entre robo e bola
+    Point2d vec_ball_robot = ball_pos-robot_pos;
+    double ang_vec_eixox = angle_two_points(vec_ball_robot,eixo_x);
+
+    //Corrige o angulo
+    if (robot_pos.y > ball_pos.y)
+            ang_vec_eixox = -ang_vec_eixox;
+
+    double ang_ball_robot = ang_vec_eixox - angle;
+
+
+    cout << "Angulo entre bola e robo: "<< ang_ball_robot << endl;
+    cout << "Angulo vetor bola robo: "<< ang_vec_eixox << endl;
+    cout << "Angulo de orientacao robo: "<< angle << endl;
+    if (ang_ball_robot <= 90 && ang_ball_robot >= -90)
+        input[2] = (90 - fabs(ang_ball_robot))/90;
+    else
+        input[2] = (-90 + fabs(ang_ball_robot))/90;
+
     input[2] = (round(input[2]*100))/100;
     cout << "FA: "<< input[2] << endl;
 
@@ -238,9 +238,9 @@ void Fuzzy::fuzzification(){
     }
 }
 
-double Fuzzy::defuzzification(){
-    double sum1=0,sum2=0;
-    int i=0;
+int Fuzzy::defuzzification(){
+    double sum1 = 0,sum2 = 0, aux2;
+    int i,j,aux1;
     for(i=0;i<=100;i++)
     {
         sum1 = sum1 + d_universe[i]*y_output[i];
@@ -248,7 +248,36 @@ double Fuzzy::defuzzification(){
     }
     output = sum1/sum2;
     cout << "Saida Fuzzy: "<< output << endl;
-    return output;
+
+    //Calcular a pertinencia da saida
+    aux1 = output/0.01;
+
+    for(j=0;j<3;j++)
+    {
+        if(j == 0)
+        {
+            mi_output[j] = y_baixo[aux1];
+        }
+        if(j == 1)
+        {
+            mi_output[j] = y_medio[aux1];
+        }
+        if(j == 2)
+        {
+            mi_output[j] = y_alto[aux1];
+        }
+    }
+
+    aux2 = max_function(mi_output[0],mi_output[1]);
+    aux2 = max_function(aux2,mi_output[2]);
+
+    if (aux2 == mi_output[0])
+        return 0;
+    else if (aux2 == mi_output[1])
+        return 1;
+    else
+        return 2;
+
 }
 
 

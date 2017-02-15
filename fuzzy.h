@@ -27,13 +27,14 @@ private:
     dMatrix limite;
 
     vector<double> pertinencia;
-    vector<double> D;//Coeficiente de Disparo
+    vector<double> D; //Coeficiente de Disparo
     vector<double> y_output;
     vector<double> y_baixo;
     vector<double> y_medio;
     vector<double> y_alto;
-    vector<double> d_universe;// Dominio dos termos primarios de entrada e saida
+    vector<double> d_universe; // Dominio dos termos primarios de entrada e saida
     vector<double> input; //vetor de entrada para calculo de decisao do fuzzy (FD,FC,FA)
+    vector<double> mi_output; //vetor de saida para calculo da decisao do fuzzy
 
     double output; //saida do fuzzy
     bool stop, duniverse_initialized; //variavel de controle de thread
@@ -53,7 +54,7 @@ public:
     void init_funcao_pertinencia();
     void fuzzification();
     void calcula_input(Robot);
-    double defuzzification();
+    int defuzzification();
     double min_function(double, double);
     double max_function(double, double);
     void Play();
