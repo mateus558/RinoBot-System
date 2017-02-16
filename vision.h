@@ -6,13 +6,16 @@
 #include <QImage>
 #include <QWaitCondition>
 #include <QtConcurrent/QtConcurrent>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+//#include <opencv2/core/core.hpp>
+//#include <opencv2/imgproc/imgproc.hpp>
+//#include <opencv2/highgui/highgui.hpp>
 #include <queue>
 #include <utility>
 #include <vector>
 #include <Eigen/Dense>
+#include <opencv2/opencv.hpp>
+#include <opencv2/tracking.hpp>
+
 #include "robot.h"
 #include "utils.h"
 
@@ -30,7 +33,7 @@ public:
     };
 private:
     bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters, showErrors;
-    int mode, rows, cols, camid, x_offset, y_offset;
+    int mode, rows, cols, camid, x_offset, y_offset, cont;
     double FPS;
     Perception info;
     QMutex mutex;
@@ -40,6 +43,10 @@ private:
     Mat vision_frame;
     VideoCapture cam;
     vector<int> low;
+    Ptr<Tracker> tracker;
+    Rect2d ball_tracker;
+    vector<Rect2d> objects_tracker;
+    vector<bool> track_init;
     vector<int> upper;
     pair<vector<int>, vector<int> > ball_color;
     Point ball_pos;

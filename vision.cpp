@@ -19,6 +19,10 @@ Vision::Vision(QObject *parent): QThread(parent)
     stop = true;
     showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters= false;
     mode = 0;
+    cont = 0;
+    tracker = Tracker::create("KCF");
+    track_init.assign(7, false);
+    objects_tracker.resize(7);
     robots.resize(6);
     robots[0].set_nick("Leona");
     robots[1].set_nick("Gandalf");
@@ -75,7 +79,8 @@ bool invalid_contour(vector<Point> p){
 
 vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
 {
-    int i, j, csize, k, tsize, r_label = 0, min, t1size, tmin, l;
+    size_t i, j, k, l;
+    int csize, tsize, r_label = 0, min, t1size, tmin;
     double dista = 0.0, angle, last_angle;
     bool not_t1, error;
     Moments ball_moment, temp_moment;
@@ -98,10 +103,26 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
         ball_last_pos = ball_cent;
+        if(!track_init[0]){
+            ball_tracker = Rect2d(ball_cent.x, ball_cent.y, 40, 40);
+            tracker->init(raw_frame, ball_tracker);
+            cont++;
+        }
+        if(cont%10 == 0){
+            tracker->update(raw_frame, ball_tracker);
+            cont = 0;
+        }
+        //objects_tracker[0] = Rect2d(ball_cent.x, ball_cent.y, 40, 40,(255, 0, 0), 2,1);
         ball_found = true;
     }else{
-        if(showErrors) cerr << "Ball not found!" << endl;
-        ball_cent = ball_last_pos;
+        if(tracker->update(raw_frame, ball_tracker)){
+            ball_cent = Point(ball_tracker.x, ball_tracker.y);
+            if(showErrors) cerr << "Ball not found! (Tracking Performed)" << endl;
+        }else{
+            if(showErrors) cerr << "Ball not found! (Tracking not performed)" << endl;
+            ball_cent = ball_last_pos;
+        }
+
         ball_found = false;
     }
 
@@ -260,6 +281,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     ball_pos = ball_cent;
     if(error && showErrors) cerr << endl;
 
+    cont++;
     return robots;
 }
 
@@ -431,13 +453,13 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
         team_cent = robots[i].get_team_cent();
         color_cent = robots[i].get_color_cent();
         angle = robots[i].get_angle();
-
+        Rect2d bbox(cent.x-20, cent.y-20, 40, 40);
         if(cent == null_point) continue;
         if(showCenters){
             circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
             circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
         }
-
+        rectangle(frame, bbox, Scalar(255,0,0), 2, 1);
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
         inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y - 20 * sin(angle * PI / 180.0));
         line(frame, cent, inter, Scalar(0, 255, 0), 1);
