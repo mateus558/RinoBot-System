@@ -100,7 +100,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     team_pos[1] = percep.team_robots[1].get_pos(); //Gandalf
     team_pos[2] = percep.team_robots[2].get_pos(); //Presto
 
-    cout << "Gandalf " << team_pos[1] << endl;
+    cout << "Presto " << percep.team_robots[2].get_channel() << endl;
 
     cph->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
     cph->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph
@@ -332,5 +332,18 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 
 void soccer_window::on_pushButton_clicked()
 {
-    serial->listen_robots();
+    if(serial->is_open())
+    {
+        serial->close_serial_port();
+    }
+    else
+    {
+        //serial->set_baud_rate(57600);
+        serial->open_serial_port();
+        string data = "Teste";
+        serial->write_data(data);
+    }
+    //serial->listen_robots();
+
+
 }

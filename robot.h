@@ -39,6 +39,7 @@ private:
     vector<int> upper_color_team;
     vector<int> low_color;
     vector<int> upper_color;
+    pair<double,double> vel;
 
 public:
     Robot();
@@ -53,11 +54,11 @@ public:
     void set_angle(double angle);
     double get_angle();
     double get_last_angle();
-    void set_lin_vel(double vel);
+    void set_lin_vel(pair<double,double>);
     bool is_detected();
     void was_detected(bool detected);
     double get_loss_rate();
-    double get_lin_vel(double vel);
+    pair<double,double> get_lin_vel();
     void set_ang_vel(double vel);
     double get_ang_vel(double vel); //angular velocity w
     Point get_centroid();

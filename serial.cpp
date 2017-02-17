@@ -8,12 +8,12 @@ using namespace std;
 Serial::Serial(){
     open = false;
     serial = new QSerialPort;
-    timer_delay = 100;
+    timer_delay = 10;
 
     connect(serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),
             this, &Serial::handle_error);
-    connect(serial, &QSerialPort::readyRead, this, &Serial::handle_readyRead);
-    connect(&timer, SIGNAL(timeout()), SLOT(handle_timeOut()));
+    //connect(serial, &QSerialPort::readyRead, this, &Serial::handle_readyRead);
+    //connect(&timer, SIGNAL(timeout()), SLOT(handle_timeOut()));
 }
 
 void Serial::listen_robots(){
@@ -50,6 +50,7 @@ void Serial::open_serial_port(){
         open = false;
         cerr << "WARNING: Serial port " << serial->portName().toUtf8().constData() << " could not be opened!" << endl;
     }
+     //timer.start(timer_delay);
 }
 
 void Serial::close_serial_port(){
@@ -68,11 +69,13 @@ void Serial::write_data(string data_str){
 
     serial->write(data);
     timer.start(timer_delay);
+    //serial->waitForBytesWritten(5);
 }
 
 void Serial::write_data(QByteArray data){
     serial->write(data);
     timer.start(timer_delay);
+    //serial->waitForBytesWritten(5);
 }
 
 void Serial::read(char *b, int i){

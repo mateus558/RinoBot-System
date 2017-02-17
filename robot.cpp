@@ -331,6 +331,11 @@ string Robot::get_ID()
     return this->ID;
 }
 
+int Robot::get_channel()
+{
+    return this->channel;
+}
+
 void Robot::set_flag_fuzzy(int output){
 
     if(output == 0)
@@ -372,4 +377,12 @@ double Robot::max_function(double p, double q){
     }
     else
         return q;
+}
+
+void Robot::set_lin_vel(pair<double, double> vels){
+    this->vel = vels;
+}
+
+pair<double,double> Robot::get_lin_vel(){
+    return this->vel;
 }
