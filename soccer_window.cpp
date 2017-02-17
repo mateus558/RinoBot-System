@@ -339,9 +339,14 @@ void soccer_window::on_pushButton_clicked()
     else
     {
         //serial->set_baud_rate(57600);
+        cout<< "ta no else demoin!"<<endl;
         serial->open_serial_port();
         string data = "Teste";
-        serial->write_data(data);
+        for(int i=0;i<3;i++)
+        {
+            serial->write_data(data);
+            cout << i << endl;
+        }
     }
     //serial->listen_robots();
 

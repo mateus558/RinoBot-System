@@ -16,7 +16,7 @@ class Serial;
 struct Encoder{
     int robot;
     double battery;
-    pair<double, double> vel;
+    pair<float, float> vel;
 };
 
 class Robot{
@@ -39,12 +39,12 @@ private:
     vector<int> upper_color_team;
     vector<int> low_color;
     vector<int> upper_color;
-    pair<double,double> vel;
+    pair<float,float> vel;
 
 public:
     Robot();
-    static bool encoders_reading(Serial *serial, int &robot, pair<double, double> &vels, double &battery);
-    bool send_velocities(Serial *serial, pair<double, double> vels);
+    static bool encoders_reading(Serial *serial, int &robot, pair<float, float> &vels, float &battery);
+    bool send_velocities(Serial *serial, pair<float, float> vels);
     void set_flag_fuzzy(int);
     int get_flag_fuzzy();
     double min_function(double, double);
@@ -54,7 +54,7 @@ public:
     void set_angle(double angle);
     double get_angle();
     double get_last_angle();
-    void set_lin_vel(pair<double,double>);
+    void set_lin_vel(pair<float, float>);
     bool is_detected();
     void was_detected(bool detected);
     double get_loss_rate();
@@ -90,3 +90,4 @@ public:
 };
 
 #endif // ROBOT_H
+

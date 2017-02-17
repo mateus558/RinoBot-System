@@ -26,7 +26,7 @@ Robot::Robot(){
     flag_fuzzy = 0;
 }
 
-bool Robot::send_velocities(Serial *serial, pair<double, double> vels){
+bool Robot::send_velocities(Serial *serial, pair<float, float> vels){
     float left_vel = vels.first, right_vel = vels.second;
 
     if(serial->is_open()){
@@ -76,7 +76,7 @@ bool Robot::send_velocities(Serial *serial, pair<double, double> vels){
     return true;
 }
 
-bool Robot::encoders_reading(Serial *serial, int &robot, pair<double, double> &vels, double &battery){
+bool Robot::encoders_reading(Serial *serial, int &robot, pair<float, float> &vels, float &battery){
     //Array de bytes lidos da serial
     QByteArray *dados;
     //Armazena a quantidade de bytes lidos da serial
