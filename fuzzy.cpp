@@ -59,8 +59,8 @@ bool Fuzzy::is_running(){
 }
 
 void Fuzzy::msleep(int ms){
-    /*struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
-    nanosleep(&ts, NULL);*/
+    struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
+    nanosleep(&ts, NULL);
 }
 
 void Fuzzy::run(){

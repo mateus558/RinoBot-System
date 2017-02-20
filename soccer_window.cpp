@@ -9,7 +9,6 @@
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
 #include "cph.h"
-#include "serial.h"
 #include "fuzzy.h"
 #include "utils.h"
 
@@ -358,7 +357,7 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 
 void soccer_window::on_pushButton_clicked()
 {
-    if(serial->is_open())
+    /*if(serial->is_open())
     {
         serial->close_serial_port();
     }
@@ -376,5 +375,5 @@ void soccer_window::on_pushButton_clicked()
     }
     //serial->listen_robots();
 
-
+    */
 }

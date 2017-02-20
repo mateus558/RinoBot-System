@@ -7,7 +7,6 @@
 #include "cph.h"
 #include "cpo.h"
 #include "fuzzy.h"
-#include "serial.h"
 
 namespace Ui {
 class soccer_window;

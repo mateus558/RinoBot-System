@@ -2,6 +2,7 @@
 #define FUZZY_H
 
 #include <QThread>
+#include <QMutex>
 #include <vector>
 #include "robot.h" //Robot class
 #include "utils.h" //Utils library

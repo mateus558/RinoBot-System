@@ -4,19 +4,53 @@
 #include <vector>
 #include <utility>
 #include <opencv2/core.hpp>
+#include <QTimer>
 #include <QtSerialPort/QSerialPort>
-#include "serial.h"
-
+#include "settingsdialog.h"
 
 using namespace std;
 using namespace cv;
 
 class Serial;
 
+//union usado para converter float em byte e vice versa
+typedef union{
+    float  Float;
+    unsigned char Bytes[4];
+} Float2Char;
+
+//union usado para converter short em byte e vice versa
+typedef union{
+    unsigned short Short;
+    unsigned char Bytes[2];
+}Short2Char;
+
 struct Encoder{
     int robot;
     double battery;
     pair<float, float> vel;
+};
+
+class Serial: public QObject{
+Q_OBJECT
+private:
+    QSerialPort *serial;
+    SettingsDialog::Settings settings;
+    QTimer timer;
+    int delay;
+
+public:
+    Serial();
+    bool open();
+    void close();
+    void read(char*, int);
+    void write(QByteArray);
+    bool flush();
+    bool is_open();
+    qint64 bytes_available();
+    void handle_error(QSerialPort::SerialPortError);
+    void set_serial_settings(SettingsDialog::Settings);
+    ~Serial();
 };
 
 class Robot{
@@ -31,20 +65,15 @@ private:
     Point2d centroid_cm;
     Point color_cent, team_cent;    //Centroid from the half role color and from team color
     Point line_slope;
-    string nick;
-    string ID;
-    string role;
+    string nick, ID, role;
     vector<Point> pos_hist;    
-    vector<int> low_color_team;
-    vector<int> upper_color_team;
-    vector<int> low_color;
-    vector<int> upper_color;
+    vector<int> low_color_team, upper_color_team, low_color, upper_color;
     pair<float,float> vel;
-
+    static Serial serial;
 public:
     Robot();
-    static bool encoders_reading(Serial *serial, int &robot, pair<float, float> &vels, float &battery);
-    bool send_velocities(Serial *serial, pair<float, float> vels);
+    static bool encoders_reading(int &robot, pair<float, float> &vels, float &battery);
+    static bool send_velocities(int channel, pair<float, float> vels);
     void set_flag_fuzzy(int);
     int get_flag_fuzzy();
     double min_function(double, double);
@@ -58,7 +87,7 @@ public:
     bool is_detected();
     void was_detected(bool detected);
     double get_loss_rate();
-    pair<double,double> get_lin_vel();
+    pair<float,float> get_lin_vel();
     void set_ang_vel(double vel);
     double get_ang_vel(double vel); //angular velocity w
     Point get_centroid();

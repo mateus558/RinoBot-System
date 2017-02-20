@@ -34,7 +34,6 @@ HEADERS  += mainwindow.h \
     utils.h \
     configrobots.h \
     setcolorrange.h \
-    serial.h \
     settingsdialog.h \
     soccer_window.h \
     cph.h \

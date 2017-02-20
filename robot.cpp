@@ -3,9 +3,10 @@
 #include <sstream>
 #include "utils.h"
 #include "robot.h"
-#include "serial.h"
 
 using namespace std;
+
+Serial Robot::serial;
 
 Robot::Robot(){
     channel = -1;
@@ -26,15 +27,15 @@ Robot::Robot(){
     flag_fuzzy = 0;
 }
 
-bool Robot::send_velocities(Serial *serial, pair<float, float> vels){
+bool Robot::send_velocities(int channel, pair<float, float> vels){
     float left_vel = vels.first, right_vel = vels.second;
 
-    if(serial->is_open()){
+    if(serial.is_open()){
         //Inicializamos o vetor de bytes a ser transferido
         QByteArray bytes(13, 0x0);
         bytes[0] = 18;
         //Setamos o byte 1 como o número do robô selecionado
-        bytes[1] = (char)this->channel;
+        bytes[1] = (char)channel;
         bytes[12] = 19;
 
         //Criamos uma variável para converter a soma dos bytes de velocidade
@@ -65,33 +66,36 @@ bool Robot::send_velocities(Serial *serial, pair<float, float> vels){
         bytes[11] = cont.Bytes[1];
 
         //Escrevemos os bytes na porta serial
-        serial->write_data(bytes);
+        serial.write(bytes);
         //Finalizamos a transferência dos dados a serial
-        serial->flush();
+        serial.flush();
     }else{
-        cerr << nick << ": (Serial closed) Couldn't write wheels velocities at serial port." << endl;
+        cerr << "(Serial closed) Couldn't write wheels velocities at serial port." << endl;
 
         return false;
     }
     return true;
 }
 
-bool Robot::encoders_reading(Serial *serial, int &robot, pair<float, float> &vels, float &battery){
+bool Robot::encoders_reading(int &robot, pair<float, float> &vels, float &battery){
     //Array de bytes lidos da serial
     QByteArray *dados;
     //Armazena a quantidade de bytes lidos da serial
     unsigned char PosDados;
     char b;
 
-    if(!serial || !serial->is_open()){
+    dados = new QByteArray(17, 0x0);
+    PosDados = 0;
+
+    if(!serial.is_open()){
         cerr << "Couldn't read information from serial. (Serial closed)" << endl;
         return false;
     }
 
     // Executamos a leitura de bytes enquanto houver um byte disponível na serial
-    while (serial->bytes_available() > 0){
+    while (serial.bytes_available() > 0){
         //Lemos um byte da serial para a variável b
-        serial->read(&b, 1);
+        serial.read(&b, 1);
         //Adicionamos b ao array de entrada de bytes
         dados->data()[PosDados] = b;
         //Incrementamos a quantidade de bytes recebidos
@@ -379,10 +383,10 @@ double Robot::max_function(double p, double q){
         return q;
 }
 
-void Robot::set_lin_vel(pair<double, double> vels){
+void Robot::set_lin_vel(pair<float, float> vels){
     this->vel = vels;
 }
 
-pair<double,double> Robot::get_lin_vel(){
+pair<float,float> Robot::get_lin_vel(){
     return this->vel;
 }
