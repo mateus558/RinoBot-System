@@ -43,7 +43,7 @@ void Serial::handle_timeOut(){
 }
 
 void Serial::open_serial_port(){
-    if(serial->open(QSerialPort::ReadWrite)){
+    if(serial->open(QIODevice::ReadWrite)){
         open = true;
         cout << serial->portName().toUtf8().constData() << " is open." << endl;
     }else{
@@ -68,14 +68,15 @@ void Serial::write_data(string data_str){
     QByteArray data(data_str.c_str(), data_str.length());
 
     serial->write(data);
-    timer.start(timer_delay);
-    //serial->waitForBytesWritten(5);
+    //timer.start(timer_delay);
+    serial->waitForBytesWritten(5);
+
 }
 
 void Serial::write_data(QByteArray data){
     serial->write(data);
-    timer.start(timer_delay);
-    //serial->waitForBytesWritten(5);
+    //timer.start(timer_delay);
+    serial->waitForBytesWritten(5);
 }
 
 void Serial::read(char *b, int i){
@@ -136,7 +137,7 @@ void Serial::set_serial_settings(SettingsDialog::Settings settings){
     serial->setBaudRate(settings.baudRate);
     serial->setDataBits(settings.dataBits);
     serial->setParity(settings.parity);
-    serial->setFlowControl(settings.flowControl);
+    //serial->setFlowControl(settings.flowControl);
     serial->setStopBits(settings.stopBits);
 }
 
