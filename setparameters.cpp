@@ -39,6 +39,19 @@ void SetParameters::closeEvent(QCloseEvent *event){
 }
 
 void SetParameters::updateSerialSettings(SettingsDialog::Settings settings){
+    fstream out;
+
+    out.open("Config/serial.cfg", fstream::out);
+
+    out << settings.name.toStdString() << endl;
+    out << settings.baudRate << endl;
+    out << settings.flowControl << endl;
+    out << settings.parity << endl;
+    out << settings.stopBits << endl;
+    out << settings.dataBits << endl;
+
+    out.close();
+
     this->serial_settings = settings;
     emit serialSettings(this->serial_settings);
 }

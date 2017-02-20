@@ -122,7 +122,7 @@ void Serial::handle_error(QSerialPort::SerialPortError error){
 }
 
 bool Serial::is_open(){
-    return this->open;
+    return serial->isOpen();
 }
 
 bool Serial::can_read_line(){
