@@ -22,7 +22,6 @@ soccer_window::soccer_window(QWidget *parent) :
 
     ui->setupUi(this);
     area_read = false;
-    serial = new Serial;
     eye = new Vision;
     cph = new CPH; //instancia o objeto cph na rotina do sistema
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
@@ -32,7 +31,6 @@ soccer_window::soccer_window(QWidget *parent) :
     eye->set_mode(0);
     load_serial_cfg();
     Robot::config_serial(serial_config);
-    Robot::open_serial();
 
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
@@ -71,7 +69,7 @@ void soccer_window::closeEvent(QCloseEvent *event){
 }
 
 void soccer_window::receiveSerialSettings(SettingsDialog::Settings serial_config){
-    this->serial->set_serial_settings(serial_config);
+    Robot::config_serial(serial_config);
 }
 
 void soccer_window::updateVisionUI(QImage img){
@@ -183,7 +181,7 @@ void soccer_window::updateFPS(double fps){
 
 void soccer_window::updateSerialSettings(SettingsDialog::Settings settings){
     //this->settings = settings;
-    serial->set_serial_settings(settings);
+    //serial->set_serial_settings(settings);
 }
 
 void soccer_window::on_start_game_clicked()
@@ -225,7 +223,6 @@ void soccer_window::on_switch_fields_clicked()
 soccer_window::~soccer_window()
 {
     delete eye;
-    delete serial;
     delete ui;
 }
 
@@ -358,23 +355,5 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 
 void soccer_window::on_pushButton_clicked()
 {
-    /*if(serial->is_open())
-    {
-        serial->close_serial_port();
-    }
-    else
-    {
-        //serial->set_baud_rate(57600);
-        cout<< "ta no else demoin!"<<endl;
-        serial->open_serial_port();
-        string data = "Teste";
-        for(int i=0;i<3;i++)
-        {
-            serial->write_data(data);
-            cout << i << endl;
-        }
-    }
-    //serial->listen_robots();
-
-    */
+    Robot::open_serial();
 }

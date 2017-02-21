@@ -4,14 +4,11 @@
 #include <vector>
 #include <utility>
 #include <opencv2/core.hpp>
-#include <QTimer>
-#include <QtSerialPort/QSerialPort>
+#include "serial.h"
 #include "settingsdialog.h"
 
 using namespace std;
 using namespace cv;
-
-class Serial;
 
 //union usado para converter float em byte e vice versa
 typedef union{
@@ -29,28 +26,6 @@ struct Encoder{
     int robot;
     double battery;
     pair<float, float> vel;
-};
-
-class Serial: public QObject{
-Q_OBJECT
-private:
-    QSerialPort *serial;
-    SettingsDialog::Settings settings;
-    QTimer timer;
-    int delay;
-
-public:
-    Serial();
-    bool open();
-    void close();
-    void read(char*, int);
-    void write(QByteArray);
-    bool flush();
-    bool is_open();
-    qint64 bytes_available();
-    void handle_error(QSerialPort::SerialPortError);
-    void set_serial_settings(SettingsDialog::Settings);
-    ~Serial();
 };
 
 class Robot{

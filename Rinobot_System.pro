@@ -38,7 +38,8 @@ HEADERS  += mainwindow.h \
     soccer_window.h \
     cph.h \
     cpo.h \
-    fuzzy.h
+    fuzzy.h \
+    serial.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-double parameters[][3] = {{-0.4, 0, 0.4},{0.3, 0.5, 0.7},{0.6, 1, 1.4}};
+double parameters[][3] = {{-0.3, 0, 0.3},{0.111, 0.333, 0.555},{0.444, 0.666, 0.888},{0.7, 1 , 1.3}};
 Point2d eixo_x(1.0,0.0);
 
 
@@ -21,17 +21,18 @@ Fuzzy::Fuzzy(){
     team_pos_grid = pVector(3);
 
     pertinencia.resize(3);
-    D.resize(27);
+    D.resize(64);
     y_output.resize(101);
     y_baixo.resize(101);
-    y_medio.resize(101);
+    y_medio1.resize(101);
+    y_medio2.resize(101);
     y_alto.resize(101);
     d_universe.resize(101);
     input.resize(3);
     mi_output.resize(3);
 
-    mi = dMatrix(3, vector<double>(3, 0.0));
-    limite = dMatrix(27, vector<double>(101, 0.0));
+    mi = dMatrix(3, vector<double>(4, 0.0));
+    limite = dMatrix(64, vector<double>(101, 0.0));
 
 }
 
@@ -89,6 +90,8 @@ void Fuzzy::set_to_select(Robot r1, Robot r2){
 
 void Fuzzy::calcula_input(Robot r){
 
+    double aux1,aux2;
+
     Point2d robot_pos = r.get_pos();
     //Point2d robot2_pos = selec_robot.r2.get_pos();
 
@@ -124,33 +127,56 @@ void Fuzzy::calcula_input(Robot r){
     cout << "FC: "<< input[1] << endl;
 
 
-    //Calculo FA - AngBallAliado
+    //Calculo FA - AngBallAliado e AngAtkAliado
 
-    //Corrige Posicionamento
-    ball_pos.y = -ball_pos.y;
-    robot_pos.y = -robot_pos.y;
+        //Corrige Posicionamento
+        ball_pos.y = -ball_pos.y;
+        robot_pos.y = -robot_pos.y;
+        centroid_atk.y=-centroid_atk.y;
 
-    //Calcula angulo entre robo e bola
-    Point2d vec_ball_robot = ball_pos-robot_pos;
-    double ang_vec_eixox = angle_two_points(vec_ball_robot,eixo_x);
+        //Calcula angulo entre robo e bola
+        Point2d vec_ball_robot = ball_pos-robot_pos;
+        double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
 
-    //Corrige o angulo
-    if (robot_pos.y > ball_pos.y)
-            ang_vec_eixox = -ang_vec_eixox;
+        //Corrige o angulo
+        if (robot_pos.y > ball_pos.y)
+                ang_vec_ball_eixox = -ang_vec_ball_eixox;
 
-    double ang_ball_robot = ang_vec_eixox - angle;
+        double ang_ball_robot = ang_vec_ball_eixox - angle;
 
+        //Calcula angulo entre robo e gol adversario
+        Point2d vec_atk_robot = centroid_atk-robot_pos;
+        double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
 
-    cout << "Angulo entre bola e robo: "<< ang_ball_robot << endl;
-    cout << "Angulo vetor bola robo: "<< ang_vec_eixox << endl;
-    cout << "Angulo de orientacao robo: "<< angle << endl;
-    if (ang_ball_robot <= 90 && ang_ball_robot >= -90)
-        input[2] = (90 - fabs(ang_ball_robot))/90;
-    else
-        input[2] = (-90 + fabs(ang_ball_robot))/90;
+        //Corrige o angulo
+        if (robot_pos.y > centroid_atk.y)
+                ang_vec_atk_eixox = -ang_vec_atk_eixox;
 
-    input[2] = (round(input[2]*100))/100;
-    cout << "FA: "<< input[2] << endl;
+        double ang_atk_robot = ang_vec_atk_eixox - angle;
+
+        //ajusta angulos para menores que 180 e maiores que -180
+        if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot-360;
+        else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot+360;
+        if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot-360;
+        else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot+360;
+
+        cout << "Angulo entre bola e robo: "<< ang_ball_robot << endl;
+        //cout << "Angulo vetor bola robo: "<< ang_vec_ball_eixox << endl;
+        cout << "Angulo entre robo e atk " << ang_atk_robot << endl;
+        //cout << "Angulo vetor atk robo " << ang_vec_atk_eixox << endl;
+        //cout << "Angulo de orientacao robo: "<< angle << endl;
+
+        if (ang_ball_robot <= 90 && ang_ball_robot >= -90)
+            aux1 = (90 - fabs(ang_ball_robot))/90;
+        else
+            aux1 = (-90 + fabs(ang_ball_robot))/90;
+        if (ang_atk_robot <= 90 && ang_atk_robot >= -90)
+            aux2 = (90 - fabs(ang_atk_robot))/90;
+        else
+            aux2 = (-90 + fabs(ang_atk_robot))/90;
+        input[2]=0.7*aux1+0.3*aux2;
+        input[2] = (round(input[2]*100))/100;
+        cout << "FA: "<< input[2] << endl;
 
 }
 
@@ -168,7 +194,7 @@ void Fuzzy::fuzzification(){
 
     for(i=0;i<3;i++)
     {
-        for(j=0;j<3;j++)
+        for(j=0;j<4;j++)
         {
             aux1 = pertinencia[i];
             if(j == 0)
@@ -177,20 +203,24 @@ void Fuzzy::fuzzification(){
             }
             if(j == 1)
             {
-                mi[i][j] = y_medio[aux1];
+                mi[i][j] = y_medio1[aux1];
             }
             if(j == 2)
+            {
+                mi[i][j] = y_medio2[aux1];
+            }
+            if(j == 3)
             {
                 mi[i][j] = y_alto[aux1];
             }
         }
     }
 
-    for(i=0;i<3;i++)
+    for(i=0;i<4;i++)
     {
-        for(j=0;j<3;j++)
+        for(j=0;j<4;j++)
         {
-            for(k=0;k<3;k++)
+            for(k=0;k<4;k++)
             {
                 aux3 = min_function(mi[0][i],mi[1][j]);
                 aux3 = min_function(aux3,mi[2][k]);
@@ -203,21 +233,28 @@ void Fuzzy::fuzzification(){
 
     for(i=0;i<cont;i++)
     {
-        if((i >= 0 && i <= 3) || (i >= 9 && i <= 12))
+        if((i >= 0 && i <= 1) || (i >= 4 && i <= 5) || (i == 16) || (i == 22))
         {
             for(j=0;j<=100;j++)
             {
                 limite[i][j] = min_function(D[i],y_baixo[j]);
             }
         }
-        else if((i >= 4 && i <= 8) || (i >= 13 && i <= 15) || (i >= 18 && i <= 22) || (i == 24))
+        else if((i >= 2 && i <= 3) || (i >= 6 && i <= 10) || (i >= 12 && i <= 13) || (i >= 17 && i <= 20) || (i >= 24 && i <= 25) || (i >= 28 && i <= 29) || (i >= 32 && i <= 34) || (i >= 36 && i <= 37) || (i >= 48 && i <= 49) || (i >= 52 && i <= 53))
         {
             for(j=0;j<=100;j++)
             {
-                limite[i][j] = min_function(D[i],y_medio[j]);
+                limite[i][j] = min_function(D[i],y_medio1[j]);
             }
         }
-        else if((i >= 16 && i <= 17) || (i == 23) || (i >= 25 && i <= 26))
+        else if((i == 11) || (i >= 14 && i <= 15) || (i == 21) || (i == 23) || (i >= 26 && i <= 27) || (i >= 30 && i <= 31) || (i == 35) || (i == 38) || (i >= 40 && i <= 42) || (i >= 44 && i <= 45) || (i >= 50 && i <= 51) || (i == 54) || (i >= 56 && i <= 57) || (i >= 60 && i <= 61))
+        {
+            for(j=0;j<=100;j++)
+            {
+                limite[i][j] = min_function(D[i],y_medio2[j]);
+            }
+        }
+        else if((i == 39) || (i == 43) || (i >= 46 && i <= 47) || (i == 55) || (i >= 58 && i <= 59) || (i >= 62 && i <= 63))
         {
             for(j=0;j<=100;j++)
             {
@@ -229,7 +266,7 @@ void Fuzzy::fuzzification(){
 
     for(i=0;i<=100;i++)
     {
-        for(k=0;k<27;k++)
+        for(k=0;k<cont;k++)
         {
             aux2 = max_function(limite[k][i],aux2);
         }
@@ -252,7 +289,7 @@ int Fuzzy::defuzzification(){
     //Calcular a pertinencia da saida
     aux1 = output/0.01;
 
-    for(j=0;j<3;j++)
+    for(j=0;j<4;j++)
     {
         if(j == 0)
         {
@@ -260,9 +297,13 @@ int Fuzzy::defuzzification(){
         }
         if(j == 1)
         {
-            mi_output[j] = y_medio[aux1];
+            mi_output[j] = y_medio1[aux1];
         }
         if(j == 2)
+        {
+            mi_output[j] = y_medio2[aux1];
+        }
+        if(j == 3)
         {
             mi_output[j] = y_alto[aux1];
         }
@@ -270,13 +311,17 @@ int Fuzzy::defuzzification(){
 
     aux2 = max_function(mi_output[0],mi_output[1]);
     aux2 = max_function(aux2,mi_output[2]);
+    aux2 = max_function(aux2,mi_output[3]);
+
 
     if (aux2 == mi_output[0])
         return 0;
     else if (aux2 == mi_output[1])
         return 1;
-    else
+    else if (aux2 == mi_output[2])
         return 2;
+    else
+        return 3;
 
 }
 
@@ -330,30 +375,45 @@ void Fuzzy::init_funcao_pertinencia(){
     {
         if(d_universe[i] < parameters[1][0] || d_universe[i] > parameters[1][2])
         {
-            y_medio[i] = 0;
+            y_medio1[i] = 0;
         }
         else if(d_universe[i] < parameters[1][1])
         {
-            y_medio[i] = (d_universe[i] - parameters[1][0])/(parameters[1][1] - parameters[1][0]);
+            y_medio1[i] = (d_universe[i] - parameters[1][0])/(parameters[1][1] - parameters[1][0]);
         }
         else if(d_universe[i] >= parameters[1][1])
         {
-            y_medio[i] = (d_universe[i] - parameters[1][2])/(parameters[1][1] - parameters[1][2]);
+            y_medio1[i] = (d_universe[i] - parameters[1][2])/(parameters[1][1] - parameters[1][2]);
         }
     }
     for(i=0;i<=100;i++)
     {
         if(d_universe[i] < parameters[2][0] || d_universe[i] > parameters[2][2])
         {
-            y_alto[i] = 0;
+            y_medio2[i] = 0;
         }
         else if(d_universe[i] < parameters[2][1])
         {
-            y_alto[i] = (d_universe[i] - parameters[2][0])/(parameters[2][1] - parameters[2][0]);
+            y_medio2[i] = (d_universe[i] - parameters[2][0])/(parameters[2][1] - parameters[2][0]);
         }
         else if(d_universe[i] >= parameters[2][1])
         {
-            y_alto[i] = (d_universe[i] - parameters[2][2])/(parameters[2][1] - parameters[2][2]);
+            y_medio2[i] = (d_universe[i] - parameters[2][2])/(parameters[2][1] - parameters[2][2]);
+        }
+    }
+    for(i=0;i<=100;i++)
+    {
+        if(d_universe[i] < parameters[3][0] || d_universe[i] > parameters[3][2])
+        {
+            y_alto[i] = 0;
+        }
+        else if(d_universe[i] < parameters[3][1])
+        {
+            y_alto[i] = (d_universe[i] - parameters[3][0])/(parameters[3][1] - parameters[3][0]);
+        }
+        else if(d_universe[i] >= parameters[3][1])
+        {
+            y_alto[i] = (d_universe[i] - parameters[3][2])/(parameters[3][1] - parameters[3][2]);
         }
     }
 }

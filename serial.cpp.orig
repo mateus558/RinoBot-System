@@ -1,0 +1,138 @@
+#include <iostream>
+#include <QMessageBox>
+#include "robot.h"
+
+using namespace std;
+
+Serial::Serial(){
+    serial = new QSerialPort;
+    delay = 10;
+
+<<<<<<< HEAD
+    connect(serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),
+            this, &Serial::handle_error);
+||||||| merged common ancestors
+    connect(serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),
+            this, &Serial::handle_error);
+    //connect(serial, &QSerialPort::readyRead, this, &Serial::handle_readyRead);
+    //connect(&timer, SIGNAL(timeout()), SLOT(handle_timeOut()));
+}
+
+void Serial::listen_robots(){
+    if(!timer.isActive()){
+        timer.start(timer_delay);
+    }
+}
+
+void Serial::handle_readyRead(){
+    Encoder info;
+=======
+    //connect(serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),
+    //        this, &Serial::handle_error);
+    //connect(serial, &QSerialPort::readyRead, this, &Serial::handle_readyRead);
+    //connect(&timer, SIGNAL(timeout()), SLOT(handle_timeOut()));
+}
+
+void Serial::listen_robots(){
+    if(!timer.isActive()){
+        timer.start(timer_delay);
+    }
+}
+
+void Serial::handle_readyRead(){
+    /*Encoder info;
+>>>>>>> 821c4b1751d54f1f29a4d3f184395c0fcbe35f93
+
+<<<<<<< HEAD
+    timer.start(delay);
+||||||| merged common ancestors
+    Robot::encoders_reading(this, info.robot, info.vel, info.battery);
+    emit encoderReading(info);
+
+    if(!timer.isActive()){
+        timer.start(timer_delay);
+    }
+=======
+    Robot::encoders_reading(this, info.robot, info.vel, &info.battery);
+    emit encoderReading(info);
+
+    if(!timer.isActive()){
+        timer.start(timer_delay);
+    }*/
+>>>>>>> 821c4b1751d54f1f29a4d3f184395c0fcbe35f93
+}
+
+bool Serial::open(){
+    if(!serial->isOpen() || !serial->isWritable()){
+        cerr << "WARNING: Serial port " << serial->portName().toUtf8().constData() << " could not be opened!" << endl;
+        return false;
+    }
+
+    if(serial->open(QIODevice::ReadWrite)){
+        cout << serial->portName().toUtf8().constData() << " is open." << endl;
+    }else{
+        cerr << "WARNING: Serial port " << serial->portName().toUtf8().constData() << " could not be opened!" << endl;
+        return false;
+    }
+
+    if(!timer.isActive())
+        timer.start(delay);
+
+    return true;
+}
+
+void Serial::close(){
+    if(serial->isOpen()){
+        serial->close();
+        clog << serial->portName().toUtf8().constData() << " closed." << endl;
+    }
+}
+
+qint64 Serial::bytes_available(){
+    return serial->bytesAvailable();
+}
+
+void Serial::write(QByteArray data){
+    serial->write(data);
+
+    timer.start(delay);
+}
+
+void Serial::read(char *b, int i){
+    serial->read(&(*b), i);
+
+    timer.start(delay);
+}
+
+bool Serial::flush(){
+    return serial->flush();
+}
+
+void Serial::handle_error(QSerialPort::SerialPortError error){
+    if (error == QSerialPort::ResourceError) {
+        cerr << serial->errorString().toUtf8().constData() << endl;
+        close();
+    }
+}
+
+bool Serial::is_open(){
+    return serial->isOpen();
+}
+
+void Serial::set_serial_settings(SettingsDialog::Settings settings){
+    this->settings = settings;
+
+    serial->setPortName(settings.name);
+    serial->setBaudRate(settings.baudRate);
+    serial->setDataBits(settings.dataBits);
+    serial->setParity(settings.parity);
+    serial->setStopBits(settings.stopBits);
+}
+
+Serial::~Serial(){
+    if(is_open()){
+        close();
+    }
+
+    delete serial;
+}

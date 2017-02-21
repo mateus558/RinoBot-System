@@ -31,7 +31,8 @@ private:
     vector<double> D; //Coeficiente de Disparo
     vector<double> y_output;
     vector<double> y_baixo;
-    vector<double> y_medio;
+    vector<double> y_medio1;
+    vector<double> y_medio2;
     vector<double> y_alto;
     vector<double> d_universe; // Dominio dos termos primarios de entrada e saida
     vector<double> input; //vetor de entrada para calculo de decisao do fuzzy (FD,FC,FA)

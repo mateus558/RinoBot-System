@@ -1,17 +1,24 @@
 #include <iostream>
+#include <QCoreApplication>
 #include <QMessageBox>
 #include "robot.h"
 
 using namespace std;
 
-Serial::Serial(){
+Serial::Serial(QObject *parent): QObject(parent){
     serial = new QSerialPort;
+    timer = new QTimer(this);
     delay = 10;
 
+    //timer.setSingleShot(true);
     connect(serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),
             this, &Serial::handle_error);
+    connect(timer, SIGNAL(timeout()), this, SLOT(handleTimeout()));
 
-    timer.start(delay);
+}
+
+void Serial::handleTimeout(){
+
 }
 
 bool Serial::open(){
@@ -27,8 +34,8 @@ bool Serial::open(){
         return false;
     }
 
-    if(!timer.isActive())
-        timer.start(delay);
+    if(!timer->isActive())
+        timer->start(delay);
 
     return true;
 }
@@ -47,13 +54,13 @@ qint64 Serial::bytes_available(){
 void Serial::write(QByteArray data){
     serial->write(data);
 
-    timer.start(delay);
+    timer->start(delay);
 }
 
 void Serial::read(char *b, int i){
     serial->read(&(*b), i);
 
-    timer.start(delay);
+    timer->start(delay);
 }
 
 bool Serial::flush(){
