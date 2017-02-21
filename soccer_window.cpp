@@ -29,11 +29,37 @@ soccer_window::soccer_window(QWidget *parent) :
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
     run_cph = false; //flag da thread do cph
     run_fuzzy = false; //flag da thread do fuzzy
+
     eye->set_mode(0);
+    load_serial_cfg();
+    serial->set_serial_settings(serial_config);
 
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
     connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);
+}
+
+void soccer_window::load_serial_cfg(){
+    fstream in;
+    string name;
+    int flowControl, parity, stopBits, dataBits;
+
+    in.open("Config/serial.cfg", fstream::in);
+
+    in >> name;
+    in >> serial_config.baudRate;
+    in >> flowControl;
+    in >> parity;
+    in >> stopBits;
+    in >> dataBits;
+
+    in.close();
+
+    serial_config.name = QString::fromStdString(name);
+    serial_config.flowControl = QSerialPort::FlowControl(flowControl);
+    serial_config.parity = QSerialPort::Parity(parity);
+    serial_config.stopBits = QSerialPort::StopBits(stopBits);
+    serial_config.dataBits = QSerialPort::DataBits(dataBits);
 }
 
 void soccer_window::closeEvent(QCloseEvent *event){

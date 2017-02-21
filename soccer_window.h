@@ -19,6 +19,7 @@ class soccer_window : public QWidget
 
 public:
     explicit soccer_window(QWidget *parent = 0);
+    void load_serial_cfg();
     ~soccer_window();
 public slots:
     void updatePerceptionInfo(Vision::Perception);
@@ -53,6 +54,7 @@ private:
     Vision *eye;
     Vision::Perception percep;
     Serial *serial;
+    SettingsDialog::Settings serial_config;
     Ui::soccer_window *ui;
     std::vector<Robot> robots;
     Point2d ball_pos;
