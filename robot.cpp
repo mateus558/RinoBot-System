@@ -27,6 +27,18 @@ Robot::Robot(){
     flag_fuzzy = 0;
 }
 
+void Robot::config_serial(SettingsDialog::Settings settings){
+    serial.set_serial_settings(settings);
+}
+
+void Robot::open_serial(){
+    serial.open();
+}
+
+void Robot::close_serial(){
+    serial.close();
+}
+
 bool Robot::send_velocities(int channel, pair<float, float> vels){
     float left_vel = vels.first, right_vel = vels.second;
 

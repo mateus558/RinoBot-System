@@ -31,7 +31,8 @@ soccer_window::soccer_window(QWidget *parent) :
 
     eye->set_mode(0);
     load_serial_cfg();
-    serial->set_serial_settings(serial_config);
+    Robot::config_serial(serial_config);
+    Robot::open_serial();
 
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));

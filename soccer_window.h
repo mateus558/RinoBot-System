@@ -52,7 +52,6 @@ private:
     Fuzzy *fuzzy;
     Vision *eye;
     Vision::Perception percep;
-    Serial *serial;
     SettingsDialog::Settings serial_config;
     Ui::soccer_window *ui;
     std::vector<Robot> robots;
