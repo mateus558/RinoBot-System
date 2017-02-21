@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "robot.h"
 
+
 using namespace std;
 
 Serial Robot::serial;
@@ -53,25 +54,26 @@ bool Robot::send_velocities(int channel, pair<float, float> vels){
         //Criamos uma variável para converter a soma dos bytes de velocidade
         Short2Char cont;
         cont.Short = 0;
+        cont.Short += bytes[0] + bytes[1];
 
         //Criamos uma variável para converter as velocidades em bytes
-        Float2Char valor;
+        Float2Char valor1, valor2;
         //Fazemos com que o valor float da nossa variável Union seja a velocidade informada
-        valor.Float = left_vel;
+        valor1.Float = left_vel;
         // Como o valor da variável Union ocupa a mesma posição de memória dos valores em byte dessa variável, setamos os bytes correspondentes da velocidade no vetor de saída como os bytes da variável Union
-        bytes[2] = valor.Bytes[0];
-        bytes[3] = valor.Bytes[1];
-        bytes[4] = valor.Bytes[2];
-        bytes[5] = valor.Bytes[3];
+        bytes[2] = valor1.Bytes[0];
+        bytes[3] = valor1.Bytes[1];
+        bytes[4] = valor1.Bytes[2];
+        bytes[5] = valor1.Bytes[3];
         // Adicionamos a soma dos bytes da velocidade a variável de contagem de bytes
-        cont.Short += valor.Bytes[0] + valor.Bytes[1] + valor.Bytes[2] + valor.Bytes[3];
+        cont.Short += valor1.Bytes[0] + valor1.Bytes[1] + valor1.Bytes[2] + valor1.Bytes[3];
 
-        valor.Float = right_vel;
-        bytes[6] = valor.Bytes[0];
-        bytes[7] = valor.Bytes[1];
-        bytes[8] = valor.Bytes[2];
-        bytes[9] = valor.Bytes[3];
-        cont.Short += valor.Bytes[0] + valor.Bytes[1] + valor.Bytes[2] + valor.Bytes[3];
+        valor2.Float = right_vel;
+        bytes[6] = valor2.Bytes[0];
+        bytes[7] = valor2.Bytes[1];
+        bytes[8] = valor2.Bytes[2];
+        bytes[9] = valor2.Bytes[3];
+        cont.Short += valor2.Bytes[0] + valor2.Bytes[1] + valor2.Bytes[2] + valor2.Bytes[3];
 
         //Setamos os bytes de contagemno vetor de saída como os bytes da variável de contagem
         bytes[10] = cont.Bytes[0];

@@ -178,6 +178,10 @@ void Fuzzy::calcula_input(Robot r){
         input[2] = (round(input[2]*100))/100;
         cout << "FA: "<< input[2] << endl;
 
+        ball_pos.y = -ball_pos.y;
+        robot_pos.y = -robot_pos.y;
+        centroid_atk.y=-centroid_atk.y;
+
 }
 
 void Fuzzy::fuzzification(){

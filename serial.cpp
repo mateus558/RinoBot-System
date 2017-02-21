@@ -22,10 +22,12 @@ void Serial::handleTimeout(){
 }
 
 bool Serial::open(){
-    if(!serial->isOpen() || !serial->isWritable()){
+    timer->start(delay);
+    serial->setPortName("/dev/ttyUSB5");
+    /*if(!serial->isOpen() || !serial->isWritable()){
         cerr << "WARNING: Serial port " << serial->portName().toUtf8().constData() << " could not be opened!" << endl;
         return false;
-    }
+    }*/
 
     if(serial->open(QIODevice::ReadWrite)){
         cout << serial->portName().toUtf8().constData() << " is open." << endl;
@@ -53,6 +55,7 @@ qint64 Serial::bytes_available(){
 
 void Serial::write(QByteArray data){
     serial->write(data);
+    //serial->waitForBytesWritten(5);
 
     timer->start(delay);
 }

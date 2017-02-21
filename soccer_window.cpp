@@ -356,4 +356,5 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 void soccer_window::on_pushButton_clicked()
 {
     Robot::open_serial();
+    Robot::send_velocities(1, make_pair(0.5, 0.5));
 }
