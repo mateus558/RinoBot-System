@@ -43,7 +43,7 @@ private:
 
 public:
     Robot();
-    static bool encoders_reading(Serial *serial, int &robot, pair<float, float> &vels, float &battery);
+    static bool encoders_reading(Serial *serial, int &robot, pair<float, float> &vels, float *battery);
     bool send_velocities(Serial *serial, pair<float, float> vels);
     void set_flag_fuzzy(int);
     int get_flag_fuzzy();

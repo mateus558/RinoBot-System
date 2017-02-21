@@ -10,8 +10,8 @@ Serial::Serial(){
     serial = new QSerialPort;
     timer_delay = 10;
 
-    connect(serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),
-            this, &Serial::handle_error);
+    //connect(serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),
+    //        this, &Serial::handle_error);
     //connect(serial, &QSerialPort::readyRead, this, &Serial::handle_readyRead);
     //connect(&timer, SIGNAL(timeout()), SLOT(handle_timeOut()));
 }
@@ -23,14 +23,14 @@ void Serial::listen_robots(){
 }
 
 void Serial::handle_readyRead(){
-    Encoder info;
+    /*Encoder info;
 
-    Robot::encoders_reading(this, info.robot, info.vel, info.battery);
+    Robot::encoders_reading(this, info.robot, info.vel, &info.battery);
     emit encoderReading(info);
 
     if(!timer.isActive()){
         timer.start(timer_delay);
-    }
+    }*/
 }
 
 void Serial::handle_timeOut(){

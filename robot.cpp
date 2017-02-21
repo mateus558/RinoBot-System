@@ -76,7 +76,7 @@ bool Robot::send_velocities(Serial *serial, pair<float, float> vels){
     return true;
 }
 
-bool Robot::encoders_reading(Serial *serial, int &robot, pair<float, float> &vels, float &battery){
+bool Robot::encoders_reading(Serial *serial, int &robot, pair<float, float> &vels, float *battery){
     //Array de bytes lidos da serial
     QByteArray *dados;
     //Armazena a quantidade de bytes lidos da serial
@@ -124,7 +124,7 @@ bool Robot::encoders_reading(Serial *serial, int &robot, pair<float, float> &vel
                     bateria.Bytes[2] = dados->at(4);
                     bateria.Bytes[3] = dados->at(5);
                     //Processamos o valor de bateria recebido
-                    battery = bateria.Float;
+                    *battery = bateria.Float;
                 }
                 //Informamos que a contagem atual de bytes recebidos é igual a zero
                 PosDados = 0;
@@ -346,12 +346,17 @@ void Robot::set_flag_fuzzy(int output){
     else if(output == 1)
     {
         flag_fuzzy = 1;
+        cout << "Robo deve ser Um bom Volante!"<< endl;
+    }
+    else if(output == 2)
+    {
+        flag_fuzzy = 2;
         cout << "Robo deve ser Um bom Meia!"<< endl;
     }
     else
     {
-        flag_fuzzy = 2;
-        cout << "Robo deve Atacar Ferozmente!"<< endl;
+        flag_fuzzy = 3;
+        cout << "Robo deve Atacar Ferozmente!" << endl;
     }
 
 }
@@ -379,7 +384,7 @@ double Robot::max_function(double p, double q){
         return q;
 }
 
-void Robot::set_lin_vel(pair<double, double> vels){
+void Robot::set_lin_vel(pair<float, float> vels){
     this->vel = vels;
 }
 
