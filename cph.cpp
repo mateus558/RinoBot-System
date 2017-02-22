@@ -143,12 +143,20 @@ void CPH::init_grid(){
     {
         for(j=0;j<36;j++)
         {
-            if (i==0 || i == 27)
-                pGrid[i][j]=1;
-            else if (j==0 || j == 35)
-                pGrid[i][j]=1;
+            if ( i == 0 || i == 27 || j == 0 || j == 1 || j == 2 || j == 33 || j == 34 || j == 35 )
+            {
+                if ( j == 1 || j == 2 || j == 33 || j == 34 )
+                {
+                    if (i > 9 && i < 18)
+                        pGrid[i][j] = 0.9;
+                    else
+                        pGrid[i][j] = 1.0;
+                }
+                else
+                    pGrid[i][j] = 1.0;
+            }
             else
-                pGrid[i][j]=0.9;
+                pGrid[i][j] = 0.9;
         }
     }
 }
@@ -203,6 +211,13 @@ void CPH::run(){
         init_grid();
         grid_initialized = true;
     }
+
+    /*cout << "Inimigo 1: " << "em x: "<< enemy_pos[0].x << " em y: "<< enemy_pos[0].y << endl;
+    cout << "Inimigo 2: " << "em x: "<< enemy_pos[1].x << " em y: "<< enemy_pos[1].y << endl;
+    cout << "Inimigo 3: " << "em x: "<< enemy_pos[2].x << " em y: "<< enemy_pos[2].y << endl;
+    cout << "Leona: " << "em x: "<< team_pos[0].x << " em y: "<< team_pos[0].y << endl;
+    cout << "Gandalf: " << "em x: "<< team_pos[1].x << " em y: "<< team_pos[1].y << endl;
+    cout << "Presto: " << "em x: "<< team_pos[2].x << " em y: "<< team_pos[2].y << endl;*/
 
     for(i = 0; i < 3; ++i){
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){

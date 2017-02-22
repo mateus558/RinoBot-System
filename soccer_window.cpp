@@ -9,6 +9,7 @@
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
 #include "cph.h"
+#include "cpo.h"
 #include "fuzzy.h"
 #include "utils.h"
 
@@ -24,8 +25,10 @@ soccer_window::soccer_window(QWidget *parent) :
     area_read = false;
     eye = new Vision;
     cph = new CPH; //instancia o objeto cph na rotina do sistema
+    cpo = new CPO; //instancia o objeto cpo na rotina do sistema
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
     run_cph = false; //flag da thread do cph
+    run_cpo = false; //flag da thread do cpo
     run_fuzzy = false; //flag da thread do fuzzy
 
     eye->set_mode(0);
@@ -100,6 +103,9 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
         fuzzy->set_centroid_atk(centroid_atk); //salva a area de atk para o fuzzy
         fuzzy->set_centroid_def(centroid_def); //salva a area de def para o fuzzy
+
+        cpo->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
+        cpo->set_centroid_def(centroid_def); //salva a area de def para o cpo
     }
 
     if(percep.ball_found){
@@ -124,11 +130,15 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     team_pos[1] = percep.team_robots[1].get_pos(); //Gandalf
     team_pos[2] = percep.team_robots[2].get_pos(); //Presto
 
-    cout << "Presto " << percep.team_robots[2].get_channel() << endl;
+    //cout << "Presto " << percep.team_robots[2].get_channel() << endl;
 
     cph->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
     cph->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph
     cph->set_team_pos(team_pos); //Salva a posicao do time para o cph
+
+    cpo->set_ball_pos(ball_pos); //Salva a posicao da bola para o cpo
+    cpo->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo
+    cpo->set_team_pos(team_pos); //Salva a posicao do time para o cpo
 
     fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2]); //Gandalf e Presto nesta ordem
     fuzzy->set_ball_pos(ball_pos); //Salva a posicao da bola para o fuzzy
@@ -161,11 +171,21 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         if(cph->is_running()){
             cph->wait();
         }
-
         cph->Play();
      }
 
-    //inicia a thread do fuzzy caso ela nao esteja em ececucao
+    //inicia a thread do cpo caso ela nao esteja em execucao
+    if(run_cpo){
+        if(cpo->is_running()){
+            cpo->wait();
+        }
+        //cpo->print_grid();
+        cpo->Play();
+     }
+
+
+
+    //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(run_fuzzy){
         if(fuzzy->is_running()){
             fuzzy->wait();
@@ -218,6 +238,21 @@ void soccer_window::on_switch_fields_clicked()
     eye->switch_teams_areas();
     eye->set_atk_area(atk_area);
     eye->set_def_area(def_area);
+
+    centroid_atk = (atk_area[2] + atk_area[3] + atk_area[4] + atk_area[5])/4;
+    centroid_def = (def_area[2] + def_area[3] + def_area[4] + def_area[5])/4;
+
+    centroid_atk.x = centroid_atk.x * X_CONV_CONST;
+    centroid_atk.y = centroid_atk.y * Y_CONV_CONST;
+
+    centroid_def.x = centroid_def.x * X_CONV_CONST;
+    centroid_def.y = centroid_def.y * Y_CONV_CONST;
+
+    fuzzy->set_centroid_atk(centroid_atk); //salva a area de atk para o fuzzy
+    fuzzy->set_centroid_def(centroid_def); //salva a area de def para o fuzzy
+
+    cpo->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
+    cpo->set_centroid_def(centroid_def); //salva a area de def para o cpo
 }
 
 soccer_window::~soccer_window()
@@ -331,6 +366,11 @@ void soccer_window::on_CPH_clicked()
     }else{
         run_fuzzy = false;
     }
+    if(!run_cpo){
+        run_cpo = true;
+    }else{
+        run_cpo = false;
+    }
 }
 
 void soccer_window::on_show_field_areas_checkbox_toggled(bool checked)
@@ -355,6 +395,25 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 
 void soccer_window::on_pushButton_clicked()
 {
-    Robot::open_serial();
-    Robot::send_velocities(1, make_pair(0.5, 0.5));
+    static int contador = 0;
+    if(contador == 0)
+    {
+        Robot::open_serial();
+        Robot::send_velocities(1, make_pair(0.1, 0.1));
+        Robot::send_velocities(2, make_pair(0.5, 0.5));
+        contador++;
+    }
+    else if(contador == 1)
+    {
+        Robot::send_velocities(1, make_pair(0, 0));
+        Robot::send_velocities(2, make_pair(0, 0));
+        contador++;
+    }
+    else if(contador == 2)
+    {
+        Robot::send_velocities(1, make_pair(0.2, 0.2));
+        Robot::send_velocities(2, make_pair(0.2, 0.2));
+        contador=1;
+    }
+
 }

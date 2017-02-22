@@ -63,7 +63,7 @@ private:
     Point centroid_def;
     void closeEvent(QCloseEvent *event);
 
-    bool started, area_read, run_cph, run_fuzzy;
+    bool started, area_read, run_cph, run_cpo, run_fuzzy;
 };
 
 #endif // SOCCER_WINDOW_H

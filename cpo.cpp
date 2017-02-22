@@ -6,22 +6,57 @@
 using namespace std;
 
 
+
 CPO::CPO(){
     dx = 5;
     dy = 5;
+    stop = true;
+    grid_initialized = false;
+    enemy_pos_grid = pVector(3);
+    team_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
     tGrid = iMatrix(28, vector<int>(36, 0));
     cout<<"\n\nAMBIENTE CRIADO!\n";
 }
 
 double CPO::iterator(){
+    Point2d eixo_x(1.0,0.0);
+
     double erro = 0;
     double top, botton, left, right;
     double newPotencial, oldPotencial;
     double vec[2], e, h, lambda;
-    int i,j,orientation;
+    int i,j;
 
-    orientation = -45;
+    double orientation;
+    // Calculo do angulo entre a bola e o gol
+    //Corrige Posicionamento
+    ball_pos.y = -ball_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+    /*cout << "posicao bola: " << endl;
+    cout << " x = " << ball_pos.x << " y = " << ball_pos.y << endl;
+    cout << "posicao centroide atk: " << endl;
+    cout << " x = " << centroid_atk.x << " y = " << centroid_atk.y << endl;*/
+
+    //Calcula angulo entre a bola e o gol de ataque
+    Point2d vec_ball_atk = centroid_atk-ball_pos;
+    orientation = angle_two_points(vec_ball_atk,eixo_x);
+    //cout << "vetor ball atk: " << endl;
+    //cout << " x = " << vec_ball_atk.x << " y = " << vec_ball_atk.y << endl;
+
+    //Corrige o angulo
+    if (vec_ball_atk.y < 0)
+            orientation = -orientation;
+    cout << "Angulo bola atk: " << orientation << endl;
+
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (orientation > 180) orientation = orientation - 360;
+    else if (orientation < -180) orientation = orientation + 360;
+
+    //Corrige Posicionamento novamente
+    ball_pos.y = -ball_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+
     vec[0] = cos(orientation*PI/180);
     vec[1] = sin(orientation*PI/180);
 
@@ -144,16 +179,25 @@ void CPO::set_potential(int i, int j, double aux){
 
 void CPO::init_grid(){
     int i,j;
+
     for(i=0;i<28;i++)
     {
         for(j=0;j<36;j++)
         {
-            if (i==0 || i == 27)
-                pGrid[i][j]=1;
-            else if (j==0 || j == 35)
-                pGrid[i][j]=1;
+            if ( i == 0 || i == 27 || j == 0 || j == 1 || j == 2 || j == 33 || j == 34 || j == 35 )
+            {
+                if ( j == 1 || j == 2 || j == 33 || j == 34 )
+                {
+                    if (i > 9 && i < 18)
+                        pGrid[i][j] = 0.9;
+                    else
+                        pGrid[i][j] = 1.0;
+                }
+                else
+                    pGrid[i][j] = 1.0;
+            }
             else
-                pGrid[i][j]=0.9;
+                pGrid[i][j] = 0.9;
         }
     }
 }
@@ -176,10 +220,6 @@ void CPO::print_grid(){
     {
         for(j=0;j<36;j++)
         {
-            while (tGrid[i][j]>180)
-                tGrid[i][j] = tGrid[i][j] - 360;
-            while (tGrid[i][j]<-180)
-                tGrid[i][j] = tGrid[i][j] + 360;
             cout<<tGrid[i][j]<<setw(7);
         }
         cout<<"\n\n";
@@ -204,12 +244,64 @@ Point CPO::convert_C_to_G(Point2d coord){
     }else{
         i.y = coord.y / dy - 1;
     }
-    cout << "i.x = " << i.x << " i.y = " << i.y << endl;
+    //cout << "i.x = " << i.x << " i.y = " << i.y << endl;
     return i;
 }
 
-void CPO::run(){
 
+void CPO::run(){
+    int i;
+    if(!grid_initialized){
+        init_grid();
+        grid_initialized = true;
+    }
+    for(i = 0; i < 3; ++i){
+        if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+            //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+        }else{
+            //tratar posição dos inimigos aqui
+        }
+
+        if(team_pos[i].x > 0 && team_pos[i].y > 0){
+            team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
+        }else{
+            //tratar posição dos miguxos aqui
+        }
+    }
+
+    if(ball_pos.x > 0 && ball_pos.y > 0){
+        ball_pos_grid = convert_C_to_G(ball_pos);
+         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+    }else{
+        //tratar a bola aqui
+    }
+
+    while(iterator()>1E-6);
+    set_direction();
+}
+
+void CPO::set_enemy_pos(p2dVector enemy_pos){
+    this->enemy_pos = enemy_pos;
+}
+
+void CPO::set_team_pos(p2dVector team_pos){
+    this->team_pos = team_pos;
+}
+
+void CPO::set_ball_pos(Point2d ball_pos){
+    this->ball_pos = ball_pos;
+}
+
+void CPO::set_centroid_atk(Point2d centroid_atk){
+    this->centroid_atk = centroid_atk;
+}
+
+void CPO::set_centroid_def(Point2d centroid_def){
+    this->centroid_def = centroid_def;
 }
 
 bool CPO::isStopped() const
@@ -226,10 +318,18 @@ void CPO::Play(){
 }
 
 void CPO::Stop(){
+    stop = true;
+}
 
+bool CPO::is_running(){
+    return isRunning();
 }
 
 void CPO::msleep(int ms){
-    struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
-    nanosleep(&ts, NULL);
+    /*struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
+    nanosleep(&ts, NULL);*/
+}
+
+CPO::~CPO(){
+
 }

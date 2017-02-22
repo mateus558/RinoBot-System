@@ -23,7 +23,7 @@ void Serial::handleTimeout(){
 
 bool Serial::open(){
     timer->start(delay);
-    serial->setPortName("/dev/ttyUSB5");
+    serial->setPortName("/dev/ttyUSB0");
     /*if(!serial->isOpen() || !serial->isWritable()){
         cerr << "WARNING: Serial port " << serial->portName().toUtf8().constData() << " could not be opened!" << endl;
         return false;

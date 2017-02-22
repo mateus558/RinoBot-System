@@ -101,7 +101,7 @@ void Fuzzy::calcula_input(Robot r){
     //Calculo do FD - distGOLDEF ate nosso player e distGOLATK ate nosso player
     input[0] = pow(2.7183,-0.6931*(euclidean_dist(centroid_atk,robot_pos)/euclidean_dist(centroid_def,robot_pos)));
     input[0] = (round(input[0]*100))/100;
-    cout << "FD: "<< input[0] << endl;
+    //cout << "FD: "<< input[0] << endl;
 
     //Calculo FC - distBallTeam, distBallEnemy
 
@@ -124,7 +124,7 @@ void Fuzzy::calcula_input(Robot r){
 
     input[1] =pow(2.7183,-0.6931*(euclidean_dist(ball_pos,robot_pos)/euclidean_dist(ball_pos,enemy_prox)));
     input[1] = (round(input[1]*100))/100;
-    cout << "FC: "<< input[1] << endl;
+    //cout << "FC: "<< input[1] << endl;
 
 
     //Calculo FA - AngBallAliado e AngAtkAliado
@@ -155,14 +155,14 @@ void Fuzzy::calcula_input(Robot r){
         double ang_atk_robot = ang_vec_atk_eixox - angle;
 
         //ajusta angulos para menores que 180 e maiores que -180
-        if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot-360;
-        else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot+360;
-        if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot-360;
-        else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot+360;
+        if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot - 360;
+        else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
+        if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
+        else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
 
-        cout << "Angulo entre bola e robo: "<< ang_ball_robot << endl;
+        //cout << "Angulo entre bola e robo: "<< ang_ball_robot << endl;
         //cout << "Angulo vetor bola robo: "<< ang_vec_ball_eixox << endl;
-        cout << "Angulo entre robo e atk " << ang_atk_robot << endl;
+        //cout << "Angulo entre robo e atk " << ang_atk_robot << endl;
         //cout << "Angulo vetor atk robo " << ang_vec_atk_eixox << endl;
         //cout << "Angulo de orientacao robo: "<< angle << endl;
 
@@ -176,7 +176,7 @@ void Fuzzy::calcula_input(Robot r){
             aux2 = (-90 + fabs(ang_atk_robot))/90;
         input[2]=0.7*aux1+0.3*aux2;
         input[2] = (round(input[2]*100))/100;
-        cout << "FA: "<< input[2] << endl;
+        //cout << "FA: "<< input[2] << endl;
 
         ball_pos.y = -ball_pos.y;
         robot_pos.y = -robot_pos.y;
@@ -288,7 +288,7 @@ int Fuzzy::defuzzification(){
         sum2 = sum2 + y_output[i];
     }
     output = sum1/sum2;
-    cout << "Saida Fuzzy: "<< output << endl;
+    //cout << "Saida Fuzzy: "<< output << endl;
 
     //Calcular a pertinencia da saida
     aux1 = output/0.01;
