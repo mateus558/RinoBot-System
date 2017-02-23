@@ -132,6 +132,10 @@ void CPH::set_direction(){
     }
 }
 
+double CPH::get_direction(int i, int j){
+    return this->tGrid[i][j];
+}
+
 void CPH::set_potential(int i, int j, double aux){
     pGrid[i][j]= aux;
 }

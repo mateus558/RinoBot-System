@@ -42,6 +42,7 @@ public:
     void set_team_pos(p2dVector);
     void set_ball_pos(Point2d);
     void set_direction();
+    double get_direction(int, int);
     void init_grid();
     void print_grid();
     void Play();

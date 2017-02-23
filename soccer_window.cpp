@@ -184,13 +184,11 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
      }
 
 
-
     //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(run_fuzzy){
         if(fuzzy->is_running()){
             fuzzy->wait();
         }
-
         fuzzy->Play();
      }
 }
