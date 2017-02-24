@@ -8,7 +8,7 @@
 #include "utils.h" //Utils library
 
 struct Selector{
-    Robot r1,r2;
+    Robot r1,r2,r3;
 };
 
 class Fuzzy: public QThread
@@ -18,8 +18,7 @@ private:
     QMutex mutex;
     pVector enemy_pos_grid; //posicao em grid dos inimigos
     pVector team_pos_grid; //posicao em grid do time
-    p2dVector enemy_pos; //posicao em cm dos inimigos
-    Point  ball_pos_grid; //posicao em grid da bola
+    p2dVector enemy_pos; //posicao em cm dos inimigo
     Point2d ball_pos; //posicao em cm da bola
     Point2d centroid_atk; //posicao em cm do centro da area de atk
     Point2d centroid_def; //posicao em cm do centro da area de def
@@ -63,7 +62,7 @@ public:
     bool is_running();
     void Stop();
     bool isStopped() const;
-    void set_to_select(Robot, Robot);
+    void set_to_select(Robot, Robot, Robot);
     void set_enemy_pos(p2dVector);
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);

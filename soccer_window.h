@@ -7,6 +7,7 @@
 #include "cph.h"
 #include "cpo.h"
 #include "fuzzy.h"
+#include "mover.h"
 
 namespace Ui {
 class soccer_window;
@@ -50,6 +51,7 @@ private:
     CPH *cph;
     CPO *cpo;
     Fuzzy *fuzzy;
+    Mover *mover;
     Vision *eye;
     Vision::Perception percep;
     SettingsDialog::Settings serial_config;
@@ -63,7 +65,7 @@ private:
     Point centroid_def;
     void closeEvent(QCloseEvent *event);
 
-    bool started, area_read, run_cph, run_cpo, run_fuzzy;
+    bool started, area_read, run_cph, run_cpo, run_fuzzy, run_mover;
 };
 
 #endif // SOCCER_WINDOW_H

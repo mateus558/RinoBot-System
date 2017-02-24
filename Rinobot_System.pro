@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     soccer_window.cpp \
     cph.cpp \
     cpo.cpp \
-    fuzzy.cpp
+    fuzzy.cpp \
+    mover.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     cph.h \
     cpo.h \
     fuzzy.h \
-    serial.h
+    serial.h \
+    mover.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

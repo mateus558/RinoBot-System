@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <cmath>
 #include "cph.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -14,7 +15,7 @@ CPH::CPH(){
     enemy_pos_grid = pVector(3);
     team_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
-    tGrid = iMatrix(28, vector<int>(36, 0));
+    tGrid = dMatrix(28, vector<double>(36, 0));
     cout<<"\n\nAMBIENTE CRIADO!\n";
 }
 
@@ -132,8 +133,8 @@ void CPH::set_direction(){
     }
 }
 
-double CPH::get_direction(int i, int j){
-    return this->tGrid[i][j];
+double CPH::get_direction(Point grid){
+    return this->tGrid[grid.y][grid.x];
 }
 
 void CPH::set_potential(int i, int j, double aux){
@@ -240,12 +241,29 @@ void CPH::run(){
         }
     }
 
-    if(ball_pos.x > 0 && ball_pos.y > 0){
-        ball_pos_grid = convert_C_to_G(ball_pos);
-         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
-    }else{
+    if (guarda_posicao){
+        Point2d vec_ball_def = centroid_def - ball_pos;
+        double aux = (0.45/150)*euclidean_dist(centroid_def,ball_pos);
+        Point2d meta = ball_pos + vec_ball_def*aux;
+        //cout << "Meta: " << endl;
+        //cout << " x: " << meta.x << " y: " << meta.y << endl;
+        if(meta.x > 0 && meta.y > 0){
+            Point meta_pos_grid = convert_C_to_G(meta);
+            //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+            set_potential(meta_pos_grid.y, meta_pos_grid.x, 0);
+        }else{
         //tratar a bola aqui
+        }
+    }
+
+    else{
+        if(ball_pos.x > 0 && ball_pos.y > 0){
+            ball_pos_grid = convert_C_to_G(ball_pos);
+            //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+            set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+        }else{
+            //tratar a bola aqui
+        }
     }
 
     while(iterator()>1E-6);
@@ -263,6 +281,21 @@ void CPH::set_team_pos(p2dVector team_pos){
 
 void CPH::set_ball_pos(Point2d ball_pos){
     this->ball_pos = ball_pos;
+}
+
+void CPH::set_centroid_atk(Point2d centroid_atk){
+    this->centroid_atk = centroid_atk;
+}
+
+void CPH::set_centroid_def(Point2d centroid_def){
+    this->centroid_def = centroid_def;
+}
+
+void CPH::set_guarda_pos(bool a){
+    if (a)
+        guarda_posicao = true;
+    else
+        guarda_posicao = false;
 }
 
 bool CPH::isStopped() const

@@ -371,10 +371,15 @@ void Robot::set_flag_fuzzy(int output){
         flag_fuzzy = 2;
         cout << "Robo deve ser Um bom Meia!"<< endl;
     }
-    else
+    else if(output == 3)
     {
         flag_fuzzy = 3;
         cout << "Robo deve Atacar Ferozmente!" << endl;
+    }
+    else
+    {
+        flag_fuzzy = 4;
+        cout << "Robo deve Catar Ferozmente!" << endl;
     }
 
 }

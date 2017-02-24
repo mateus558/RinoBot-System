@@ -12,6 +12,7 @@
 #include "cpo.h"
 #include "fuzzy.h"
 #include "utils.h"
+#include "mover.h"
 
 using namespace std;
 
@@ -27,9 +28,11 @@ soccer_window::soccer_window(QWidget *parent) :
     cph = new CPH; //instancia o objeto cph na rotina do sistema
     cpo = new CPO; //instancia o objeto cpo na rotina do sistema
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
+    mover = new Mover; //instancia o objeto mover na rotina do sistema
     run_cph = false; //flag da thread do cph
     run_cpo = false; //flag da thread do cpo
     run_fuzzy = false; //flag da thread do fuzzy
+    run_mover = false;
 
     eye->set_mode(0);
     load_serial_cfg();
@@ -106,6 +109,9 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
         cpo->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
         cpo->set_centroid_def(centroid_def); //salva a area de def para o cpo
+
+        cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
+        cph->set_centroid_def(centroid_def); //salva a area de def para o cph
     }
 
     if(percep.ball_found){
@@ -140,9 +146,14 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     cpo->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo
     cpo->set_team_pos(team_pos); //Salva a posicao do time para o cpo
 
-    fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2]); //Gandalf e Presto nesta ordem
+    fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]); //Gandalf e Presto nesta ordem
     fuzzy->set_ball_pos(ball_pos); //Salva a posicao da bola para o fuzzy
     fuzzy->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o fuzzy
+
+    mover->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    mover->set_to_select_iterador(cph,cpo);
+    mover->set_enemy_pos(enemy_pos);
+    mover->set_ball_pos(ball_pos);
 
     if(percep.team_robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -171,6 +182,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         if(cph->is_running()){
             cph->wait();
         }
+        //cph->print_grid();
         cph->Play();
      }
 
@@ -183,13 +195,19 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         cpo->Play();
      }
 
-
     //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(run_fuzzy){
         if(fuzzy->is_running()){
             fuzzy->wait();
         }
         fuzzy->Play();
+     }
+
+    if(run_mover){
+        if(mover->is_running()){
+            mover->wait();
+        }
+        mover->Play();
      }
 }
 
@@ -251,6 +269,9 @@ void soccer_window::on_switch_fields_clicked()
 
     cpo->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
     cpo->set_centroid_def(centroid_def); //salva a area de def para o cpo
+
+    cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
+    cph->set_centroid_def(centroid_def); //salva a area de def para o cph
 }
 
 soccer_window::~soccer_window()
@@ -359,15 +380,15 @@ void soccer_window::on_CPH_clicked()
     }else{
         run_cph = false;
     }
-    if(!run_fuzzy){
-        run_fuzzy = true;
-    }else{
-        run_fuzzy = false;
-    }
     if(!run_cpo){
         run_cpo = true;
     }else{
         run_cpo = false;
+    }
+    if(!run_fuzzy){
+        run_fuzzy = true;
+    }else{
+        run_fuzzy = false;
     }
 }
 
@@ -393,25 +414,31 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 
 void soccer_window::on_pushButton_clicked()
 {
-    static int contador = 0;
+    /*static int contador = 0;
     if(contador == 0)
     {
         Robot::open_serial();
-        Robot::send_velocities(1, make_pair(0.1, 0.1));
-        Robot::send_velocities(2, make_pair(0.5, 0.5));
+        Robot::send_velocities(3, make_pair(-0.1, -0.1));
+        //Robot::send_velocities(2, make_pair(0.5, 0.5));
         contador++;
     }
     else if(contador == 1)
     {
-        Robot::send_velocities(1, make_pair(0, 0));
-        Robot::send_velocities(2, make_pair(0, 0));
+        Robot::send_velocities(3, make_pair(0, 0));
+        //Robot::send_velocities(2, make_pair(0, 0));
         contador++;
     }
     else if(contador == 2)
     {
-        Robot::send_velocities(1, make_pair(0.2, 0.2));
-        Robot::send_velocities(2, make_pair(0.2, 0.2));
+        Robot::send_velocities(3, make_pair(-0.5, -0.5));
+        //Robot::send_velocities(2, make_pair(0.2, 0.2));
         contador=1;
+    }*/
+
+    if(!run_mover){
+        run_mover = true;
+    }else{
+        run_mover = false;
     }
 
 }

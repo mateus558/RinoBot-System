@@ -17,14 +17,17 @@ private:
     int i;
     QMutex mutex;
     dMatrix pGrid;
-    iMatrix tGrid;
+    dMatrix tGrid;
     pVector enemy_pos_grid;
     pVector team_pos_grid;
     p2dVector enemy_pos;
     p2dVector team_pos;
     Point  ball_pos_grid;
     Point2d ball_pos;
+    Point2d centroid_atk;
+    Point2d centroid_def;
     bool stop, grid_initialized;
+    bool guarda_posicao = false;
 
 protected:
     void msleep(int ms);
@@ -41,8 +44,11 @@ public:
     void set_enemy_pos(p2dVector);
     void set_team_pos(p2dVector);
     void set_ball_pos(Point2d);
+    void set_centroid_atk(Point2d);
+    void set_centroid_def(Point2d);
+    void set_guarda_pos(bool);
     void set_direction();
-    double get_direction(int, int);
+    double get_direction(Point);
     void init_grid();
     void print_grid();
     void Play();

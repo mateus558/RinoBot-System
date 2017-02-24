@@ -81,11 +81,14 @@ void Fuzzy::run(){
     //fuzzification();
     //selec_robot.r2.set_flag_fuzzy(defuzzification());
 
+    //selec_robot.r3.set_flag_fuzzy(4);
+
 }
 
-void Fuzzy::set_to_select(Robot r1, Robot r2){
+void Fuzzy::set_to_select(Robot r1, Robot r2, Robot r3){
     selec_robot.r1 = r1;
     selec_robot.r2 = r2;
+    selec_robot.r3 = r3;
 }
 
 void Fuzzy::calcula_input(Robot r){

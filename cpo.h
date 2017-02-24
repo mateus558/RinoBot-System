@@ -20,7 +20,7 @@ private:
     QMutex mutex;
 
     dMatrix pGrid;
-    iMatrix tGrid;
+    dMatrix tGrid;
 
     pVector enemy_pos_grid;
     pVector team_pos_grid;
@@ -32,7 +32,7 @@ private:
     Point2d centroid_def;
 
     bool grid_initialized;
-    bool drible = true;
+    bool drible = false;
 
 protected:
     void run();
@@ -48,9 +48,10 @@ public:
     int get_occupancy(int, int);
     Point convert_C_to_G(Point2d);
     void set_direction();
-    double get_direction(int, int);
+    double get_direction(Point);
     void init_grid();
     void print_grid();
+    void set_orientation(double);
     void set_enemy_pos(p2dVector);
     void set_team_pos(p2dVector);
     void set_ball_pos(Point2d);

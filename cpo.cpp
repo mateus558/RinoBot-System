@@ -18,7 +18,7 @@ CPO::CPO(){
     enemy_pos_grid = pVector(3);
     team_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
-    tGrid = iMatrix(28, vector<int>(36, 0));
+    tGrid = dMatrix(28, vector<double>(36, 0));
     cout<<"\n\nAMBIENTE CRIADO!\n";
 }
 
@@ -146,8 +146,8 @@ void CPO::set_direction(){
     }
 }
 
-double CPO::get_direction(int i, int j){
-    return this->tGrid[i][j];
+double CPO::get_direction(Point grid){
+    return this->tGrid[grid.y][grid.x];;
 }
 
 void CPO::set_potential(int i, int j, double aux){
@@ -306,7 +306,7 @@ void CPO::run(){
     }
     else
         orientation = ang_ball_atk;
-    cout << "Angulo de drible: " << orientation << endl;
+    //cout << "Angulo de orientacao: " << orientation << endl;
 
     //Corrige Posicionamento novamente
     ball_pos.y = -ball_pos.y;
@@ -314,6 +314,10 @@ void CPO::run(){
 
     while(iterator()>1E-6);
     set_direction();
+}
+
+void CPO::set_orientation(double angle){
+    this->orientation = angle;
 }
 
 void CPO::set_enemy_pos(p2dVector enemy_pos){
