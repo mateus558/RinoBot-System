@@ -65,7 +65,8 @@ public:
     bool is_detected();
     void was_detected(bool detected);
     double get_loss_rate();
-    pair<float,float> get_lin_vel();
+    float get_l_vel();
+    float get_r_vel();
     void set_ang_vel(double vel);
     double get_ang_vel(double vel); //angular velocity w
     Point get_centroid();

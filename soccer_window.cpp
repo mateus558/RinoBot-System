@@ -146,11 +146,13 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     cpo->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo
     cpo->set_team_pos(team_pos); //Salva a posicao do time para o cpo
 
-    fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]); //Gandalf e Presto nesta ordem
+    //set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+
+    fuzzy->set_to_select(&percep.team_robots[1], &percep.team_robots[2], &percep.team_robots[0]); //Gandalf, Presto e Leona nesta ordem
     fuzzy->set_ball_pos(ball_pos); //Salva a posicao da bola para o fuzzy
     fuzzy->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o fuzzy
 
-    mover->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    mover->set_to_select(&percep.team_robots[1], &percep.team_robots[2], &percep.team_robots[0]);
     mover->set_to_select_iterador(cph,cpo);
     mover->set_enemy_pos(enemy_pos);
     mover->set_ball_pos(ball_pos);
@@ -176,6 +178,10 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->presto_detec_label->setText("Not Detected");
     }
+
+    cph->zera_flag_finish();
+    cpo->zera_flag_finish();
+    fuzzy->zera_flag_finish();
 
     //inicia a thread do cph caso ela nao esteja em execucao
     if(run_cph){
@@ -209,6 +215,15 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         }
         mover->Play();
      }
+
+   cout<<percep.team_robots[1].get_channel()<<endl;
+   float vel = percep.team_robots[1].get_l_vel();
+   float ver = percep.team_robots[1].get_r_vel();
+   cout<<vel<<endl;
+   cout<<ver<<endl;
+
+   //Robot::send_velocities(percep.team_robots[1].get_channel(), percep.team_robots[1].get_lin_vel());
+
 }
 
 void soccer_window::updateFPS(double fps){
@@ -233,12 +248,13 @@ void soccer_window::on_start_game_clicked()
         }
 
         eye->Play();
-
+        Robot::open_serial();
         ui->start_game->setText("Stop Game");
     }else{
         eye->Stop();
         eye->wait();
         eye->release_cam();
+        Robot::close_serial();
         ui->start_game->setText("Start Game");
     }
 }
@@ -435,10 +451,15 @@ void soccer_window::on_pushButton_clicked()
         contador=1;
     }*/
 
-    if(!run_mover){
+    /*if(!run_mover){
+        run_mover = true;
+    }else{
+        run_mover = false;
+    }*/
+
+    if (cph->get_flag_finish() && cpo->get_flag_finish() && fuzzy->get_flag_finish() && !run_mover){
         run_mover = true;
     }else{
         run_mover = false;
     }
-
 }

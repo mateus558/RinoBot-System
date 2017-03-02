@@ -241,7 +241,7 @@ void CPH::run(){
         }
     }
 
-    if (guarda_posicao){
+    /*if (guarda_posicao){
         Point2d vec_ball_def = centroid_def - ball_pos;
         double aux = (0.45/150)*euclidean_dist(centroid_def,ball_pos);
         Point2d meta = ball_pos + vec_ball_def*aux;
@@ -252,22 +252,32 @@ void CPH::run(){
             //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
             set_potential(meta_pos_grid.y, meta_pos_grid.x, 0);
         }else{
-        //tratar a bola aqui
+        //tratar a meta aqui
         }
+    }*/
+
+
+    if(ball_pos.x > 0 && ball_pos.y > 0){
+        ball_pos_grid = convert_C_to_G(ball_pos);
+        //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+    }else{
+        //tratar a bola aqui
     }
 
-    else{
-        if(ball_pos.x > 0 && ball_pos.y > 0){
-            ball_pos_grid = convert_C_to_G(ball_pos);
-            //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-            set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
-        }else{
-            //tratar a bola aqui
-        }
-    }
 
     while(iterator()>1E-6);
     set_direction();
+
+    flag_finish_cph = true;
+}
+
+bool CPH::get_flag_finish(){
+    return this->flag_finish_cph;
+}
+
+void CPH::zera_flag_finish(){
+    flag_finish_cph = false;
 }
 
 
@@ -289,13 +299,6 @@ void CPH::set_centroid_atk(Point2d centroid_atk){
 
 void CPH::set_centroid_def(Point2d centroid_def){
     this->centroid_def = centroid_def;
-}
-
-void CPH::set_guarda_pos(bool a){
-    if (a)
-        guarda_posicao = true;
-    else
-        guarda_posicao = false;
 }
 
 bool CPH::isStopped() const

@@ -358,34 +358,34 @@ void Robot::set_flag_fuzzy(int output){
 
     if(output == 0)
     {
-        flag_fuzzy = 0;
+        this->flag_fuzzy = 0;
         cout << "Robo deve Defender Arduamente!"<< endl;
     }
     else if(output == 1)
     {
-        flag_fuzzy = 1;
+        this->flag_fuzzy = 1;
         cout << "Robo deve ser Um bom Volante!"<< endl;
     }
     else if(output == 2)
     {
-        flag_fuzzy = 2;
+        this->flag_fuzzy = 2;
         cout << "Robo deve ser Um bom Meia!"<< endl;
     }
     else if(output == 3)
     {
-        flag_fuzzy = 3;
+        this->flag_fuzzy = 3;
         cout << "Robo deve Atacar Ferozmente!" << endl;
     }
     else
     {
-        flag_fuzzy = 4;
+        this->flag_fuzzy = 4;
         cout << "Robo deve Catar Ferozmente!" << endl;
     }
 
 }
 
 int Robot::get_flag_fuzzy(){
-    return  this->flag_fuzzy;
+    return flag_fuzzy;
 
 }
 
@@ -411,6 +411,9 @@ void Robot::set_lin_vel(pair<float, float> vels){
     this->vel = vels;
 }
 
-pair<float,float> Robot::get_lin_vel(){
-    return this->vel;
+float Robot::get_l_vel(){
+    return vel.first;
+}
+float Robot::get_r_vel(){
+    return vel.second;
 }

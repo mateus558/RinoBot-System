@@ -8,7 +8,7 @@
 #include "utils.h" //Utils library
 
 struct Selector{
-    Robot r1,r2,r3;
+    Robot *r1,*r2,*r3;
 };
 
 class Fuzzy: public QThread
@@ -39,6 +39,7 @@ private:
 
     double output; //saida do fuzzy
     bool stop, duniverse_initialized; //variavel de controle de thread
+    bool flag_finish_fuzzy;
 
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
 
@@ -54,15 +55,17 @@ public:
     void init_duniverse();
     void init_funcao_pertinencia();
     void fuzzification();
-    void calcula_input(Robot);
+    void calcula_input(Robot *);
     int defuzzification();
+    bool get_flag_finish();
+    void zera_flag_finish();
     double min_function(double, double);
     double max_function(double, double);
     void Play();
     bool is_running();
     void Stop();
     bool isStopped() const;
-    void set_to_select(Robot, Robot, Robot);
+    void set_to_select(Robot*, Robot*, Robot*);
     void set_enemy_pos(p2dVector);
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);

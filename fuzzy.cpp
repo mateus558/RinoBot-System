@@ -34,6 +34,7 @@ Fuzzy::Fuzzy(){
     mi = dMatrix(3, vector<double>(4, 0.0));
     limite = dMatrix(64, vector<double>(101, 0.0));
 
+
 }
 
 Fuzzy::~Fuzzy(){
@@ -74,31 +75,32 @@ void Fuzzy::run(){
     //Pro primeiro robô
     calcula_input(selec_robot.r1);
     fuzzification();
-    selec_robot.r1.set_flag_fuzzy(defuzzification());
+    selec_robot.r1->set_flag_fuzzy(defuzzification());
 
     //Pro segundo robô
     //calcula_input(selec_robot.r2);
     //fuzzification();
-    //selec_robot.r2.set_flag_fuzzy(defuzzification());
+    //selec_robot.r2->set_flag_fuzzy(defuzzification());
 
-    //selec_robot.r3.set_flag_fuzzy(4);
+    //selec_robot.r3->set_flag_fuzzy(4);
 
+    flag_finish_fuzzy = true;
 }
 
-void Fuzzy::set_to_select(Robot r1, Robot r2, Robot r3){
+void Fuzzy::set_to_select(Robot *r1, Robot *r2, Robot *r3){
     selec_robot.r1 = r1;
     selec_robot.r2 = r2;
     selec_robot.r3 = r3;
 }
 
-void Fuzzy::calcula_input(Robot r){
+void Fuzzy::calcula_input(Robot *r){
 
     double aux1,aux2;
 
-    Point2d robot_pos = r.get_pos();
+    Point2d robot_pos = r->get_pos();
     //Point2d robot2_pos = selec_robot.r2.get_pos();
 
-    double angle = r.get_angle();
+    double angle = r->get_angle();
    //double angle2 = selec_robot.r2.get_angle();
 
     //Calculo do FD - distGOLDEF ate nosso player e distGOLATK ate nosso player
@@ -330,6 +332,14 @@ int Fuzzy::defuzzification(){
     else
         return 3;
 
+}
+
+bool Fuzzy::get_flag_finish(){
+    return this->flag_finish_fuzzy;
+}
+
+void Fuzzy::zera_flag_finish(){
+    flag_finish_fuzzy = false;
 }
 
 

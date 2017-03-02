@@ -260,20 +260,9 @@ void CPO::run(){
     }
 
     // Calculo do angulo de orientacao usar no ataque leve para dribles
-
-    //Define o enimigo mais proximo
-    Point2d enemy_prox;
-    if ((euclidean_dist(ball_pos,enemy_pos[0]) <= euclidean_dist(ball_pos,enemy_pos[1])) && (euclidean_dist(ball_pos,enemy_pos[0]) <= euclidean_dist(ball_pos,enemy_pos[2])))
-        enemy_prox = enemy_pos[0];
-    else if (euclidean_dist(ball_pos,enemy_pos[1]) <= euclidean_dist(ball_pos,enemy_pos[2]))
-        enemy_prox = enemy_pos[1];
-    else
-        enemy_prox = enemy_pos[2];
-
     //Corrige Posicionamento
     ball_pos.y = -ball_pos.y;
     centroid_atk.y = -centroid_atk.y;
-    enemy_prox.y = -enemy_prox.y;
 
     //Calcula angulo entre a bola e o gol de ataque
     Point2d vec_ball_atk = centroid_atk-ball_pos;
@@ -284,9 +273,23 @@ void CPO::run(){
     if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
     else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
     //cout << "Angulo bola atk: " << ang_ball_atk << endl;
+    orientation = ang_ball_atk;
+    //Corrige Posicionamento novamente
+    ball_pos.y = -ball_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+   // cout << "Angulo de orientacao: " << orientation << endl;
 
-    if (drible)
+    /*if (drible)
     {
+    //Define o enimigo mais proximo
+    Point2d enemy_prox;
+    enemy_prox.y = -enemy_prox.y;
+    if ((euclidean_dist(ball_pos,enemy_pos[0]) <= euclidean_dist(ball_pos,enemy_pos[1])) && (euclidean_dist(ball_pos,enemy_pos[0]) <= euclidean_dist(ball_pos,enemy_pos[2])))
+        enemy_prox = enemy_pos[0];
+    else if (euclidean_dist(ball_pos,enemy_pos[1]) <= euclidean_dist(ball_pos,enemy_pos[2]))
+        enemy_prox = enemy_pos[1];
+    else
+        enemy_prox = enemy_pos[2];
     //Calcula o angulo entre a bola e o inimigo mais proximo
     Point2d vec_ball_enemy = enemy_prox-ball_pos;
     double ang_ball_enemy = angle_two_points(vec_ball_enemy,eixo_x);
@@ -303,17 +306,21 @@ void CPO::run(){
         orientation = ang_ball_atk - 90*cos((3.1415/180)*(ang_ball_enemy-ang_ball_atk))*pow(2.7183,-0.04620*euclidean_dist(ball_pos,enemy_prox));
     else
         orientation = ang_ball_atk + 90*cos((3.1415/180)*(ang_ball_enemy-ang_ball_atk))*pow(2.7183,-0.04620*euclidean_dist(ball_pos,enemy_prox));
-    }
-    else
-        orientation = ang_ball_atk;
-    //cout << "Angulo de orientacao: " << orientation << endl;
+    }*/
 
-    //Corrige Posicionamento novamente
-    ball_pos.y = -ball_pos.y;
-    centroid_atk.y=-centroid_atk.y;
-
+    cout<<"Orientação: "<<orientation<<endl;
     while(iterator()>1E-6);
     set_direction();
+
+    flag_finish_cpo = true;
+}
+
+bool CPO::get_flag_finish(){
+    return this->flag_finish_cpo;
+}
+
+void CPO::zera_flag_finish(){
+    flag_finish_cpo = false;
 }
 
 void CPO::set_orientation(double angle){
@@ -338,13 +345,6 @@ void CPO::set_centroid_atk(Point2d centroid_atk){
 
 void CPO::set_centroid_def(Point2d centroid_def){
     this->centroid_def = centroid_def;
-}
-
-void CPO::set_drible(bool a){
-    if (a)
-        drible = true;
-    else
-        drible = false;
 }
 
 bool CPO::isStopped() const

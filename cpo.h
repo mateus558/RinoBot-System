@@ -31,8 +31,7 @@ private:
     Point2d centroid_atk;
     Point2d centroid_def;
 
-    bool grid_initialized;
-    bool drible = false;
+    bool grid_initialized,flag_finish_cpo;
 
 protected:
     void run();
@@ -49,6 +48,8 @@ public:
     Point convert_C_to_G(Point2d);
     void set_direction();
     double get_direction(Point);
+    bool get_flag_finish();
+    void zera_flag_finish();
     void init_grid();
     void print_grid();
     void set_orientation(double);
@@ -57,7 +58,6 @@ public:
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);
     void set_centroid_def(Point2d);
-    void set_drible(bool);
     void Play();
     bool is_running();
     void Stop();

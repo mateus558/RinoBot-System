@@ -9,6 +9,7 @@
 #include "fuzzy.h"
 #include "cph.h"
 #include "cpo.h"
+#include "serial.h"
 
 struct Selec{
     CPH *cph;
@@ -25,7 +26,8 @@ private:
     Point2d ball_pos; //posicao em cm da bola
     Point2d centroid_atk; //posicao em cm do centro da area de atk
     Point2d centroid_def; //posicao em cm do centro da area de def
-
+    float vl,vr;
+    static Serial serial;
 
     bool stop, mover_initialized; //variavel de controle de thread
 
@@ -40,7 +42,7 @@ public:
     Mover();
 
     void init_mover();
-    void calcula_velocidades(Robot, CPH *, CPO *);
+    void calcula_velocidades(Robot *, CPH *, CPO *);
     double min_function(double, double);
     double max_function(double, double);
     double ajusta_angulo(double);
@@ -48,7 +50,7 @@ public:
     bool is_running();
     void Stop();
     bool isStopped() const;
-    void set_to_select(Robot, Robot,Robot);
+    void set_to_select(Robot *, Robot *, Robot *);
     void set_to_select_iterador(CPH *, CPO *);
     void set_enemy_pos(p2dVector);
     void set_ball_pos(Point2d);

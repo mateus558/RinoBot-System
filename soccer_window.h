@@ -66,6 +66,10 @@ private:
     void closeEvent(QCloseEvent *event);
 
     bool started, area_read, run_cph, run_cpo, run_fuzzy, run_mover;
+
+    Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
+
+
 };
 
 #endif // SOCCER_WINDOW_H

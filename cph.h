@@ -26,8 +26,7 @@ private:
     Point2d ball_pos;
     Point2d centroid_atk;
     Point2d centroid_def;
-    bool stop, grid_initialized;
-    bool guarda_posicao = false;
+    bool stop, grid_initialized,flag_finish_cph;
 
 protected:
     void msleep(int ms);
@@ -46,9 +45,10 @@ public:
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);
     void set_centroid_def(Point2d);
-    void set_guarda_pos(bool);
     void set_direction();
     double get_direction(Point);
+    bool get_flag_finish();
+    void zera_flag_finish();
     void init_grid();
     void print_grid();
     void Play();
