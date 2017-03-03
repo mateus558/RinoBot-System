@@ -7,7 +7,7 @@
 
 using namespace std;
 double limiar_theta = 90;
-double v_max = 0.6;
+double v_max = 0.4;
 double w_max = 8;
 double k = (w_max/v_max);
 double l = 0.0275;
@@ -128,7 +128,7 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo){
         }*/
 
 
-        theta = cph->get_direction(robot_grid);
+        theta = cpo->get_direction(robot_grid);
         cout << "angulo do grid: " << theta << endl;
 
         alpha = theta - r->get_angle();

@@ -34,7 +34,7 @@ double CPO2::iterator(){
     vec[1] = sin(orientation*PI/180);
 
     h = dx/dy;
-    e = .5;
+    e = 1;
     lambda = e*h/2;
 
      for(i=0;i<28;i++)
@@ -49,7 +49,7 @@ double CPO2::iterator(){
                  left = get_neighborhood(i,j,2);
                  right = get_neighborhood(i,j,3);
                  newPotencial = ((1+lambda*vec[0])*right+(1-lambda*vec[0])*left+(1+lambda*vec[1])*top+(1-lambda*vec[1])*botton)/4;
-                 //newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
+                 newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
                  erro = erro + pow((newPotencial - oldPotencial),2);
                  set_potential(i,j,newPotencial);
              }

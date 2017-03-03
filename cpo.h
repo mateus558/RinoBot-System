@@ -17,6 +17,7 @@ private:
     int dx;
     int dy;
     double orientation;
+    double e;
     QMutex mutex;
 
     dMatrix pGrid;

@@ -120,8 +120,8 @@ void Fuzzy::calcula_input(Robot r){
         enemy_prox = enemy_pos[1];
     else
         enemy_prox = enemy_pos[2];
-/*
-    cout << "Distancia inimigo1: "<<euclidean_dist(ball_pos,enemy_pos[0]) << endl;
+
+    /*cout << "Distancia inimigo1: "<<euclidean_dist(ball_pos,enemy_pos[0]) << endl;
     cout << "Distancia inimigo2: "<<euclidean_dist(ball_pos,enemy_pos[1]) << endl;
     cout << "Distancia inimigo3 "<<euclidean_dist(ball_pos,enemy_pos[2]) << endl;
 

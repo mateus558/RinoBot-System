@@ -27,14 +27,13 @@ double CPO::iterator(){
     double erro = 0;
     double top, botton, left, right;
     double newPotencial, oldPotencial;
-    double vec[2], e, h, lambda;
+    double vec[2], h, lambda;
     int i,j;
 
     vec[0] = cos(orientation*PI/180);
     vec[1] = sin(orientation*PI/180);
 
     h = dx/dy;
-    e = 0.4;
     lambda = e*h/2;
 
      for(i=0;i<28;i++)
@@ -259,6 +258,18 @@ void CPO::run(){
         //tratar a bola aqui
     }
 
+    //Utiliza o robo amigo mais próximo para definição do epsilon
+    Point2d team_prox;
+    if ((euclidean_dist(ball_pos,team_pos[0]) <= euclidean_dist(ball_pos,team_pos[1])) && (euclidean_dist(ball_pos,team_pos[0]) <= euclidean_dist(ball_pos,team_pos[2])))
+        team_prox = team_pos[0];
+    else if (euclidean_dist(ball_pos,team_pos[1]) <= euclidean_dist(ball_pos,team_pos[2]))
+        team_prox = team_pos[1];
+    else
+        team_prox = team_pos[2];
+
+    e = euclidean_dist(team_prox,ball_pos)/150;
+    cout << " epsilon: " << e << endl;
+
     // Calculo do angulo de orientacao usar no ataque leve para dribles
     //Corrige Posicionamento
     ball_pos.y = -ball_pos.y;
@@ -279,6 +290,7 @@ void CPO::run(){
     ball_pos.y = -ball_pos.y;
     centroid_atk.y=-centroid_atk.y;
    // cout << "Angulo de orientacao: " << orientation << endl;
+
 
     /*if (drible)
     {
@@ -309,7 +321,7 @@ void CPO::run(){
         orientation = ang_ball_atk + 90*cos((3.1415/180)*(ang_ball_enemy-ang_ball_atk))*pow(2.7183,-0.04620*euclidean_dist(ball_pos,enemy_prox));
     }*/
 
-    cout<<"Orientação: "<<orientation<<endl;
+    //cout<<"Orientação: "<<orientation<<endl;
     while(iterator()>1E-6);
     set_direction();
 
