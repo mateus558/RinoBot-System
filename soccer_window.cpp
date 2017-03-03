@@ -102,10 +102,10 @@ void soccer_window::updateFuzzyRobots(Selector selec_robot){
 
     emit updateVisionInfo(team_robots);
 
-    cout << team_robots[0].get_nick() << " " << team_robots[0].get_l_vel() << " " << team_robots[0].get_flag_fuzzy() << endl;
+   /* cout << team_robots[0].get_nick() << " " << team_robots[0].get_l_vel() << " " << team_robots[0].get_flag_fuzzy() << endl;
     cout << team_robots[1].get_nick() << " " << team_robots[1].get_l_vel() << " " << team_robots[1].get_flag_fuzzy() << endl;
     cout << team_robots[2].get_nick() << " " << team_robots[2].get_l_vel() << " " << team_robots[2].get_flag_fuzzy() << endl;
-
+*/
 }
 
 void soccer_window::updateMoverRobots(Selector selec_robot){
@@ -144,11 +144,15 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
         cph->set_centroid_def(centroid_def); //salva a area de def para o cph
         cph->set_def_area(def_area);
+
         cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
         cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo
 
         cph2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
         cph2->set_centroid_def(centroid_def); //salva a area de def para o cph
+
+        mover->set_centroid_atk(centroid_atk);
+        mover->set_centroid_def(centroid_def);
     }
 
     if(percep.ball_found){
@@ -182,13 +186,13 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     cpo->set_ball_pos(ball_pos); //Salva a posicao da bola para o cpo
     cpo->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo
     cpo->set_team_pos(team_pos); //Salva a posicao do time para o cpo
-/*    cph2->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
+    cph2->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
     cph2->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph
     cph2->set_team_pos(team_pos); //Salva a posicao do time para o cph
 
     cpo2->set_ball_pos(ball_pos); //Salva a posicao da bola para o cpo
     cpo2->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo
-    cpo2->set_team_pos(team_pos); //Salva a posicao do time para o cpo*/
+    cpo2->set_team_pos(team_pos); //Salva a posicao do time para o cpo
     //set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
 
     fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]); //Gandalf, Presto e Leona nesta ordem
@@ -196,7 +200,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     fuzzy->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o fuzzy
 
     mover->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    mover->set_to_select_iterador(cph,cpo);
+    mover->set_to_select_iterador(cph,cpo,cph2,cpo2);
     mover->set_enemy_pos(enemy_pos);
     mover->set_ball_pos(ball_pos);
 
@@ -221,13 +225,13 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->presto_detec_label->setText("Not Detected");
     }
-    cout << "Centroid atk = x: " << centroid_atk.x * X_CONV_CONST << " y: " << centroid_atk.y * Y_CONV_CONST << endl;
+    //cout << "Centroid atk = x: " << centroid_atk.x * X_CONV_CONST << " y: " << centroid_atk.y * Y_CONV_CONST << endl;
 
 
     cph->zera_flag_finish();
     cpo->zera_flag_finish();
-    //cph2->zera_flag_finish();
-    //cpo2->zera_flag_finish();
+    cph2->zera_flag_finish();
+    cpo2->zera_flag_finish();
     fuzzy->zera_flag_finish();
 
     //inicia a thread do cph caso ela nao esteja em execucao
@@ -239,13 +243,13 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         cph->Play();
      }
 
-    /*if(run_cph){
+    if(run_cph2){
         if(cph2->is_running()){
             cph2->wait();
         }
-        //cph->print_grid();
+        //cph2->print_grid();
         cph2->Play();
-     }*/
+     }
 
     //inicia a thread do cpo caso ela nao esteja em execucao
     if(run_cpo){
@@ -256,13 +260,13 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         cpo->Play();
      }
 
-    /*if(run_cpo){
+    if(run_cpo2){
         if(cpo2->is_running()){
             cpo2->wait();
         }
-        //cpo->print_grid();
+        //cpo2->print_grid();
         cpo2->Play();
-     }*/
+     }
 
     //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(run_fuzzy){
@@ -285,12 +289,12 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
    //cout<<vel<<endl;
    //cout<<ver<<endl;
 
-   if(euclidean_dist(ball_pos, team_robots[1].get_pos()) < 8){
+   /*if(euclidean_dist(ball_pos, team_robots[1].get_pos()) < 8){
        Robot::send_velocities(team_robots[1].get_channel(),make_pair(0, 0));
    }else{
        Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
-   }
-   //Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
+   }*/
+   Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
    //cout << "channel " << team_robots[1].get_channel() << endl;
 
 }
@@ -359,11 +363,14 @@ void soccer_window::on_switch_fields_clicked()
     cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
     cph->set_centroid_def(centroid_def); //salva a area de def para o cph
 
-    /*cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
+    cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
     cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo
 
     cph2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-    cph2->set_centroid_def(centroid_def); //salva a area de def para o cph*/
+    cph2->set_centroid_def(centroid_def); //salva a area de def para o cph
+
+    mover->set_centroid_atk(centroid_atk);
+    mover->set_centroid_def(centroid_def);
 }
 
 soccer_window::~soccer_window()
@@ -477,6 +484,16 @@ void soccer_window::on_CPH_clicked()
     }else{
         run_cpo = false;
     }
+    if(!run_cph2){
+        run_cph2 = true;
+    }else{
+        run_cph2 = false;
+    }
+    if(!run_cpo2){
+        run_cpo2 = true;
+    }else{
+        run_cpo2 = false;
+    }
  /*   if(!run_mover){
         run_mover = true;
     }else run_mover = false;*/
@@ -536,7 +553,7 @@ void soccer_window::on_pushButton_clicked()
         run_mover = false;
     }*/
 
-    if (cph->get_flag_finish() && cpo->get_flag_finish() && fuzzy->get_flag_finish() && !run_mover){
+    if (cph->get_flag_finish() && cpo->get_flag_finish() && cph2->get_flag_finish() && cpo2->get_flag_finish() &&  fuzzy->get_flag_finish() && !run_mover){
         run_mover = true;
     }else{
         run_mover = false;

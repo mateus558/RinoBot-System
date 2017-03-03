@@ -308,7 +308,7 @@ void CPO2::run(){
         orientation = ang_ball_atk + 90*cos((3.1415/180)*(ang_ball_enemy-ang_ball_atk))*pow(2.7183,-0.04620*euclidean_dist(ball_pos,enemy_prox));
     }*/
 
-    cout<<"Orientação: "<<orientation<<endl;
+   // cout<<"Orientação: "<<orientation<<endl;
     while(iterator()>1E-6);
     set_direction();
 

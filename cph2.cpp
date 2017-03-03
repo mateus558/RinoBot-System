@@ -242,29 +242,30 @@ void CPH2::run(){
         }
     }
 
-    /*if (guarda_posicao){
-        Point2d vec_ball_def = centroid_def - ball_pos;
-        double aux = (0.45/150)*euclidean_dist(centroid_def,ball_pos);
-        Point2d meta = ball_pos + vec_ball_def*aux;
-        //cout << "Meta: " << endl;
-        //cout << " x: " << meta.x << " y: " << meta.y << endl;
-        if(meta.x > 0 && meta.y > 0){
-            Point meta_pos_grid = convert_C_to_G(meta);
-            //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-            set_potential(meta_pos_grid.y, meta_pos_grid.x, 0);
-        }else{
-        //tratar a meta aqui
-        }
-    }*/
+
+    Point2d vec_ball_def = centroid_def - ball_pos;
+    double aux = (0.45/150)*euclidean_dist(centroid_def,ball_pos);
+
+    Point2d meta = ball_pos + vec_ball_def*aux;
+    //cout << "Meta: " << endl;
+    //cout << " x: " << meta.x << " y: " << meta.y << endl;
+    if(meta.x > 0 && meta.y > 0){
+         Point meta_pos_grid = convert_C_to_G(meta);
+         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+         set_potential(meta_pos_grid.y, meta_pos_grid.x, 0);
+    }else{
+    //tratar a meta aqui
+    }
+    meta_aux = meta;
 
 
-    if(ball_pos.x > 0 && ball_pos.y > 0){
+    /*if(ball_pos.x > 0 && ball_pos.y > 0){
         ball_pos_grid = convert_C_to_G(ball_pos);
         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
         set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
     }else{
         //tratar a bola aqui
-    }
+    }*/
 
 
     while(iterator()>1E-6);
@@ -302,6 +303,10 @@ void CPH2::set_centroid_atk(Point2d centroid_atk){
 
 void CPH2::set_centroid_def(Point2d centroid_def){
     this->centroid_def = centroid_def;
+}
+
+Point2d CPH2::get_meta_aux(){
+    return this->meta_aux;
 }
 
 bool CPH2::isStopped() const

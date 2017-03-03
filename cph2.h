@@ -24,6 +24,7 @@ private:
     p2dVector team_pos;
     Point  ball_pos_grid;
     Point2d ball_pos;
+    Point2d meta_aux;
     Point2d centroid_atk;
     Point2d centroid_def;
     bool stop, grid_initialized,flag_finish_CPH2;
@@ -45,6 +46,7 @@ public:
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);
     void set_centroid_def(Point2d);
+    Point2d get_meta_aux();
     void set_direction();
     double get_direction(Point);
     bool get_flag_finish();

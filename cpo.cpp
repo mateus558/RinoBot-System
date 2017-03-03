@@ -268,7 +268,7 @@ void CPO::run(){
         team_prox = team_pos[2];
 
     e = euclidean_dist(team_prox,ball_pos)/150;
-    cout << " epsilon: " << e << endl;
+   // cout << " epsilon: " << e << endl;
 
     // Calculo do angulo de orientacao usar no ataque leve para dribles
     //Corrige Posicionamento

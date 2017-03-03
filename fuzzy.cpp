@@ -180,7 +180,7 @@ void Fuzzy::calcula_input(Robot r){
             aux2 = (90 - fabs(ang_atk_robot))/90;
         else
             aux2 = (-90 + fabs(ang_atk_robot))/90;
-        input[2]=0.7*aux1+0.3*aux2;
+        input[2]= 0.7*aux1+0.3*aux2;
         input[2] = (round(input[2]*100))/100;
         //cout << "FA: "<< input[2] << endl;
 

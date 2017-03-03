@@ -99,6 +99,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     if(contours[0].size() != 0){
         remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
         remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
+        sort(contours[0].begin(), contours[0].end(), sort_by_larger_area);
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);

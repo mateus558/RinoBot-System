@@ -208,6 +208,8 @@ Point CPH::convert_C_to_G(Point2d coord){
     }else{
         i.y = coord.y / dy - 1;
     }
+
+
     return i;
 }
 
@@ -260,18 +262,20 @@ void CPH::run(){
     double def_area_x = def_area[0].x*X_CONV_CONST;
     double def_area_y1 = def_area[1].y*Y_CONV_CONST;
     double def_area_y2 = def_area[6].y*Y_CONV_CONST;
+    Point meta;
+    Point2d meta2d;
+    meta2d.y = centroid_def.y;
 
     cout<<"Bola: "<< ball_pos.x << " , " << ball_pos.y << endl;
     cout<<"Defesa 0: "<< def_area_x << endl;
     cout<<"Defesa 1: "<< def_area_y1 << endl;
     cout<<"Defesa 6: "<< def_area_y2 << endl;
 
-    if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
-        cout << "Reconheceu a area de defesa" << endl;
-        Point meta;
-        Point2d meta2d;
-        meta2d.y = centroid_def.y;
-        if (centroid_atk.x > ball_pos.x){
+    if (centroid_atk.x > ball_pos.x){
+        if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
+            cout << "Reconheceu a area de defesa" << endl;
+
+
             if(ball_pos.x > 0 && ball_pos.y > 0){
                 meta2d.x = centroid_def.x + 35;
                 meta = convert_C_to_G(meta2d);
@@ -280,25 +284,16 @@ void CPH::run(){
             }else{
                 //tratar a meta aqui
             }
+
         }else{
             if(ball_pos.x > 0 && ball_pos.y > 0){
-                meta2d.x = centroid_def.x - 35;
-                meta = convert_C_to_G(meta2d);
+                ball_pos_grid = convert_C_to_G(ball_pos);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                set_potential(meta.y, meta.x, 0);
+                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
             }else{
-                //tratar a meta aqui
+                //tratar a bola aqui
             }
-        }
-    }else{
-        if(ball_pos.x > 0 && ball_pos.y > 0){
-            ball_pos_grid = convert_C_to_G(ball_pos);
-            //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-            set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
-        }else{
-            //tratar a bola aqui
-        }
-        if(centroid_atk.x > ball_pos.x){
+
             if(ball_pos.x > 0 && ball_pos.y > 0){
                 ball_pos_grid = convert_C_to_G(ball_pos);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
@@ -309,7 +304,25 @@ void CPH::run(){
                 //tratar a barreira aqui
             }
         }
-        else{
+    }else{
+        if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                meta2d.x = centroid_def.x - 35;
+                meta = convert_C_to_G(meta2d);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                set_potential(meta.y, meta.x, 0);
+            }else{
+                //tratar a meta aqui
+            }
+        }else{
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                ball_pos_grid = convert_C_to_G(ball_pos);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+            }else{
+                //tratar a bola aqui
+            }
+
             if(ball_pos.x > 0 && ball_pos.y > 0){
                 ball_pos_grid = convert_C_to_G(ball_pos);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
