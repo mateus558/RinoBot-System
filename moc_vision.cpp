@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Vision_t {
-    QByteArrayData data[8];
-    char stringdata0[82];
+    QByteArrayData data[11];
+    char stringdata0[126];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,12 +36,16 @@ QT_MOC_LITERAL(3, 22, 18), // "Vision::Perception"
 QT_MOC_LITERAL(4, 41, 14), // "processedImage"
 QT_MOC_LITERAL(5, 56, 5), // "image"
 QT_MOC_LITERAL(6, 62, 15), // "framesPerSecond"
-QT_MOC_LITERAL(7, 78, 3) // "FPS"
+QT_MOC_LITERAL(7, 78, 3), // "FPS"
+QT_MOC_LITERAL(8, 82, 17), // "updateFuzzyRobots"
+QT_MOC_LITERAL(9, 100, 7), // "rVector"
+QT_MOC_LITERAL(10, 108, 17) // "updateMoverRobots"
 
     },
     "Vision\0infoPercepted\0\0Vision::Perception\0"
     "processedImage\0image\0framesPerSecond\0"
-    "FPS"
+    "FPS\0updateFuzzyRobots\0rVector\0"
+    "updateMoverRobots"
 };
 #undef QT_MOC_LITERAL
 
@@ -51,7 +55,7 @@ static const uint qt_meta_data_Vision[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -59,14 +63,22 @@ static const uint qt_meta_data_Vision[] = {
        3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   29,    2, 0x06 /* Public */,
-       4,    1,   32,    2, 0x06 /* Public */,
-       6,    1,   35,    2, 0x06 /* Public */,
+       1,    1,   39,    2, 0x06 /* Public */,
+       4,    1,   42,    2, 0x06 /* Public */,
+       6,    1,   45,    2, 0x06 /* Public */,
+
+ // slots: name, argc, parameters, tag, flags
+       8,    1,   48,    2, 0x0a /* Public */,
+      10,    1,   51,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    2,
     QMetaType::Void, QMetaType::QImage,    5,
     QMetaType::Void, QMetaType::Double,    7,
+
+ // slots: parameters
+    QMetaType::Void, 0x80000000 | 9,    2,
+    QMetaType::Void, 0x80000000 | 9,    2,
 
        0        // eod
 };
@@ -80,6 +92,8 @@ void Vision::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 0: _t->infoPercepted((*reinterpret_cast< Vision::Perception(*)>(_a[1]))); break;
         case 1: _t->processedImage((*reinterpret_cast< const QImage(*)>(_a[1]))); break;
         case 2: _t->framesPerSecond((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 3: _t->updateFuzzyRobots((*reinterpret_cast< rVector(*)>(_a[1]))); break;
+        case 4: _t->updateMoverRobots((*reinterpret_cast< rVector(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -134,13 +148,13 @@ int Vision::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 5)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 3;
+        _id -= 5;
     }
     return _id;
 }

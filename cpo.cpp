@@ -34,7 +34,7 @@ double CPO::iterator(){
     vec[1] = sin(orientation*PI/180);
 
     h = dx/dy;
-    e = 1;
+    e = 0.4;
     lambda = e*h/2;
 
      for(i=0;i<28;i++)
@@ -49,7 +49,7 @@ double CPO::iterator(){
                  left = get_neighborhood(i,j,2);
                  right = get_neighborhood(i,j,3);
                  newPotencial = ((1+lambda*vec[0])*right+(1-lambda*vec[0])*left+(1+lambda*vec[1])*top+(1-lambda*vec[1])*botton)/4;
-                 //newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
+                 newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
                  erro = erro + pow((newPotencial - oldPotencial),2);
                  set_potential(i,j,newPotencial);
              }
@@ -230,10 +230,10 @@ Point CPO::convert_C_to_G(Point2d coord){
 void CPO::run(){
     Point2d eixo_x(1.0,0.0);
     int i;
-    if(!grid_initialized){
+    //if(!grid_initialized){
         init_grid();
         grid_initialized = true;
-    }
+    //}
     for(i = 0; i < 3; ++i){
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
             enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
@@ -274,6 +274,7 @@ void CPO::run(){
     else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
     //cout << "Angulo bola atk: " << ang_ball_atk << endl;
     orientation = ang_ball_atk;
+    //orientation = 45;
     //Corrige Posicionamento novamente
     ball_pos.y = -ball_pos.y;
     centroid_atk.y=-centroid_atk.y;

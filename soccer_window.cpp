@@ -21,18 +21,24 @@ soccer_window::soccer_window(QWidget *parent) :
     ui(new Ui::soccer_window)
 {
     qRegisterMetaType<Vision::Perception>("Vision::Perception");
+    qRegisterMetaType<Selector>("Selector");
+    qRegisterMetaType<rVector>("rVector");
+
 
     ui->setupUi(this);
     area_read = false;
     eye = new Vision;
     cph = new CPH; //instancia o objeto cph na rotina do sistema
     cpo = new CPO; //instancia o objeto cpo na rotina do sistema
+    cph2 = new CPH2; //instancia o objeto cph na rotina do sistema
+    cpo2 = new CPO2;
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
     mover = new Mover; //instancia o objeto mover na rotina do sistema
     run_cph = false; //flag da thread do cph
     run_cpo = false; //flag da thread do cpo
     run_fuzzy = false; //flag da thread do fuzzy
     run_mover = false;
+    team_robots.resize(3);
 
     eye->set_mode(0);
     load_serial_cfg();
@@ -41,6 +47,10 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
     connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);
+    connect(fuzzy, SIGNAL(emitRobots(Selector)), this, SLOT(updateFuzzyRobots(Selector)), Qt::QueuedConnection);
+    connect(mover, SIGNAL(emitRobots(Selector)), this, SLOT(updateMoverRobots(Selector)), Qt::QueuedConnection);
+    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateFuzzyRobots(rVector)), Qt::QueuedConnection);
+    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateMoverRobots(rVector)), Qt::QueuedConnection);
 }
 
 void soccer_window::load_serial_cfg(){
@@ -85,6 +95,27 @@ void soccer_window::updateVisionUI(QImage img){
     }
 }
 
+void soccer_window::updateFuzzyRobots(Selector selec_robot){
+    team_robots[0].set_flag_fuzzy(selec_robot.r3.get_flag_fuzzy());
+    team_robots[1].set_flag_fuzzy(selec_robot.r1.get_flag_fuzzy());
+    team_robots[2].set_flag_fuzzy(selec_robot.r2.get_flag_fuzzy());
+
+    emit updateVisionInfo(team_robots);
+
+    cout << team_robots[0].get_nick() << " " << team_robots[0].get_l_vel() << " " << team_robots[0].get_flag_fuzzy() << endl;
+    cout << team_robots[1].get_nick() << " " << team_robots[1].get_l_vel() << " " << team_robots[1].get_flag_fuzzy() << endl;
+    cout << team_robots[2].get_nick() << " " << team_robots[2].get_l_vel() << " " << team_robots[2].get_flag_fuzzy() << endl;
+
+}
+
+void soccer_window::updateMoverRobots(Selector selec_robot){
+    team_robots[0].set_lin_vel(make_pair(selec_robot.r3.get_l_vel(), selec_robot.r3.get_r_vel()));
+    team_robots[1].set_lin_vel(make_pair(selec_robot.r1.get_l_vel(), selec_robot.r1.get_r_vel()));
+    team_robots[2].set_lin_vel(make_pair(selec_robot.r2.get_l_vel(), selec_robot.r2.get_r_vel()));
+
+    emit updateVisionInfo(team_robots);
+}
+
 void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     p2dVector enemy_pos(3), team_pos(3);
 
@@ -112,6 +143,12 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
         cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
         cph->set_centroid_def(centroid_def); //salva a area de def para o cph
+        cph->set_def_area(def_area);
+        cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
+        cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo
+
+        cph2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
+        cph2->set_centroid_def(centroid_def); //salva a area de def para o cph
     }
 
     if(percep.ball_found){
@@ -135,7 +172,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     team_pos[0] = percep.team_robots[0].get_pos(); //Leona
     team_pos[1] = percep.team_robots[1].get_pos(); //Gandalf
     team_pos[2] = percep.team_robots[2].get_pos(); //Presto
-
+    team_robots = percep.team_robots;
     //cout << "Presto " << percep.team_robots[2].get_channel() << endl;
 
     cph->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
@@ -145,14 +182,20 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     cpo->set_ball_pos(ball_pos); //Salva a posicao da bola para o cpo
     cpo->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo
     cpo->set_team_pos(team_pos); //Salva a posicao do time para o cpo
+/*    cph2->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
+    cph2->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph
+    cph2->set_team_pos(team_pos); //Salva a posicao do time para o cph
 
+    cpo2->set_ball_pos(ball_pos); //Salva a posicao da bola para o cpo
+    cpo2->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo
+    cpo2->set_team_pos(team_pos); //Salva a posicao do time para o cpo*/
     //set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
 
-    fuzzy->set_to_select(&percep.team_robots[1], &percep.team_robots[2], &percep.team_robots[0]); //Gandalf, Presto e Leona nesta ordem
+    fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]); //Gandalf, Presto e Leona nesta ordem
     fuzzy->set_ball_pos(ball_pos); //Salva a posicao da bola para o fuzzy
     fuzzy->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o fuzzy
 
-    mover->set_to_select(&percep.team_robots[1], &percep.team_robots[2], &percep.team_robots[0]);
+    mover->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
     mover->set_to_select_iterador(cph,cpo);
     mover->set_enemy_pos(enemy_pos);
     mover->set_ball_pos(ball_pos);
@@ -178,9 +221,13 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->presto_detec_label->setText("Not Detected");
     }
+    cout << "Centroid atk = x: " << centroid_atk.x * X_CONV_CONST << " y: " << centroid_atk.y * Y_CONV_CONST << endl;
+
 
     cph->zera_flag_finish();
     cpo->zera_flag_finish();
+    //cph2->zera_flag_finish();
+    //cpo2->zera_flag_finish();
     fuzzy->zera_flag_finish();
 
     //inicia a thread do cph caso ela nao esteja em execucao
@@ -192,6 +239,14 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         cph->Play();
      }
 
+    /*if(run_cph){
+        if(cph2->is_running()){
+            cph2->wait();
+        }
+        //cph->print_grid();
+        cph2->Play();
+     }*/
+
     //inicia a thread do cpo caso ela nao esteja em execucao
     if(run_cpo){
         if(cpo->is_running()){
@@ -200,6 +255,14 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         //cpo->print_grid();
         cpo->Play();
      }
+
+    /*if(run_cpo){
+        if(cpo2->is_running()){
+            cpo2->wait();
+        }
+        //cpo->print_grid();
+        cpo2->Play();
+     }*/
 
     //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(run_fuzzy){
@@ -216,13 +279,19 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         mover->Play();
      }
 
-   cout<<percep.team_robots[1].get_channel()<<endl;
+   //cout<<percep.team_robots[1].get_channel()<<endl;
    float vel = percep.team_robots[1].get_l_vel();
    float ver = percep.team_robots[1].get_r_vel();
-   cout<<vel<<endl;
-   cout<<ver<<endl;
+   //cout<<vel<<endl;
+   //cout<<ver<<endl;
 
-   //Robot::send_velocities(percep.team_robots[1].get_channel(), percep.team_robots[1].get_lin_vel());
+   if(euclidean_dist(ball_pos, team_robots[1].get_pos()) < 8){
+       Robot::send_velocities(team_robots[1].get_channel(),make_pair(0, 0));
+   }else{
+       Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
+   }
+   //Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
+   //cout << "channel " << team_robots[1].get_channel() << endl;
 
 }
 
@@ -254,6 +323,7 @@ void soccer_window::on_start_game_clicked()
         eye->Stop();
         eye->wait();
         eye->release_cam();
+        Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::close_serial();
         ui->start_game->setText("Start Game");
     }
@@ -288,6 +358,12 @@ void soccer_window::on_switch_fields_clicked()
 
     cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
     cph->set_centroid_def(centroid_def); //salva a area de def para o cph
+
+    /*cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
+    cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo
+
+    cph2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
+    cph2->set_centroid_def(centroid_def); //salva a area de def para o cph*/
 }
 
 soccer_window::~soccer_window()
@@ -401,6 +477,9 @@ void soccer_window::on_CPH_clicked()
     }else{
         run_cpo = false;
     }
+ /*   if(!run_mover){
+        run_mover = true;
+    }else run_mover = false;*/
     if(!run_fuzzy){
         run_fuzzy = true;
     }else{
@@ -462,4 +541,9 @@ void soccer_window::on_pushButton_clicked()
     }else{
         run_mover = false;
     }
+   /* if (cph2->get_flag_finish() && cpo2->get_flag_finish() && fuzzy->get_flag_finish() && !run_mover){
+        run_mover = true;
+    }else{
+        run_mover = false;
+    }*/
 }

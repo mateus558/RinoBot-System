@@ -7,10 +7,10 @@
 
 using namespace std;
 double limiar_theta = 90;
-double v_max = 0.8;
-double w_max = 14;
+double v_max = 0.6;
+double w_max = 8;
 double k = (w_max/v_max);
-double l = 0.0285;
+double l = 0.0275;
 
 Serial Mover::serial;
 
@@ -60,10 +60,10 @@ void Mover::run(){
 
 
     //Pro primeiro robô - Gandalf
-    calcula_velocidades(selec_robot.r1,selec_iterador.cph,selec_iterador.cpo);
-    selec_robot.r1->set_lin_vel(make_pair(vl,vr));
-    cout << "Vel left: " << vl << endl;
-    cout << "Vel right: " << vr << endl;
+    calcula_velocidades(&selec_robot.r1,selec_iterador.cph,selec_iterador.cpo);
+    selec_robot.r1.set_lin_vel(make_pair(vl,vr));
+    //cout << "Vel left: " << vl << endl;
+    //cout << "Vel right: " << vr << endl;
 
     /*float velocidade = selec_robot.r1->get_l_vel();
     float veld = selec_robot.r1->get_r_vel();
@@ -72,21 +72,21 @@ void Mover::run(){
 
     //selec_robot.r1.open_serial();
 
-    cout<<selec_robot.r1->get_channel()<<endl;
-    cout<<selec_robot.r2->get_channel()<<endl;
-    cout<<selec_robot.r3->get_channel()<<endl;
+    /*cout<<selec_robot.r1.get_channel()<<endl;
+    cout<<selec_robot.r2.get_channel()<<endl;
+    cout<<selec_robot.r3.get_channel()<<endl;*/
 
-    //Robot::send_velocities(selec_robot.r1->get_channel(), selec_robot.r1->get_lin_vel());
+    //Robot::send_velocities(selec_robot.r1.get_channel(), make_pair(selec_robot.r1.get_r_vel(), selec_robot.r1.get_l_vel()));
 
 
     //Pro segundo robô - Presto
     //calcula_velocidades(selec_robot.r2,selec_iterador.cph,selec_iterador.cpo);
     //selec_robot.r2->send_velocities(selec_robot.r2->get_channel(), selec_robot.r2->get_lin_vel());
 
-
+    emit emitRobots(selec_robot);
 }
 
-void Mover::set_to_select(Robot *r1, Robot *r2, Robot *r3){
+void Mover::set_to_select(Robot r1, Robot r2, Robot r3){
     selec_robot.r1 = r1;
     selec_robot.r2 = r2;
     selec_robot.r3 = r3;
@@ -102,30 +102,30 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo){
     double v,w,theta,alpha;
     Point2d robot_pos = r->get_pos();
     Point robot_grid = convert_C_to_G(robot_pos);
-    cout << " Posicao do robo " << endl;
-    cout << " x: " << robot_pos.x << " y: " << robot_pos.y << endl;
+    //cout << " Posicao do robo " << endl;
+    //cout << " x: " << robot_pos.x << " y: " << robot_pos.y << endl;
 
     if(r->get_flag_fuzzy() == 4){
         cout<<"Sou Goleiro!"<<endl;
     }
     else{
 
-        if(r->get_flag_fuzzy() == 0){
+        /*if(r->get_flag_fuzzy() == 0){
              //theta = cph->get_direction(robot_grid);
             cout << "Rodrigay!" << endl;
         }
         else if(r->get_flag_fuzzy() == 1){
-             //theta = cph->get_direction(robot_grid);
+             //theta = cph2->get_direction(robot_grid);
             cout << "gabigay!" << endl;
         }
         else if(r->get_flag_fuzzy() == 2){
-             //theta = cpo->get_direction(robot_grid);
+             //theta = cpo2->get_direction(robot_grid);
             cout << "JoaoTraveco!" << endl;
         }
         else if(r->get_flag_fuzzy() == 3){
              //theta = cpo->get_direction(robot_grid);
             cout << "Fredtransex!" << endl;
-        }
+        }*/
 
 
         theta = cph->get_direction(robot_grid);
@@ -146,13 +146,20 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo){
             v = v_max*fabs(alpha)/limiar_theta - v_max;
         }
 
-        cout << "velocidade linear: " << v << endl;
-        cout << "velocidade angular: " << w << endl;
+        /*if(w < 45){
+            w *= 2;
+        }
+        if(w < 22.5){
+            w *= 2;
+        }*/
+
+        //cout << "velocidade linear: " << v << endl;
+        //cout << "velocidade angular: " << w << endl;
 
         vl = v-w*l;
         vr = v+w*l;
 
-        //r.set_lin_vel(make_pair(vl,vr));
+        //r->set_lin_vel(make_pair(vl,vr));
     }
 }
 

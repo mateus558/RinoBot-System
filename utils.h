@@ -9,7 +9,7 @@
 
 #define FIELD_WIDTH 132
 #define FIELD_HEIGHT 175
-#define MIN_ROBOT_AREA 100
+#define MIN_ROBOT_AREA 25
 #define MAX_ROBOT_AREA 250
 #define MIN_BALL_AREA 50
 #define MAX_BALL_AREA 100

@@ -429,7 +429,7 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
     Point cent, team_cent, color_cent, inter;
 
     if(ball_pos != null_point)
-        circle(frame, ball_pos, 20, Scalar(255, 0, 0));
+        circle(frame, ball_pos, 10, Scalar(255, 0, 0));
 
     for(i = 0; i < size-3; ++i){
         cent = robots[i].get_centroid();
@@ -581,6 +581,18 @@ void Vision::Play()
             stop = false;
         start();
     }
+}
+
+void Vision::updateFuzzyRobots(rVector team_robots){
+    robots[0].set_flag_fuzzy(team_robots[0].get_flag_fuzzy());
+    robots[1].set_flag_fuzzy(team_robots[1].get_flag_fuzzy());
+    robots[2].set_flag_fuzzy(team_robots[2].get_flag_fuzzy());
+}
+
+void Vision::updateMoverRobots(rVector team_robots){
+    robots[0].set_lin_vel(make_pair(team_robots[0].get_l_vel(), team_robots[0].get_r_vel()));
+    robots[1].set_lin_vel(make_pair(team_robots[1].get_l_vel(), team_robots[1].get_r_vel()));
+    robots[2].set_lin_vel(make_pair(team_robots[2].get_l_vel(), team_robots[2].get_r_vel()));
 }
 
 void Vision::switch_teams_areas(){

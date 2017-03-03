@@ -59,6 +59,11 @@ private:
     pVector def_points, tdef_points;
     Matrix3d last_P;
     vector<Robot> robots;
+
+public slots:
+    void updateFuzzyRobots(rVector);
+    void updateMoverRobots(rVector);
+
 signals:
     void infoPercepted(Vision::Perception);
     void processedImage(const QImage &image);

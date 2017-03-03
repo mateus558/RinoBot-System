@@ -37,7 +37,8 @@ private:
 protected:
     void msleep(int ms);
     void run(); //rotina que a thread executa
-
+signals:
+    void emitRobots(Selector);
 public:
     Mover();
 
@@ -50,7 +51,7 @@ public:
     bool is_running();
     void Stop();
     bool isStopped() const;
-    void set_to_select(Robot *, Robot *, Robot *);
+    void set_to_select(Robot, Robot, Robot);
     void set_to_select_iterador(CPH *, CPO *);
     void set_enemy_pos(p2dVector);
     void set_ball_pos(Point2d);

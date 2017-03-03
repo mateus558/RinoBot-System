@@ -354,34 +354,97 @@ int Robot::get_channel()
     return this->channel;
 }
 
-void Robot::set_flag_fuzzy(int output){
+void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, Point2d ball){
 
     if(output == 0)
     {
-        this->flag_fuzzy = 0;
+        this->flag_fuzzy = output;
         cout << "Robo deve Defender Arduamente!"<< endl;
     }
     else if(output == 1)
     {
-        this->flag_fuzzy = 1;
-        cout << "Robo deve ser Um bom Volante!"<< endl;
+        if(centroid_cm.x < centroid_def.x){
+            if((ball.x > centroid_def.x - 75 && ball.x < centroid_def.x - 15) && (ball.y < centroid_def.y + 35 && ball.y > centroid_def.y - 35)){
+                if(centroid_cm.x > ball.x){
+                    cout << nick <<" deve Defender Arduamente!"<< endl;
+                    this->flag_fuzzy = 0;
+                }else{
+                    this->flag_fuzzy = output;
+                    cout << nick <<" deve ser Um bom Volante!3"<< endl;
+                }
+            }
+
+        }else if(centroid_cm.x > centroid_def.x){
+            if((ball.x < centroid_def.x + 75 && ball.x > centroid_def.x - 15) && (ball.y < centroid_def.y + 35 && ball.y > centroid_def.y - 35)){
+                if(centroid_cm.x < ball.x){
+                    this->flag_fuzzy = 0;
+                    cout << nick <<"Robo deve Defender Arduamente!"<< endl;
+                }else{
+                    this->flag_fuzzy = output;
+                    cout << nick << " deve ser Um bom Volante!2"<< endl;
+                }
+            }else{
+                this->flag_fuzzy = output;
+                cout << nick <<" deve ser Um bom Volante!1"<< endl;
+            }
+        }else{
+            this->flag_fuzzy = output;
+            cout << nick <<" deve ser Um bom Volante!1"<< endl;
+        }
+        //cout << nick <<" deve ser Um bom Volante!"<< endl;
     }
     else if(output == 2)
     {
         this->flag_fuzzy = 2;
-        cout << "Robo deve ser Um bom Meia!"<< endl;
+        cout << nick <<" deve ser Um bom Meia!"<< endl;
     }
     else if(output == 3)
     {
-        this->flag_fuzzy = 3;
-        cout << "Robo deve Atacar Ferozmente!" << endl;
+         if(centroid_cm.x < centroid_atk.x){
+            if((ball.x > centroid_atk.x - 75) && (ball.y < centroid_atk.y + 35 && ball.y > centroid_atk.y - 35)){
+                if(centroid_cm.x < ball.x){
+                    this->flag_fuzzy = 3;
+                    cout << nick <<" deve Atacar Ferozmente!" << endl;
+                }else{
+                    this->flag_fuzzy = 2;
+                    cout << nick <<" deve ser Um bom Meia!4"<< endl;
+                }
+            }else{
+                this->flag_fuzzy = 2;
+                cout << nick <<" deve ser Um bom Meia!5"<< endl;
+            }
+         }else if(centroid_cm.x > centroid_atk.x){
+            if(ball.x < centroid_atk.x + 75 && (ball.y < centroid_atk.y + 35 && ball.y > centroid_atk.y - 35)){
+                if(centroid_cm.x > ball.x){
+                    this->flag_fuzzy = 3;
+                    cout << nick <<" deve Atacar Ferozmente!" << endl;
+                }else{
+                    this->flag_fuzzy = 2;
+                    cout << nick <<" deve ser Um bom Meia!1"<< endl;
+
+                }
+            }else{
+                this->flag_fuzzy = 2;
+                cout << nick <<" deve ser Um bom Meia!2"<< endl;
+
+            }
+         }else{
+             this->flag_fuzzy = 2;
+             cout << nick <<" deve ser Um bom Meia!3"<< endl;
+
+         }
+        //cout << "Robo deve Atacar Ferozmente!" << endl;
     }
     else
     {
         this->flag_fuzzy = 4;
-        cout << "Robo deve Catar Ferozmente!" << endl;
+        cout << nick <<" deve Catar Ferozmente!" << endl;
     }
 
+}
+
+void Robot::set_flag_fuzzy(int output){
+    this->flag_fuzzy = output;
 }
 
 int Robot::get_flag_fuzzy(){
