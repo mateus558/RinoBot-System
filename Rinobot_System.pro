@@ -25,7 +25,10 @@ SOURCES += main.cpp\
     soccer_window.cpp \
     cph.cpp \
     cpo.cpp \
-    fuzzy.cpp
+    fuzzy.cpp \
+    mover.cpp \
+    cph2.cpp \
+    cpo2.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -34,12 +37,15 @@ HEADERS  += mainwindow.h \
     utils.h \
     configrobots.h \
     setcolorrange.h \
-    serial.h \
     settingsdialog.h \
     soccer_window.h \
     cph.h \
     cpo.h \
-    fuzzy.h
+    fuzzy.h \
+    serial.h \
+    mover.h \
+    cph2.h \
+    cpo2.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

@@ -9,19 +9,19 @@
 
 #define FIELD_WIDTH 132
 #define FIELD_HEIGHT 175
-#define MIN_ROBOT_AREA 100
+#define MIN_ROBOT_AREA 25
 #define MAX_ROBOT_AREA 250
 #define MIN_BALL_AREA 50
 #define MAX_BALL_AREA 100
 #define MAX_CENT_DIST 20
-#define DEFAULT_NROWS 424   //Default number of the rows of the frame
-#define DEFAULT_NCOLS 555   //Default number of the columns of the frame
-#define X_CONV_CONST 0.309009009   //Conversion constant for the X axis
-#define Y_CONV_CONST 0.307075472   //Conversion constant for the Y axis
+#define DEFAULT_NROWS 480   //Default number of the rows of the frame
+#define DEFAULT_NCOLS 640   //Default number of the columns of the frame
+#define X_CONV_CONST 0.339882122   //Conversion constant for the X axis
+#define Y_CONV_CONST 0.345549738  //Conversion constant for the Y axis
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000
-
+//173cmx132cm - field
 using namespace cv;
 using namespace Eigen;
 
@@ -34,8 +34,8 @@ typedef std::vector<std::vector<Point> > pMatrix; //Point matrix template
 typedef std::vector<std::vector<Point2d> > p2dMatrix; //double precision Point matrix template
 
 
-double euclidean_dist(Point p, Point q);
-double angle_two_points(Point p, Point q);
+double euclidean_dist(Point2d p, Point2d q);
+double angle_two_points(Point2d p, Point2d q);
 std::pair<Matrix3d, Vector3d> kalman_filter(Vector3d pos_cam, Vector2d v_w, Vector3d last_pos , double dt, Matrix3d last_P);
 bool read_points(std::string fname, std::vector<Point> &points);
 bool sort_by_larger_area(std::vector<Point> p0, std::vector<Point> p1);

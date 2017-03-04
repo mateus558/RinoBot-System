@@ -19,6 +19,10 @@ Vision::Vision(QObject *parent): QThread(parent)
     stop = true;
     showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters= false;
     mode = 0;
+    cont = 0;
+    tracker = Tracker::create("KCF");
+    track_init.assign(7, false);
+    objects_tracker.resize(7);
     robots.resize(6);
     robots[0].set_nick("Leona");
     robots[1].set_nick("Gandalf");
@@ -75,7 +79,8 @@ bool invalid_contour(vector<Point> p){
 
 vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
 {
-    int i, j, csize, k, tsize, r_label = 0, min, t1size, tmin, l;
+    size_t i, j, k, l;
+    int csize, tsize, r_label = 0, min, t1size, tmin;
     double dista = 0.0, angle, last_angle;
     bool not_t1, error;
     Moments ball_moment, temp_moment;
@@ -92,18 +97,23 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Get the ball moment from the contour
     if(contours[0].size() != 0){
-        remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
         remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
+        remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
+        sort(contours[0].begin(), contours[0].end(), sort_by_larger_area);
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
         ball_last_pos = ball_cent;
         ball_found = true;
     }else{
-        if(showErrors) cerr << "Ball not found!" << endl;
         ball_cent = ball_last_pos;
         ball_found = false;
     }
+
+    ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
+    ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
+    ball_pos_cm = ball_pos_cm;
+    ball_pos = ball_cent;
 
     remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
     sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
@@ -254,12 +264,10 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         robots[i].was_detected(false);
     }
 
-    ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
-    ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
-    ball_pos_cm = ball_pos_cm;
-    ball_pos = ball_cent;
+
     if(error && showErrors) cerr << endl;
 
+    cont++;
     return robots;
 }
 
@@ -424,20 +432,18 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
     Point cent, team_cent, color_cent, inter;
 
     if(ball_pos != null_point)
-        circle(frame, ball_pos, 20, Scalar(255, 0, 0));
+        circle(frame, ball_pos, 10, Scalar(255, 0, 0));
 
     for(i = 0; i < size-3; ++i){
         cent = robots[i].get_centroid();
         team_cent = robots[i].get_team_cent();
         color_cent = robots[i].get_color_cent();
         angle = robots[i].get_angle();
-
         if(cent == null_point) continue;
         if(showCenters){
             circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
             circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
         }
-
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
         inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y - 20 * sin(angle * PI / 180.0));
         line(frame, cent, inter, Scalar(0, 255, 0), 1);
@@ -578,6 +584,18 @@ void Vision::Play()
             stop = false;
         start();
     }
+}
+
+void Vision::updateFuzzyRobots(rVector team_robots){
+    robots[0].set_flag_fuzzy(team_robots[0].get_flag_fuzzy());
+    robots[1].set_flag_fuzzy(team_robots[1].get_flag_fuzzy());
+    robots[2].set_flag_fuzzy(team_robots[2].get_flag_fuzzy());
+}
+
+void Vision::updateMoverRobots(rVector team_robots){
+    robots[0].set_lin_vel(make_pair(team_robots[0].get_l_vel(), team_robots[0].get_r_vel()));
+    robots[1].set_lin_vel(make_pair(team_robots[1].get_l_vel(), team_robots[1].get_r_vel()));
+    robots[2].set_lin_vel(make_pair(team_robots[2].get_l_vel(), team_robots[2].get_r_vel()));
 }
 
 void Vision::switch_teams_areas(){

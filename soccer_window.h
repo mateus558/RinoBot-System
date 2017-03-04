@@ -6,8 +6,10 @@
 #include "vision.h"
 #include "cph.h"
 #include "cpo.h"
+#include "cph2.h"
+#include "cpo2.h"
 #include "fuzzy.h"
-#include "serial.h"
+#include "mover.h"
 
 namespace Ui {
 class soccer_window;
@@ -19,13 +21,18 @@ class soccer_window : public QWidget
 
 public:
     explicit soccer_window(QWidget *parent = 0);
+    void load_serial_cfg();
     ~soccer_window();
 public slots:
+    void updateMoverRobots(Selector);
+    void updateFuzzyRobots(Selector);
     void updatePerceptionInfo(Vision::Perception);
     void updateSerialSettings(SettingsDialog::Settings);
     void updateVisionUI(QImage);
     void receiveSerialSettings(SettingsDialog::Settings);
     void updateFPS(double);
+signals:
+    void updateVisionInfo(rVector);
 private slots:
 
     void on_start_game_clicked();
@@ -48,13 +55,16 @@ private slots:
 
 private:
     CPH *cph;
+    CPH2 *cph2;
     CPO *cpo;
+    CPO2 *cpo2;
     Fuzzy *fuzzy;
+    Mover *mover;
     Vision *eye;
     Vision::Perception percep;
-    Serial *serial;
+    SettingsDialog::Settings serial_config;
     Ui::soccer_window *ui;
-    std::vector<Robot> robots;
+    std::vector<Robot> team_robots;
     Point2d ball_pos;
     std::vector<cv::Point> map_area;
     std::vector<cv::Point> def_area;
@@ -63,7 +73,11 @@ private:
     Point centroid_def;
     void closeEvent(QCloseEvent *event);
 
-    bool started, area_read, run_cph, run_fuzzy;
+    bool started, area_read, run_cph, run_cpo, run_fuzzy, run_mover, run_cph2, run_cpo2;
+
+    Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
+
+
 };
 
 #endif // SOCCER_WINDOW_H

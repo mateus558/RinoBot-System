@@ -3,9 +3,11 @@
 #include <sstream>
 #include "utils.h"
 #include "robot.h"
-#include "serial.h"
+
 
 using namespace std;
+
+Serial Robot::serial;
 
 Robot::Robot(){
     channel = -1;
@@ -26,72 +28,88 @@ Robot::Robot(){
     flag_fuzzy = 0;
 }
 
-bool Robot::send_velocities(Serial *serial, pair<double, double> vels){
+void Robot::config_serial(SettingsDialog::Settings settings){
+    serial.set_serial_settings(settings);
+}
+
+void Robot::open_serial(){
+    serial.open();
+}
+
+void Robot::close_serial(){
+    serial.close();
+}
+
+bool Robot::send_velocities(int channel, pair<float, float> vels){
     float left_vel = vels.first, right_vel = vels.second;
 
-    if(serial->is_open()){
+    if(serial.is_open()){
         //Inicializamos o vetor de bytes a ser transferido
         QByteArray bytes(13, 0x0);
         bytes[0] = 18;
         //Setamos o byte 1 como o número do robô selecionado
-        bytes[1] = (char)this->channel;
+        bytes[1] = (char)channel;
         bytes[12] = 19;
 
         //Criamos uma variável para converter a soma dos bytes de velocidade
         Short2Char cont;
         cont.Short = 0;
+        cont.Short += bytes[0] + bytes[1];
 
         //Criamos uma variável para converter as velocidades em bytes
-        Float2Char valor;
+        Float2Char valor1, valor2;
         //Fazemos com que o valor float da nossa variável Union seja a velocidade informada
-        valor.Float = left_vel;
+        valor1.Float = left_vel;
         // Como o valor da variável Union ocupa a mesma posição de memória dos valores em byte dessa variável, setamos os bytes correspondentes da velocidade no vetor de saída como os bytes da variável Union
-        bytes[2] = valor.Bytes[0];
-        bytes[3] = valor.Bytes[1];
-        bytes[4] = valor.Bytes[2];
-        bytes[5] = valor.Bytes[3];
+        bytes[2] = valor1.Bytes[0];
+        bytes[3] = valor1.Bytes[1];
+        bytes[4] = valor1.Bytes[2];
+        bytes[5] = valor1.Bytes[3];
         // Adicionamos a soma dos bytes da velocidade a variável de contagem de bytes
-        cont.Short += valor.Bytes[0] + valor.Bytes[1] + valor.Bytes[2] + valor.Bytes[3];
+        cont.Short += valor1.Bytes[0] + valor1.Bytes[1] + valor1.Bytes[2] + valor1.Bytes[3];
 
-        valor.Float = right_vel;
-        bytes[6] = valor.Bytes[0];
-        bytes[7] = valor.Bytes[1];
-        bytes[8] = valor.Bytes[2];
-        bytes[9] = valor.Bytes[3];
-        cont.Short += valor.Bytes[0] + valor.Bytes[1] + valor.Bytes[2] + valor.Bytes[3];
+        valor2.Float = right_vel;
+        bytes[6] = valor2.Bytes[0];
+        bytes[7] = valor2.Bytes[1];
+        bytes[8] = valor2.Bytes[2];
+        bytes[9] = valor2.Bytes[3];
+        cont.Short += valor2.Bytes[0] + valor2.Bytes[1] + valor2.Bytes[2] + valor2.Bytes[3];
 
         //Setamos os bytes de contagemno vetor de saída como os bytes da variável de contagem
         bytes[10] = cont.Bytes[0];
         bytes[11] = cont.Bytes[1];
 
         //Escrevemos os bytes na porta serial
-        serial->write_data(bytes);
+        serial.write(bytes);
         //Finalizamos a transferência dos dados a serial
-        serial->flush();
+        serial.flush();
     }else{
-        cerr << nick << ": (Serial closed) Couldn't write wheels velocities at serial port." << endl;
+        cerr << "(Serial closed) Couldn't write wheels velocities at serial port." << endl;
 
         return false;
     }
     return true;
 }
 
-bool Robot::encoders_reading(Serial *serial, int &robot, pair<double, double> &vels, double &battery){
+bool Robot::encoders_reading(int &robot, pair<float, float> &vels, float &battery){
     //Array de bytes lidos da serial
     QByteArray *dados;
     //Armazena a quantidade de bytes lidos da serial
     unsigned char PosDados;
     char b;
 
-    if(!serial || !serial->is_open()){
+    dados = new QByteArray(17, 0x0);
+    PosDados = 0;
+
+    if(!serial.is_open()){
         cerr << "Couldn't read information from serial. (Serial closed)" << endl;
         return false;
     }
 
     // Executamos a leitura de bytes enquanto houver um byte disponível na serial
-    while (serial->bytes_available() > 0){
+    while (serial.bytes_available() > 0){
         //Lemos um byte da serial para a variável b
-        serial->read(&b, 1);
+        serial.read(&b, 1);
         //Adicionamos b ao array de entrada de bytes
         dados->data()[PosDados] = b;
         //Incrementamos a quantidade de bytes recebidos
@@ -331,10 +349,134 @@ string Robot::get_ID()
     return this->ID;
 }
 
-void Robot::set_flag_fuzzy(double output){
+int Robot::get_channel()
+{
+    return this->channel;
+}
+
+void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, Point2d ball){
+
+    if(output == 0)
+    {
+        this->flag_fuzzy = output;
+       // cout << "Robo deve Defender Arduamente!"<< endl;
+    }
+    else if(output == 1)
+    {
+        if(centroid_cm.x < centroid_def.x){
+            if((ball.x > centroid_def.x - 75 && ball.x < centroid_def.x - 15) && (ball.y < centroid_def.y + 35 && ball.y > centroid_def.y - 35)){
+                if(centroid_cm.x > ball.x){
+                    //cout << nick <<" deve Defender Arduamente!"<< endl;
+                    this->flag_fuzzy = 0;
+                }else{
+                    this->flag_fuzzy = output;
+                    //cout << nick <<" deve ser Um bom Volante!3"<< endl;
+                }
+            }
+
+        }else if(centroid_cm.x > centroid_def.x){
+            if((ball.x < centroid_def.x + 75 && ball.x > centroid_def.x - 15) && (ball.y < centroid_def.y + 35 && ball.y > centroid_def.y - 35)){
+                if(centroid_cm.x < ball.x){
+                    this->flag_fuzzy = 0;
+                    //cout << nick <<"Robo deve Defender Arduamente!"<< endl;
+                }else{
+                    this->flag_fuzzy = output;
+                    //cout << nick << " deve ser Um bom Volante!2"<< endl;
+                }
+            }else{
+                this->flag_fuzzy = output;
+                //cout << nick <<" deve ser Um bom Volante!1"<< endl;
+            }
+        }else{
+            this->flag_fuzzy = output;
+            //cout << nick <<" deve ser Um bom Volante!1"<< endl;
+        }
+        //cout << nick <<" deve ser Um bom Volante!"<< endl;
+    }
+    else if(output == 2)
+    {
+        this->flag_fuzzy = 2;
+        //cout << nick <<" deve ser Um bom Meia!"<< endl;
+    }
+    else if(output == 3)
+    {
+         if(centroid_cm.x < centroid_atk.x){
+            if((ball.x > centroid_atk.x - 75) && (ball.y < centroid_atk.y + 35 && ball.y > centroid_atk.y - 35)){
+                if(centroid_cm.x < ball.x){
+                    this->flag_fuzzy = 3;
+                    //cout << nick <<" deve Atacar Ferozmente!" << endl;
+                }else{
+                    this->flag_fuzzy = 2;
+                   // cout << nick <<" deve ser Um bom Meia!4"<< endl;
+                }
+            }else{
+                this->flag_fuzzy = 2;
+                //cout << nick <<" deve ser Um bom Meia!5"<< endl;
+            }
+         }else if(centroid_cm.x > centroid_atk.x){
+            if(ball.x < centroid_atk.x + 75 && (ball.y < centroid_atk.y + 35 && ball.y > centroid_atk.y - 35)){
+                if(centroid_cm.x > ball.x){
+                    this->flag_fuzzy = 3;
+                    //cout << nick <<" deve Atacar Ferozmente!" << endl;
+                }else{
+                    this->flag_fuzzy = 2;
+                   // cout << nick <<" deve ser Um bom Meia!1"<< endl;
+
+                }
+            }else{
+                this->flag_fuzzy = 2;
+                //cout << nick <<" deve ser Um bom Meia!2"<< endl;
+
+            }
+         }else{
+             this->flag_fuzzy = 2;
+            // cout << nick <<" deve ser Um bom Meia!3"<< endl;
+
+         }
+        //cout << "Robo deve Atacar Ferozmente!" << endl;
+    }
+    else
+    {
+        this->flag_fuzzy = 4;
+        //cout << nick <<" deve Catar Ferozmente!" << endl;
+    }
 
 }
 
-int Robot::get_flag_fuzzy(){
+void Robot::set_flag_fuzzy(int output){
+    this->flag_fuzzy = output;
+}
 
+int Robot::get_flag_fuzzy(){
+    return flag_fuzzy;
+
+}
+
+double Robot::min_function(double p, double q){
+    if(p <= q)
+    {
+        return p;
+    }
+    else
+        return q;
+}
+
+double Robot::max_function(double p, double q){
+    if(p >= q)
+    {
+        return p;
+    }
+    else
+        return q;
+}
+
+void Robot::set_lin_vel(pair<float, float> vels){
+    this->vel = vels;
+}
+
+float Robot::get_l_vel(){
+    return vel.first;
+}
+float Robot::get_r_vel(){
+    return vel.second;
 }

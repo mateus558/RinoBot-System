@@ -7,12 +7,12 @@
 using namespace std;
 using namespace Eigen;
 
-double euclidean_dist(Point p, Point q)
+double euclidean_dist(Point2d p, Point2d q)
 {
     return sqrt((q.x-p.x)*(q.x-p.x) + (q.y-p.y)*(q.y-p.y));
 }
 
-double angle_two_points(Point p, Point q)
+double angle_two_points(Point2d p, Point2d q)
 {
     double theta;
     double dot, pnorm, qnorm;
@@ -23,6 +23,24 @@ double angle_two_points(Point p, Point q)
     theta = acos(dot/(pnorm*qnorm));
 
     return theta * 180.0 / PI;
+}
+
+double min_function(double p, double q){
+    if(p <= q)
+    {
+        return p;
+    }
+    else
+        return q;
+}
+
+double max_function(double p, double q){
+    if(p >= q)
+    {
+        return p;
+    }
+    else
+        return q;
 }
 
 bool read_points(string fname, vector<Point> &points){
@@ -117,6 +135,7 @@ bool sort_by_largest_y(Point a, Point b){
 
 bool sort_by_larger_area(vector<Point> p0, vector<Point> p1)
 {
+    if(p0.size() == 0 || p1.size() == 0) return false;
     return contourArea(p0) < contourArea(p1);
 }
 

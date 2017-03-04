@@ -53,6 +53,7 @@ private slots:
     void on_save_image_clicked();
 
 private:
+    int cam_id;
     Ui::SetParameters *ui;
     ConfigRobots *conf;
     Vision *eye;

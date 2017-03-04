@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <cmath>
 #include "cph.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -14,7 +15,7 @@ CPH::CPH(){
     enemy_pos_grid = pVector(3);
     team_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
-    tGrid = iMatrix(28, vector<int>(36, 0));
+    tGrid = dMatrix(28, vector<double>(36, 0));
     cout<<"\n\nAMBIENTE CRIADO!\n";
 }
 
@@ -41,7 +42,7 @@ double CPH::iterator(){
             }
         }
     }
-    cout << "Erro" << " " << erro << endl;
+    //cout << "Erro" << " " << erro << endl;
     return erro;
 }
 
@@ -132,6 +133,10 @@ void CPH::set_direction(){
     }
 }
 
+double CPH::get_direction(Point grid){
+    return this->tGrid[grid.y][grid.x];
+}
+
 void CPH::set_potential(int i, int j, double aux){
     pGrid[i][j]= aux;
 }
@@ -143,12 +148,20 @@ void CPH::init_grid(){
     {
         for(j=0;j<36;j++)
         {
-            if (i==0 || i == 27)
-                pGrid[i][j]=1;
-            else if (j==0 || j == 35)
-                pGrid[i][j]=1;
+            if ( i == 0 || i == 27 || j == 0 || j == 1 || j == 2 || j == 33 || j == 34 || j == 35 )
+            {
+                if ( j == 1 || j == 2 || j == 33 || j == 34 )
+                {
+                    if (i > 9 && i < 18)
+                        pGrid[i][j] = 0.9;
+                    else
+                        pGrid[i][j] = 1.0;
+                }
+                else
+                    pGrid[i][j] = 1.0;
+            }
             else
-                pGrid[i][j]=0.9;
+                pGrid[i][j] = 0.9;
         }
     }
 }
@@ -171,11 +184,7 @@ void CPH::print_grid(){
     {
         for(j=0;j<36;j++)
         {
-            while (tGrid[i][j]>180)
-                tGrid[i][j] = tGrid[i][j] - 360;
-            while (tGrid[i][j]<-180)
-                tGrid[i][j] = tGrid[i][j] + 360;
-            cout<<tGrid[i][j]<<setw(7);
+            cout<<tGrid[i][j]<<"\t";
         }
         cout<<"\n\n";
     }
@@ -199,42 +208,158 @@ Point CPH::convert_C_to_G(Point2d coord){
     }else{
         i.y = coord.y / dy - 1;
     }
+
+
     return i;
 }
 
 void CPH::run(){
-    if(!grid_initialized){
+    //if(!grid_initialized){
         init_grid();
+
         grid_initialized = true;
-    }
+    //}
+
+    /*cout << "Inimigo 1: " << "em x: "<< enemy_pos[0].x << " em y: "<< enemy_pos[0].y << endl;
+    cout << "Inimigo 2: " << "em x: "<< enemy_pos[1].x << " em y: "<< enemy_pos[1].y << endl;
+    cout << "Inimigo 3: " << "em x: "<< enemy_pos[2].x << " em y: "<< enemy_pos[2].y << endl;
+    cout << "Leona: " << "em x: "<< team_pos[0].x << " em y: "<< team_pos[0].y << endl;
+    cout << "Gandalf: " << "em x: "<< team_pos[1].x << " em y: "<< team_pos[1].y << endl;
+    cout << "Presto: " << "em x: "<< team_pos[2].x << " em y: "<< team_pos[2].y << endl;*/
+
 
     for(i = 0; i < 3; ++i){
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
             enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
-            cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-            set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+            //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
         }else{
             //tratar posição dos inimigos aqui
         }
 
         if(team_pos[i].x > 0 && team_pos[i].y > 0){
             team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-            cout<<"Amigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
         }else{
             //tratar posição dos miguxos aqui
         }
     }
 
-    if(ball_pos.x > 0 && ball_pos.y > 0){
-        ball_pos_grid = convert_C_to_G(ball_pos);
-         cout<<"Bola "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+    /*if (guarda_posicao){
+        Point2d vec_ball_def = centroid_def - ball_pos;
+        double aux = (0.45/150)*euclidean_dist(centroid_def,ball_pos);
+        Point2d meta = ball_pos + vec_ball_def*aux;
+        //cout << "Meta: " << endl;
+        //cout << " x: " << meta.x << " y: " << meta.y << endl;
+        if(meta.x > 0 && meta.y > 0){
+            Point meta_pos_grid = convert_C_to_G(meta);
+            //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+            set_potential(meta_pos_grid.y, meta_pos_grid.x, 0);
+        }else{
+        //tratar a meta aqui
+        }
+    }*/ //tratar no lugar do volante
+
+    double def_area_x = def_area[0].x*X_CONV_CONST;
+    double def_area_y1 = def_area[1].y*Y_CONV_CONST;
+    double def_area_y2 = def_area[6].y*Y_CONV_CONST;
+    Point meta;
+    Point2d meta2d;
+    meta2d.y = centroid_def.y;
+
+   /* cout<<"Bola: "<< ball_pos.x << " , " << ball_pos.y << endl;
+    cout<<"Defesa 0: "<< def_area_x << endl;
+    cout<<"Defesa 1: "<< def_area_y1 << endl;
+    cout<<"Defesa 6: "<< def_area_y2 << endl;*/
+
+    if (centroid_atk.x > ball_pos.x){
+        if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
+            cout << "Reconheceu a area de defesa" << endl;
+
+
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                meta2d.x = centroid_def.x + 35;
+                meta = convert_C_to_G(meta2d);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (meta.x > 0 && meta.y > 0)
+                    set_potential(meta.y, meta.x, 0);
+            }else{
+                //tratar a meta aqui
+            }
+
+        }else{
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                ball_pos_grid = convert_C_to_G(ball_pos);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+            }else{
+                //tratar a bola aqui
+            }
+
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                ball_pos_grid = convert_C_to_G(ball_pos);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
+                set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
+                set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
+            }else{
+                //tratar a barreira aqui
+            }
+        }
     }else{
-        //tratar a bola aqui
+        if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                meta2d.x = centroid_def.x - 35;
+                meta = convert_C_to_G(meta2d);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (meta.x > 0 && meta.y > 0)
+                    set_potential(meta.y, meta.x, 0);
+            }else{
+                //tratar a meta aqui
+            }
+        }else{
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                ball_pos_grid = convert_C_to_G(ball_pos);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+            }else{
+                //tratar a bola aqui
+            }
+
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                ball_pos_grid = convert_C_to_G(ball_pos);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
+                set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
+                set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
+            }else{
+                //tratar a barreira aqui
+            }
+        }
     }
+
 
     while(iterator()>1E-6);
     set_direction();
+
+   //print_grid();
+
+    flag_finish_cph = true;
+}
+
+void CPH::set_def_area(pVector def_area){
+    this->def_area = def_area;
+}
+
+bool CPH::get_flag_finish(){
+    return this->flag_finish_cph;
+}
+
+void CPH::zera_flag_finish(){
+    flag_finish_cph = false;
 }
 
 
@@ -248,6 +373,14 @@ void CPH::set_team_pos(p2dVector team_pos){
 
 void CPH::set_ball_pos(Point2d ball_pos){
     this->ball_pos = ball_pos;
+}
+
+void CPH::set_centroid_atk(Point2d centroid_atk){
+    this->centroid_atk = centroid_atk;
+}
+
+void CPH::set_centroid_def(Point2d centroid_def){
+    this->centroid_def = centroid_def;
 }
 
 bool CPH::isStopped() const
