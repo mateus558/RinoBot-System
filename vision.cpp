@@ -97,8 +97,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Get the ball moment from the contour
     if(contours[0].size() != 0){
-        remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
         remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
+        remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
         sort(contours[0].begin(), contours[0].end(), sort_by_larger_area);
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
@@ -109,6 +109,11 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         ball_cent = ball_last_pos;
         ball_found = false;
     }
+
+    ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
+    ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
+    ball_pos_cm = ball_pos_cm;
+    ball_pos = ball_cent;
 
     remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
     sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
@@ -259,10 +264,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         robots[i].was_detected(false);
     }
 
-    ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
-    ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
-    ball_pos_cm = ball_pos_cm;
-    ball_pos = ball_cent;
+
     if(error && showErrors) cerr << endl;
 
     cont++;

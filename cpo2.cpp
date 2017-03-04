@@ -11,8 +11,7 @@ using namespace std;
 
 
 CPO2::CPO2(){
-    dx = 5;
-    dy = 5;
+
     stop = true;
     grid_initialized = false;
     enemy_pos_grid = pVector(3);
@@ -34,7 +33,8 @@ double CPO2::iterator(){
     vec[1] = sin(orientation*PI/180);
 
     h = dx/dy;
-    e = 1;
+
+    e = 0.8;
     lambda = e*h/2;
 
      for(i=0;i<28;i++)
@@ -238,7 +238,8 @@ void CPO2::run(){
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
             enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
             //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-            set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
         }else{
             //tratar posição dos inimigos aqui
         }
@@ -254,7 +255,23 @@ void CPO2::run(){
     if(ball_pos.x > 0 && ball_pos.y > 0){
         ball_pos_grid = convert_C_to_G(ball_pos);
          //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+        if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+            set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+
+        //Calcula angulo entre a bola e o gol de ataque
+        Point2d vec_ball_atk = centroid_atk-ball_pos;
+        double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
+        if (vec_ball_atk.y < 0)
+                ang_ball_atk = -ang_ball_atk;
+        //ajusta angulos para menores que 180 e maiores que -180
+        if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
+        else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
+        //cout << "Angulo bola atk: " << ang_ball_atk << endl;
+        orientation = ang_ball_atk;
+
+        //Corrige Posicionamento novamente
+        ball_pos.y = -ball_pos.y;
+        centroid_atk.y=-centroid_atk.y;
     }else{
         //tratar a bola aqui
     }
@@ -264,19 +281,7 @@ void CPO2::run(){
     ball_pos.y = -ball_pos.y;
     centroid_atk.y = -centroid_atk.y;
 
-    //Calcula angulo entre a bola e o gol de ataque
-    Point2d vec_ball_atk = centroid_atk-ball_pos;
-    double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
-    if (vec_ball_atk.y < 0)
-            ang_ball_atk = -ang_ball_atk;
-    //ajusta angulos para menores que 180 e maiores que -180
-    if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
-    else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
-    //cout << "Angulo bola atk: " << ang_ball_atk << endl;
-    orientation = ang_ball_atk;
-    //Corrige Posicionamento novamente
-    ball_pos.y = -ball_pos.y;
-    centroid_atk.y=-centroid_atk.y;
+
    // cout << "Angulo de orientacao: " << orientation << endl;
 
     /*if (drible)

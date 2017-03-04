@@ -71,19 +71,21 @@ void Fuzzy::run(){
         init_funcao_pertinencia();
         duniverse_initialized = true;
     }
+    if(ball_pos.x > 0 && ball_pos.y > 0){
+        //Pro primeiro robô
+        calcula_input(selec_robot.r1);
+        fuzzification();
+        selec_robot.r1.set_flag_fuzzy(defuzzification(), centroid_atk, centroid_def, ball_pos);
 
-    //Pro primeiro robô
-    calcula_input(selec_robot.r1);
-    fuzzification();
-    selec_robot.r1.set_flag_fuzzy(defuzzification(), centroid_atk, centroid_def, ball_pos);
+        //Pro segundo robô
+        calcula_input(selec_robot.r2);
+        fuzzification();
+        selec_robot.r2.set_flag_fuzzy(defuzzification(), centroid_atk, centroid_def, ball_pos);
 
-    //Pro segundo robô
-    calcula_input(selec_robot.r2);
-    fuzzification();
-    selec_robot.r2.set_flag_fuzzy(defuzzification(), centroid_atk, centroid_def, ball_pos);
-
-    selec_robot.r3.set_flag_fuzzy(4, centroid_atk, centroid_def, ball_pos);
-
+        selec_robot.r3.set_flag_fuzzy(4, centroid_atk, centroid_def, ball_pos);
+    }else{
+        //tratar bola aqui
+    }
     emit emitRobots(selec_robot);
     flag_finish_fuzzy = true;
 }
@@ -102,6 +104,10 @@ void Fuzzy::calcula_input(Robot r){
     //Point2d robot2_pos = selec_robot.r2.get_pos();
 
     double angle = r.get_angle();
+    if(angle != angle){
+        angle = r.get_last_angle();
+        if(angle != angle) angle = 0;
+    }
    //double angle2 = selec_robot.r2.get_angle();
 
     //Calculo do FD - distGOLDEF ate nosso player e distGOLATK ate nosso player
@@ -145,7 +151,7 @@ void Fuzzy::calcula_input(Robot r){
         double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
 
         //Corrige o angulo
-        if (robot_pos.y > ball_pos.y)
+        if (vec_ball_robot.y < 0)
                 ang_vec_ball_eixox = -ang_vec_ball_eixox;
 
         double ang_ball_robot = ang_vec_ball_eixox - angle;
@@ -155,7 +161,7 @@ void Fuzzy::calcula_input(Robot r){
         double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
 
         //Corrige o angulo
-        if (robot_pos.y > centroid_atk.y)
+        if (vec_atk_robot.y < 0)
                 ang_vec_atk_eixox = -ang_vec_atk_eixox;
 
         double ang_atk_robot = ang_vec_atk_eixox - angle;
@@ -180,6 +186,7 @@ void Fuzzy::calcula_input(Robot r){
             aux2 = (90 - fabs(ang_atk_robot))/90;
         else
             aux2 = (-90 + fabs(ang_atk_robot))/90;
+
         input[2]= 0.7*aux1+0.3*aux2;
         input[2] = (round(input[2]*100))/100;
         //cout << "FA: "<< input[2] << endl;

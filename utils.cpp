@@ -135,6 +135,7 @@ bool sort_by_largest_y(Point a, Point b){
 
 bool sort_by_larger_area(vector<Point> p0, vector<Point> p1)
 {
+    if(p0.size() == 0 || p1.size() == 0) return false;
     return contourArea(p0) < contourArea(p1);
 }
 

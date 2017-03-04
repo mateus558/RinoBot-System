@@ -26,6 +26,7 @@ soccer_window::soccer_window(QWidget *parent) :
 
 
     ui->setupUi(this);
+    ui->cam_id_spinBox->setValue(0);
     area_read = false;
     eye = new Vision;
     cph = new CPH; //instancia o objeto cph na rotina do sistema
@@ -289,11 +290,12 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
    //cout<<vel<<endl;
    //cout<<ver<<endl;
 
-   /*if(euclidean_dist(ball_pos, team_robots[1].get_pos()) < 8){
+   /*if(euclidean_dist(cph2->get_meta_aux(), team_robots[1].get_pos()) < 8){
        Robot::send_velocities(team_robots[1].get_channel(),make_pair(0, 0));
    }else{
        Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
    }*/
+
    Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
    //cout << "channel " << team_robots[1].get_channel() << endl;
 

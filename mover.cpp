@@ -8,9 +8,9 @@
 using namespace std;
 double limiar_theta = 90;
 double v_max = 0.6;
-double w_max = 8;
+double w_max = 7;
 double k = (w_max/v_max);
-double l = 0.0275;
+double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275)
 
 Serial Mover::serial;
 
@@ -57,7 +57,6 @@ void Mover::run(){
         //init_mover();
         mover_initialized = true;
     }
-
 
     //Pro primeiro robô - Gandalf
     calcula_velocidades(&selec_robot.r1,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2);
@@ -129,55 +128,99 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
              //theta = cpo->get_direction(robot_grid);
             cout << "Fredtransex!" << endl;
         }*/
+        cout << " Decisao fuzzy" <<  r->get_flag_fuzzy() << endl;
 
-
-        theta = cph->get_direction(robot_grid);
+        theta = cpo->get_direction(robot_grid);
         //cout << "angulo do grid: " << theta << endl;
 
         //cout << "Bola :" << ball_pos.y << endl;
 
         //cout << "Distancia: " << euclidean_dist(ball_pos,robot_pos) << endl;
-        cout << "Centroide de ataque: " << centroid_atk.y << endl;
+        //cout << "Centroide de ataque: " << centroid_atk.y << endl;
 
-        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
-            cout << "1" << endl;
-            vl = -0.6;
-            vr = 0.6;
-        }
-        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
-            cout << "2" << endl;
-            vl = 0.6;
-            vr = -0.6;
-        }
-        else{
-            alpha = theta - r->get_angle();
-            alpha = ajusta_angulo(alpha);
-
-            //cout << "angulo do robo: "<<r->get_angle()<<endl;
-
-            if (fabs(alpha) <= limiar_theta){
-                w = k*v_max*alpha/180;
-                v = -v_max*fabs(alpha)/limiar_theta + v_max;
+        if (centroid_atk.x > ball_pos.x){
+            if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
+                cout << "1" << endl;
+                vl = -0.6;
+                vr = 0.6;
+            }
+            else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
+                cout << "2" << endl;
+                vl = 0.6;
+                vr = -0.6;
             }
             else{
-                alpha = ajusta_angulo(alpha+180);
-                w = k*v_max*alpha/180;
-                v = v_max*fabs(alpha)/limiar_theta - v_max;
+                alpha = theta - r->get_angle();
+                alpha = ajusta_angulo(alpha);
+
+                //cout << "angulo do robo: "<<r->get_angle()<<endl;
+
+                if (fabs(alpha) <= limiar_theta){
+                    w = k*v_max*alpha/180;
+                    v = -v_max*fabs(alpha)/limiar_theta + v_max;
+                }
+                else{
+                    alpha = ajusta_angulo(alpha+180);
+                    w = k*v_max*alpha/180;
+                    v = v_max*fabs(alpha)/limiar_theta - v_max;
+                }
+
+                if(w < 45){
+                    w *= 2;
+                }
+                if(w < 22.5){
+                    w *= 2;
+                }
+
+                //cout << "velocidade linear: " << v << endl;
+                //cout << "velocidade angular: " << w << endl;
+
+                vl = v-w*l;
+                vr = v+w*l;
+                //r->set_lin_vel(make_pair(vl,vr));
             }
-
-            /*if(w < 45){
-                w *= 2;
+        }
+        else{
+            if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
+                cout << "1" << endl;
+                vl = 0.6;
+                vr = -0.6;
             }
-            if(w < 22.5){
-                w *= 2;
-            }*/
+            else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
+                cout << "2" << endl;
+                vl = -0.6;
+                vr = 0.6;
+            }
+            else{
+                alpha = theta - r->get_angle();
+                alpha = ajusta_angulo(alpha);
 
-            //cout << "velocidade linear: " << v << endl;
-            //cout << "velocidade angular: " << w << endl;
+                //cout << "angulo do robo: "<<r->get_angle()<<endl;
 
-            vl = v-w*l;
-            vr = v+w*l;
-            //r->set_lin_vel(make_pair(vl,vr));
+                if (fabs(alpha) <= limiar_theta){
+                    w = k*v_max*alpha/180;
+                    v = -v_max*fabs(alpha)/limiar_theta + v_max;
+                }
+                else{
+                    alpha = ajusta_angulo(alpha+180);
+                    w = k*v_max*alpha/180;
+                    v = v_max*fabs(alpha)/limiar_theta - v_max;
+                }
+
+                /*if(w < 45){
+                    w *= 2;
+                }
+                if(w < 22.5){
+                    w *= 2;
+                }*/
+
+                //cout << "velocidade linear: " << v << endl;
+                //cout << "velocidade angular: " << w << endl;
+
+                vl = v-w*l;
+                vr = v+w*l;
+                //r->set_lin_vel(make_pair(vl,vr));
+            }
         }
     }
 }

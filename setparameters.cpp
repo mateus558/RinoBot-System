@@ -20,6 +20,7 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
 
     eye->set_mode(0);
     ui->setupUi(this);
+    ui->spinBox->setValue(0);
     //setAttribute(Qt::WA_DeleteOnClose);
     eye->set_camid(ui->spinBox->value());
     connect(ui->configRobots, SIGNAL(clicked(bool)), this, SLOT(on_configRobots_clicked()));
@@ -71,7 +72,7 @@ void SetParameters::updateFPS(double val)
 
 void SetParameters::on_initCapture_clicked()
 {
-    int cam_id = ui->spinBox->value();
+    cam_id = ui->spinBox->value();
     if(eye->isStopped()){
         if(!eye->open_camera(cam_id)){
             QMessageBox msgBox;
@@ -185,7 +186,7 @@ void SetParameters::on_configRobots_clicked()
         eye->Stop();
         eye->release_cam();
     }
-    conf->set_camid(eye->get_camID());
+    conf->set_camid(cam_id);
     conf->show();
 }
 
@@ -197,7 +198,7 @@ void SetParameters::on_T1_color_clicked()
         eye->release_cam();
     }
     set_team_color->set_robot("T1");
-    set_team_color->set_camid(eye->get_camID());
+    set_team_color->set_camid(cam_id);
     set_team_color->show();
 }
 
@@ -208,20 +209,19 @@ void SetParameters::on_T2_color_clicked()
         eye->release_cam();
     }
     set_team_color->set_robot("T2");
-    set_team_color->set_camid(eye->get_camID());
+    set_team_color->set_camid(cam_id);
     set_team_color->show();
 }
 
 void SetParameters::on_ball_color_clicked()
 {
-    int cam = eye->get_camID();
 
     if(!eye->isStopped()){
         eye->Stop();
         eye->release_cam();
     }
     set_team_color->set_robot("ball");
-    set_team_color->set_camid(cam);
+    set_team_color->set_camid(cam_id);
     set_team_color->show();
 }
 

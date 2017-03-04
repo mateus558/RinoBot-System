@@ -227,11 +227,13 @@ void CPH::run(){
     cout << "Gandalf: " << "em x: "<< team_pos[1].x << " em y: "<< team_pos[1].y << endl;
     cout << "Presto: " << "em x: "<< team_pos[2].x << " em y: "<< team_pos[2].y << endl;*/
 
+
     for(i = 0; i < 3; ++i){
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
             enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
             //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-            set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
         }else{
             //tratar posição dos inimigos aqui
         }
@@ -266,10 +268,10 @@ void CPH::run(){
     Point2d meta2d;
     meta2d.y = centroid_def.y;
 
-    cout<<"Bola: "<< ball_pos.x << " , " << ball_pos.y << endl;
+   /* cout<<"Bola: "<< ball_pos.x << " , " << ball_pos.y << endl;
     cout<<"Defesa 0: "<< def_area_x << endl;
     cout<<"Defesa 1: "<< def_area_y1 << endl;
-    cout<<"Defesa 6: "<< def_area_y2 << endl;
+    cout<<"Defesa 6: "<< def_area_y2 << endl;*/
 
     if (centroid_atk.x > ball_pos.x){
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
@@ -280,7 +282,8 @@ void CPH::run(){
                 meta2d.x = centroid_def.x + 35;
                 meta = convert_C_to_G(meta2d);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                set_potential(meta.y, meta.x, 0);
+                if (meta.x > 0 && meta.y > 0)
+                    set_potential(meta.y, meta.x, 0);
             }else{
                 //tratar a meta aqui
             }
@@ -289,7 +292,8 @@ void CPH::run(){
             if(ball_pos.x > 0 && ball_pos.y > 0){
                 ball_pos_grid = convert_C_to_G(ball_pos);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+                if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
             }else{
                 //tratar a bola aqui
             }
@@ -310,7 +314,8 @@ void CPH::run(){
                 meta2d.x = centroid_def.x - 35;
                 meta = convert_C_to_G(meta2d);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                set_potential(meta.y, meta.x, 0);
+                if (meta.x > 0 && meta.y > 0)
+                    set_potential(meta.y, meta.x, 0);
             }else{
                 //tratar a meta aqui
             }
@@ -318,7 +323,8 @@ void CPH::run(){
             if(ball_pos.x > 0 && ball_pos.y > 0){
                 ball_pos_grid = convert_C_to_G(ball_pos);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+                if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
             }else{
                 //tratar a bola aqui
             }

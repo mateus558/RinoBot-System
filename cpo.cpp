@@ -11,8 +11,6 @@ using namespace std;
 
 
 CPO::CPO(){
-    dx = 5;
-    dy = 5;
     stop = true;
     grid_initialized = false;
     enemy_pos_grid = pVector(3);
@@ -237,7 +235,8 @@ void CPO::run(){
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
             enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
             //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-            set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
         }else{
             //tratar posição dos inimigos aqui
         }
@@ -251,44 +250,60 @@ void CPO::run(){
     }
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
-        ball_pos_grid = convert_C_to_G(ball_pos);
-         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+        //Utiliza o robo amigo mais próximo para definição do epsilon
+        Point2d team_prox;
+        if ((euclidean_dist(ball_pos,team_pos[0]) <= euclidean_dist(ball_pos,team_pos[1])) && (euclidean_dist(ball_pos,team_pos[0]) <= euclidean_dist(ball_pos,team_pos[2])))
+            team_prox = team_pos[0];
+        else if (euclidean_dist(ball_pos,team_pos[1]) <= euclidean_dist(ball_pos,team_pos[2]))
+            team_prox = team_pos[1];
+        else
+            team_prox = team_pos[2];
+
+        e = 0.3 + euclidean_dist(team_prox,ball_pos)/250;
+       // cout << " epsilon: " << e << endl;
+
+        // Calculo do angulo de orientacao usar no ataque leve para dribles
+        //Corrige Posicionamento
+        ball_pos.y = -ball_pos.y;
+        centroid_atk.y = -centroid_atk.y;
+
+        //Calcula angulo entre a bola e o gol de ataque
+        Point2d vec_ball_atk = centroid_atk-ball_pos;
+        double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
+        if (vec_ball_atk.y < 0)
+                ang_ball_atk = -ang_ball_atk;
+        //ajusta angulos para menores que 180 e maiores que -180
+        if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
+        else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
+        //cout << "Angulo bola atk: " << ang_ball_atk << endl;
+        orientation = ang_ball_atk;
+        //orientation = 45;
+        //Corrige Posicionamento novamente
+        ball_pos.y = -ball_pos.y;
+        centroid_atk.y=-centroid_atk.y;
+
+        Point meta;
+        if (euclidean_dist(ball_pos,team_prox) < 5){
+            if (centroid_atk.x > 0 && centroid_atk.y > 0){
+                meta = convert_C_to_G(centroid_atk);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (meta.x > 0 && meta.y > 0)
+                    set_potential(meta.y, meta.x, 0);
+            }else{
+                //tratar o gol aqui
+            }
+
+        }else{
+            ball_pos_grid = convert_C_to_G(ball_pos);
+             //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+            if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+        }
     }else{
         //tratar a bola aqui
     }
 
-    //Utiliza o robo amigo mais próximo para definição do epsilon
-    Point2d team_prox;
-    if ((euclidean_dist(ball_pos,team_pos[0]) <= euclidean_dist(ball_pos,team_pos[1])) && (euclidean_dist(ball_pos,team_pos[0]) <= euclidean_dist(ball_pos,team_pos[2])))
-        team_prox = team_pos[0];
-    else if (euclidean_dist(ball_pos,team_pos[1]) <= euclidean_dist(ball_pos,team_pos[2]))
-        team_prox = team_pos[1];
-    else
-        team_prox = team_pos[2];
 
-    e = euclidean_dist(team_prox,ball_pos)/150;
-   // cout << " epsilon: " << e << endl;
-
-    // Calculo do angulo de orientacao usar no ataque leve para dribles
-    //Corrige Posicionamento
-    ball_pos.y = -ball_pos.y;
-    centroid_atk.y = -centroid_atk.y;
-
-    //Calcula angulo entre a bola e o gol de ataque
-    Point2d vec_ball_atk = centroid_atk-ball_pos;
-    double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
-    if (vec_ball_atk.y < 0)
-            ang_ball_atk = -ang_ball_atk;
-    //ajusta angulos para menores que 180 e maiores que -180
-    if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
-    else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
-    //cout << "Angulo bola atk: " << ang_ball_atk << endl;
-    orientation = ang_ball_atk;
-    //orientation = 45;
-    //Corrige Posicionamento novamente
-    ball_pos.y = -ball_pos.y;
-    centroid_atk.y=-centroid_atk.y;
    // cout << "Angulo de orientacao: " << orientation << endl;
 
 

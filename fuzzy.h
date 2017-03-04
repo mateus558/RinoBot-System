@@ -26,7 +26,7 @@ private:
     dMatrix mi; //grau de pertinencia
     dMatrix limite;
 
-    vector<double> pertinencia;
+    vector<int> pertinencia;
     vector<double> D; //Coeficiente de Disparo
     vector<double> y_output;
     vector<double> y_baixo;

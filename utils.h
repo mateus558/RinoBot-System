@@ -14,14 +14,14 @@
 #define MIN_BALL_AREA 50
 #define MAX_BALL_AREA 100
 #define MAX_CENT_DIST 20
-#define DEFAULT_NROWS 424   //Default number of the rows of the frame
-#define DEFAULT_NCOLS 555   //Default number of the columns of the frame
-#define X_CONV_CONST 0.309009009   //Conversion constant for the X axis
-#define Y_CONV_CONST 0.307075472   //Conversion constant for the Y axis
+#define DEFAULT_NROWS 480   //Default number of the rows of the frame
+#define DEFAULT_NCOLS 640   //Default number of the columns of the frame
+#define X_CONV_CONST 0.339882122   //Conversion constant for the X axis
+#define Y_CONV_CONST 0.345549738  //Conversion constant for the Y axis
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000
-
+//173cmx132cm - field
 using namespace cv;
 using namespace Eigen;
 
