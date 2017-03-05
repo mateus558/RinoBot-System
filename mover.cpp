@@ -56,29 +56,7 @@ void Mover::run(){
     if(!mover_initialized){
         //init_mover();
         mover_initialized = true;
-    }
-    if (selec_robot.r1.get_flag_fuzzy() >= 2 && selec_robot.r2.get_flag_fuzzy() >= 2){
-        if (fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
-            selec_robot.r2.set_flag_fuzzy(1);
-        }
-        else {
-            selec_robot.r1.set_flag_fuzzy(1);
-        }
-    }
-    else{
-        //tratar aqui
-    }
-    if (selec_robot.r1.get_flag_fuzzy() <= 1 && selec_robot.r2.get_flag_fuzzy() <= 1){
-        if (fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
-            selec_robot.r1.set_flag_fuzzy(2);
-        }
-        else {
-            selec_robot.r2.set_flag_fuzzy(2);
-        }
-    }
-    else{
-        //tratar aqui
-    }
+    }    
 
     //Pro primeiro robô - Gandalf
     calcula_velocidades(&selec_robot.r1,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3);

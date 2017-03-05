@@ -36,6 +36,7 @@ private:
     vector<double> d_universe; // Dominio dos termos primarios de entrada e saida
     vector<double> input; //vetor de entrada para calculo de decisao do fuzzy (FD,FC,FA)
     vector<double> mi_output; //vetor de saida para calculo da decisao do fuzzy
+    vector<int> decisao_robo;
 
     double output; //saida do fuzzy
     bool stop, duniverse_initialized; //variavel de controle de thread

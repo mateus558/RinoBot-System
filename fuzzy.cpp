@@ -28,6 +28,7 @@ Fuzzy::Fuzzy(){
     y_medio2.resize(101);
     y_alto.resize(101);
     d_universe.resize(101);
+    decisao_robo.resize(3);
     input.resize(3);
     mi_output.resize(3);
 
@@ -74,18 +75,43 @@ void Fuzzy::run(){
     if(ball_pos.x > 0 && ball_pos.y > 0){
         //Pro primeiro robô
         calcula_input(selec_robot.r1);
-        fuzzification();
-        selec_robot.r1.set_flag_fuzzy(defuzzification(), centroid_atk, centroid_def, ball_pos);
-        selec_robot.r1.set_output_fuzzy(output);
+        fuzzification();        
+        decisao_robo[0] = defuzzification();
 
         //Pro segundo robô
         calcula_input(selec_robot.r2);
         fuzzification();
-        selec_robot.r2.set_flag_fuzzy(defuzzification(), centroid_atk, centroid_def, ball_pos);
-        selec_robot.r2.set_output_fuzzy(output);
+        decisao_robo[1] = defuzzification();
 
 
-        selec_robot.r3.set_flag_fuzzy(4, centroid_atk, centroid_def, ball_pos);
+        if (decisao_robo[0] >= 2 && decisao_robo[1] >= 2){
+            if (fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+                decisao_robo[1] = 1;
+            }
+            else {
+                decisao_robo[0] = 1;
+            }
+        }
+        else{
+            //tratar aqui
+        }
+        if (decisao_robo[0] <= 1 && decisao_robo[1] <= 1){
+            if (fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+                decisao_robo[0] = 2;
+            }
+            else {
+                decisao_robo[1] = 2;
+            }
+        }
+        else{
+            //tratar aqui
+        }
+        decisao_robo[2] = 4;
+
+        selec_robot.r1.set_flag_fuzzy(decisao_robo[0], centroid_atk, centroid_def, ball_pos);
+        selec_robot.r2.set_flag_fuzzy(decisao_robo[1], centroid_atk, centroid_def, ball_pos);
+        selec_robot.r3.set_flag_fuzzy(decisao_robo[2], centroid_atk, centroid_def, ball_pos);
+
     }else{
         //tratar bola aqui
     }
