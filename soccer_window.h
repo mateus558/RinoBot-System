@@ -8,6 +8,7 @@
 #include "cpo.h"
 #include "cph2.h"
 #include "cpo2.h"
+#include "cpo3.h"
 #include "fuzzy.h"
 #include "mover.h"
 
@@ -41,8 +42,6 @@ private slots:
 
     void on_read_parameters_clicked();
 
-    void on_CPH_clicked();
-
     void on_show_field_areas_checkbox_toggled(bool checked);
 
     void on_show_rnames_checkBox_toggled(bool checked);
@@ -51,13 +50,14 @@ private slots:
 
     void on_show_visionlogs_checkbox_toggled(bool checked);
 
-    void on_pushButton_clicked();
+    void on_start_game_2_clicked();
 
 private:
     CPH *cph;
     CPH2 *cph2;
     CPO *cpo;
     CPO2 *cpo2;
+    CPO3 *cpo3;
     Fuzzy *fuzzy;
     Mover *mover;
     Vision *eye;
@@ -71,13 +71,12 @@ private:
     std::vector<cv::Point> atk_area;
     Point centroid_atk;
     Point centroid_def;
-    void closeEvent(QCloseEvent *event);
-
-    bool started, area_read, run_cph, run_cpo, run_fuzzy, run_mover, run_cph2, run_cpo2;
-
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
+    int cam_id;
+    bool started, area_read, run_cph, run_cpo, run_fuzzy, run_mover, run_cph2, run_cpo2, run_cpo3, game_started;
 
 
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // SOCCER_WINDOW_H

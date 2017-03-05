@@ -76,11 +76,14 @@ void Fuzzy::run(){
         calcula_input(selec_robot.r1);
         fuzzification();
         selec_robot.r1.set_flag_fuzzy(defuzzification(), centroid_atk, centroid_def, ball_pos);
+        selec_robot.r1.set_output_fuzzy(output);
 
         //Pro segundo robô
         calcula_input(selec_robot.r2);
         fuzzification();
         selec_robot.r2.set_flag_fuzzy(defuzzification(), centroid_atk, centroid_def, ball_pos);
+        selec_robot.r2.set_output_fuzzy(output);
+
 
         selec_robot.r3.set_flag_fuzzy(4, centroid_atk, centroid_def, ball_pos);
     }else{

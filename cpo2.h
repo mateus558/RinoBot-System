@@ -17,6 +17,7 @@ private:
     const int dx = 5;
     const int dy = 5;
     double orientation;
+    double e;
     QMutex mutex;
 
     dMatrix pGrid;

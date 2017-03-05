@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_soccer_window_t {
-    QByteArrayData data[24];
-    char stringdata0[478];
+    QByteArrayData data[23];
+    char stringdata0[465];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -46,13 +46,12 @@ QT_MOC_LITERAL(13, 208, 9), // "updateFPS"
 QT_MOC_LITERAL(14, 218, 21), // "on_start_game_clicked"
 QT_MOC_LITERAL(15, 240, 24), // "on_switch_fields_clicked"
 QT_MOC_LITERAL(16, 265, 26), // "on_read_parameters_clicked"
-QT_MOC_LITERAL(17, 292, 14), // "on_CPH_clicked"
-QT_MOC_LITERAL(18, 307, 36), // "on_show_field_areas_checkbox_..."
-QT_MOC_LITERAL(19, 344, 7), // "checked"
-QT_MOC_LITERAL(20, 352, 31), // "on_show_rnames_checkBox_toggled"
-QT_MOC_LITERAL(21, 384, 35), // "on_show_rcentroids_checkbox_t..."
-QT_MOC_LITERAL(22, 420, 35), // "on_show_visionlogs_checkbox_t..."
-QT_MOC_LITERAL(23, 456, 21) // "on_pushButton_clicked"
+QT_MOC_LITERAL(17, 292, 36), // "on_show_field_areas_checkbox_..."
+QT_MOC_LITERAL(18, 329, 7), // "checked"
+QT_MOC_LITERAL(19, 337, 31), // "on_show_rnames_checkBox_toggled"
+QT_MOC_LITERAL(20, 369, 35), // "on_show_rcentroids_checkbox_t..."
+QT_MOC_LITERAL(21, 405, 35), // "on_show_visionlogs_checkbox_t..."
+QT_MOC_LITERAL(22, 441, 23) // "on_start_game_2_clicked"
 
     },
     "soccer_window\0updateVisionInfo\0\0rVector\0"
@@ -62,12 +61,12 @@ QT_MOC_LITERAL(23, 456, 21) // "on_pushButton_clicked"
     "updateVisionUI\0receiveSerialSettings\0"
     "updateFPS\0on_start_game_clicked\0"
     "on_switch_fields_clicked\0"
-    "on_read_parameters_clicked\0on_CPH_clicked\0"
+    "on_read_parameters_clicked\0"
     "on_show_field_areas_checkbox_toggled\0"
     "checked\0on_show_rnames_checkBox_toggled\0"
     "on_show_rcentroids_checkbox_toggled\0"
     "on_show_visionlogs_checkbox_toggled\0"
-    "on_pushButton_clicked"
+    "on_start_game_2_clicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -77,7 +76,7 @@ static const uint qt_meta_data_soccer_window[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      17,   14, // methods
+      16,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -85,25 +84,24 @@ static const uint qt_meta_data_soccer_window[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   99,    2, 0x06 /* Public */,
+       1,    1,   94,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       4,    1,  102,    2, 0x0a /* Public */,
-       6,    1,  105,    2, 0x0a /* Public */,
-       7,    1,  108,    2, 0x0a /* Public */,
-       9,    1,  111,    2, 0x0a /* Public */,
-      11,    1,  114,    2, 0x0a /* Public */,
-      12,    1,  117,    2, 0x0a /* Public */,
-      13,    1,  120,    2, 0x0a /* Public */,
-      14,    0,  123,    2, 0x08 /* Private */,
-      15,    0,  124,    2, 0x08 /* Private */,
-      16,    0,  125,    2, 0x08 /* Private */,
-      17,    0,  126,    2, 0x08 /* Private */,
-      18,    1,  127,    2, 0x08 /* Private */,
-      20,    1,  130,    2, 0x08 /* Private */,
-      21,    1,  133,    2, 0x08 /* Private */,
-      22,    1,  136,    2, 0x08 /* Private */,
-      23,    0,  139,    2, 0x08 /* Private */,
+       4,    1,   97,    2, 0x0a /* Public */,
+       6,    1,  100,    2, 0x0a /* Public */,
+       7,    1,  103,    2, 0x0a /* Public */,
+       9,    1,  106,    2, 0x0a /* Public */,
+      11,    1,  109,    2, 0x0a /* Public */,
+      12,    1,  112,    2, 0x0a /* Public */,
+      13,    1,  115,    2, 0x0a /* Public */,
+      14,    0,  118,    2, 0x08 /* Private */,
+      15,    0,  119,    2, 0x08 /* Private */,
+      16,    0,  120,    2, 0x08 /* Private */,
+      17,    1,  121,    2, 0x08 /* Private */,
+      19,    1,  124,    2, 0x08 /* Private */,
+      20,    1,  127,    2, 0x08 /* Private */,
+      21,    1,  130,    2, 0x08 /* Private */,
+      22,    0,  133,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    2,
@@ -119,11 +117,10 @@ static const uint qt_meta_data_soccer_window[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void, QMetaType::Bool,   19,
-    QMetaType::Void, QMetaType::Bool,   19,
-    QMetaType::Void, QMetaType::Bool,   19,
-    QMetaType::Void, QMetaType::Bool,   19,
+    QMetaType::Void, QMetaType::Bool,   18,
+    QMetaType::Void, QMetaType::Bool,   18,
+    QMetaType::Void, QMetaType::Bool,   18,
+    QMetaType::Void, QMetaType::Bool,   18,
     QMetaType::Void,
 
        0        // eod
@@ -146,12 +143,11 @@ void soccer_window::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 8: _t->on_start_game_clicked(); break;
         case 9: _t->on_switch_fields_clicked(); break;
         case 10: _t->on_read_parameters_clicked(); break;
-        case 11: _t->on_CPH_clicked(); break;
-        case 12: _t->on_show_field_areas_checkbox_toggled((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 13: _t->on_show_rnames_checkBox_toggled((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 14: _t->on_show_rcentroids_checkbox_toggled((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 15: _t->on_show_visionlogs_checkbox_toggled((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 16: _t->on_pushButton_clicked(); break;
+        case 11: _t->on_show_field_areas_checkbox_toggled((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 12: _t->on_show_rnames_checkBox_toggled((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 13: _t->on_show_rcentroids_checkbox_toggled((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 14: _t->on_show_visionlogs_checkbox_toggled((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 15: _t->on_start_game_2_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -192,13 +188,13 @@ int soccer_window::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 17)
+        if (_id < 16)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 17;
+        _id -= 16;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 17)
+        if (_id < 16)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 17;
+        _id -= 16;
     }
     return _id;
 }

@@ -33,6 +33,7 @@ private:
     int channel;    //Communication channel
     int n_loss, n_detected;
     int flag_fuzzy;
+    double output_fuzzy;
     double angle, last_angle;   //Rotation angle
     double loss_rate;
     bool detected;
@@ -50,11 +51,13 @@ public:
     static bool encoders_reading(int &robot, pair<float, float> &vels, float &battery);
     static bool send_velocities(int channel, pair<float, float> vels);
     static void config_serial(SettingsDialog::Settings settings);
-   // static bool is_open();
+    // static bool is_open();
     static void open_serial();
     static void close_serial();
     void set_flag_fuzzy(int, Point, Point, Point2d);
     void set_flag_fuzzy(int);
+    void set_output_fuzzy(double);
+    double get_output_fuzzy();
     int get_flag_fuzzy();
     double min_function(double, double);
     double max_function(double, double);

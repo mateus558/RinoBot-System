@@ -31,7 +31,6 @@ public:
     QLabel *game_view;
     QPushButton *start_game;
     QPushButton *switch_fields;
-    QPushButton *CPH;
     QLCDNumber *fps_lcd;
     QLabel *fps_label;
     QGroupBox *battery_level_group;
@@ -72,7 +71,7 @@ public:
     QLabel *gandalf_serial_col;
     QLabel *leona_detec_col;
     QLabel *presto_detec_col;
-    QPushButton *pushButton;
+    QPushButton *start_game_2;
 
     void setupUi(QWidget *soccer_window)
     {
@@ -93,10 +92,7 @@ public:
         start_game->setGeometry(QRect(730, 10, 171, 41));
         switch_fields = new QPushButton(soccer_window);
         switch_fields->setObjectName(QStringLiteral("switch_fields"));
-        switch_fields->setGeometry(QRect(730, 70, 171, 41));
-        CPH = new QPushButton(soccer_window);
-        CPH->setObjectName(QStringLiteral("CPH"));
-        CPH->setGeometry(QRect(760, 190, 111, 31));
+        switch_fields->setGeometry(QRect(730, 110, 171, 41));
         fps_lcd = new QLCDNumber(soccer_window);
         fps_lcd->setObjectName(QStringLiteral("fps_lcd"));
         fps_lcd->setGeometry(QRect(820, 550, 64, 23));
@@ -144,7 +140,7 @@ public:
         presto_label->setGeometry(QRect(20, 550, 59, 14));
         optionsGroupBox = new QGroupBox(soccer_window);
         optionsGroupBox->setObjectName(QStringLiteral("optionsGroupBox"));
-        optionsGroupBox->setGeometry(QRect(740, 290, 141, 121));
+        optionsGroupBox->setGeometry(QRect(740, 330, 141, 121));
         show_field_areas_checkbox = new QCheckBox(optionsGroupBox);
         show_field_areas_checkbox->setObjectName(QStringLiteral("show_field_areas_checkbox"));
         show_field_areas_checkbox->setGeometry(QRect(10, 30, 85, 20));
@@ -159,7 +155,7 @@ public:
         show_visionlogs_checkbox->setGeometry(QRect(10, 90, 131, 20));
         read_parameters = new QPushButton(soccer_window);
         read_parameters->setObjectName(QStringLiteral("read_parameters"));
-        read_parameters->setGeometry(QRect(730, 130, 171, 41));
+        read_parameters->setGeometry(QRect(730, 170, 171, 41));
         detection_status_group = new QGroupBox(soccer_window);
         detection_status_group->setObjectName(QStringLiteral("detection_status_group"));
         detection_status_group->setGeometry(QRect(400, 480, 141, 101));
@@ -195,17 +191,17 @@ public:
         presto_loss_rate->setGeometry(QRect(130, 70, 31, 16));
         ball_detec_label = new QLabel(soccer_window);
         ball_detec_label->setObjectName(QStringLiteral("ball_detec_label"));
-        ball_detec_label->setGeometry(QRect(770, 430, 91, 20));
+        ball_detec_label->setGeometry(QRect(770, 470, 91, 20));
         ball_detec_col_label = new QLabel(soccer_window);
         ball_detec_col_label->setObjectName(QStringLiteral("ball_detec_col_label"));
-        ball_detec_col_label->setGeometry(QRect(740, 430, 21, 16));
+        ball_detec_col_label->setGeometry(QRect(740, 470, 21, 16));
         ball_detec_col_label->setStyleSheet(QStringLiteral("background-color : red"));
         cam_id_label = new QLabel(soccer_window);
         cam_id_label->setObjectName(QStringLiteral("cam_id_label"));
-        cam_id_label->setGeometry(QRect(740, 250, 59, 14));
+        cam_id_label->setGeometry(QRect(740, 290, 59, 14));
         cam_id_spinBox = new QSpinBox(soccer_window);
         cam_id_spinBox->setObjectName(QStringLiteral("cam_id_spinBox"));
-        cam_id_spinBox->setGeometry(QRect(800, 250, 47, 23));
+        cam_id_spinBox->setGeometry(QRect(800, 290, 47, 23));
         cam_id_spinBox->setMaximum(999);
         cam_id_spinBox->setValue(300);
         serial_status_group = new QGroupBox(soccer_window);
@@ -232,14 +228,13 @@ public:
         presto_detec_col->setObjectName(QStringLiteral("presto_detec_col"));
         presto_detec_col->setGeometry(QRect(10, 70, 21, 16));
         presto_detec_col->setStyleSheet(QStringLiteral("background-color : red"));
-        pushButton = new QPushButton(soccer_window);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setGeometry(QRect(760, 460, 80, 22));
+        start_game_2 = new QPushButton(soccer_window);
+        start_game_2->setObjectName(QStringLiteral("start_game_2"));
+        start_game_2->setGeometry(QRect(730, 60, 171, 41));
         optionsGroupBox->raise();
         game_view->raise();
         start_game->raise();
         switch_fields->raise();
-        CPH->raise();
         fps_lcd->raise();
         fps_label->raise();
         battery_level_group->raise();
@@ -254,7 +249,7 @@ public:
         cam_id_label->raise();
         cam_id_spinBox->raise();
         serial_status_group->raise();
-        pushButton->raise();
+        start_game_2->raise();
 
         retranslateUi(soccer_window);
 
@@ -265,9 +260,8 @@ public:
     {
         soccer_window->setWindowTitle(QApplication::translate("soccer_window", "Play Soccer", 0));
         game_view->setText(QApplication::translate("soccer_window", "TextLabel", 0));
-        start_game->setText(QApplication::translate("soccer_window", "Start Game", 0));
+        start_game->setText(QApplication::translate("soccer_window", "Start Capture", 0));
         switch_fields->setText(QApplication::translate("soccer_window", "Switch ATK/DEF Area", 0));
-        CPH->setText(QApplication::translate("soccer_window", "CPH", 0));
         fps_label->setText(QApplication::translate("soccer_window", "FPS:", 0));
         battery_level_group->setTitle(QApplication::translate("soccer_window", "Battery Levels:", 0));
         robots_roles_group->setTitle(QApplication::translate("soccer_window", "Robots Roles:", 0));
@@ -303,7 +297,7 @@ public:
         gandalf_serial_col->setText(QString());
         leona_detec_col->setText(QString());
         presto_detec_col->setText(QString());
-        pushButton->setText(QApplication::translate("soccer_window", "PushButton", 0));
+        start_game_2->setText(QApplication::translate("soccer_window", "Start Game", 0));
     } // retranslateUi
 
 };

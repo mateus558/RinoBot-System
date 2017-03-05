@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     fuzzy.cpp \
     mover.cpp \
     cph2.cpp \
-    cpo2.cpp
+    cpo2.cpp \
+    cpo3.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -45,7 +46,8 @@ HEADERS  += mainwindow.h \
     serial.h \
     mover.h \
     cph2.h \
-    cpo2.h
+    cpo2.h \
+    cpo3.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

@@ -8,7 +8,6 @@ using namespace std;
 
 
 CPH::CPH(){
-    dx = dy = 5;
     i = 0;
     stop = true;
     grid_initialized = false;
@@ -275,7 +274,7 @@ void CPH::run(){
 
     if (centroid_atk.x > ball_pos.x){
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
-            cout << "Reconheceu a area de defesa" << endl;
+            //cout << "Reconheceu a area de defesa" << endl;
 
 
             if(ball_pos.x > 0 && ball_pos.y > 0){

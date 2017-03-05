@@ -57,30 +57,41 @@ void Mover::run(){
         //init_mover();
         mover_initialized = true;
     }
+    if (selec_robot.r1.get_flag_fuzzy() >= 2 && selec_robot.r2.get_flag_fuzzy() >= 2){
+        if (fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+            selec_robot.r2.set_flag_fuzzy(1);
+        }
+        else {
+            selec_robot.r1.set_flag_fuzzy(1);
+        }
+    }
+    else{
+        //tratar aqui
+    }
+    if (selec_robot.r1.get_flag_fuzzy() <= 1 && selec_robot.r2.get_flag_fuzzy() <= 1){
+        if (fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+            selec_robot.r1.set_flag_fuzzy(2);
+        }
+        else {
+            selec_robot.r2.set_flag_fuzzy(2);
+        }
+    }
+    else{
+        //tratar aqui
+    }
 
     //Pro primeiro robô - Gandalf
-    calcula_velocidades(&selec_robot.r1,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2);
+    calcula_velocidades(&selec_robot.r1,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3);
     selec_robot.r1.set_lin_vel(make_pair(vl,vr));
-    //cout << "Vel left: " << vl << endl;
-    //cout << "Vel right: " << vr << endl;
-
-    /*float velocidade = selec_robot.r1->get_l_vel();
-    float veld = selec_robot.r1->get_r_vel();
-    cout << "Vel: "<<velocidade << endl;
-    cout << "Ver: "<<veld << endl;*/
-
-    //selec_robot.r1.open_serial();
-
-    /*cout<<selec_robot.r1.get_channel()<<endl;
-    cout<<selec_robot.r2.get_channel()<<endl;
-    cout<<selec_robot.r3.get_channel()<<endl;*/
-
-    //Robot::send_velocities(selec_robot.r1.get_channel(), make_pair(selec_robot.r1.get_r_vel(), selec_robot.r1.get_l_vel()));
-
 
     //Pro segundo robô - Presto
-    //calcula_velocidades(selec_robot.r2,selec_iterador.cph,selec_iterador.cpo);
-    //selec_robot.r2->send_velocities(selec_robot.r2->get_channel(), selec_robot.r2->get_lin_vel());
+    calcula_velocidades(&selec_robot.r2,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3);
+    selec_robot.r2.set_lin_vel(make_pair(vl,vr));
+
+    //Pro terceiro robô - Leona
+    calcula_velocidades(&selec_robot.r3,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3);
+    selec_robot.r3.set_lin_vel(make_pair(vl,vr));
+
 
     emit emitRobots(selec_robot);
 }
@@ -91,63 +102,77 @@ void Mover::set_to_select(Robot r1, Robot r2, Robot r3){
     selec_robot.r3 = r3;
 }
 
-void Mover::set_to_select_iterador(CPH *cph, CPO *cpo , CPH2 *cph2, CPO2 *cpo2){
+void Mover::set_to_select_iterador(CPH *cph, CPO *cpo , CPH2 *cph2, CPO2 *cpo2, CPO3 *cpo3){
     selec_iterador.cph = cph;
     selec_iterador.cph2 = cph2;
     selec_iterador.cpo = cpo;
     selec_iterador.cpo2 = cpo2;
+    selec_iterador.cpo3 = cpo3;
 
 }
 
-void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *cpo2){
+void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *cpo2, CPO3 *cpo3){
 
     double v,w,theta,alpha;
+    w_max = 7;
     Point2d robot_pos = r->get_pos();
     Point robot_grid = convert_C_to_G(robot_pos);
     //cout << " Posicao do robo " << endl;
     //cout << " x: " << robot_pos.x << " y: " << robot_pos.y << endl;
 
     if(r->get_flag_fuzzy() == 4){
-        cout<<"Sou Goleiro!"<<endl;
+        //cout<<"Sou Goleiro!"<<endl;
+        w_max = 5;
+        theta = cpo3->get_direction(robot_grid);
     }
     else{
 
-        /*if(r->get_flag_fuzzy() == 0){
-             //theta = cph->get_direction(robot_grid);
-            cout << "Rodrigay!" << endl;
+        if(r->get_flag_fuzzy() == 0){
+            theta = cph->get_direction(robot_grid);
+            //cout << "Rodrigay!" << endl;
         }
         else if(r->get_flag_fuzzy() == 1){
-             //theta = cph2->get_direction(robot_grid);
-            cout << "gabigay!" << endl;
+            theta = cph2->get_direction(robot_grid);
+            //cout << "gabigay!" << endl;
         }
         else if(r->get_flag_fuzzy() == 2){
-             //theta = cpo2->get_direction(robot_grid);
-            cout << "JoaoTraveco!" << endl;
+            theta = cpo2->get_direction(robot_grid);
+            //cout << "JoaoTraveco!" << endl;
         }
         else if(r->get_flag_fuzzy() == 3){
-             //theta = cpo->get_direction(robot_grid);
-            cout << "Fredtransex!" << endl;
-        }*/
-        cout << " Decisao fuzzy" <<  r->get_flag_fuzzy() << endl;
-
-        theta = cpo->get_direction(robot_grid);
-        //cout << "angulo do grid: " << theta << endl;
-
-        //cout << "Bola :" << ball_pos.y << endl;
-
-        //cout << "Distancia: " << euclidean_dist(ball_pos,robot_pos) << endl;
-        //cout << "Centroide de ataque: " << centroid_atk.y << endl;
+            theta = cpo->get_direction(robot_grid);
+            //cout << "Fredtransex!" << endl;
+        }
+    }
+    cout << "decisao: " << r->get_flag_fuzzy();
 
         if (centroid_atk.x > ball_pos.x){
             if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
-                cout << "1" << endl;
+                //cout << "1" << endl;
                 vl = -0.6;
                 vr = 0.6;
             }
             else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
-                cout << "2" << endl;
+                //cout << "2" << endl;
                 vl = 0.6;
                 vr = -0.6;
+            }
+            else if (euclidean_dist(robot_pos,cph2->get_meta_aux()) < 5 && r->get_flag_fuzzy() == 1){
+                cout << "3" << endl;
+                vl = 0;
+                vr = 0;
+            }
+            else if (euclidean_dist(robot_pos,cpo3->get_meta_aux()) < 5){// && r->get_flag_fuzzy() == 4){
+                cout << "4" << endl;
+                alpha = 90 - r->get_angle();
+                alpha = ajusta_angulo(alpha);
+                if (fabs(alpha) < 10 || fabs(alpha) > 170)
+                    w = 0;
+                else{
+                    w = k*v_max*alpha/180;
+                    vl = -w*l;
+                    vr = w*l;
+                }
             }
             else{
                 alpha = theta - r->get_angle();
@@ -165,18 +190,12 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
                     v = v_max*fabs(alpha)/limiar_theta - v_max;
                 }
 
-                if(w < 45){
-                    w *= 2;
-                }
-                if(w < 22.5){
-                    w *= 2;
-                }
 
                 //cout << "velocidade linear: " << v << endl;
                 //cout << "velocidade angular: " << w << endl;
 
-                vl = v-w*l;
-                vr = v+w*l;
+                vl = v - w*l;
+                vr = v + w*l;
                 //r->set_lin_vel(make_pair(vl,vr));
             }
         }
@@ -191,6 +210,23 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
                 vl = -0.6;
                 vr = 0.6;
             }
+            else if (euclidean_dist(robot_pos,cph2->get_meta_aux()) < 5 && r->get_flag_fuzzy() == 1){
+                cout << "3" << endl;
+                vl = 0;
+                vr = 0;
+            }
+            else if (euclidean_dist(robot_pos,cpo3->get_meta_aux()) < 5){// && r->get_flag_fuzzy() == 4){
+                cout << "4" << endl;
+                alpha = 90 - r->get_angle();
+                alpha = ajusta_angulo(alpha);
+                if (fabs(alpha) < 10 || fabs(alpha) > 170)
+                    w = 0;
+                else{
+                    w = k*v_max*alpha/180;
+                    vl = -w*l;
+                    vr = w*l;
+                }
+            }
             else{
                 alpha = theta - r->get_angle();
                 alpha = ajusta_angulo(alpha);
@@ -207,13 +243,6 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
                     v = v_max*fabs(alpha)/limiar_theta - v_max;
                 }
 
-                /*if(w < 45){
-                    w *= 2;
-                }
-                if(w < 22.5){
-                    w *= 2;
-                }*/
-
                 //cout << "velocidade linear: " << v << endl;
                 //cout << "velocidade angular: " << w << endl;
 
@@ -223,7 +252,7 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
             }
         }
     }
-}
+
 
 Point Mover::convert_C_to_G(Point2d coord){
     Point i;

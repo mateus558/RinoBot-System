@@ -28,7 +28,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::openSetParameters()
 {
-    setparam->setAttribute( Qt::WA_DeleteOnClose );
     setparam->show();
 }
 
@@ -36,6 +35,5 @@ void MainWindow::openSetParameters()
 
 void MainWindow::on_pushButton_5_clicked()
 {
-    soccer->setAttribute( Qt::WA_DeleteOnClose );
     soccer->show();
 }

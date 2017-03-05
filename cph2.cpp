@@ -8,7 +8,6 @@ using namespace std;
 
 
 CPH2::CPH2(){
-    dx = dy = 5;
     i = 0;
     stop = true;
     grid_initialized = false;
@@ -243,21 +242,23 @@ void CPH2::run(){
     }
 
     //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+    Point2d meta;
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
-        if ((ball_pos.y > centroid_def.y+50 || ball_pos.y < centroid_def.y-50) && fabs(ball_pos.x - centroid_def.x) < 70){
+        if ((ball_pos.y > centroid_def.y+55 || ball_pos.y < centroid_def.y-55) && fabs(ball_pos.x - centroid_def.x) < 70){
             cout << 1 << endl;
             ball_pos_grid = convert_C_to_G(ball_pos);
             if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0){
                 cout << 2 << endl;
                 cout<<"Meta: "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
                 set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+                meta_aux = ball_pos;
             }
         }else{
             Point2d vec_ball_def = centroid_def - ball_pos;
             double aux = (0.45/150)*euclidean_dist(centroid_def,ball_pos);
 
-            Point2d meta = ball_pos + vec_ball_def*aux;
+            meta = ball_pos + vec_ball_def*aux;
             //cout << "Meta: " << endl;
             //cout << " x: " << meta.x << " y: " << meta.y << endl;
             if(meta.x > 0 && meta.y > 0){

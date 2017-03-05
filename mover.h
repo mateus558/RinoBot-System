@@ -11,6 +11,7 @@
 #include "cpo.h"
 #include "cph2.h"
 #include "cpo2.h"
+#include "cpo3.h"
 #include "serial.h"
 
 struct Selec{
@@ -18,6 +19,7 @@ struct Selec{
     CPO *cpo;
     CPH2 *cph2;
     CPO2 *cpo2;
+    CPO3 *cpo3;
 };
 
 class Mover: public QThread
@@ -47,7 +49,7 @@ public:
     Mover();
 
     void init_mover();
-    void calcula_velocidades(Robot *, CPH *, CPO *, CPH2 *, CPO2 *);
+    void calcula_velocidades(Robot *, CPH *, CPO *, CPH2 *, CPO2 *,CPO3 *);
     double min_function(double, double);
     double max_function(double, double);
     double ajusta_angulo(double);
@@ -56,7 +58,7 @@ public:
     void Stop();
     bool isStopped() const;
     void set_to_select(Robot, Robot, Robot);
-    void set_to_select_iterador(CPH *, CPO *,CPH2 *,CPO2 *);
+    void set_to_select_iterador(CPH *, CPO *,CPH2 *,CPO2 *, CPO3 *);
     void set_enemy_pos(p2dVector);
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);
