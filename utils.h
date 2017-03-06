@@ -9,15 +9,15 @@
 
 #define FIELD_WIDTH 132
 #define FIELD_HEIGHT 175
-#define MIN_ROBOT_AREA 25
-#define MAX_ROBOT_AREA 250
+#define MIN_ROBOT_AREA 50
+#define MAX_ROBOT_AREA 500
 #define MIN_BALL_AREA 50
 #define MAX_BALL_AREA 100
 #define MAX_CENT_DIST 20
 #define DEFAULT_NROWS 480   //Default number of the rows of the frame
 #define DEFAULT_NCOLS 640   //Default number of the columns of the frame
-#define X_CONV_CONST 0.339882122   //Conversion constant for the X axis
-#define Y_CONV_CONST 0.345549738  //Conversion constant for the Y axis
+#define X_CONV_CONST 0.3145   //Conversion constant for the X axis
+#define Y_CONV_CONST 0.3106 //Conversion constant for the Y axis
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000

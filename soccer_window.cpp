@@ -84,7 +84,7 @@ void soccer_window::load_serial_cfg(){
 
 void soccer_window::closeEvent(QCloseEvent *event){
     QWidget::closeEvent(event);
-
+    Robot::close_serial();
     eye->Stop();
     eye->wait();
     eye->release_cam();
@@ -113,11 +113,15 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
     team_robots[0].set_lin_vel(make_pair(selec_robot.r3.get_l_vel(), selec_robot.r3.get_r_vel()));
     team_robots[1].set_lin_vel(make_pair(selec_robot.r1.get_l_vel(), selec_robot.r1.get_r_vel()));
     team_robots[2].set_lin_vel(make_pair(selec_robot.r2.get_l_vel(), selec_robot.r2.get_r_vel()));
-
-    Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
-    Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
-    Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
-
+    if(game_started){
+        Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
+        Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
+        Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
+    }else{
+        Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
+        Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
+        Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
+    }
     emit updateVisionInfo(team_robots);
 }
 
@@ -357,7 +361,7 @@ void soccer_window::on_start_game_2_clicked()
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
-        Robot::close_serial();
+        //Robot::close_serial();
         ui->start_game_2->setText("Start Game");
     }
 }

@@ -122,7 +122,7 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
             //cout << "Fredtransex!" << endl;
         }
     }
-    cout << "decisao: " << r->get_flag_fuzzy();
+    //cout << "decisao: " << r->get_flag_fuzzy();
 
         if (centroid_atk.x > ball_pos.x){
             if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
@@ -136,12 +136,10 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
                 vr = -0.6;
             }
             else if (euclidean_dist(robot_pos,cph2->get_meta_aux()) < 5 && r->get_flag_fuzzy() == 1){
-                cout << "3" << endl;
                 vl = 0;
                 vr = 0;
             }
             else if (euclidean_dist(robot_pos,cpo3->get_meta_aux()) < 5){// && r->get_flag_fuzzy() == 4){
-                cout << "4" << endl;
                 alpha = 90 - r->get_angle();
                 alpha = ajusta_angulo(alpha);
                 if (fabs(alpha) < 10 || fabs(alpha) > 170)
@@ -179,22 +177,18 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
         }
         else{
             if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
-                cout << "1" << endl;
                 vl = 0.6;
                 vr = -0.6;
             }
             else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robot_pos) < 5)){
-                cout << "2" << endl;
                 vl = -0.6;
                 vr = 0.6;
             }
             else if (euclidean_dist(robot_pos,cph2->get_meta_aux()) < 5 && r->get_flag_fuzzy() == 1){
-                cout << "3" << endl;
                 vl = 0;
                 vr = 0;
             }
             else if (euclidean_dist(robot_pos,cpo3->get_meta_aux()) < 5){// && r->get_flag_fuzzy() == 4){
-                cout << "4" << endl;
                 alpha = 90 - r->get_angle();
                 alpha = ajusta_angulo(alpha);
                 if (fabs(alpha) < 10 || fabs(alpha) > 170)

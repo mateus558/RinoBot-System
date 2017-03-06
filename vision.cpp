@@ -419,7 +419,7 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
     Mat mask, res;
 
     mask = detect_colors(vision_frame, low, upper);
-    cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
+    //cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
     raw_frame.copyTo(res, mask);
 
     return res;
@@ -486,14 +486,13 @@ void Vision::run()
         vision_frame = crop_image(raw_frame.clone());
         raw_frame = crop_image(raw_frame);
         vision_frame = proccess_frame(vision_frame, vision_frame);
-
+        //cout << raw_frame.rows << " " << raw_frame.cols << endl;
         switch(mode){
             case 0: //Visualization mode
                 obj_contours = detect_objects(vision_frame, robots).second;
                 robots = fill_robots(obj_contours, robots);
                 vision_frame = draw_robots(vision_frame, robots);
 
-                cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
                 break;
             case 1: //Set color mode
                 vision_frame = setting_mode(raw_frame, vision_frame, low, upper);
@@ -527,7 +526,10 @@ void Vision::run()
         }
 
         //img = QImage((uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
-        img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
+        cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
+        img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
+        img.bits();
+
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         FPS = 1/elapsed_secs;

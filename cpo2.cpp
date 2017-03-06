@@ -31,7 +31,6 @@ double CPO2::iterator(){
 
     vec[0] = cos(orientation*PI/180);
     vec[1] = sin(orientation*PI/180);
-
     h = dx/dy;
 
     lambda = e*h/2;
@@ -288,7 +287,7 @@ void CPO2::run(){
             else
                 team_prox = team_pos[2];
 
-            e = 0.3 + euclidean_dist(team_prox,ball_pos)/250;
+            e = 0.3 + euclidean_dist(team_prox,ball_pos)/200;
            // cout << " epsilon: " << e << endl;
 
             ball_pos_grid = convert_C_to_G(ball_pos);

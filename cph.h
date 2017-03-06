@@ -12,8 +12,8 @@ class CPH : public QThread
 {
     Q_OBJECT
 private:
-    const int dx = 5;
-    const int dy = 5;
+    static const int dx = 5;
+    static const int dy = 5;
     int i;
     QMutex mutex;
     dMatrix pGrid;

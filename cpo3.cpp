@@ -262,7 +262,7 @@ void CPO3::run(){
         init_grid();
         grid_initialized = true;
     //}    
-    e = 0.5;
+    e = 0;
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
         if (ball_pos.x < centroid_atk.x){

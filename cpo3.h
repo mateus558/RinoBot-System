@@ -15,8 +15,8 @@ class CPO3 : public QThread
 private:
     bool stop;
 
-    const int dx = 5;
-    const int dy = 5;
+    static const int dx = 5;
+    static const int dy = 5;
     double orientation;
     double e;
     QMutex mutex;
