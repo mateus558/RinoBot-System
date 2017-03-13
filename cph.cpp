@@ -15,7 +15,7 @@ CPH::CPH(){
     team_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
     tGrid = dMatrix(28, vector<double>(36, 0));
-    cout<<"\n\nAMBIENTE CRIADO!\n";
+    //cout<<"\n\nAMBIENTE CRIADO!\n";
 }
 
 double CPH::iterator(){
@@ -300,9 +300,11 @@ void CPH::run(){
             if(ball_pos.x > 0 && ball_pos.y > 0){
                 ball_pos_grid = convert_C_to_G(ball_pos);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
-                set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
-                set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
+                if(ball_pos_grid.x+1 < 28 && ball_pos_grid.y+1 < 28){
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
+                    set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
+                    set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
+                }
             }else{
                 //tratar a barreira aqui
             }
@@ -331,9 +333,11 @@ void CPH::run(){
             if(ball_pos.x > 0 && ball_pos.y > 0){
                 ball_pos_grid = convert_C_to_G(ball_pos);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
-                set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
-                set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
+                if(ball_pos_grid.y+1 < 28){
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
+                    set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
+                    set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
+                }
             }else{
                 //tratar a barreira aqui
             }

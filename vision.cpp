@@ -103,17 +103,23 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
-        ball_last_pos = ball_cent;
+
         ball_found = true;
     }else{
         ball_cent = ball_last_pos;
         ball_found = false;
     }
 
-    ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
-    ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
+
     ball_pos_cm = ball_pos_cm;
     ball_pos = ball_cent;
+    ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
+    ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
+
+    info.ball_vel.first = double(ball_pos.x - ball_last_pos.x) * X_CONV_CONST;
+    info.ball_vel.second = double(ball_pos.y - ball_last_pos.y) * Y_CONV_CONST;
+
+    ball_last_pos = ball_cent;
 
     remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
     sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
@@ -390,6 +396,8 @@ Mat Vision::crop_image(Mat org){
         transform(def_points, tdef_points, transf_matrix);
         transform(atk_points, tatk_points, transf_matrix);
 
+        atk_centroid = (tatk_points[2] + tatk_points[3] + tatk_points[4] + tatk_points[5])/4;
+        def_centroid = (tdef_points[2] + tdef_points[3] + tdef_points[4] + tdef_points[5])/4;
         info.map_area = tmap_points;
         info.atk_area = tatk_points;
         info.def_area = tdef_points;
@@ -532,6 +540,13 @@ void Vision::run()
 
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+        info.ball_vel.first /= elapsed_secs;
+        info.ball_vel.second /= elapsed_secs;
+
+        if(euclidean_dist(def_centroid, Point2d(0,0)) > euclidean_dist(atk_centroid, Point2d(0,0))){
+            info.ball_vel.first *= -1;
+        }
+
         FPS = 1/elapsed_secs;
 
         info.enemy_robots[0] = robots[3];
@@ -541,6 +556,7 @@ void Vision::run()
         info.team_robots[1] = robots[1];
         info.team_robots[2] = robots[2];
         info.ball_found = ball_found;
+
         if(ball_pos != null_point){
             info.ball_pos_cm = ball_pos_cm;
             info.ball_pos = ball_pos;
@@ -601,6 +617,10 @@ void Vision::updateMoverRobots(rVector team_robots){
 }
 
 void Vision::switch_teams_areas(){
+    Point temp = atk_centroid;
+    atk_centroid = def_centroid;
+    def_centroid = temp;
+
     teamsChanged = (teamsChanged)?false:true;
 }
 

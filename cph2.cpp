@@ -15,7 +15,7 @@ CPH2::CPH2(){
     team_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
     tGrid = dMatrix(28, vector<double>(36, 0));
-    cout<<"\n\nAMBIENTE CRIADO!\n";
+    //cout<<"\n\nAMBIENTE CRIADO!\n";
 }
 
 double CPH2::iterator(){
@@ -253,6 +253,15 @@ void CPH2::run(){
                 cout<<"Meta: "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
                 set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
                 meta_aux = ball_pos;
+                /*if(ball_pos.x < centroid_atk.x){
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
+                    set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
+                    set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
+                }else{
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
+                    set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
+                    set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
+                }*/
             }
         }else{
             Point2d vec_ball_def = centroid_def - ball_pos;

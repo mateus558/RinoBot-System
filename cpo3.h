@@ -33,6 +33,7 @@ private:
     Point2d meta_aux;
     Point2d centroid_atk;
     Point2d centroid_def;
+    pair<double, double> ball_vel;
 
     bool grid_initialized,flag_finish_CPO3;
 
@@ -43,6 +44,7 @@ signals:
 
 public:
     CPO3();
+
     double iterator();
     double get_neighborhood(int, int, int);
     void set_potential(int, int, double);
@@ -55,6 +57,7 @@ public:
     void zera_flag_finish();
     void init_grid();
     void print_grid();
+    void set_ball_vel(pair<double, double>);
     void set_orientation(double);
     void set_enemy_pos(p2dVector);
     void set_team_pos(p2dVector);

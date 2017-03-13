@@ -17,7 +17,7 @@ CPO::CPO(){
     team_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
     tGrid = dMatrix(28, vector<double>(36, 0));
-    cout<<"\n\nAMBIENTE CRIADO!\n";
+    //cout<<"\n\nAMBIENTE CRIADO!\n";
 }
 
 double CPO::iterator(){
@@ -286,6 +286,7 @@ void CPO::run(){
         if (euclidean_dist(ball_pos,team_prox) < 5){
             if (centroid_atk.x > 0 && centroid_atk.y > 0){
                 meta = convert_C_to_G(centroid_atk);
+                e = 0;
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
                 if (meta.x > 0 && meta.y > 0)
                     set_potential(meta.y, meta.x, 0);

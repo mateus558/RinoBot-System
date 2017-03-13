@@ -77,15 +77,16 @@ void Fuzzy::run(){
         calcula_input(selec_robot.r1);
         fuzzification();        
         decisao_robo[0] = defuzzification();
+        double gandalf = 0.4 * (input[0] + input[1]) + 0.2 * input[2];
 
         //Pro segundo robô
         calcula_input(selec_robot.r2);
         fuzzification();
         decisao_robo[1] = defuzzification();
-
+        double presto = 0.4 * (input[0] + input[1]) + 0.2 * input[2];
 
         if (decisao_robo[0] >= 2 && decisao_robo[1] >= 2){
-            if (fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+            if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
                 decisao_robo[1] = 1;
             }
             else {
@@ -96,7 +97,7 @@ void Fuzzy::run(){
             //tratar aqui
         }
         if (decisao_robo[0] <= 1 && decisao_robo[1] <= 1){
-            if (fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+            if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
                 decisao_robo[0] = 2;
             }
             else {

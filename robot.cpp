@@ -40,6 +40,10 @@ void Robot::close_serial(){
     serial.close();
 }
 
+bool Robot::is_serial_open(){
+    return serial.is_open();
+}
+
 bool Robot::send_velocities(int channel, pair<float, float> vels){
     float left_vel = vels.first, right_vel = vels.second;
 
@@ -363,7 +367,7 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
     else if(output == 1)
     {
         if (ball.x < centroid_atk.x){
-            if (ball.x < centroid_def.x + 75 && ball.y < centroid_def.y + 35 && ball.y > centroid_def.y - 35){
+            if (ball.x < centroid_def.x + 75 && ball.y < centroid_def.y + 45 && ball.y > centroid_def.y - 45){
                 this->flag_fuzzy = 0;
                 //cout << nick <<" deve Defender Arduamente!"<< endl;
             }
@@ -373,7 +377,7 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
             }
         }
         else{
-            if (ball.x > centroid_def.x - 75 && ball.y < centroid_def.y + 35 && ball.y > centroid_def.y - 35){
+            if (ball.x > centroid_def.x - 75 && ball.y < centroid_def.y + 45 && ball.y > centroid_def.y - 45){
                 this->flag_fuzzy = 0;
                 //cout << nick <<" deve Defender Arduamente2!"<< endl;
             }
@@ -420,7 +424,7 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
     else if(output == 3)
     {
          if(centroid_cm.x < centroid_atk.x){
-            if((ball.x > centroid_atk.x - 75) && (ball.y < centroid_atk.y + 35 && ball.y > centroid_atk.y - 35)){
+            if((ball.x > centroid_atk.x - 75) && (ball.y < centroid_atk.y + 45 && ball.y > centroid_atk.y - 45)){
                 if(centroid_cm.x < ball.x){
                     this->flag_fuzzy = 3;
                     //cout << nick <<" deve Atacar Ferozmente!" << endl;
@@ -433,7 +437,7 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
                 //cout << nick <<" deve ser Um bom Meia!5"<< endl;
             }
          }else if(centroid_cm.x > centroid_atk.x){
-            if(ball.x < centroid_atk.x + 75 && (ball.y < centroid_atk.y + 35 && ball.y > centroid_atk.y - 35)){
+            if(ball.x < centroid_atk.x + 75 && (ball.y < centroid_atk.y + 45 && ball.y > centroid_atk.y - 45)){
                 if(centroid_cm.x > ball.x){
                     this->flag_fuzzy = 3;
                     //cout << nick <<" deve Atacar Ferozmente!" << endl;

@@ -26,6 +26,7 @@ class Vision: public QThread {  Q_OBJECT
 public:
     struct Perception{
         bool ball_found;
+        pair<double, double> ball_vel;
         Point ball_pos, ball_last_pos;
         Point2d ball_pos_cm;
         rVector enemy_robots, team_robots;
@@ -53,7 +54,7 @@ private:
     bool ball_found;
     Point2d ball_pos_cm;
     Point ball_last_pos;
-    Point x_axis_slope;
+    Point x_axis_slope, def_centroid, atk_centroid;
     pVector map_points, tmap_points;
     pVector atk_points, tatk_points;
     pVector def_points, tdef_points;

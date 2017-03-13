@@ -73,7 +73,7 @@ private:
     Point centroid_def;
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
     int cam_id;
-    bool started, area_read, run_cph, run_cpo, run_fuzzy, run_mover, run_cph2, run_cpo2, run_cpo3, game_started;
+    bool started, area_read, run_cph, run_cpo, run_fuzzy, run_mover, run_cph2, run_cpo2, run_cpo3, game_started, team_changed;
 
 
     void closeEvent(QCloseEvent *event);

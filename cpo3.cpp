@@ -21,6 +21,8 @@ CPO3::CPO3(){
     //cout<<"\n\nAMBIENTE CRIADO!\n";
 }
 
+
+
 double CPO3::iterator(){
 
     double erro = 0;
@@ -152,7 +154,7 @@ void CPO3::set_direction(){
                  else
                      tGrid[i][j] = -90;
              }
-             if (i > 5 && i < 22 && (j == 31 || j == 2)){
+             /*if (i > 5 && i < 22 && (j == 31 || j == 2)){
                  if (meta.y < i)
                      tGrid[i][j] = 75;
                  else
@@ -165,7 +167,7 @@ void CPO3::set_direction(){
                      tGrid[i][j] = 105;
                  else
                      tGrid[i][j] = -105;
-             }
+             }*/
 
          }
      }
@@ -266,29 +268,48 @@ void CPO3::run(){
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
         if (ball_pos.x < centroid_atk.x){
-                meta2d.x = centroid_def.x + 8;
-                if (ball_pos.y > centroid_def.y + 18)
-                    meta2d.y = centroid_def.y + 18;
-                else if (ball_pos.y < centroid_def.y - 18)
-                    meta2d.y = centroid_def.y - 18;
-                else
-                    meta2d.y = ball_pos.y;
+                if(ball_pos.x > 75){
+                    meta2d.x = centroid_def.x + 8;
+                    meta2d.y = centroid_def.y;
+                    meta = convert_C_to_G(meta2d);
+                    if (meta.x > 0 && meta.y > 0){
+                        set_potential(meta.y, meta.x, 0);
+                    }
+                }
+                else{
+                    meta2d.x = centroid_def.x + 8;
+                    if (ball_pos.y > centroid_def.y + 18)
+                        meta2d.y = centroid_def.y + 18;
+                    else if (ball_pos.y < centroid_def.y - 18)
+                        meta2d.y = centroid_def.y - 18;
+                    else
+                        meta2d.y = ball_pos.y;
+                    meta = convert_C_to_G(meta2d);
+                    if (meta.x > 0 && meta.y > 0){
+                        set_potential(meta.y, meta.x, 0);
+                    }
+                    else{
+                            //tratar meta aqui
+                    }
+                    meta_aux.x = meta2d.x;
+                    meta_aux.y = meta2d.y;
+                    if (meta2d.y > team_pos[0].y)
+                        orientation = -90;
+                    else
+                        orientation = 90;
+                    //cout << "Bola fora da area" << endl;
+                }
+
+        }else{
+            if(ball_pos.x < 75){
+                meta2d.x = centroid_def.x - 8;
+                meta2d.y = centroid_def.y;
                 meta = convert_C_to_G(meta2d);
                 if (meta.x > 0 && meta.y > 0){
                     set_potential(meta.y, meta.x, 0);
                 }
-                else{
-                        //tratar meta aqui
-                }
-                meta_aux.x = meta2d.x;
-                meta_aux.y = meta2d.y;
-                if (meta2d.y > team_pos[0].y)
-                    orientation = -90;
-                else
-                    orientation = 90;
-                //cout << "Bola fora da area" << endl;
-
-        }else{
+            }
+            else{
                 meta2d.x = centroid_def.x - 8;
                 if (ball_pos.y > centroid_def.y + 18)
                     meta2d.y = centroid_def.y + 18;
@@ -310,17 +331,11 @@ void CPO3::run(){
                 else
                     orientation = 90;
                 //cout << "Bola fora da area" << endl;
+            }
         }
     }else{
         //tratar a bola aqui
-    }
-
-    //cout << "Meta: " << meta.x << " , " << meta.y << endl;
-
-   // cout << "Angulo de orientacao: " << orientation << endl;
-
-
-   // cout<<"Orientação: "<<orientation<<endl;
+    };
     while(iterator()>1E-6);
     set_direction();   
 
@@ -335,6 +350,10 @@ bool CPO3::get_flag_finish(){
 
 void CPO3::zera_flag_finish(){
     flag_finish_CPO3 = false;
+}
+
+void CPO3::set_ball_vel(pair<double, double> ball_vel){
+    this->ball_vel = ball_vel;
 }
 
 void CPO3::set_orientation(double angle){

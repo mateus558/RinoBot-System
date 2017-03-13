@@ -51,7 +51,7 @@ public:
     static bool encoders_reading(int &robot, pair<float, float> &vels, float &battery);
     static bool send_velocities(int channel, pair<float, float> vels);
     static void config_serial(SettingsDialog::Settings settings);
-    // static bool is_open();
+    static bool is_serial_open();
     static void open_serial();
     static void close_serial();
     void set_flag_fuzzy(int, Point, Point, Point2d);

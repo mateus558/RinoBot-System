@@ -16,11 +16,12 @@
 #define MAX_CENT_DIST 20
 #define DEFAULT_NROWS 480   //Default number of the rows of the frame
 #define DEFAULT_NCOLS 640   //Default number of the columns of the frame
-#define X_CONV_CONST 0.3145   //Conversion constant for the X axis
-#define Y_CONV_CONST 0.3106 //Conversion constant for the Y axis
+#define X_CONV_CONST 0.3091   //Conversion constant for the X axis
+#define Y_CONV_CONST 0.3139 //Conversion constant for the Y axis
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000
+
 //173cmx132cm - field
 using namespace cv;
 using namespace Eigen;

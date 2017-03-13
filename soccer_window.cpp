@@ -114,6 +114,7 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
     team_robots[1].set_lin_vel(make_pair(selec_robot.r1.get_l_vel(), selec_robot.r1.get_r_vel()));
     team_robots[2].set_lin_vel(make_pair(selec_robot.r2.get_l_vel(), selec_robot.r2.get_r_vel()));
     if(game_started){
+        cout <<
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
@@ -122,6 +123,7 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
     }
+    cout << "ds" << team_robots[0].get_r_vel() << " " <<  endl;
     emit updateVisionInfo(team_robots);
 }
 
@@ -165,7 +167,11 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
         mover->set_centroid_atk(centroid_atk);
         mover->set_centroid_def(centroid_def);
+        mover->set_def_area(def_area);
     }
+
+    mover->set_ball_vel(percep.ball_vel);
+    cpo3->set_ball_vel(percep.ball_vel);
 
     if(percep.ball_found){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -221,6 +227,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     mover->set_to_select_iterador(cph,cpo,cph2,cpo2,cpo3);
     mover->set_enemy_pos(enemy_pos);
     mover->set_ball_pos(ball_pos);
+    mover->set_def_area(def_area);
 
     if(percep.team_robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -287,13 +294,13 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         cpo2->Play();
      }
     //inicia a thread do cpo3 caso ela nao esteja em execucao
-    if(run_cpo3){
+    /*if(run_cpo3){
         if(cpo3->is_running()){
             cpo3->wait();
         }
         //cpo3->print_grid();
         cpo3->Play();
-     }
+     }*/
     //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(run_fuzzy){
         if(fuzzy->is_running()){
@@ -307,11 +314,11 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         cpo->wait();
         cph2->wait();
         cpo2->wait();
-        cpo3->wait();
+        //cpo3->wait();
         fuzzy->wait();
 
 
-        if (cph->get_flag_finish() && cpo->get_flag_finish() && cph2->get_flag_finish() && cpo2->get_flag_finish() && cpo3->get_flag_finish() &&  fuzzy->get_flag_finish() && !run_mover){
+        if (cph->get_flag_finish() && cpo->get_flag_finish() && cph2->get_flag_finish() && cpo2->get_flag_finish() &&  fuzzy->get_flag_finish() && !run_mover){
             run_mover = true;
         }else{
             run_mover = false;
@@ -346,7 +353,10 @@ void soccer_window::on_start_game_2_clicked()
         run_cpo3 = true;
         run_fuzzy = true;
 
-        Robot::open_serial();
+        if(!Robot::is_serial_open()){
+            Robot::open_serial();
+        }
+
         ui->start_game_2->setText("Stop Game");
     }else{
         game_started = false;
@@ -361,7 +371,7 @@ void soccer_window::on_start_game_2_clicked()
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
-        //Robot::close_serial();
+
         ui->start_game_2->setText("Start Game");
     }
 }
@@ -418,6 +428,7 @@ void soccer_window::on_switch_fields_clicked()
 
     cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
     cph->set_centroid_def(centroid_def); //salva a area de def para o cph
+    cph->set_def_area(def_area);
 
     cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo2
     cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo2
@@ -430,6 +441,8 @@ void soccer_window::on_switch_fields_clicked()
 
     mover->set_centroid_atk(centroid_atk);
     mover->set_centroid_def(centroid_def);
+    mover->set_def_area(def_area);
+    mover->team_changed();
 }
 
 void soccer_window::on_read_parameters_clicked()

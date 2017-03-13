@@ -32,11 +32,13 @@ private:
     Point2d ball_pos; //posicao em cm da bola
     Point2d centroid_atk; //posicao em cm do centro da area de atk
     Point2d centroid_def; //posicao em cm do centro da area de def
-    float vl,vr;
+    pVector def_area;
+    pair<double, double> ball_vel;
+    vector<pair<float, float> > vels;
     static Serial serial;
 
     bool stop, mover_initialized; //variavel de controle de thread
-
+    bool team_chang;
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
     Selec selec_iterador;
 
@@ -47,9 +49,13 @@ signals:
     void emitRobots(Selector);
 public:
     Mover();
+    double set_ang(double robot_angle, double angle, double w);
+    pair<double, double> potDefense(double katt, double kw, Robot r, Point2d obj, bool correct);
+    pair<double, double> defenderGK(Robot r);
 
     void init_mover();
-    void calcula_velocidades(Robot *, CPH *, CPO *, CPH2 *, CPO2 *,CPO3 *);
+    void calcula_velocidades(Robot *, CPH *, CPO *, CPH2 *, CPO2 *,CPO3 *, pair<float, float>*);
+    void goleiro(Robot r, pair<float, float> *vels);
     double min_function(double, double);
     double max_function(double, double);
     double ajusta_angulo(double);
@@ -57,6 +63,9 @@ public:
     bool is_running();
     void Stop();
     bool isStopped() const;
+    void team_changed();
+    void set_def_area(pVector def_area);
+    void set_ball_vel(pair<double, double>);
     void set_to_select(Robot, Robot, Robot);
     void set_to_select_iterador(CPH *, CPO *,CPH2 *,CPO2 *, CPO3 *);
     void set_enemy_pos(p2dVector);

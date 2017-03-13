@@ -18,7 +18,7 @@ CPO2::CPO2(){
     team_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
     tGrid = dMatrix(28, vector<double>(36, 0));
-    cout<<"\n\nAMBIENTE CRIADO!\n";
+    //cout<<"\n\nAMBIENTE CRIADO!\n";
 }
 
 double CPO2::iterator(){
@@ -253,7 +253,7 @@ void CPO2::run(){
     }
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
-        if (fabs(ball_pos.x - centroid_def.x) < 50){
+        if (fabs(ball_pos.x - centroid_def.x) < 40){
             e = 0;
             orientation = 0;
             if (ball_pos.x < centroid_atk.x){
