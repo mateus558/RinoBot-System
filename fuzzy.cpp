@@ -206,7 +206,7 @@ void Fuzzy::calcula_input(Robot r){
         //cout << "Angulo vetor bola robo: "<< ang_vec_ball_eixox << endl;
         //cout << "Angulo entre robo e atk " << ang_atk_robot << endl;
         //cout << "Angulo vetor atk robo " << ang_vec_atk_eixox << endl;
-        //cout << "Angulo de orientacao robo: "<< angle << endl;
+        cout << "Angulo de orientacao robo: "<< angle << endl;
 
         if (ang_ball_robot <= 90 && ang_ball_robot >= -90)
             aux1 = (90 - fabs(ang_ball_robot))/90;
