@@ -439,9 +439,9 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
     double angle;
     Point cent, team_cent, color_cent, inter;
 
-    if(ball_pos != null_point)
+    if(ball_pos != null_point){
         circle(frame, ball_pos, 10, Scalar(255, 0, 0));
-
+    }
     for(i = 0; i < size-3; ++i){
         cent = robots[i].get_centroid();
         team_cent = robots[i].get_team_cent();
@@ -477,6 +477,7 @@ void Vision::run()
     double elapsed_secs;
     clock_t begin, end;
     vector<pMatrix> obj_contours;
+    IplImage ipl_img;
     Point def_cent, atk_cent;
 
     while(!stop){
@@ -491,10 +492,12 @@ void Vision::run()
 
         rows = raw_frame.rows;
         cols = raw_frame.cols;
-        vision_frame = crop_image(raw_frame.clone());
         raw_frame = crop_image(raw_frame);
+        ipl_img = raw_frame;
+        vision_frame = cvarrToMat(img_resize(&ipl_img, DEFAULT_NCOLS, DEFAULT_NROWS));  // default additional arguments: don't copy data.
+        raw_frame = vision_frame.clone();
         vision_frame = proccess_frame(vision_frame, vision_frame);
-        //cout << raw_frame.rows << " " << raw_frame.cols << endl;
+
         switch(mode){
             case 0: //Visualization mode
                 obj_contours = detect_objects(vision_frame, robots).second;
