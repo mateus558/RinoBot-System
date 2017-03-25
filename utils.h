@@ -14,15 +14,15 @@
 #define MIN_BALL_AREA 50
 #define MAX_BALL_AREA 100
 #define MAX_CENT_DIST 20
-#define DEFAULT_NROWS 480   //Default number of the rows of the frame
-#define DEFAULT_NCOLS 640   //Default number of the columns of the frame
-#define X_CONV_CONST 0.3091   //Conversion constant for the X axis
-#define Y_CONV_CONST 0.3139 //Conversion constant for the Y axis
+#define DEFAULT_NROWS 382   //Default number of the rows of the frame
+#define DEFAULT_NCOLS 505   //Default number of the columns of the frame
+#define X_CONV_CONST 0.346534653   //Conversion constant for the X axis
+#define Y_CONV_CONST 0.345549738 //Conversion constant for the Y axis
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000
 
-//173cmx132cm - field
+//175cmx132cm - field
 using namespace cv;
 using namespace Eigen;
 
@@ -34,7 +34,7 @@ typedef std::vector<std::vector<double> > dMatrix;  //Double Matrix template
 typedef std::vector<std::vector<Point> > pMatrix; //Point matrix template
 typedef std::vector<std::vector<Point2d> > p2dMatrix; //double precision Point matrix template
 
-
+IplImage* img_resize(IplImage* src_img, int new_width,int new_height);
 double euclidean_dist(Point2d p, Point2d q);
 double angle_two_points(Point2d p, Point2d q);
 std::pair<Matrix3d, Vector3d> kalman_filter(Vector3d pos_cam, Vector2d v_w, Vector3d last_pos , double dt, Matrix3d last_P);

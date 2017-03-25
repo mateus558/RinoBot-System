@@ -246,11 +246,11 @@ void CPH2::run(){
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
         if ((ball_pos.y > centroid_def.y+55 || ball_pos.y < centroid_def.y-55) && fabs(ball_pos.x - centroid_def.x) < 70){
-            cout << 1 << endl;
+            //cout << 1 << endl;
             ball_pos_grid = convert_C_to_G(ball_pos);
             if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0){
-                cout << 2 << endl;
-                cout<<"Meta: "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                //cout << 2 << endl;
+                //cout<<"Meta: "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
                 set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
                 meta_aux = ball_pos;
                 /*if(ball_pos.x < centroid_atk.x){
