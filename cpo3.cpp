@@ -145,7 +145,7 @@ void CPO3::set_direction(){
         }
     }
     // Setar a orientacao das celulas na linha ndo gol
-    Point meta = convert_C_to_G(meta_aux);
+    /*Point meta = convert_C_to_G(meta_aux);
     for(i=0;i<28;i++){
          for(j=0;j<36;j++){
              if(i > 6 && i < 21 && (j == 32 || j == 3)){ //|| j == 4 || j == 31)){ // i>6, i<21, j==3, 32
@@ -154,7 +154,7 @@ void CPO3::set_direction(){
                  else
                      tGrid[i][j] = -90;
              }
-             /*if (i > 5 && i < 22 && (j == 31 || j == 2)){
+             if (i > 5 && i < 22 && (j == 31 || j == 2)){
                  if (meta.y < i)
                      tGrid[i][j] = 75;
                  else
@@ -167,10 +167,7 @@ void CPO3::set_direction(){
                      tGrid[i][j] = 105;
                  else
                      tGrid[i][j] = -105;
-             }*/
-
-         }
-     }
+             }*/ 
 }
 
 double CPO3::get_direction(Point grid){
@@ -265,8 +262,9 @@ void CPO3::run(){
         grid_initialized = true;
     //}    
     e = 0;
+    orientation = 0;
 
-    if(ball_pos.x > 0 && ball_pos.y > 0){
+    /*if(ball_pos.x > 0 && ball_pos.y > 0){
         if (ball_pos.x < centroid_atk.x){
                 if(ball_pos.x > 75){
                     meta2d.x = centroid_def.x + 8;
@@ -335,7 +333,20 @@ void CPO3::run(){
         }
     }else{
         //tratar a bola aqui
-    };
+    };*/
+
+
+
+    meta2d.x = centroid_def.x - 8;
+    meta2d.y = centroid_def.y;
+
+    meta = convert_C_to_G(meta2d);
+    if (meta.x > 0 && meta.y > 0){
+        cout << "ataque: " << centroid_atk << " defesa: " << centroid_def << endl;
+        set_potential(meta.y, meta.x, 0);
+    }
+
+    meta_aux = meta2d;
     while(iterator()>1E-6);
     set_direction();   
 

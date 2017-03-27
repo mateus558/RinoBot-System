@@ -276,7 +276,7 @@ pair<double, double> Mover::potDefense(double katt, double kw, Robot r, Point2d 
                     }else if(dy == erroY){
                         vels.first = 0;
                     }else{
-                        drobo = fabs(b_pos.y - pos_robot.y) - dy;
+                        //drobo = fabs(b_pos.y - pos_robot.y) -Point2d meta_aux; dy;
                         vels.first = fabs(drobo / dt);
                     }
                 }
@@ -342,7 +342,7 @@ pair<double, double> Mover::potDefense(double katt, double kw, Robot r, Point2d 
         /*if(vels.first > 0){
             vels.first = (vels.first > 0.6)?0.6:vels.first;
         }else{
-            vels.first = (vels.first > -0.6)?-0.6:vels.first;
+            vels.first = (vels.first > -0.6)?-0.6:vels.first;Point2d meta_aux;
         }*/
        // vels.first *= -1;
     //}
@@ -489,17 +489,49 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
     if(r->get_flag_fuzzy() == 4){
         /*goleiro(*r, vels);
         v = vels->first;
-        w = vels->second;*/
+        w = vels->second;
         v = 0;
 
         if(ball_pos.y < r->get_pos().y){
             w = -7;
         }else{
             w = 7;
+        }*/
+        theta = cpo3->get_direction(robot_grid);
+        alpha = theta - r->get_angle();
+        alpha = ajusta_angulo(alpha);
+
+        //cout << "angulo do robo: "<<r->get_angle()<<endl;
+
+        if (fabs(alpha) <= limiar_theta){
+            w = k*v_max*alpha/180;
+            v = -v_max*fabs(alpha)/limiar_theta + v_max;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            w = k*v_max*alpha/180;
+            v = v_max*fabs(alpha)/limiar_theta - v_max;
+        }
+        Point2d meta_aux;
+
+        //cout << "velocidade linear: " << v << endl;
+        //cout << "velocidade angular: " << w << endl;
+
+
+
+        if((euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4) && (fabs(r->get_angle())> 80) && (fabs(r->get_angle()< 100))){
+            v = 0;
+            w = 0;
+        }
+        else if (euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4){
+            v = 0;
+            alpha = theta - 90;
+            w = k*v_max*alpha/180;
         }
         vels->first = v - w*l;
-        vels->second = v+w*l;
-        cout << vels->first << endl;
+        vels->second = v + w*l;
+
+
     }
     else{
 

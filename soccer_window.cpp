@@ -294,13 +294,13 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         cpo2->Play();
      }
     //inicia a thread do cpo3 caso ela nao esteja em execucao
-    /*if(run_cpo3){
+    if(run_cpo3){
         if(cpo3->is_running()){
             cpo3->wait();
         }
         //cpo3->print_grid();
         cpo3->Play();
-     }*/
+     }
     //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(run_fuzzy){
         if(fuzzy->is_running()){
@@ -314,11 +314,11 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         cpo->wait();
         cph2->wait();
         cpo2->wait();
-        //cpo3->wait();
+        cpo3->wait();
         fuzzy->wait();
 
 
-        if (cph->get_flag_finish() && cpo->get_flag_finish() && cph2->get_flag_finish() && cpo2->get_flag_finish() &&  fuzzy->get_flag_finish() && !run_mover){
+        if (cph->get_flag_finish() && cpo->get_flag_finish() && cph2->get_flag_finish() && cpo2->get_flag_finish() && cpo3->get_flag_finish() &&  fuzzy->get_flag_finish() && !run_mover){
             run_mover = true;
         }else{
             run_mover = false;

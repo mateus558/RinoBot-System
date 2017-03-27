@@ -221,10 +221,10 @@ void CPH::run(){
 
     /*cout << "Inimigo 1: " << "em x: "<< enemy_pos[0].x << " em y: "<< enemy_pos[0].y << endl;
     cout << "Inimigo 2: " << "em x: "<< enemy_pos[1].x << " em y: "<< enemy_pos[1].y << endl;
-    cout << "Inimigo 3: " << "em x: "<< enemy_pos[2].x << " em y: "<< enemy_pos[2].y << endl;*/
+    cout << "Inimigo 3: " << "em x: "<< enemy_pos[2].x << " em y: "<< enemy_pos[2].y << endl;
     cout << "Leona: " << "em x: "<< team_pos[0].x << " em y: "<< team_pos[0].y << endl;
     cout << "Gandalf: " << "em x: "<< team_pos[1].x << " em y: "<< team_pos[1].y << endl;
-    cout << "Presto: " << "em x: "<< team_pos[2].x << " em y: "<< team_pos[2].y << endl;
+    cout << "Presto: " << "em x: "<< team_pos[2].x << " em y: "<< team_pos[2].y << endl; */
 
 
     for(i = 0; i < 3; ++i){
