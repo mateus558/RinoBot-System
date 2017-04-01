@@ -29,7 +29,9 @@ SOURCES += main.cpp\
     mover.cpp \
     cph2.cpp \
     cpo2.cpp \
-    cpo3.cpp
+    cpo3.cpp \
+    navegation.cpp \
+    game_functions.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -47,7 +49,9 @@ HEADERS  += mainwindow.h \
     mover.h \
     cph2.h \
     cpo2.h \
-    cpo3.h
+    cpo3.h \
+    navegation.h \
+    game_functions.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

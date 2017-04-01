@@ -53,6 +53,7 @@ private slots:
     void on_start_game_2_clicked();
 
 private:
+    NAVEGATION *Gandalf, *Presto, *Leona;
     CPH *cph;
     CPH2 *cph2;
     CPO *cpo;

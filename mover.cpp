@@ -88,7 +88,6 @@ void Mover::set_to_select_iterador(CPH *cph, CPO *cpo , CPH2 *cph2, CPO2 *cpo2, 
     selec_iterador.cpo = cpo;
     selec_iterador.cpo2 = cpo2;
     selec_iterador.cpo3 = cpo3;
-
 }
 
 void Mover::set_ball_vel(pair<double, double> ball_vel){

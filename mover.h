@@ -12,6 +12,7 @@
 #include "cph2.h"
 #include "cpo2.h"
 #include "cpo3.h"
+#include "navegation.h"
 #include "serial.h"
 
 struct Selec{
@@ -20,6 +21,9 @@ struct Selec{
     CPH2 *cph2;
     CPO2 *cpo2;
     CPO3 *cpo3;
+    NAVEGATION *Gandalf;
+    NAVEGATION *Presto;
+    NAVEGATION *Leona;
 };
 
 class Mover: public QThread
