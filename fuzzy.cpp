@@ -118,6 +118,7 @@ void Fuzzy::run(){
     }
     emit emitRobots(selec_robot);
     flag_finish_fuzzy = true;
+    cout << flag_finish_fuzzy << endl;
 }
 
 void Fuzzy::set_to_select(Robot r1, Robot r2, Robot r3){

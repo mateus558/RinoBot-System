@@ -11,6 +11,8 @@
 #include "cpo3.h"
 #include "fuzzy.h"
 #include "mover.h"
+#include "navegation.h"
+#include "game_functions.h"
 
 namespace Ui {
 class soccer_window;
@@ -53,7 +55,8 @@ private slots:
     void on_start_game_2_clicked();
 
 private:
-    NAVEGATION *Gandalf, *Presto, *Leona;
+    NAVEGATION *calc_Gandalf, *calc_Presto, *calc_Leona;
+    GAME_FUNCTIONS Gandalf, Presto, Leona;
     CPH *cph;
     CPH2 *cph2;
     CPO *cpo;
@@ -75,6 +78,7 @@ private:
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
     int cam_id;
     bool started, area_read, run_cph, run_cpo, run_fuzzy, run_mover, run_cph2, run_cpo2, run_cpo3, game_started, team_changed;
+    bool run_Gandalf, run_Presto, run_Leona;
 
 
     void closeEvent(QCloseEvent *event);

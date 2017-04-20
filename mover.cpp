@@ -56,8 +56,17 @@ void Mover::run(){
     if(!mover_initialized){
         //init_mover();
         mover_initialized = true;
-    }    
+    }
+    calcula_velocidades(&selec_robot.r1,selec_iterador.Gandalf, &vels[0]);
+    selec_robot.r1.set_lin_vel(vels[0]);
 
+    calcula_velocidades(&selec_robot.r2,selec_iterador.Presto, &vels[1]);
+    selec_robot.r2.set_lin_vel(vels[1]);
+
+    calcula_velocidades(&selec_robot.r3,selec_iterador.Leona, &vels[2]);
+    selec_robot.r3.set_lin_vel(vels[2]);
+
+    /*
     //Pro terceiro robô - Leona
     calcula_velocidades(&selec_robot.r3,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3, &vels[2]);
     selec_robot.r3.set_lin_vel(vels[2]);
@@ -68,7 +77,7 @@ void Mover::run(){
 
     //Pro segundo robô - Presto
     calcula_velocidades(&selec_robot.r2,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3, &vels[1]);
-    selec_robot.r2.set_lin_vel(vels[1]);
+    selec_robot.r2.set_lin_vel(vels[1]);*/
 
     cout << vels[2].first << endl;
 
@@ -82,12 +91,10 @@ void Mover::set_to_select(Robot r1, Robot r2, Robot r3){
     selec_robot.r3 = r3;
 }
 
-void Mover::set_to_select_iterador(CPH *cph, CPO *cpo , CPH2 *cph2, CPO2 *cpo2, CPO3 *cpo3){
-    selec_iterador.cph = cph;
-    selec_iterador.cph2 = cph2;
-    selec_iterador.cpo = cpo;
-    selec_iterador.cpo2 = cpo2;
-    selec_iterador.cpo3 = cpo3;
+void Mover::set_to_select_iterador(NAVEGATION *Gandalf, NAVEGATION *Presto, NAVEGATION *Leona){
+    selec_iterador.Gandalf = Gandalf;
+    selec_iterador.Presto = Presto;
+    selec_iterador.Leona = Leona;
 }
 
 void Mover::set_ball_vel(pair<double, double> ball_vel){
@@ -474,7 +481,10 @@ void Mover::goleiro(Robot r, pair<float, float> *vels){
     cout << vels->first << " " << vels->second << endl;
 }
 
-void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *cpo2, CPO3 *cpo3, pair<float, float> *vels){
+void Mover::calcula_velocidades(Robot *r, NAVEGATION *robo,
+
+
+                                pair<float, float> *vels){
 
     double v,w,theta,alpha;
     pair<float, float> vel;
@@ -485,8 +495,9 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
     //cout << " x: " << robot_pos.x << " y: " << robot_pos.y << endl;
    // cout << r->get_flag_fuzzy() << endl;
 
-    if(r->get_flag_fuzzy() == 4){
-        /*goleiro(*r, vels);
+
+   if(r->get_flag_fuzzy() == 4){
+        goleiro(*r, vels);
         v = vels->first;
         w = vels->second;
         v = 0;
@@ -495,8 +506,8 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
             w = -7;
         }else{
             w = 7;
-        }*/
-        theta = cpo3->get_direction(robot_grid);
+        }
+        theta = robo->get_direction(robot_grid);
         alpha = theta - r->get_angle();
         alpha = ajusta_angulo(alpha);
 
@@ -518,11 +529,11 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
 
 
 
-        if((euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4) && (fabs(r->get_angle())> 80) && (fabs(r->get_angle()< 100))){
+        if((euclidean_dist(robot_pos, robo->get_meta_aux()) < 4) && (fabs(r->get_angle())> 80) && (fabs(r->get_angle()< 100))){
             v = 0;
             w = 0;
         }
-        else if (euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4){
+        else if (euclidean_dist(robot_pos, robo->get_meta_aux()) < 4){
             v = 0;
             alpha = theta - 90;
             w = k*v_max*alpha/180;
@@ -533,23 +544,7 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
 
     }
     else{
-
-        if(r->get_flag_fuzzy() == 0){
-            theta = cph->get_direction(robot_grid);
-            //cout << "Rodrigay!" << endl;
-        }
-        else if(r->get_flag_fuzzy() == 1){
-            theta = cph2->get_direction(robot_grid);
-            //cout << "gabigay!" << endl;
-        }
-        else if(r->get_flag_fuzzy() == 2){
-            theta = cpo2->get_direction(robot_grid);
-            //cout << "JoaoTraveco!" << endl;
-        }
-        else if(r->get_flag_fuzzy() == 3){
-            theta = cpo->get_direction(robot_grid);
-            //cout << "Fredtransex!" << endl;
-        }
+        theta = robo->get_direction(robot_grid);
     }
     //cout << "decisao: " << r->get_flag_fuzzy();
 
@@ -565,7 +560,7 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
                     vels->first = 0.6;
                     vels->second = -0.6;
                 }
-                else if (euclidean_dist(robot_pos,cph2->get_meta_aux()) < 5 && r->get_flag_fuzzy() == 1){
+                else if (euclidean_dist(robot_pos,robo->get_meta_aux()) < 5 && r->get_flag_fuzzy() == 1){
                     vels->first = 0;
                     vels->second = 0;
                 }
@@ -604,7 +599,7 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *
                     vels->first = -0.6;
                     vels->second = 0.6;
                 }
-                else if (euclidean_dist(robot_pos,cph2->get_meta_aux()) < 5 && r->get_flag_fuzzy() == 1){
+                else if (euclidean_dist(robot_pos,robo->get_meta_aux()) < 5 && r->get_flag_fuzzy() == 1){
                     vels->first = 0;
                     vels->second = 0;
                 }

@@ -58,7 +58,7 @@ public:
     pair<double, double> defenderGK(Robot r);
 
     void init_mover();
-    void calcula_velocidades(Robot *, CPH *, CPO *, CPH2 *, CPO2 *,CPO3 *, pair<float, float>*);
+    void calcula_velocidades(Robot *, NAVEGATION *, pair<float, float>*);
     void goleiro(Robot r, pair<float, float> *vels);
     double min_function(double, double);
     double max_function(double, double);
@@ -71,7 +71,7 @@ public:
     void set_def_area(pVector def_area);
     void set_ball_vel(pair<double, double>);
     void set_to_select(Robot, Robot, Robot);
-    void set_to_select_iterador(CPH *, CPO *,CPH2 *,CPO2 *, CPO3 *);
+    void set_to_select_iterador(NAVEGATION *, NAVEGATION *, NAVEGATION *);
     void set_enemy_pos(p2dVector);
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);

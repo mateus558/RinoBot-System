@@ -932,6 +932,7 @@ moc_mainwindow.cpp: ../../Qt/5.7/gcc_64/include/QtWidgets/QMainWindow \
 		fuzzy.h \
 		mover.h \
 		navegation.h \
+		game_functions.h \
 		mainwindow.h \
 		../../Qt/5.7/gcc_64/bin/moc
 	/home/rinobot/Qt/5.7/gcc_64/bin/moc $(DEFINES) -I/home/rinobot/Qt/5.7/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.7/gcc_64/include -I/home/rinobot/Qt/5.7/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.7/gcc_64/include/QtGui -I/home/rinobot/Qt/5.7/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.7/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
@@ -2283,6 +2284,7 @@ moc_soccer_window.cpp: ../../Qt/5.7/gcc_64/include/QtWidgets/QMainWindow \
 		fuzzy.h \
 		mover.h \
 		navegation.h \
+		game_functions.h \
 		soccer_window.h \
 		../../Qt/5.7/gcc_64/bin/moc
 	/home/rinobot/Qt/5.7/gcc_64/bin/moc $(DEFINES) -I/home/rinobot/Qt/5.7/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.7/gcc_64/include -I/home/rinobot/Qt/5.7/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.7/gcc_64/include/QtGui -I/home/rinobot/Qt/5.7/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.7/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include soccer_window.h -o moc_soccer_window.cpp
@@ -3755,6 +3757,7 @@ main.o: main.cpp mainwindow.h \
 		fuzzy.h \
 		mover.h \
 		navegation.h \
+		game_functions.h \
 		../../Qt/5.7/gcc_64/include/QtWidgets/QApplication \
 		../../Qt/5.7/gcc_64/include/QtWidgets/qapplication.h \
 		../../Qt/5.7/gcc_64/include/QtWidgets/qdesktopwidget.h \
@@ -4022,6 +4025,7 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		fuzzy.h \
 		mover.h \
 		navegation.h \
+		game_functions.h \
 		ui_mainwindow.h \
 		../../Qt/5.7/gcc_64/include/QtCore/QVariant \
 		../../Qt/5.7/gcc_64/include/QtWidgets/QAction \
@@ -5926,6 +5930,7 @@ soccer_window.o: soccer_window.cpp ../../Qt/5.7/gcc_64/include/QtWidgets/QMessag
 		fuzzy.h \
 		mover.h \
 		navegation.h \
+		game_functions.h \
 		ui_soccer_window.h \
 		../../Qt/5.7/gcc_64/include/QtCore/QVariant \
 		../../Qt/5.7/gcc_64/include/QtWidgets/QAction \

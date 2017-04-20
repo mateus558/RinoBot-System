@@ -29,6 +29,7 @@ private:
     Point2d ball_pos;
     Point2d centroid_atk;
     Point2d centroid_def;
+    Point2d meta;
     bool stop, grid_initialized, flag_finish_navegation;
 
 protected:
@@ -48,6 +49,8 @@ public:
     void init_grid();
     void print_grid();
     Point convert_C_to_G(Point2d); // colocar na utils
+    Point2d get_meta_aux();
+    void set_meta_aux(Point2d);
     /*void set_enemy_pos(p2dVector);
     void set_team_pos(p2dVector);
     void set_ball_pos(Point2d);

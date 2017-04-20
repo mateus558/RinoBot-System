@@ -339,6 +339,14 @@ void NAVEGATION::print_grid(){
     cout<<"\n\n\n";
 }
 
+Point2d NAVEGATION::get_meta_aux(){
+    return this->meta;
+}
+
+void NAVEGATION::set_meta_aux(Point2d meta){
+    this->meta = meta;
+}
+
 /*void NAVEGATION::set_enemy_pos(p2dVector enemy_pos){
     this->enemy_pos = enemy_pos;
 }

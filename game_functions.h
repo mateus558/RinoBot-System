@@ -30,6 +30,7 @@ private:
     pVector def_area;
     pair<double, double> ball_vel;
     bool stop, game_functions_initialized,flag_finish_functions; //variavel de controle de thread
+    bool calc_Gandalf, calc_Presto, calc_Leona;
     Selector selec_robot; //estrutura de selecao dos robos que vao sair do fuzzy
     Selec selec_iterador; //estrutura de selecao dos objetos da classe navegacao
 
@@ -46,11 +47,15 @@ public:
     void set_enemy_pos(p2dVector);
     void set_team_pos(p2dVector);
     void set_ball_pos(Point2d);
+    void set_ball_vel(pair<double, double>);
     void set_def_area(pVector);
     void set_centroid_atk(Point2d);
     void set_centroid_def(Point2d);
     Point convert_C_to_G(Point2d);
     void set_game_function(Robot *);
+    void set_calc_Gandalf(bool);
+    void set_calc_Presto(bool);
+    void set_calc_Leona(bool);
 
     void goalkeeper(NAVEGATION *);
     void defender(NAVEGATION *);

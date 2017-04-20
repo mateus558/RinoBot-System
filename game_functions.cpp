@@ -1,4 +1,15 @@
 #include "game_functions.h"
+#include <QThread>
+#include <QMutex>
+#include <vector>
+#include "robot.h" //Robot class
+#include "utils.h" //Utils library
+#include "fuzzy.h"
+#include "mover.h"
+#include "navegation.h"
+#include "iostream"
+
+using namespace std;
 
 GAME_FUNCTIONS::GAME_FUNCTIONS()
 {
@@ -8,9 +19,15 @@ GAME_FUNCTIONS::GAME_FUNCTIONS()
 }
 
 void GAME_FUNCTIONS::run(){
-    set_game_function(&selec_robot.r1);
-    set_game_function(&selec_robot.r2);
-    set_game_function(&selec_robot.r3);
+    if (calc_Gandalf){
+        set_game_function(&selec_robot.r1);
+    }
+    else if (calc_Presto){
+        set_game_function(&selec_robot.r2);
+    }
+    else if (calc_Leona){
+        set_game_function(&selec_robot.r3);
+    }
     flag_finish_functions = true;
 }
 
@@ -18,7 +35,11 @@ void GAME_FUNCTIONS::set_to_select(Robot r1, Robot r2, Robot r3){
     selec_robot.r1 = r1;
     selec_robot.r2 = r2;
     selec_robot.r3 = r3;
-}
+}void goalkeeper(NAVEGATION *);
+void defender(NAVEGATION *);
+void defensive_midfielder(NAVEGATION *);
+void ofensive_midfielder(NAVEGATION *);
+void striker(NAVEGATION *);
 
 void GAME_FUNCTIONS::set_to_select_iterador(NAVEGATION *Gandalf, NAVEGATION *Presto, NAVEGATION *Leona){
     selec_iterador.Gandalf = Gandalf;
@@ -36,6 +57,10 @@ void GAME_FUNCTIONS::set_team_pos(p2dVector team_pos){
 
 void GAME_FUNCTIONS::set_ball_pos(Point2d ball_pos){
     this->ball_pos = ball_pos;
+}
+
+void GAME_FUNCTIONS::set_ball_vel(pair<double, double> ball_vel){
+    this->ball_vel = ball_vel;
 }
 
 void GAME_FUNCTIONS::set_def_area(pVector def_area){
@@ -56,51 +81,77 @@ Point GAME_FUNCTIONS::convert_C_to_G(Point2d coord){
     coord.x = int(coord.x) + 5;
     coord.y = int(coord.y) + 5;
 
-    if(coord.x / dx != 35){
+    if(coord.x / dx < 35 && coord.x > 0){
         i.x = coord.x / dx;
-    }else{
-        i.x = coord.x / dx - 1;
+    }else if(coord.x / dx >= 35){
+        i.x = 34;
+    }else if(coord.x / dx <= 0){
+        i.x = 1;
     }
 
-    if(coord.y / dy != 27){
+    if(coord.y / dy < 27 && coord.y > 0){
         i.y = coord.y / dy;
-    }else{
-        i.y = coord.y / dy - 1;
+    }else if(coord.y / dy >= 27){
+        i.y = 26;
+    }else if(coord.y / dy <= 0){
+        i.y = 1;
     }
-
 
     return i;
 }
 
 void GAME_FUNCTIONS::set_game_function(Robot *r){
     NAVEGATION *robo;
-
-    if (r == &selec_robot.r1){
+    /*cout << 4 << endl;
+    if (r->get_channel() == selec_robot.r1.get_channel()){
+        cout << 5 << endl;
         robo = selec_iterador.Gandalf;
     }
-    else if (r == &selec_robot.r2){
+    else if (r->get_channel() == selec_robot.r2.get_channel()){
         robo = selec_iterador.Presto;
     }
-    else if (r == &selec_robot.r3){
+    else if (r->get_channel() == selec_robot.r3.get_channel()){
+        robo = selec_iterador.Leona;
+    }*/
+    if (calc_Gandalf){
+        robo = selec_iterador.Gandalf;
+    }
+    else if (calc_Presto){
+        robo = selec_iterador.Presto;
+    }
+    else if (calc_Leona){
         robo = selec_iterador.Leona;
     }
 
     if (r->get_flag_fuzzy() == 0){
-        defender(robo);
+        robo->print_grid();
+        //defender(robo);
     }
     else if (r->get_flag_fuzzy() == 1){
-        defensive_midfielder(robo);
+        //defensive_midfielder(robo);
     }
     else if (r->get_flag_fuzzy() == 2){
-        ofensive_midfielder(robo);
+        //ofensive_midfielder(robo);
     }
     else if (r->get_flag_fuzzy() == 3){
-        striker(robo);
+        //striker(robo);
     }
     else if (r->get_flag_fuzzy() == 4){
-        goalkeeper(robo);
+        //goalkeeper(robo);
     }
 
+}
+
+void GAME_FUNCTIONS::set_calc_Gandalf(bool var){
+    this->calc_Gandalf = var;
+}
+
+void GAME_FUNCTIONS::set_calc_Presto(bool var){
+    this->calc_Presto = var;
+}
+
+void GAME_FUNCTIONS::set_calc_Leona(bool var){
+    this->calc_Leona = var;
 }
 
 void GAME_FUNCTIONS::goalkeeper(NAVEGATION *robo){
