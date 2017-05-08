@@ -77,7 +77,8 @@ void Mover::run(){
 
     //Pro segundo robô - Presto
     calcula_velocidades(&selec_robot.r2,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3, &vels[1]);
-    selec_robot.r2.set_lin_vel(vels[1]);*/
+    selec_robot.r2.set_lin_vel(vels[1]);
+    */
 
     cout << vels[2].first << endl;
 
