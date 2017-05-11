@@ -347,6 +347,7 @@ void CPO3::run(){
     }
 
     meta_aux = meta2d;
+    cout << "Metax: " << meta.x << " Metay: " << meta.y << endl;
     while(iterator()>1E-6);
     set_direction();   
 
