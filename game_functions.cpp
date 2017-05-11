@@ -114,32 +114,59 @@ void GAME_FUNCTIONS::set_game_function(Robot *r){
         robo = selec_iterador.Leona;
     }*/
     if (calc_Gandalf){
-        robo = selec_iterador.Gandalf;
+        if (r->get_flag_fuzzy() == 0){
+            robo->print_grid();
+            //defender(selec_iterador.Gandalf);
+        }
+        else if (r->get_flag_fuzzy() == 1){
+            //defensive_midfielder(selec_iterador.Gandalf);
+        }
+        else if (r->get_flag_fuzzy() == 2){
+            //ofensive_midfielder(selec_iterador.Gandalf);
+        }
+        else if (r->get_flag_fuzzy() == 3){
+            //striker(selec_iterador.Gandalf);
+        }
+        else if (r->get_flag_fuzzy() == 4){
+            //goalkeeper(selec_iterador.Gandalf);
+        }
     }
     else if (calc_Presto){
-        robo = selec_iterador.Presto;
+        if (r->get_flag_fuzzy() == 0){
+            robo->print_grid();
+            defender(selec_iterador.Presto);
+        }
+        else if (r->get_flag_fuzzy() == 1){
+            defensive_midfielder(selec_iterador.Presto);
+        }
+        else if (r->get_flag_fuzzy() == 2){
+            ofensive_midfielder(selec_iterador.Presto);
+        }
+        else if (r->get_flag_fuzzy() == 3){
+            striker(selec_iterador.Presto);
+        }
+        else if (r->get_flag_fuzzy() == 4){
+            goalkeeper(selec_iterador.Presto);
+        }
     }
     else if (calc_Leona){
-        robo = selec_iterador.Leona;
+        if (r->get_flag_fuzzy() == 0){
+            robo->print_grid();
+            //defender(selec_iterador.Leona);
+        }
+        else if (r->get_flag_fuzzy() == 1){
+            //defensive_midfielder(selec_iterador.Leona);
+        }
+        else if (r->get_flag_fuzzy() == 2){
+            //ofensive_midfielder(selec_iterador.Leona);
+        }
+        else if (r->get_flag_fuzzy() == 3){
+            //striker(selec_iterador.Leona);
+        }
+        else if (r->get_flag_fuzzy() == 4){
+            //goalkeeper(selec_iterador.Leona);
+        }
     }
-
-    if (r->get_flag_fuzzy() == 0){
-        robo->print_grid();
-        //defender(robo);
-    }
-    else if (r->get_flag_fuzzy() == 1){
-        //defensive_midfielder(robo);
-    }
-    else if (r->get_flag_fuzzy() == 2){
-        //ofensive_midfielder(robo);
-    }
-    else if (r->get_flag_fuzzy() == 3){
-        //striker(robo);
-    }
-    else if (r->get_flag_fuzzy() == 4){
-        //goalkeeper(robo);
-    }
-
 }
 
 void GAME_FUNCTIONS::set_calc_Gandalf(bool var){

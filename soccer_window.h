@@ -56,7 +56,7 @@ private slots:
 
 private:
     NAVEGATION *calc_Gandalf, *calc_Presto, *calc_Leona;
-    GAME_FUNCTIONS Gandalf, Presto, Leona;
+    GAME_FUNCTIONS gandalf, presto, leona;
     CPH *cph;
     CPH2 *cph2;
     CPO *cpo;
