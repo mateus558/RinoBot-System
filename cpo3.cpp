@@ -7,6 +7,7 @@
 #include "robot.h"
 
 using namespace std;
+Point meta;
 
 
 
@@ -256,11 +257,10 @@ Point CPO3::convert_C_to_G(Point2d coord){
 void CPO3::run(){
     Point2d eixo_x(1.0,0.0);
     Point2d meta2d;
-    Point meta;
     //if(!grid_initialized){
         init_grid();
         grid_initialized = true;
-    //}    
+    //}
     e = 0;
     orientation = 0;
 
@@ -335,10 +335,33 @@ void CPO3::run(){
         //tratar a bola aqui
     };*/
 
+
+
+            //print_grid();
+
+    return2goal();
+    flag_finish_CPO3 = true;
+
+
+}
+
+void CPO3::return2goal(){
     if(ball_pos.x > 0 && ball_pos.y > 0){
             if (ball_pos.x < centroid_atk.x){
-                meta_aux.x = centroid_def.x + 8;
-                meta_aux.y = centroid_def.y;
+                if(ball_pos.y < 45 &&  ball_pos.x < 90){
+                    meta_aux.x = centroid_def.x + 8;
+                    meta_aux.y = centroid_def.y - 20;
+                }
+                else if(ball_pos.y > 95 &&  ball_pos.x < 90){
+                    meta_aux.x = centroid_def.x + 8;
+                    meta_aux.y = centroid_def.y + 20;
+                }
+                else if (ball_pos.x > 90){
+                    meta_aux.x = centroid_def.x + 8;
+                    meta_aux.y = centroid_def.y;
+                }
+                else
+
                 meta = convert_C_to_G(meta_aux); //cm to grid
                 if (meta_aux.x > 0 && meta_aux.y > 0){
                     //cout << "ataque: " << centroid_atk << " defesa: " << centroid_def << endl;
@@ -350,8 +373,20 @@ void CPO3::run(){
             }
 
             if (ball_pos.x >= centroid_atk.x){
-                meta_aux.x = centroid_def.x - 8;
-                meta_aux.y = centroid_def.y;
+                if(ball_pos.y < 45 &&  ball_pos.x > 90){
+                    meta_aux.x = centroid_def.x - 8;
+                    meta_aux.y = centroid_def.y - 20;
+                }
+                else if(ball_pos.y > 95 &&  ball_pos.x > 90){
+                    meta_aux.x = centroid_def.x - 8;
+                    meta_aux.y = centroid_def.y + 20;
+                }
+                else if(ball_pos.x < 90){
+                    meta_aux.x = centroid_def.x - 8;
+                    meta_aux.y = centroid_def.y;
+                }
+                else
+
                 meta = convert_C_to_G(meta_aux);
                 if (meta_aux.x > 0 && meta_aux.y > 0){
                     //cout << "ataque: " << centroid_atk << " defesa: " << centroid_def << endl;
@@ -362,18 +397,25 @@ void CPO3::run(){
             }
             while(iterator()>1E-6);
             set_direction();
+            set_grid_orientation();
 
-            //print_grid();
-
-            flag_finish_CPO3 = true;
     }
+}
 
-
-
-
-
-
-
+void CPO3::set_grid_orientation(){
+    // Setar a orientacao das celulas na linha ndo gol
+        meta = convert_C_to_G(meta_aux);
+        int i, j;
+        for(i=0;i<28;i++){
+             for(j=0;j<36;j++){
+                 if(i > 6 && i < 21 && (j == 32 || j == 3)){ //|| j == 4 || j == 31)){ // i>6, i<21, j==3, 32
+                     if (meta.y < i)
+                         tGrid[i][j] = 90;
+                     else
+                         tGrid[i][j] = -90;
+                 }
+             }
+        }
 }
 
 bool CPO3::get_flag_finish(){

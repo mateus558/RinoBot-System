@@ -7,7 +7,7 @@
 
 using namespace std;
 double limiar_theta = 90;
-double v_max = 0.6;
+double v_max = 0.4;
 double w_max = 7;
 double k = (w_max/v_max);
 double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275)
@@ -556,19 +556,22 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph,CPO *cpo, CPH2 *cph2, CPO2 *c
            w = k*v_max*alpha/180;
            v = v_max*fabs(alpha)/limiar_theta - v_max;
        }
-       Point2d meta_aux;
-       if((euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4) && (fabs(r->get_angle())> 80) && (fabs(r->get_angle()< 100))){
-           v = 0;
-           w = 0;
-       }
-       else if (euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4){
-           v = 0;
-           alpha = theta - 90;
-           w = k*v_max*alpha/180;
-       }
        vels->first = v - w*l;
        vels->second = v + w*l;
 
+       Point2d meta_aux;
+       if((euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 5) && (fabs(r->get_angle()) > 85) && (fabs(r->get_angle()) < 95)){
+           vels->first = 0;
+           vels->second = 0;
+       }
+       else if (euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 5){
+           goalkeeper_orientation(r,vels);
+       }
+
+
+       //goalkeeper_orientation(r,vels);
+       //vels->first = -w*l;
+       //vels->second = w*l;
 
     }
     else{
@@ -668,7 +671,21 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph,CPO *cpo, CPH2 *cph2, CPO2 *c
                 }
             }
         }
+}
 
+void Mover::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
+    double alpha,w;
+    alpha = 90 - r->get_angle();
+    alpha = ajusta_angulo(alpha);
+    if (fabs(alpha) <= limiar_theta){
+        w = k*v_max*alpha/180,2;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        w = k*v_max*alpha/180,2;
+    }
+    vels->first = -w*l;
+    vels->second = w*l;
 }
 
 

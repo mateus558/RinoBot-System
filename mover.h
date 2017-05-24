@@ -59,6 +59,7 @@ public:
 
     void init_mover();
     void calcula_velocidades(Robot *, CPH *,CPO *, CPH2 *, CPO2 *, CPO3 *, pair<float, float>*);
+    void goalkeeper_orientation(Robot *, pair<float, float>*);
     void goleiro(Robot r, pair<float, float> *vels);
     double min_function(double, double);
     double max_function(double, double);

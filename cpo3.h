@@ -69,6 +69,8 @@ public:
     bool is_running();
     void Stop();
     bool isStopped() const;
+    void return2goal();
+    void set_grid_orientation();
     ~CPO3();
 };
 
