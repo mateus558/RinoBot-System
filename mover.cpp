@@ -500,7 +500,7 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph,CPO *cpo, CPH2 *cph2, CPO2 *c
 
 
    if(r->get_flag_fuzzy() == 4){
-        goleiro(*r, vels);
+        /*goleiro(*r, vels);
         v = vels->first;
         w = vels->second;
         v = 0;
@@ -542,7 +542,32 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph,CPO *cpo, CPH2 *cph2, CPO2 *c
             w = k*v_max*alpha/180;
         }
         vels->first = v - w*l;
-        vels->second = v + w*l;
+        vels->second = v + w*l;*/
+
+       theta = cpo3->get_direction(robot_grid);
+       alpha = theta - r->get_angle();
+       alpha = ajusta_angulo(alpha);
+       if (fabs(alpha) <= limiar_theta){
+           w = k*v_max*alpha/180;
+           v = -v_max*fabs(alpha)/limiar_theta + v_max;
+       }
+       else{
+           alpha = ajusta_angulo(alpha+180);
+           w = k*v_max*alpha/180;
+           v = v_max*fabs(alpha)/limiar_theta - v_max;
+       }
+       Point2d meta_aux;
+       if((euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4) && (fabs(r->get_angle())> 80) && (fabs(r->get_angle()< 100))){
+           v = 0;
+           w = 0;
+       }
+       else if (euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4){
+           v = 0;
+           alpha = theta - 90;
+           w = k*v_max*alpha/180;
+       }
+       vels->first = v - w*l;
+       vels->second = v + w*l;
 
 
     }

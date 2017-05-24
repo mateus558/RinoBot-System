@@ -33,7 +33,7 @@ double CPO3::iterator(){
 
     vec[0] = cos(orientation*PI/180);
     vec[1] = sin(orientation*PI/180);
-
+    e = 0;
     h = dx/dy;
     lambda = e*h/2;
 
@@ -335,25 +335,45 @@ void CPO3::run(){
         //tratar a bola aqui
     };*/
 
+    if(ball_pos.x > 0 && ball_pos.y > 0){
+            if (ball_pos.x < centroid_atk.x){
+                meta_aux.x = centroid_def.x + 8;
+                meta_aux.y = centroid_def.y;
+                meta = convert_C_to_G(meta_aux); //cm to grid
+                if (meta_aux.x > 0 && meta_aux.y > 0){
+                    //cout << "ataque: " << centroid_atk << " defesa: " << centroid_def << endl;
+                    set_potential(meta.y, meta.x, 0);
+                    //cout << "Metax: " << meta_aux.x << " Metay: " << meta_aux.y << endl;
 
+                }
 
-    meta2d.x = centroid_def.x - 8;
-    meta2d.y = centroid_def.y;
+            }
 
-    meta = convert_C_to_G(meta2d);
-    if (meta.x > 0 && meta.y > 0){
-        cout << "ataque: " << centroid_atk << " defesa: " << centroid_def << endl;
-        set_potential(meta.y, meta.x, 0);
+            if (ball_pos.x >= centroid_atk.x){
+                meta_aux.x = centroid_def.x - 8;
+                meta_aux.y = centroid_def.y;
+                meta = convert_C_to_G(meta_aux);
+                if (meta_aux.x > 0 && meta_aux.y > 0){
+                    //cout << "ataque: " << centroid_atk << " defesa: " << centroid_def << endl;
+                    set_potential(meta.y, meta.x, 0);
+                    //cout << "Metax: " << meta_aux.x << " Metay: " << meta_aux.y << endl;
+
+                }
+            }
+            while(iterator()>1E-6);
+            set_direction();
+
+            //print_grid();
+
+            flag_finish_CPO3 = true;
     }
 
-    meta_aux = meta2d;
-    cout << "Metax: " << meta.x << " Metay: " << meta.y << endl;
-    while(iterator()>1E-6);
-    set_direction();   
 
-    //print_grid();
 
-    flag_finish_CPO3 = true;
+
+
+
+
 }
 
 bool CPO3::get_flag_finish(){

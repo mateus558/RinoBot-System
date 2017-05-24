@@ -130,7 +130,7 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
     }
-    cout << "ds" << team_robots[0].get_r_vel() << " " <<  endl;
+    //cout << "ds" << team_robots[0].get_r_vel() << " " <<  endl;
     emit updateVisionInfo(team_robots);
 }
 
