@@ -472,7 +472,6 @@ void Robot::set_flag_fuzzy(int output){
 
 int Robot::get_flag_fuzzy(){
     return flag_fuzzy;
-
 }
 
 void Robot::set_output_fuzzy(double output){

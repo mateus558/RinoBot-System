@@ -455,6 +455,25 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         mover->Play();
      }
 
+    if(!run_cph || !run_cph2 || !run_cpo || !run_cpo2 || !run_cpo3){
+            fuzzy->wait();
+            cout << 1 << endl;
+            //cout << fuzzy->get_flag_finish() << endl;
+            if (fuzzy->get_flag_finish() && !run_mover){
+                run_cph = true;
+                run_cph2 = true;
+                run_cpo = true;
+                run_cpo2 = true;
+                run_cpo3 = true;
+            }else{
+                run_cph = false;
+                run_cph2 = false;
+                run_cpo = false;
+                run_cpo2 = false;
+                run_cpo3 = false;
+            }
+        }
+
 }
 
 void soccer_window::updateFPS(double fps){

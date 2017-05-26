@@ -35,11 +35,7 @@ void GAME_FUNCTIONS::set_to_select(Robot r1, Robot r2, Robot r3){
     selec_robot.r1 = r1;
     selec_robot.r2 = r2;
     selec_robot.r3 = r3;
-}void goalkeeper(NAVEGATION *);
-void defender(NAVEGATION *);
-void defensive_midfielder(NAVEGATION *);
-void ofensive_midfielder(NAVEGATION *);
-void striker(NAVEGATION *);
+}
 
 void GAME_FUNCTIONS::set_to_select_iterador(NAVEGATION *Gandalf, NAVEGATION *Presto, NAVEGATION *Leona){
     selec_iterador.Gandalf = Gandalf;
