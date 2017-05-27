@@ -7,8 +7,10 @@
 
 using namespace std;
 double limiar_theta = 90;
-double v_max = 0.4;
+double v_max = 0.6;
 double w_max = 7;
+double v_max_gol = 0.4;
+double w_max_gol = 5;
 double k = (w_max/v_max);
 double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275)
 
@@ -494,86 +496,261 @@ void Mover::calcula_velocidades(Robot *r, CPH *cph,CPO *cpo, CPH2 *cph2, CPO2 *c
 
     Point2d robot_pos = r->get_pos();
     Point robot_grid = convert_C_to_G(robot_pos);
+
+    Point2d ball_v;
+
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = -ball_vel.second / 100;
     //cout << " Posicao do robo " << endl;
     //cout << " x: " << robot_pos.x << " y: " << robot_pos.y << endl;
    // cout << r->get_flag_fuzzy() << endl;
 
 
-   if(r->get_flag_fuzzy() == 4){
-        /*goleiro(*r, vels);
-        v = vels->first;
-        w = vels->second;
-        v = 0;
+    if(r->get_flag_fuzzy() == 4){
+         /*goleiro(*r, vels);
+         v = vels->first;
+         w = vels->second;
+         v = 0;
 
-        if(ball_pos.y < r->get_pos().y){
-            w = -7;
-        }else{
-            w = 7;
-        }
+         if(ball_pos.y < r->get_pos().y){
+             w = -7;
+         }else{
+             w = 7;
+         }
+         theta = cpo3->get_direction(robot_grid);
+         alpha = theta - r->get_angle();
+         alpha = ajusta_angulo(alpha);
+
+         //cout << "angulo do robo: "<<r->get_angle()<<endl;
+
+         if (fabs(alpha) <= limiar_theta){
+             w = k*v_max*alpha/180;
+             v = -v_max*fabs(alpha)/limiar_theta + v_max;
+         }
+         else{
+             alpha = ajusta_angulo(alpha+180);
+             w = k*v_max*alpha/180;
+             v = v_max*fabs(alpha)/limiar_theta - v_max;
+         }
+         Point2d meta_aux;
+
+         //cout << "velocidade linear: " << v << endl;
+         //cout << "velocidade angular: " << w << endl;
+
+
+
+         if((euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4) && (fabs(r->get_angle())> 80) && (fabs(r->get_angle()< 100))){
+             v = 0;
+             w = 0;
+         }
+         else if (euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4){
+             v = 0;
+             alpha = theta - 90;
+             w = k*v_max*alpha/180;
+         }
+         vels->first = v - w*l;
+         vels->second = v + w*l;*/
+
         theta = cpo3->get_direction(robot_grid);
         alpha = theta - r->get_angle();
         alpha = ajusta_angulo(alpha);
 
-        //cout << "angulo do robo: "<<r->get_angle()<<endl;
+        if (ball_pos.x < centroid_atk.x){
+            if(ball_pos.x > 90 || ball_pos.y < 45 || ball_pos.y > 95){
+                if (fabs(alpha) <= limiar_theta){
+                    w = k*v_max_gol*alpha/180;
+                    v = -v_max_gol*fabs(alpha)/limiar_theta + v_max_gol;
+                }
+                else{
+                    alpha = ajusta_angulo(alpha+180);
+                    w = k*v_max_gol*alpha/180;
+                    v = v_max_gol*fabs(alpha)/limiar_theta - v_max_gol;
+                }
 
-        if (fabs(alpha) <= limiar_theta){
-            w = k*v_max*alpha/180;
-            v = -v_max*fabs(alpha)/limiar_theta + v_max;
+                //Return2Goal
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+
+                //AdjustRobo
+                if((euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 5) && (fabs(r->get_angle()) > 85) && (fabs(r->get_angle()) < 95)){
+                    vels->first = 0;
+                    vels->second = 0;
+                }
+                else if (euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 5){
+                    goalkeeper_orientation(r,vels);
+                }
+            }
+            else{
+                //AdjustRobo
+                if(fabs(r->get_angle()) < 80 || fabs(r->get_angle()) > 100)
+                    goalkeeper_orientation(r,vels);
+                else{
+                    //FollowBall
+                    if (r->get_angle() > 0 && ball_pos.y < robot_pos.y ){
+                        v = fabs(ball_v.y) - 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (r->get_angle() > 0 && ball_pos.y > robot_pos.y){
+                        v = -fabs(ball_v.y) - 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (r->get_angle() < 0 && ball_pos.y < robot_pos.y ){
+                         v = -fabs(ball_v.y) + 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (r->get_angle() < 0 && ball_pos.y > robot_pos.y ){
+                         v = fabs(ball_v.y) + 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    vels->first = v;
+                    vels->second = v;
+                }
+            }
+            // previsao de bola - perigo de gol
+
+           double tempo;
+           double aux_position_y;
+           if (r->get_angle() > 0 && ball_pos.y < robot_pos.y ){
+               if (ball_v.x < -0.4){
+                   tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
+                   aux_position_y = ball_pos.y - tempo*ball_v.y;
+                   //if (aux_position_y > robot_pos.y){
+                       v = -(aux_position_y-robot_pos.y)/tempo;
+                       vels->first = v;
+                       vels->second = v;
+                   //}
+               }
+           }
+           else if (r->get_angle() > 0 && ball_pos.y > robot_pos.y){
+               if (ball_v.x < -0.4){
+                   tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
+                   aux_position_y = ball_pos.y - tempo*ball_v.y;
+                   //if (aux_position_y < robot_pos.y){
+                       v = -(aux_position_y-robot_pos.y)/tempo;
+                       vels->first = v;
+                       vels->second = v;
+                   //}
+               }
+           }
+           else if (r->get_angle() < 0 && ball_pos.y < robot_pos.y ){
+               if (ball_v.x < -0.4){
+                   tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
+                   aux_position_y = ball_pos.y - tempo*ball_v.y;
+                   //if (aux_position_y > robot_pos.y){
+                       v = (aux_position_y-robot_pos.y)/tempo;
+                       vels->first = v;
+                       vels->second = v;
+                   //}
+               }
+           }
+           else if (r->get_angle() < 0 && ball_pos.y > robot_pos.y ){
+               if (ball_v.x < -0.4){
+                   tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
+                   aux_position_y = ball_pos.y - tempo*ball_v.y;
+                   //if (aux_position_y < robot_pos.y){
+                       v = (aux_position_y-robot_pos.y)/tempo;
+                       vels->first = v;
+                       vels->second = v;
+                   //}
+               }
+           }
         }
-        else{
-            alpha = ajusta_angulo(alpha+180);
-            w = k*v_max*alpha/180;
-            v = v_max*fabs(alpha)/limiar_theta - v_max;
+        else {
+            if(ball_pos.x < 90 || ball_pos.y < 45 || ball_pos.y > 95){
+                if (fabs(alpha) <= limiar_theta){
+                    w = k*v_max_gol*alpha/180;
+                    v = -v_max_gol*fabs(alpha)/limiar_theta + v_max_gol;
+                }
+                else{
+                    alpha = ajusta_angulo(alpha+180);
+                    w = k*v_max_gol*alpha/180;
+                    v = v_max_gol*fabs(alpha)/limiar_theta - v_max_gol;
+                }
+
+                //Return2Goal
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+
+                //AdjustRobo
+                if((euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 5) && (fabs(r->get_angle()) > 85) && (fabs(r->get_angle()) < 95)){
+                    vels->first = 0;
+                    vels->second = 0;
+                }
+                else if (euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 5){
+                    goalkeeper_orientation(r,vels);
+                }
+            }
+            else{
+                //AdjustRobo
+                if(fabs(r->get_angle()) < 80 || fabs(r->get_angle()) > 100)
+                    goalkeeper_orientation(r,vels);
+                else{
+                    //FollowBall
+                    if (r->get_angle() > 0 && ball_pos.y < robot_pos.y ){
+                        v = fabs(ball_v.y) - 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (r->get_angle() > 0 && ball_pos.y > robot_pos.y){
+                        v = -fabs(ball_v.y) - 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (r->get_angle() < 0 && ball_pos.y < robot_pos.y ){
+                         v = -fabs(ball_v.y) + 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (r->get_angle() < 0 && ball_pos.y > robot_pos.y ){
+                         v = fabs(ball_v.y) + 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    vels->first = v;
+                    vels->second = v;
+                }
+            }
+            // previsao de bola - perigo de gol
+
+           double tempo;
+           double aux_position_y;
+           if (r->get_angle() > 0 && ball_pos.y < robot_pos.y ){
+               if (ball_v.x > 0.4){
+                   tempo = (centroid_def.x-5-ball_pos.x)/ball_v.x;
+                   aux_position_y = ball_pos.y - tempo*ball_v.y;
+                   //if (aux_position_y > robot_pos.y){
+                       v = -(aux_position_y-robot_pos.y)/tempo;
+                       vels->first = v;
+                       vels->second = v;
+                   //}
+               }
+           }
+           else if (r->get_angle() > 0 && ball_pos.y > robot_pos.y){
+               if (ball_v.x > 0.4){
+                   tempo = (centroid_def.x-5-ball_pos.x)/ball_v.x;
+                   aux_position_y = ball_pos.y - tempo*ball_v.y;
+                   //if (aux_position_y < robot_pos.y){
+                       v = -(aux_position_y-robot_pos.y)/tempo;
+                       vels->first = v;
+                       vels->second = v;
+                   //}
+               }
+           }
+           else if (r->get_angle() < 0 && ball_pos.y < robot_pos.y ){
+               if (ball_v.x > 0.4){
+                   tempo = (centroid_def.x-5-ball_pos.x)/ball_v.x;
+                   aux_position_y = ball_pos.y - tempo*ball_v.y;
+                   //if (aux_position_y > robot_pos.y){
+                       v = (aux_position_y-robot_pos.y)/tempo;
+                       vels->first = v;
+                       vels->second = v;
+                   //}
+               }
+           }
+           else if (r->get_angle() < 0 && ball_pos.y > robot_pos.y ){
+               if (ball_v.x > 0.4){
+                   tempo = (centroid_def.x-5-ball_pos.x)/ball_v.x;
+                   aux_position_y = ball_pos.y - tempo*ball_v.y;
+                   //if (aux_position_y < robot_pos.y){
+                       v = (aux_position_y-robot_pos.y)/tempo;
+                       vels->first = v;
+                       vels->second = v;
+                   //}
+               }
+           }
+
         }
-        Point2d meta_aux;
-
-        //cout << "velocidade linear: " << v << endl;
-        //cout << "velocidade angular: " << w << endl;
 
 
-
-        if((euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4) && (fabs(r->get_angle())> 80) && (fabs(r->get_angle()< 100))){
-            v = 0;
-            w = 0;
-        }
-        else if (euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 4){
-            v = 0;
-            alpha = theta - 90;
-            w = k*v_max*alpha/180;
-        }
-        vels->first = v - w*l;
-        vels->second = v + w*l;*/
-
-       theta = cpo3->get_direction(robot_grid);
-       alpha = theta - r->get_angle();
-       alpha = ajusta_angulo(alpha);
-       if (fabs(alpha) <= limiar_theta){
-           w = k*v_max*alpha/180;
-           v = -v_max*fabs(alpha)/limiar_theta + v_max;
-       }
-       else{
-           alpha = ajusta_angulo(alpha+180);
-           w = k*v_max*alpha/180;
-           v = v_max*fabs(alpha)/limiar_theta - v_max;
-       }
-       vels->first = v - w*l;
-       vels->second = v + w*l;
-
-       Point2d meta_aux;
-       if((euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 5) && (fabs(r->get_angle()) > 85) && (fabs(r->get_angle()) < 95)){
-           vels->first = 0;
-           vels->second = 0;
-       }
-       else if (euclidean_dist(robot_pos, cpo3->get_meta_aux()) < 5){
-           goalkeeper_orientation(r,vels);
-       }
-
-
-       //goalkeeper_orientation(r,vels);
-       //vels->first = -w*l;
-       //vels->second = w*l;
-
-    }
+     }
     else{
        if (r->get_flag_fuzzy() == 0){
            theta = cph->get_direction(robot_grid);
