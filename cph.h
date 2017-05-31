@@ -11,7 +11,7 @@
 class CPH : public QThread
 {
     Q_OBJECT
-private:
+protected:
     static const int dx = 5;
     static const int dy = 5;
     int i;
@@ -29,7 +29,6 @@ private:
     Point2d centroid_def;
     bool stop, grid_initialized,flag_finish_cph;
 
-protected:
     void msleep(int ms);
     void run();
 

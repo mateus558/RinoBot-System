@@ -30,8 +30,8 @@ SOURCES += main.cpp\
     cph2.cpp \
     cpo2.cpp \
     cpo3.cpp \
-    navegation.cpp \
-    game_functions.cpp
+    game_functions.cpp \
+    navigation.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -50,8 +50,8 @@ HEADERS  += mainwindow.h \
     cph2.h \
     cpo2.h \
     cpo3.h \
-    navegation.h \
-    game_functions.h
+    game_functions.h \
+    navigation.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

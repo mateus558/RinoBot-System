@@ -1,5 +1,5 @@
-#ifndef NAVEGATION_H
-#define NAVEGATION_H
+#ifndef NAVIGATION_H
+#define NAVIGATION_H
 
 #include <QThread>
 #include <QMutex>
@@ -8,10 +8,10 @@
 #include "utils.h" //Utils library
 
 
-class NAVEGATION : public QThread
+class Navigation : public QThread
 {
     Q_OBJECT
-private:
+protected:
     static const int dx = 5;
     static const int dy = 5;
     int i;
@@ -32,12 +32,11 @@ private:
     Point2d meta;
     bool stop, grid_initialized, flag_finish_navegation;
 
-protected:
     void msleep(int ms);
     void run();
 
 public:
-    NAVEGATION();
+    Navigation();
     double iterator_cph();
     double iterator_cpo();
     double get_neighborhood(int, int, int);
@@ -48,6 +47,13 @@ public:
     double get_direction(Point);
     void init_grid();
     void print_grid();
+    void set_enemy_pos(p2dVector);
+    void set_team_pos(p2dVector);
+    void set_ball_pos(Point2d);
+    void set_ball_vel(pair<double, double>);
+    void set_def_area(pVector);
+    void set_centroid_atk(Point2d);
+    void set_centroid_def(Point2d);
     Point convert_C_to_G(Point2d); // colocar na utils
     Point2d get_meta_aux();
     void set_meta_aux(Point2d);
@@ -65,10 +71,10 @@ public:
     bool is_running();
     void Stop();
     bool isStopped() const;
-    ~NAVEGATION();
+    ~Navigation();
 
 };
 
-#endif // NAVEGATION_H
+#endif // NAVIGATION_H
 
 

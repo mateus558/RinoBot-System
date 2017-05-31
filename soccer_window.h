@@ -11,7 +11,7 @@
 #include "cpo3.h"
 #include "fuzzy.h"
 #include "mover.h"
-#include "navegation.h"
+#include "navigation.h"
 #include "game_functions.h"
 
 namespace Ui {
@@ -55,8 +55,8 @@ private slots:
     void on_start_game_2_clicked();
 
 private:
-    NAVEGATION *calc_Gandalf, *calc_Presto, *calc_Leona;
-    GAME_FUNCTIONS gandalf, presto, leona;
+    //NAVEGATION *calc_Gandalf, *calc_Presto, *calc_Leona;
+    //GAME_FUNCTIONS gandalf, presto, leona;
     CPH *cph;
     CPH2 *cph2;
     CPO *cpo;
@@ -64,6 +64,7 @@ private:
     CPO3 *cpo3;
     Fuzzy *fuzzy;
     Mover *mover;
+    Navigation *navigation;
     Vision *eye;
     Vision::Perception percep;
     SettingsDialog::Settings serial_config;

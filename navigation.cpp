@@ -1,4 +1,4 @@
-#include "navegation.h"
+#include "navigation.h"
 #include <iostream>
 #include <iomanip>
 #include <cmath>
@@ -6,7 +6,7 @@
 
 using namespace std;
 
-NAVEGATION::NAVEGATION(){
+Navigation::Navigation(){
     i = 0;
     stop = true;
     grid_initialized = false;
@@ -17,7 +17,7 @@ NAVEGATION::NAVEGATION(){
     //cout << "\n\nAMBIENTE CRIADO! \n";
 }
 
-void NAVEGATION::run(){
+void Navigation::run(){
 
         //A ser editada - classe função de jogo
         //if(!grid_initialized){
@@ -132,8 +132,7 @@ void NAVEGATION::run(){
 
 
 
-
-double NAVEGATION::iterator_cph(){
+double Navigation::iterator_cph(){
     double erro = 0;
     double top, botton, left, right;
     double newPotencial, oldPotencial;
@@ -159,7 +158,7 @@ double NAVEGATION::iterator_cph(){
     return erro;
 }
 
-double NAVEGATION::iterator_cpo(){
+double Navigation::iterator_cpo(){
     double erro = 0;
     double top, botton, left, right;
     double newPotencial, oldPotencial;
@@ -193,7 +192,7 @@ double NAVEGATION::iterator_cpo(){
      return erro;
 }
 
-double NAVEGATION::get_neighborhood(int i, int j, int k){
+double Navigation::get_neighborhood(int i, int j, int k){
    double top,botton,left,right;
    if(i==0)
    {
@@ -249,15 +248,15 @@ double NAVEGATION::get_neighborhood(int i, int j, int k){
    }
 }
 
-void NAVEGATION::set_potential(int i, int j, double aux){
+void Navigation::set_potential(int i, int j, double aux){
     pGrid[i][j]= aux;
 }
 
-double NAVEGATION::get_potential(int i, int j){
+double Navigation::get_potential(int i, int j){
     return pGrid[i][j];
 }
 
-int NAVEGATION::get_occupancy(int i, int j){
+int Navigation::get_occupancy(int i, int j){
     if(get_potential(i,j)==1 || get_potential(i,j)==0)
     {
         return 0;
@@ -268,7 +267,7 @@ int NAVEGATION::get_occupancy(int i, int j){
     }
 }
 
-void NAVEGATION::set_direction(){
+void Navigation::set_direction(){
     int i,j;
 
     for(i=0;i<28;i++)
@@ -284,11 +283,11 @@ void NAVEGATION::set_direction(){
     }
 }
 
-double NAVEGATION::get_direction(Point grid){
+double Navigation::get_direction(Point grid){
     return this->tGrid[grid.y][grid.x];
 }
 
-void NAVEGATION::init_grid(){
+void Navigation::init_grid(){
     int i,j;
 
     for(i=0;i<28;i++)
@@ -314,7 +313,7 @@ void NAVEGATION::init_grid(){
     grid_initialized = true;
 }
 
-void NAVEGATION::print_grid(){
+void Navigation::print_grid(){
     cout<<"\n\n\nGrid:\n\n";;
     int i,j;
     for(i=0;i<28;i++)
@@ -339,79 +338,79 @@ void NAVEGATION::print_grid(){
     cout<<"\n\n\n";
 }
 
-Point2d NAVEGATION::get_meta_aux(){
+Point2d Navigation::get_meta_aux(){
     return this->meta;
 }
 
-void NAVEGATION::set_meta_aux(Point2d meta){
+void Navigation::set_meta_aux(Point2d meta){
     this->meta = meta;
 }
 
-/*void NAVEGATION::set_enemy_pos(p2dVector enemy_pos){
+void Navigation::set_enemy_pos(p2dVector enemy_pos){
     this->enemy_pos = enemy_pos;
 }
 
-void NAVEGATION::set_team_pos(p2dVector team_pos){
+void Navigation::set_team_pos(p2dVector team_pos){
     this->team_pos = team_pos;
 }
 
-void NAVEGATION::set_ball_pos(Point2d ball_pos){
+void Navigation::set_ball_pos(Point2d ball_pos){
     this->ball_pos = ball_pos;
 }
 
-void NAVEGATION::set_def_area(pVector def_area){
+void Navigation::set_def_area(pVector def_area){
     this->def_area = def_area;
 }
 
-void NAVEGATION::set_centroid_atk(Point2d centroid_atk){
+void Navigation::set_centroid_atk(Point2d centroid_atk){
     this->centroid_atk = centroid_atk;
 }
 
-void NAVEGATION::set_centroid_def(Point2d centroid_def){
+void Navigation::set_centroid_def(Point2d centroid_def){
     this->centroid_def = centroid_def;
-}*/
+}
 
-void NAVEGATION::set_epsilon(double e){
+void Navigation::set_epsilon(double e){
     this->e = e;
 }
 
-void NAVEGATION::set_orientation(double orientation){
+void Navigation::set_orientation(double orientation){
     this->orientation = orientation;
 }
 
 
-bool NAVEGATION::get_flag_finish(){
+bool Navigation::get_flag_finish(){
     return this->flag_finish_navegation;
 }
 
-void NAVEGATION::zera_flag_finish(){
+void Navigation::zera_flag_finish(){
     flag_finish_navegation = false;
 }
 
-void NAVEGATION::Play(){
+void Navigation::Play(){
     if(isStopped())
         stop = false;
    start();
 }
 
-bool NAVEGATION::is_running(){
+bool Navigation::is_running(){
     return isRunning();
 }
 
-void NAVEGATION::Stop(){
+void Navigation::Stop(){
     stop = true;
 }
 
-bool NAVEGATION::isStopped() const
+bool Navigation::isStopped() const
 {
     return this->stop;
 }
 
-void NAVEGATION::msleep(int ms){
+void Navigation::msleep(int ms){
     /*struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
     nanosleep(&ts, NULL);*/
 }
 
-NAVEGATION::~NAVEGATION(){
+Navigation::~Navigation(){
 
 }

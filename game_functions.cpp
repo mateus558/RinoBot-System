@@ -1,4 +1,4 @@
-#include "game_functions.h"
+/*#include "game_functions.h"
 #include <QThread>
 #include <QMutex>
 #include <vector>
@@ -6,7 +6,7 @@
 #include "utils.h" //Utils library
 #include "fuzzy.h"
 #include "mover.h"
-#include "navegation.h"
+#include "navigation.h"
 #include "iostream"
 
 using namespace std;
@@ -37,13 +37,13 @@ void GAME_FUNCTIONS::set_to_select(Robot r1, Robot r2, Robot r3){
     selec_robot.r3 = r3;
 }
 
-void GAME_FUNCTIONS::set_to_select_iterador(NAVEGATION *Gandalf, NAVEGATION *Presto, NAVEGATION *Leona){
+/*void GAME_FUNCTIONS::set_to_select_iterador(NAVEGATION *Gandalf, NAVEGATION *Presto, NAVEGATION *Leona){
     selec_iterador.Gandalf = Gandalf;
     selec_iterador.Presto = Presto;
     selec_iterador.Leona = Leona;
-}
+}*/
 
-void GAME_FUNCTIONS::set_enemy_pos(p2dVector enemy_pos){
+/*void GAME_FUNCTIONS::set_enemy_pos(p2dVector enemy_pos){
     this->enemy_pos = enemy_pos;
 }
 
@@ -108,7 +108,7 @@ void GAME_FUNCTIONS::set_game_function(Robot *r){
     }
     else if (r->get_channel() == selec_robot.r3.get_channel()){
         robo = selec_iterador.Leona;
-    }*/
+    }
     if (calc_Gandalf){
         if (r->get_flag_fuzzy() == 0){
             robo->print_grid();
@@ -332,7 +332,7 @@ void GAME_FUNCTIONS::defensive_midfielder(NAVEGATION *robo){
                     set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
                     set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
                     set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
-                }*/
+                }
             }
         }else{
             Point2d vec_ball_def = centroid_def - ball_pos;
@@ -361,7 +361,7 @@ void GAME_FUNCTIONS::defensive_midfielder(NAVEGATION *robo){
         set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
     }else{
         //tratar a bola aqui
-    }*/
+    }
     while(robo->iterator_cph()>1E-6);
     robo->set_direction();
 }
@@ -487,7 +487,7 @@ void GAME_FUNCTIONS::ofensive_midfielder(NAVEGATION *robo){
         orientation = ang_ball_atk - 90*cos((3.1415/180)*(ang_ball_enemy-ang_ball_atk))*pow(2.7183,-0.04620*euclidean_dist(ball_pos,enemy_prox));
     else
         orientation = ang_ball_atk + 90*cos((3.1415/180)*(ang_ball_enemy-ang_ball_atk))*pow(2.7183,-0.04620*euclidean_dist(ball_pos,enemy_prox));
-    }*/
+    }
 
    // cout<<"Orientação: "<<orientation<<endl;
     while(robo->iterator_cpo()>1E-6);
@@ -604,9 +604,9 @@ bool GAME_FUNCTIONS::isStopped() const
 
 void GAME_FUNCTIONS::msleep(int ms){
     /*struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
-    nanosleep(&ts, NULL);*/
+    nanosleep(&ts, NULL);
 }
 
 GAME_FUNCTIONS::~GAME_FUNCTIONS(){
 
-}
+}*/

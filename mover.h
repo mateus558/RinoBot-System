@@ -12,21 +12,21 @@
 #include "cph2.h"
 #include "cpo2.h"
 #include "cpo3.h"
-#include "navegation.h"
+#include "navigation.h"
 #include "serial.h"
 
 struct Selec{
-    CPH *cph;
+    /*CPH *cph;
     CPO *cpo;
     CPH2 *cph2;
     CPO2 *cpo2;
     CPO3 *cpo3;
-    NAVEGATION *Gandalf;
-    NAVEGATION *Presto;
-    NAVEGATION *Leona;
+    Navigation *Gandalf;
+    Navigation *Presto;
+    Navigation *Leona;*/
 };
 
-class Mover: public QThread
+class Mover: public Navigation
 {
     Q_OBJECT
 private:
@@ -58,6 +58,11 @@ public:
     pair<double, double> defenderGK(Robot r);
 
     void init_mover();
+    void goalkeeper(Robot *, int);
+    void defender(Robot *, int);
+    void defensive_midfielder(Robot *, int);
+    void ofensive_midfielder(Robot *, int);
+    void striker(Robot *, int);
     void calcula_velocidades(Robot *, CPH *,CPO *, CPH2 *, CPO2 *, CPO3 *, pair<float, float>*);
     void goalkeeper_orientation(Robot *, pair<float, float>*);
     void goleiro(Robot r, pair<float, float> *vels);

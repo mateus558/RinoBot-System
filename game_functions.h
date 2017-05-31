@@ -1,4 +1,4 @@
-#ifndef GAME_FUNCTIONS_H
+/*#ifndef GAME_FUNCTIONS_H
 #define GAME_FUNCTIONS_H
 
 #include <QThread>
@@ -8,7 +8,7 @@
 #include "utils.h" //Utils library
 #include "fuzzy.h"
 #include "mover.h"
-#include "navegation.h"
+#include "navigation.h"
 
 
 class GAME_FUNCTIONS: public QThread
@@ -42,7 +42,7 @@ signals:
 
 public:
     GAME_FUNCTIONS();
-    void set_to_select_iterador(NAVEGATION *, NAVEGATION *,NAVEGATION *);
+    //void set_to_select_iterador(NAVEGATION *, NAVEGATION *,NAVEGATION *);
     void set_to_select(Robot, Robot, Robot);
     void set_enemy_pos(p2dVector);
     void set_team_pos(p2dVector);
@@ -57,7 +57,7 @@ public:
     void set_calc_Presto(bool);
     void set_calc_Leona(bool);
 
-    void goalkeeper(NAVEGATION *);
+    /*void goalkeeper(NAVEGATION *);
     void defender(NAVEGATION *);
     void defensive_midfielder(NAVEGATION *);
     void ofensive_midfielder(NAVEGATION *);
@@ -71,11 +71,6 @@ public:
     bool isStopped() const;
     ~GAME_FUNCTIONS();
 
-
-
-
-
-
 };
 
-#endif // GAME_FUNCTIONS_H
+#endif // GAME_FUNCTIONS_H*/

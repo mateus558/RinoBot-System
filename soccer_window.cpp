@@ -13,7 +13,7 @@
 #include "fuzzy.h"
 #include "utils.h"
 #include "mover.h"
-#include "navegation.h"
+#include "navigation.h"
 #include "game_functions.h"
 
 using namespace std;
@@ -31,9 +31,9 @@ soccer_window::soccer_window(QWidget *parent) :
     ui->cam_id_spinBox->setValue(0);
     area_read = false;
     eye = new Vision;
-    calc_Gandalf = new NAVEGATION;
+    /*calc_Gandalf = new NAVEGATION;
     calc_Presto = new NAVEGATION;
-    calc_Leona = new NAVEGATION;
+    calc_Leona = new NAVEGATION;*/
     cph = new CPH; //instancia o objeto cph na rotina do sistema
     cpo = new CPO; //instancia o objeto cpo na rotina do sistema
     cph2 = new CPH2; //instancia o objeto cph2 na rotina do sistema
@@ -41,6 +41,7 @@ soccer_window::soccer_window(QWidget *parent) :
     cpo3 = new CPO3; //instancia o objeto cpo3 na rotina do sistema
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
     mover = new Mover; //instancia o objeto mover na rotina do sistema
+    navigation = new Navigation; //instancia o objeto navigation na rotina do sistema
     run_Gandalf = false;
     run_Presto = false;
     run_Leona = false;
@@ -163,7 +164,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         cph->set_centroid_def(centroid_def); //salva a area de def para o cph
         cph->set_def_area(def_area);
 
-        gandalf.set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
+        /*gandalf.set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
         gandalf.set_centroid_def(centroid_def); //salva a area de def para o cph
         gandalf.set_def_area(def_area);
 
@@ -173,7 +174,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
         leona.set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
         leona.set_centroid_def(centroid_def); //salva a area de def para o cph
-        leona.set_def_area(def_area);
+        leona.set_def_area(def_area);*/
 
         cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo2
         cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo2
@@ -187,11 +188,15 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         mover->set_centroid_atk(centroid_atk);
         mover->set_centroid_def(centroid_def);
         mover->set_def_area(def_area);
+
+        navigation->set_centroid_atk(centroid_atk);  //salva a area de atk para o navigation
+        navigation->set_centroid_def(centroid_def); //salva a area de def para o navigation
+        navigation->set_def_area(def_area);
     }
 
-    gandalf.set_ball_vel(percep.ball_vel);
+    /*gandalf.set_ball_vel(percep.ball_vel);
     presto.set_ball_vel(percep.ball_vel);
-    leona.set_ball_vel(percep.ball_vel);
+    leona.set_ball_vel(percep.ball_vel);*/
     mover->set_ball_vel(percep.ball_vel);
     cpo3->set_ball_vel(percep.ball_vel);
 
@@ -219,7 +224,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     team_robots = percep.team_robots;
     //cout << "Presto " << percep.team_robots[2].get_channel() << endl;
 
-    gandalf.set_ball_pos(ball_pos);
+    /*gandalf.set_ball_pos(ball_pos);
     gandalf.set_enemy_pos(enemy_pos);
     gandalf.set_team_pos(team_pos);
 
@@ -229,7 +234,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
     leona.set_ball_pos(ball_pos);
     leona.set_enemy_pos(enemy_pos);
-    leona.set_team_pos(team_pos);
+    leona.set_team_pos(team_pos);*/
 
     cph->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
     cph->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph
@@ -251,25 +256,29 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     cpo3->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo3
     cpo3->set_team_pos(team_pos); //Salva a posicao do time para o cpo3
 
+    navigation->set_ball_pos(ball_pos); //Salva a posicao da bola para o navigation
+    navigation->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o navigation
+    navigation->set_team_pos(team_pos); //Salva a posicao do time para o navigation
+
     //set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
 
-    gandalf.set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    gandalf.set_to_select_iterador(calc_Gandalf, calc_Presto, calc_Leona);
+    /*gandalf.set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    //gandalf.set_to_select_iterador(calc_Gandalf, calc_Presto, calc_Leona);
     gandalf.set_calc_Gandalf(true);
     gandalf.set_calc_Presto(false);
     gandalf.set_calc_Leona(false);
 
     presto.set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    presto.set_to_select_iterador(calc_Gandalf, calc_Presto, calc_Leona);
+    //presto.set_to_select_iterador(calc_Gandalf, calc_Presto, calc_Leona);
     presto.set_calc_Gandalf(false);
     presto.set_calc_Presto(true);
     presto.set_calc_Leona(false);
 
     leona.set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    leona.set_to_select_iterador(calc_Gandalf, calc_Presto, calc_Leona);
+    //leona.set_to_select_iterador(calc_Gandalf, calc_Presto, calc_Leona);
     leona.set_calc_Gandalf(false);
     leona.set_calc_Presto(false);
-    leona.set_calc_Leona(true);
+    leona.set_calc_Leona(true);*/
 
     fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]); //Gandalf, Presto e Leona nesta ordem
     fuzzy->set_ball_pos(ball_pos); //Salva a posicao da bola para o fuzzy
@@ -309,9 +318,9 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     cph2->zera_flag_finish();
     cpo2->zera_flag_finish();
     cpo3->zera_flag_finish();
-    gandalf.zera_flag_finish();
+    /*gandalf.zera_flag_finish();
     presto.zera_flag_finish();
-    leona.zera_flag_finish();
+    leona.zera_flag_finish();*/
     fuzzy->zera_flag_finish();
 
     if(run_fuzzy){
@@ -387,7 +396,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
 
     //inicia a thread do cph caso ela nao esteja em execucao
-    if(run_cph){
+    /*if(run_cph){
         if(cph->is_running()){
             cph->wait();
         }
@@ -426,22 +435,22 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         }
         //cpo3->print_grid();
         cpo3->Play();
-     }
+     }*/
 
     //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(!run_mover){
-        cph->wait();
+        /*cph->wait();
         cpo->wait();
         cph2->wait();
         cpo2->wait();
-        cpo3->wait();
+        cpo3->wait();*/
         //gandalf.wait();
         //presto.wait();
         //leona.wait();
         fuzzy->wait();
 
 
-        if (cph->get_flag_finish() && cpo->get_flag_finish() && cph2->get_flag_finish() && cpo2->get_flag_finish() && cpo3->get_flag_finish() && fuzzy->get_flag_finish() && !run_mover){
+        if (/*cph->get_flag_finish() && cpo->get_flag_finish() && cph2->get_flag_finish() && cpo2->get_flag_finish() && cpo3->get_flag_finish() &&*/ fuzzy->get_flag_finish() && !run_mover){
             run_mover = true;
         }else{
             run_mover = false;
@@ -455,7 +464,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         mover->Play();
      }
 
-    if(!run_cph || !run_cph2 || !run_cpo || !run_cpo2 || !run_cpo3){
+    /*if(!run_cph || !run_cph2 || !run_cpo || !run_cpo2 || !run_cpo3){
             fuzzy->wait();
             cout << 1 << endl;
             //cout << fuzzy->get_flag_finish() << endl;
@@ -472,7 +481,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
                 run_cpo2 = false;
                 run_cpo3 = false;
             }
-        }
+        }*/
 
 }
 
@@ -508,9 +517,9 @@ void soccer_window::on_start_game_2_clicked()
         run_cph2 = false;
         run_cpo2 = false;
         run_cpo3 = false;
-        run_Gandalf = false;
+        /*run_Gandalf = false;
         run_Presto = false;
-        run_Leona = false;
+        run_Leona = false;*/
         run_fuzzy = false;
         run_mover = false;
 
@@ -576,7 +585,11 @@ void soccer_window::on_switch_fields_clicked()
     cph->set_centroid_def(centroid_def); //salva a area de def para o cph
     cph->set_def_area(def_area);
 
-    gandalf.set_centroid_atk(centroid_atk);
+    navigation->set_centroid_atk(centroid_atk);  //salva a area de atk para o navigation
+    navigation->set_centroid_def(centroid_def); //salva a area de def para o navigation
+    navigation->set_def_area(def_area);
+
+    /*gandalf.set_centroid_atk(centroid_atk);
     gandalf.set_centroid_def(centroid_def);
     gandalf.set_def_area(def_area);
 
@@ -586,7 +599,7 @@ void soccer_window::on_switch_fields_clicked()
 
     leona.set_centroid_atk(centroid_atk);
     leona.set_centroid_def(centroid_def);
-    leona.set_def_area(def_area);
+    leona.set_def_area(def_area);*/
 
     cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo2
     cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo2

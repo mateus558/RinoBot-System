@@ -69,7 +69,7 @@ void Mover::run(){
     selec_robot.r3.set_lin_vel(vels[2]);*/
 
 
-    //Pro terceiro robô - Leona
+    /*//Pro terceiro robô - Leona
     calcula_velocidades(&selec_robot.r3,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3, &vels[2]);
     selec_robot.r3.set_lin_vel(vels[2]);
 
@@ -79,10 +79,73 @@ void Mover::run(){
 
     //Pro segundo robô - Presto
     calcula_velocidades(&selec_robot.r2,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3, &vels[1]);
-    selec_robot.r2.set_lin_vel(vels[1]);
+    selec_robot.r2.set_lin_vel(vels[1]);*/
 
+    //Pro terceiro robô - Leona
+    int r3_flag = selec_robot.r3.get_flag_fuzzy();
+    cout << "Leona: " << r3_flag << endl;
+    switch (r3_flag){
+        case 0:
+            defender(&selec_robot.r3, 2);
+            break;
+        case 1:
+            defensive_midfielder(&selec_robot.r3, 2);
+            break;
+        case 2:
+            ofensive_midfielder(&selec_robot.r3, 2);
+            break;
+        case 3:
+            striker(&selec_robot.r3, 2);
+            break;
+        case 4:
+            goalkeeper(&selec_robot.r3, 2);
+            break;
+        selec_robot.r3.set_lin_vel(vels[2]);
+    }
 
-    //cout << vels[2].first << endl;
+    //Pro primeiro robô - Gandalf
+    int r1_flag = selec_robot.r1.get_flag_fuzzy();
+    cout << "Gandalf: " << r1_flag << endl;
+    switch (r1_flag){
+        case 0:
+            defender(&selec_robot.r1, 0);
+            break;
+        case 1:
+            defensive_midfielder(&selec_robot.r1, 0);
+            break;
+        case 2:
+            ofensive_midfielder(&selec_robot.r1, 0);
+            break;
+        case 3:
+            striker(&selec_robot.r1, 0);
+            break;
+        case 4:
+            goalkeeper(&selec_robot.r1, 0);
+            break;
+        selec_robot.r1.set_lin_vel(vels[0]);
+    }
+
+    //Pro segundo robô - Presto
+    int r2_flag = selec_robot.r2.get_flag_fuzzy();
+    cout << "Presto: " << r2_flag << endl;
+    switch (r2_flag){
+        case 0:
+            defender(&selec_robot.r2, 1);
+            break;
+        case 1:
+            defensive_midfielder(&selec_robot.r2, 1);
+            break;
+        case 2:
+            ofensive_midfielder(&selec_robot.r2, 1);
+            break;
+        case 3:
+            striker(&selec_robot.r2, 1);
+            break;
+        case 4:
+            goalkeeper(&selec_robot.r2, 1);
+        break;
+        selec_robot.r2.set_lin_vel(vels[1]);
+    }
 
 
     emit emitRobots(selec_robot);
@@ -98,11 +161,11 @@ void Mover::set_to_select_iterador(CPH *cph, CPO *cpo, CPH2 *cph2, CPO2 *cpo2, C
     /*selec_iterador.Gandalf = Gandalf;
     selec_iterador.Presto = Presto;
     selec_iterador.Leona = Leona;*/
-    selec_iterador.cph = cph;
+    /*selec_iterador.cph = cph;
     selec_iterador.cpo = cpo;
     selec_iterador.cph2 = cph2;
     selec_iterador.cpo2 = cpo2;
-    selec_iterador.cpo3 = cpo3;
+    selec_iterador.cpo3 = cpo3;*/
 }
 
 void Mover::set_ball_vel(pair<double, double> ball_vel){
@@ -910,4 +973,405 @@ double Mover::ajusta_angulo(double angle){
     else
         angle = angle;
     return angle;
+}
+
+
+
+
+void Mover::goalkeeper(Robot *robo, int num_Robo){
+    //fazer depois
+}
+
+void Mover::defender(Robot *robo, int num_Robo){
+    //if(!grid_initialized){
+        init_grid();
+    //}
+
+    for(i = 0; i < 3; ++i){
+        if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+            //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+        }else{
+            //tratar posição dos inimigos aqui
+        }
+
+        if(team_pos[i].x > 0 && team_pos[i].y > 0){
+            team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
+        }else{
+            //tratar posição dos miguxos aqui
+        }
+    }
+
+    double def_area_x = def_area[0].x*X_CONV_CONST;
+    double def_area_y1 = def_area[1].y*Y_CONV_CONST;
+    double def_area_y2 = def_area[6].y*Y_CONV_CONST;
+    Point meta;
+    Point2d meta2d;
+    meta2d.y = centroid_def.y;
+
+
+
+    if (centroid_atk.x > ball_pos.x){
+        if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
+            //cout << "Reconheceu a area de defesa" << endl;
+
+
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                meta2d.x = centroid_def.x + 35;
+                meta = convert_C_to_G(meta2d);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (meta.x > 0 && meta.y > 0)
+                    set_potential(meta.y, meta.x, 0);
+            }else{
+                //tratar a meta aqui
+            }
+
+        }else{
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                ball_pos_grid = convert_C_to_G(ball_pos);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+            }else{
+                //tratar a bola aqui
+            }
+
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                ball_pos_grid = convert_C_to_G(ball_pos);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if(ball_pos_grid.x+1 < 28 && ball_pos_grid.y+1 < 28){
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
+                    set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
+                    set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
+                }
+            }else{
+                //tratar a barreira aqui
+            }
+        }
+    }else{
+        if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                meta2d.x = centroid_def.x - 35;
+                meta = convert_C_to_G(meta2d);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (meta.x > 0 && meta.y > 0)
+                    set_potential(meta.y, meta.x, 0);
+            }else{
+                //tratar a meta aqui
+            }
+        }else{
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                ball_pos_grid = convert_C_to_G(ball_pos);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+            }else{
+                //tratar a bola aqui
+            }
+
+            if(ball_pos.x > 0 && ball_pos.y > 0){
+                ball_pos_grid = convert_C_to_G(ball_pos);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if(ball_pos_grid.y+1 < 28){
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
+                    set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
+                    set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
+                }
+            }else{
+                //tratar a barreira aqui
+            }
+        }
+    }
+    while(iterator_cph()>1E-6);
+    set_direction();
+
+}
+
+void Mover::defensive_midfielder(Robot *robo, int num_Robo){
+    //if(!grid_initialized){
+        init_grid();
+    //}
+    Point2d meta_aux;
+
+    for(i = 0; i < 3; ++i){
+        if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+            //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+        }else{
+            //tratar posição dos inimigos aqui
+        }
+
+        if(team_pos[i].x > 0 && team_pos[i].y > 0){
+            team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
+        }else{
+            //tratar posição dos miguxos aqui
+        }
+    }
+
+    //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+    Point2d meta;
+
+    if(ball_pos.x > 0 && ball_pos.y > 0){
+        if ((ball_pos.y > centroid_def.y+55 || ball_pos.y < centroid_def.y-55) && fabs(ball_pos.x - centroid_def.x) < 70){
+            //cout << 1 << endl;
+            ball_pos_grid = convert_C_to_G(ball_pos);
+            if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0){
+                //cout << 2 << endl;
+                //cout<<"Meta: "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+                meta_aux = ball_pos;
+                /*if(ball_pos.x < centroid_atk.x){
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
+                    set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
+                    set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
+                }else{
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
+                    set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
+                    set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
+                }*/
+            }
+        }else{
+            Point2d vec_ball_def = centroid_def - ball_pos;
+            double aux = (0.45/150)*euclidean_dist(centroid_def,ball_pos);
+
+            meta = ball_pos + vec_ball_def*aux;
+            //cout << "Meta: " << endl;
+            //cout << " x: " << meta.x << " y: " << meta.y << endl;
+            if(meta.x > 0 && meta.y > 0){
+                 Point meta_pos_grid = convert_C_to_G(meta);
+                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                 if (meta_pos_grid.x > 0 && meta_pos_grid.y > 0)
+                     set_potential(meta_pos_grid.y, meta_pos_grid.x, 0);
+            }else{
+                //tratar a meta aqui
+            }
+            meta_aux = meta;
+        }
+    }else{
+        //tratar a bola aqui
+    }
+
+    /*if(ball_pos.x > 0 && ball_pos.y > 0){
+        ball_pos_grid = convert_C_to_G(ball_pos);
+        //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+    }else{
+        //tratar a bola aqui
+    }*/
+    while(iterator_cph()>1E-6);
+    set_direction();
+}
+
+void Mover::ofensive_midfielder(Robot *robo, int num_Robo){
+    Point2d eixo_x(1.0,0.0);
+    Point2d meta2d;
+    Point meta;
+    //if(!grid_initialized){
+        init_grid();
+    //}
+
+    for(i = 0; i < 3; ++i){
+        if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+            //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+        }else{
+            //tratar posição dos inimigos aqui
+        }
+
+        if(team_pos[i].x > 0 && team_pos[i].y > 0){
+            team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
+        }else{
+            //tratar posição dos miguxos aquieuclidean_dist(ball_pos,enemy_prox
+        }
+    }
+
+    if(ball_pos.x > 0 && ball_pos.y > 0){
+        if (fabs(ball_pos.x - centroid_def.x) < 40){
+            set_epsilon(0);
+            set_orientation(0);
+            if (ball_pos.x < centroid_atk.x){
+                meta2d.x = centroid_def.x + 75;
+                meta2d.y  = centroid_def.y;
+                meta = convert_C_to_G(meta2d);
+                if(meta.x > 0 && meta.y > 0){
+                         set_potential(meta.y, meta.x, 0);
+                }else{
+                    //tratar a meta aqui
+                }
+            }
+            else{
+                meta2d.x = centroid_def.x - 75;
+                meta2d.y  = centroid_def.y;
+                meta = convert_C_to_G(meta2d);
+                if(meta.x > 0 && meta.y > 0){
+                         set_potential(meta.y, meta.x, 0);
+                }else{
+                    //tratar a meta aqui
+                }
+            }
+        }
+        else{
+            //Utiliza o robo amigo mais próximo para definição do epsilon
+            Point2d team_prox;
+            if ((euclidean_dist(ball_pos,team_pos[0]) <= euclidean_dist(ball_pos,team_pos[1])) && (euclidean_dist(ball_pos,team_pos[0]) <= euclidean_dist(ball_pos,team_pos[2])))
+                team_prox = team_pos[0];
+            else if (euclidean_dist(ball_pos,team_pos[1]) <= euclidean_dist(ball_pos,team_pos[2]))
+                team_prox = team_pos[1];
+            else
+                team_prox = team_pos[2];
+
+            set_epsilon(0.3 + euclidean_dist(team_prox,ball_pos)/200);
+           // cout << " epsilon: " << e << endl;
+
+            ball_pos_grid = convert_C_to_G(ball_pos);
+             //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+            if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+
+            // Calculo do angulo de orientacao usar no ataque leve para dribles
+            //Corrige Posicionamento
+            ball_pos.y = -ball_pos.y;
+            centroid_atk.y = -centroid_atk.y;
+
+            //Calcula angulo entre a bola e o gol de ataque
+            Point2d vec_ball_atk = centroid_atk-ball_pos;
+            double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
+            if (vec_ball_atk.y < 0)
+                    ang_ball_atk = -ang_ball_atk;
+            //ajusta angulos para menores que 180 e maiores que -180
+            if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
+            else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
+            //cout << "Angulo bola atk: " << ang_ball_atk << endl;
+            set_orientation(ang_ball_atk);
+            //orientation = 45;
+            //Corrige Posicionamento novamente
+            ball_pos.y = -ball_pos.y;
+            centroid_atk.y=-centroid_atk.y;
+        }
+
+    }else{
+        //tratar a bola aqui
+    }
+
+    /*if (drible)
+    {
+    //Define o enimigo mais proximo
+    Point2d enemy_prox;
+    enemy_prox.y = -enemy_prox.y;
+    if ((euclidean_dist(ball_pos,enemy_pos[0]) <= euclidean_dist(ball_pos,enemy_pos[1])) && (euclidean_dist(ball_pos,enemy_pos[0]) <= euclidean_dist(ball_pos,enemy_pos[2])))
+        enemy_prox = enemy_pos[0];
+    else if (euclidean_dist(ball_pos,enemy_pos[1]) <= euclidean_dist(ball_pos,enemy_pos[2]))
+        enemy_prox = enemy_pos[1];
+    else
+        enemy_prox = enemy_pos[2];
+    //Calcula o angulo entre a bola e o inimigo mais proximo
+    Point2d vec_ball_enemy = enemy_prox-ball_pos;
+    double ang_ball_enemy = angle_two_points(vec_ball_enemy,eixo_x);
+    //Corrige o angulo
+    if (vec_ball_enemy.y < 0)
+            ang_ball_enemy = -ang_ball_enemy;
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (ang_ball_enemy > 180) ang_ball_enemy = ang_ball_enemy - 360;
+    else if (ang_ball_enemy < -180) ang_ball_enemy = ang_ball_enemy + 360;
+    //cout << "Angulo bola enemy: " << ang_ball_enemy << endl;
+
+    //Calcula a orientacao como base na bola, inimigo mais proximo e gol adversario
+    if ((ang_ball_enemy-ang_ball_atk) > 0)
+        orientation = ang_ball_atk - 90*cos((3.1415/180)*(ang_ball_enemy-ang_ball_atk))*pow(2.7183,-0.04620*euclidean_dist(ball_pos,enemy_prox));
+    else
+        orientation = ang_ball_atk + 90*cos((3.1415/180)*(ang_ball_enemy-ang_ball_atk))*pow(2.7183,-0.04620*euclidean_dist(ball_pos,enemy_prox));
+    }*/
+
+   // cout<<"Orientação: "<<orientation<<endl;
+    while(iterator_cpo()>1E-6);
+    set_direction();
+}
+
+void Mover::striker(Robot *robo, int num_Robo){
+    Point2d eixo_x(1.0,0.0);
+    //if(!grid_initialized){
+        init_grid();
+    //}
+    for(i = 0; i < 3; ++i){
+        if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+            //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+        }else{
+            //tratar posição dos inimigos aqui
+        }
+
+        if(team_pos[i].x > 0 && team_pos[i].y > 0){
+            team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
+        }else{
+            //tratar posição dos miguxos aquieuclidean_dist(ball_pos,enemy_prox
+        }
+    }
+
+    if(ball_pos.x > 0 && ball_pos.y > 0){
+        //Utiliza o robo amigo mais próximo para definição do epsilon
+        Point2d team_prox;
+        if ((euclidean_dist(ball_pos,team_pos[0]) <= euclidean_dist(ball_pos,team_pos[1])) && (euclidean_dist(ball_pos,team_pos[0]) <= euclidean_dist(ball_pos,team_pos[2])))
+            team_prox = team_pos[0];
+        else if (euclidean_dist(ball_pos,team_pos[1]) <= euclidean_dist(ball_pos,team_pos[2]))
+            team_prox = team_pos[1];
+        else
+            team_prox = team_pos[2];
+
+        set_epsilon(0.3 + euclidean_dist(team_prox,ball_pos)/250);
+       // cout << " epsilon: " << e << endl;
+
+        // Calculo do angulo de orientacao usar no ataque leve para dribles
+        //Corrige Posicionamento
+        ball_pos.y = -ball_pos.y;
+        centroid_atk.y = -centroid_atk.y;
+
+        //Calcula angulo entre a bola e o gol de ataque
+        Point2d vec_ball_atk = centroid_atk-ball_pos;
+        double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
+        if (vec_ball_atk.y < 0)
+                ang_ball_atk = -ang_ball_atk;
+        //ajusta angulos para menores que 180 e maiores que -180
+        if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
+        else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
+        //cout << "Angulo bola atk: " << ang_ball_atk << endl;
+        set_orientation(ang_ball_atk);
+        //orientation = 45;
+        //Corrige Posicionamento novamente
+        ball_pos.y = -ball_pos.y;
+        centroid_atk.y=-centroid_atk.y;
+
+        Point meta;
+        if (euclidean_dist(ball_pos,team_prox) < 5){
+            if (centroid_atk.x > 0 && centroid_atk.y > 0){
+                meta = convert_C_to_G(centroid_atk);
+                set_epsilon(0);
+                //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (meta.x > 0 && meta.y > 0)
+                    set_potential(meta.y, meta.x, 0);
+            }else{
+                //tratar o gol aqui
+            }
+
+        }else{
+            ball_pos_grid = convert_C_to_G(ball_pos);
+             //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+            if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+        }
+    }else{
+        //tratar a bola aqui
+    }
+    while(iterator_cpo()>1E-6);
+    set_direction();
 }

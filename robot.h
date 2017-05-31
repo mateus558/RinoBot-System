@@ -28,7 +28,8 @@ struct Encoder{
     pair<float, float> vel;
 };
 
-class Robot{
+class Robot
+{
 private:
     int channel;    //Communication channel
     int n_loss, n_detected;
