@@ -42,7 +42,6 @@ HEADERS  += mainwindow.h \
     setcolorrange.h \
     settingsdialog.h \
     soccer_window.h \
-    cph.h \
     cpo.h \
     fuzzy.h \
     serial.h \

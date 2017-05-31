@@ -14,6 +14,9 @@ double w_max_gol = 5;
 double k = (w_max/v_max);
 double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275)
 
+double v,w,theta,alpha;
+pair<float, float> vel;
+
 Serial Mover::serial;
 
 Mover::Mover()
@@ -24,6 +27,14 @@ Mover::Mover()
     team_pos_grid = pVector(3);
     team_chang = false;
     vels.assign(3, make_pair(0, 0));
+
+    i = 0;
+    stop = true;
+    grid_initialized = false;
+    enemy_pos_grid = pVector(3);
+    team_pos_grid = pVector(3);
+    pGrid = dMatrix(28, vector<double>(36, 0.0));
+    tGrid = dMatrix(28, vector<double>(36, 0.0));
 }
 
 Mover::~Mover(){
@@ -59,93 +70,68 @@ void Mover::run(){
         //init_mover();
         mover_initialized = true;
     }
-    /*calcula_velocidades(&selec_robot.r1,selec_iterador.Gandalf, &vels[0]);
-    selec_robot.r1.set_lin_vel(vels[0]);
-
-    calcula_velocidades(&selec_robot.r2,selec_iterador.Presto, &vels[1]);
-    selec_robot.r2.set_lin_vel(vels[1]);
-
-    calcula_velocidades(&selec_robot.r3,selec_iterador.Leona, &vels[2]);
-    selec_robot.r3.set_lin_vel(vels[2]);*/
-
-
-    /*//Pro terceiro robô - Leona
-    calcula_velocidades(&selec_robot.r3,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3, &vels[2]);
-    selec_robot.r3.set_lin_vel(vels[2]);
-
-    //Pro primeiro robô - Gandalf
-    calcula_velocidades(&selec_robot.r1,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3, &vels[0]);
-    selec_robot.r1.set_lin_vel(vels[0]);
-
-    //Pro segundo robô - Presto
-    calcula_velocidades(&selec_robot.r2,selec_iterador.cph,selec_iterador.cpo,selec_iterador.cph2,selec_iterador.cpo2, selec_iterador.cpo3, &vels[1]);
-    selec_robot.r2.set_lin_vel(vels[1]);*/
-
     //Pro terceiro robô - Leona
-    int r3_flag = selec_robot.r3.get_flag_fuzzy();
-    cout << "Leona: " << r3_flag << endl;
+    /*int r3_flag = selec_robot.r3.get_flag_fuzzy();
     switch (r3_flag){
         case 0:
-            defender(&selec_robot.r3, 2);
+            defender(&selec_robot.r3, 2, &vels[2]);
             break;
         case 1:
-            defensive_midfielder(&selec_robot.r3, 2);
+            defensive_midfielder(&selec_robot.r3, 2, &vels[2]);
             break;
         case 2:
-            ofensive_midfielder(&selec_robot.r3, 2);
+            ofensive_midfielder(&selec_robot.r3, 2, &vels[2]);
             break;
         case 3:
-            striker(&selec_robot.r3, 2);
+            striker(&selec_robot.r3, 2, &vels[2]);
             break;
         case 4:
-            goalkeeper(&selec_robot.r3, 2);
+            goalkeeper(&selec_robot.r3, 2, &vels[2]);
             break;
-        selec_robot.r3.set_lin_vel(vels[2]);
     }
+    selec_robot.r3.set_lin_vel(vels[2]);*/
 
     //Pro primeiro robô - Gandalf
     int r1_flag = selec_robot.r1.get_flag_fuzzy();
-    cout << "Gandalf: " << r1_flag << endl;
     switch (r1_flag){
         case 0:
-            defender(&selec_robot.r1, 0);
+            defender(&selec_robot.r1, 0, &vels[0]);
             break;
         case 1:
-            defensive_midfielder(&selec_robot.r1, 0);
+            defensive_midfielder(&selec_robot.r1, 0, &vels[0]);
             break;
         case 2:
-            ofensive_midfielder(&selec_robot.r1, 0);
+            ofensive_midfielder(&selec_robot.r1, 0, &vels[0]);
             break;
         case 3:
-            striker(&selec_robot.r1, 0);
+            striker(&selec_robot.r1, 0, &vels[0]);
             break;
         case 4:
-            goalkeeper(&selec_robot.r1, 0);
+            goalkeeper(&selec_robot.r1, 0, &vels[0]);
             break;
-        selec_robot.r1.set_lin_vel(vels[0]);
     }
-
+    selec_robot.r1.set_lin_vel(vels[0]);
+    /*
     //Pro segundo robô - Presto
     int r2_flag = selec_robot.r2.get_flag_fuzzy();
-    cout << "Presto: " << r2_flag << endl;
     switch (r2_flag){
         case 0:
-            defender(&selec_robot.r2, 1);
+            defender(&selec_robot.r2, 1, &vels[1]);
             break;
         case 1:
-            defensive_midfielder(&selec_robot.r2, 1);
+            defensive_midfielder(&selec_robot.r2, 1, &vels[1]);
             break;
         case 2:
-            ofensive_midfielder(&selec_robot.r2, 1);
+            ofensive_midfielder(&selec_robot.r2, 1, &vels[1]);
             break;
         case 3:
-            striker(&selec_robot.r2, 1);
+            striker(&selec_robot.r2, 1, &vels[1]);
             break;
         case 4:
-            goalkeeper(&selec_robot.r2, 1);
+            goalkeeper(&selec_robot.r2, 1, &vels[1]);
         break;
-        selec_robot.r2.set_lin_vel(vels[1]);
     }
+    selec_robot.r2.set_lin_vel(vels[1]);*/
 
 
     emit emitRobots(selec_robot);
@@ -188,368 +174,12 @@ double Mover::set_ang(double robot_angle, double angle, double w){
     return w;
 }
 
-void Mover::set_def_area(pVector def_area){
-    this->def_area = def_area;
-}
-
 void Mover::team_changed(){
     if(!team_chang){
         team_chang = true;
     }else{
         team_chang = false;
     }
-}
-
-pair<double, double> Mover::defenderGK(Robot r){
-    double limiar = 0.04, bb = 0, rho, rho1, rho2, angulation,kw = 1;
-    int ksi = 100, xtraRange = 50;
-    Point2d goal, ball, b_pos, lx, ly, goaler, r_pos;
-    Point def_centroid;
-    pVector limits = def_area;
-    pair<double, double> b_vel, vels;
-
-    r_pos = r.get_pos()*10;
-    b_pos = ball_pos * 10;
-    def_centroid = (def_area[0] + def_area[1] + def_area[6] + def_area[7]) / 4;
-    cout << def_centroid.x << " " << def_centroid.y << endl;
-    def_centroid.x *= X_CONV_CONST * 10;
-    def_centroid.y *= Y_CONV_CONST * 10;
-    goal = def_centroid;
-    ball = Point2d(def_centroid.x + limiar * 3, b_pos.y);
-    lx = Point2d(limits[0].x * X_CONV_CONST * 10, limits[7].x * X_CONV_CONST * 10);
-    ly = Point2d(limits[0].y * Y_CONV_CONST * 10, limits[7].y * Y_CONV_CONST * 10);
-
-    if(b_pos.y < ly.y){
-        cout << "oi" << endl;
-        ball = Point2d(def_centroid.x + limiar * 3, def_area[7].y* Y_CONV_CONST * 10);
-    }else if(b_pos.y < ly.x){
-        cout << "oi1" << endl;
-        ball = Point2d(def_centroid.x + limiar * 3, def_area[0].y* Y_CONV_CONST * 10);
-    }
-    cout << ly << endl;
-    cout << def_area[7]* Y_CONV_CONST * 10 << " " << def_area[0]* Y_CONV_CONST * 10 << endl;
-
-    //if(!team_changed){
-    goaler = Point2d(goal.x , goal.y);
-    cout << goaler << endl;
-    cout << r_pos << endl;
-    cout << "ly=" << ly << endl;
-    cout << "lx=" << lx << endl;
-
-    rho = euclidean_dist(goaler, r_pos);
-    rho1 = euclidean_dist(goaler, b_pos);
-    rho2 = euclidean_dist(ball, r_pos);
-    cout << team_chang << endl;
-   //if(team_chang){
-        //b_vel.first = -ball_vel.first / 100;
-    //}else{
-        b_vel.first = ball_vel.first / 100;
-    //}
-    cout << "rho=" << rho << endl;
-
-    b_vel.second = ball_vel.second / 100;
-    angulation = (r.get_angle() < 0)?-90:90;
-
-    if(rho1 < 750){
-        cout << 1 << endl;
-        if(b_vel.first < -0.1 || (b_vel.first < 0.05 && (b_pos.y < ly.x || b_pos.y > ly.y))){
-            cout << 2 << endl;
-            if(rho2 > ksi){
-                cout << 7<<endl;
-                vels = potDefense(0.0015, kw, r, ball, 0);
-            }else{
-                cout << 8 << endl;
-                vels.first = 0;
-                vels.second = set_ang(r.get_angle(), angulation, 1);
-            }
-        }else if(r_pos.x < lx.y && r_pos.y > ly.x && r_pos.y < ly.y && r_pos.y < ly.y + limiar){
-            cout << 3 << endl;
-            if(fabs(r.get_angle()) < 115 && fabs(r.get_angle()) > 65){
-                vels.first = 0;
-                vels.second = set_ang(r.get_angle(), angulation, 1);
-            }else{
-                vels.first = 0;
-                vels.second = set_ang(r.get_angle(), angulation, 1);
-            }
-        }else{
-            cout << 4 << endl;
-            if(rho > ksi){
-                vels = potDefense(0.0015, kw, r, goaler, 0);
-            }else{
-                if(fabs(r.get_angle()) < 115 && fabs(r.get_angle()) > 65){
-                    vels.first = 0;
-                    vels.second = set_ang(r.get_angle(), angulation, 1);
-                }else{
-                    vels.first = 0;
-                    vels.second = set_ang(r.get_angle(), angulation, 1);
-                }
-            }
-        }
-    }else if(rho > ksi){
-        cout << 5 << endl;
-        vels = potDefense(0.0015, kw, r, goaler, 0);
-    }else{
-        cout << 6 << endl;
-        vels.first = 0;
-        vels.second = set_ang(r.get_angle(), angulation, 1);
-    }
-
-    //}
-    return vels;
-}
-
-pair<double, double> Mover::potDefense(double katt, double kw, Robot r, Point2d obj, bool correct){
-    Point2d pos_robot, b_pos, Fatt;
-    pair<double, double> vels = make_pair(0,0), ball_v;
-    double  var = 0.7, limiar = 0.04, diff = 16;//katt = 0.0015,,  kw = 0.07
-    double erroY, dt, dy, drobo, alpha, r_angle, angle;
-
-    vels.second = 0.0;
-    b_pos = ball_pos / 100;
-    ball_v.first = ball_vel.first / 100;
-    ball_v.second = ball_vel.second / 100;
-    pos_robot = r.get_pos() * 10;
-    erroY = fabs(pos_robot.y - ball_pos.y)/100;
-    /*r_angle = r.get_angle();
-    cout << "pos_robot=" << pos_robot << endl;
-    cout << "obj=" << obj << endl;NAVEGATION *robo
-    Fatt = katt * (obj - pos_robot);
-    cout << "Fatt="<<Fatt << endl;
-    vels.first = sqrt(Fatt.x * Fatt.x + Fatt.y * Fatt.y);
-    cout << "obj - pos_robot = " << (pos_robot-obj) << endl;
-    vels.first = (vels.first > 0.6)?0.6:vels.first;
-    cout << fabs(obj.y - pos_robot.y) << endl;
-    if(fabs(obj.y - pos_robot.y) <= diff){
-        vels.first = 0.0;
-    }*/
-
-    //if(correct){
-        if(pos_robot.y > b_pos.y){
-            cout << 1 << endl;
-            if(ball_v.first == 0){    //Vx ball = 0
-                if(ball_v.second == 0){   //Vy ball = 0
-                    /*Fatt = katt * (obj - pos_robot);
-                    vels.first = sqrt(Fatt.x * Fatt.x + Fatt.y * Fatt.y);
-                    vels.first = (vels.first > 0.6)?0.6:vels.first;*/
-                }else if(ball_v.second > 0){  //Vy ball > 0
-                    vels.first = fabs(ball_v.second) + fabs(ball_v.first);
-                }else{  //Vy ball < 0
-                    vels.first = (erroY / var) * abs(ball_v.first);
-                }
-            }else if(ball_v.first < 0){
-                if(ball_v.second == 0){   //Vy ball = 0
-                    dt = (fabs(b_pos.x - pos_robot.x) + limiar) / ball_v.first;
-                    dy = fabs(ball_v.second * dt);
-                    drobo = fabs(b_pos.y - pos_robot.y) - dy;
-                    vels.first = drobo / dt;
-                }else if(ball_v.second > 0){  //Vy ball > 0
-                    vels.first = fabs(ball_v.second) + fabs(ball_v.first);
-                }else{  //Vy ball < 0
-                    dt = (fabs(b_pos.x - pos_robot.x) + limiar) / ball_v.first;
-                    dy = fabs(ball_v.second * dt);
-
-                    if(dy > erroY){
-                        vels.first = -(dy - erroY) / dt;
-                    }else if(dy == erroY){
-                        vels.first = 0;
-                    }else{
-                        //drobo = fabs(b_pos.y - pos_robot.y) -Point2d meta_aux; dy;
-                        vels.first = fabs(drobo / dt);
-                    }
-                }
-            }else{  //Vx > 0
-                if(ball_v.second == 0){
-                   /* Fatt = katt * (obj - pos_robot);
-                    vels.first = sqrt(Fatt.x * Fatt.x + Fatt.y * Fatt.y);*/
-                }else if(ball_v.second > 0.6){
-                    vels.first = fabs(vels.second) + fabs(vels.first);
-                }else{
-                    vels.first = (erroY / 0.7) * fabs(vels.first);
-                }
-            }
-        }/*else if(pos_robot.y < b_pos.y){
-            if(ball_v.first == 0){    //Vx ball = 0
-                if(ball_v.second == 0){   //Vy ball = 0
-                    Fatt = katt * (obj - pos_robot);
-                    vels.first = sqrt(Fatt.x * Fatt.x + Fatt.y * Fatt.y);
-                    vels.first = (vels.first > 0.6)?0.6:vels.first;
-                }else if(ball_v.second > 0){  //Vy ball > 0
-                    vels.first = (erroY / var) * abs(ball_v.first);
-                }else{  //Vy ball < 0
-                    vels.first = fabs(ball_v.second) + fabs(ball_v.first);
-                }
-            }else if(ball_v.first < 0){
-                if(ball_v.second == 0){   //Vy ball = 0
-                    dt = (fabs(b_pos.x - pos_robot.x) + limiar) / ball_v.first;
-                    dy = fabs(ball_v.second * dt);
-                    drobo = fabs(b_pos.y - pos_robot.y) - dy;
-                    vels.first = drobo / dt;
-                }else if(ball_v.second > 0){  //Vy ball > 0
-                    dt = (fabs(b_pos.x - pos_robot.x) + limiar) / ball_v.first;
-                    dy = fabs(ball_v.second * dt);
-
-                    if(dy > erroY){
-                        vels.first = -(dy - erroY) / dt;
-                    }else if(dy == erroY){
-                        vels.first = 0;
-                    }else{
-                        drobo = fabs(b_pos.y - pos_robot.y) - dy;
-                        vels.first = fabs(drobo) / dt;
-                    }
-                }else{  //Vy ball < 0
-                    vels.first = fabs(ball_v.second) + fabs(ball_v.first);
-                }
-            }else{  //Vx > 0
-                if(ball_v.second == 0){   //Vy ball = 0
-                    Fatt = katt * (obj - pos_robot);
-                    vels.first = sqrt(Fatt.x * Fatt.x + Fatt.y * Fatt.y);
-                    vels.first = (vels.first > 0.6)?0.6:vels.first;
-                }else if(ball_v.second > 0){  //Vy ball > 0
-                    vels.first = (erroY / 0.7) * fabs(ball_v.first);
-                }else{  //Vy ball < 0
-                    vels.first = fabs(ball_v.second) + fabs(ball_v.first);
-                }
-            }
-        }else if(pos_robot.y == b_pos.y){
-            vels.first = 0;
-        }else{
-            cerr << "Error at goalkeeper function." << endl;
-        }*/
-
-        /*if(vels.first > 0){
-            vels.first = (vels.first > 0.6)?0.6:vels.first;
-        }else{
-            vels.first = (vels.first > -0.6)?-0.6:vels.first;Point2d meta_aux;
-        }*/
-       // vels.first *= -1;
-    //}
-    //cout << "r_angle=" << r_angle << endl;
-
-    //r_angle = (r_angle < 0)?r_angle*-1 + 180:r_angle;
-    //cout << "r_angle=" << r_angle << endl;
-    /*alpha = fmod(atan2(-Fatt.y, Fatt.x) * 180 / PI - r_angle, 360);
-    cout << "atan=" << atan2(-Fatt.y, Fatt.x) * 180 / PI<< endl;
-    cout << "atan-r_angle = " << atan2(-Fatt.y, Fatt.x) * 180 / PI - r_angle << endl;
-    cout << alpha << endl;
-    /*if(alpha > 180){
-        alpha = alpha - 360;
-    }
-
-    if(fabs(alpha) > 90){
-        vels.first *= -1;
-        alpha = fmod(alpha+180, 360);
-        if(alpha > 180){
-            alpha = alpha - 360;
-        }
-    }*/
-    //vels.second =(correct)?kw * (alpha*PI)/180:0;
-    //vels.second = kw * (alpha*PI)/180;
-    vels.second = 0;
-    /*cout << "kw=" << kw << endl;
-    cout << "w=" << vels.second << " alpha= " << alpha <<  " " << kw*(alpha * PI) / 180 << endl;
-    cout << "v = "<<vels.first<<endl;*/
-    return vels;
-}
-
-void Mover::goleiro(Robot r, pair<float, float> *vels){
-    Point2d pos_robot, b_pos, ball_v;
-    double erroY, dt, dy, drobo, limiar, var, r_angle;
-
-    *vels = make_pair(0, 0);
-    r_angle = r.get_angle();
-    ball_v.x = ball_vel.first / 100;
-    ball_v.y = ball_vel.second / 100;
-    pos_robot = r.get_pos()*10;
-    b_pos = ball_pos*10;
-    erroY = fabs(pos_robot.y - ball_pos.y)/100;
-    cout << b_pos << " " << (def_area[5].y * Y_CONV_CONST * 10) << endl;
-    if(pos_robot.y > b_pos.y){
-        cout << 8 << endl;
-        if(ball_v.x == 0){    //Vx ball = 0
-                cout << 2 << endl;
-                if(ball_v.y == 0){   //Vy ball = 0
-                /*Fatt = katt * (obj - pos_robot);
-                vels->first = sqrt(Fatt.x * Fatt.x + Fatt.y * Fatt.y);
-                vels->first = (vels->first > 0.6)?0.6:vels->first;*/
-            }else if(ball_v.y > 0){  //Vy ball > 0
-                cout << 3 << endl;
-                vels->first = fabs(ball_v.y) + fabs(ball_v.x);
-            }else{  //Vy ball < 0
-                cout << 4 << endl;
-
-                vels->first = (erroY / var) * abs(ball_v.x);
-            }
-        }else if(ball_v.x < 0){
-            if(ball_v.y == 0){   //Vy ball = 0
-                cout << 5 << endl;
-                dt = (fabs(b_pos.x - pos_robot.x) + limiar) / ball_v.x;
-                dy = fabs(ball_v.y * dt);
-                drobo = fabs(b_pos.y - pos_robot.y) - dy;
-                vels->first = drobo / dt;
-            }else if(ball_v.y > 0){  //Vy ball > 0
-                cout << 6 << endl;
-
-                vels->first = fabs(ball_v.y) + fabs(ball_v.x);
-            }else{  //Vy ball < 0
-                cout << 7 << endl;
-
-                dt = (fabs(b_pos.x - pos_robot.x) + limiar) / ball_v.x;
-                dy = fabs(ball_v.y * dt);
-
-                if(dy > erroY){
-                    vels->first = (dy - erroY) / dt;
-                }else if(dy == erroY){
-                    vels->first = 0;
-                }else{
-                    drobo = fabs(b_pos.y - pos_robot.y) - dy;
-                    vels->first = -fabs(drobo / dt);
-                }
-            }
-        }else{  //Vx > 0
-
-        }
-    }else if(pos_robot.y < b_pos.y){
-        cout << 1 << endl;
-        if(ball_v.x == 0){    //Vx ball = 0
-            if(ball_v.y == 0){   //Vy ball = 0
-                /*Fatt = katt * (obj - pos_robot);
-                vels->first = sqrt(Fatt.x * Fatt.x + Fatt.y * Fatt.y);
-                vels->first = (vels->first > 0.6)?0.6:vels->first;*/
-            }else if(ball_v.y > 0){  //Vy ball > 0
-                vels->first = (erroY / var) * abs(ball_v.x);
-            }else{  //Vy ball < 0
-                vels->first = fabs(ball_v.y) + fabs(ball_v.x);
-            }
-        }else if(ball_v.x < 0){
-            if(ball_v.y == 0){   //Vy ball = 0
-                dt = (fabs(b_pos.x - pos_robot.x) + limiar) / ball_v.x;
-                dy = fabs(ball_v.y * dt);
-                drobo = fabs(b_pos.y - pos_robot.y) - dy;
-                vels->first = drobo / dt;
-            }else if(ball_v.y > 0){  //Vy ball > 0
-                dt = (fabs(b_pos.x - pos_robot.x) + limiar) / ball_v.x;
-                dy = fabs(ball_v.y * dt);
-
-                if(dy > erroY){
-                    vels->first = -(dy - erroY) / dt;
-                }else if(dy == erroY){
-                    vels->first = 0;
-                }else{
-                    drobo = fabs(b_pos.y - pos_robot.y) - dy;
-                    vels->first = fabs(drobo) / dt;
-                }
-            }else{  //Vy ball < 0
-                vels->first = fabs(ball_v.y) + fabs(ball_v.x);
-            }
-        }
-    }else{
-        vels->first = 0;
-    }
-
-    if(r_angle > 0){
-        vels->first *= -1;
-    }
-    cout << vels->first << " " << vels->second << endl;
 }
 
 void Mover::calcula_velocidades(Robot *r, CPH *cph,CPO *cpo, CPH2 *cph2, CPO2 *cpo2, CPO3 *cpo3, pair<float, float> *vels){
@@ -928,7 +558,6 @@ void Mover::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
     vels->second = w*l;
 }
 
-
 Point Mover::convert_C_to_G(Point2d coord){
     Point i;
 
@@ -965,6 +594,14 @@ void Mover::set_centroid_def(Point2d centroid_def){
     this->centroid_def = centroid_def;
 }
 
+void Mover::set_team_pos(p2dVector team_pos){
+    this->team_pos = team_pos;
+}
+
+void Mover::set_def_area(pVector def_area){
+    this->def_area = def_area;
+}
+
 double Mover::ajusta_angulo(double angle){
     if (angle < -180)
         angle = angle + 360;
@@ -975,14 +612,12 @@ double Mover::ajusta_angulo(double angle){
     return angle;
 }
 
-
-
-
-void Mover::goalkeeper(Robot *robo, int num_Robo){
+void Mover::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *vels){
     //fazer depois
 }
 
-void Mover::defender(Robot *robo, int num_Robo){
+void Mover::defender(Robot *robo, int num_Robo, pair<float, float> *vels){
+    // Gera o grid
     //if(!grid_initialized){
         init_grid();
     //}
@@ -1088,9 +723,27 @@ void Mover::defender(Robot *robo, int num_Robo){
     while(iterator_cph()>1E-6);
     set_direction();
 
+    // Calcula velocidades
+    Point robot_grid = convert_C_to_G(robo->get_pos());
+
+    theta = get_direction(robot_grid);
+    alpha = theta - robo->get_angle();
+
+    if (fabs(alpha) <= limiar_theta){
+        w = k*v_max*alpha/180;
+        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        w = k*v_max*alpha/180;
+        v = v_max*fabs(alpha)/limiar_theta - v_max;
+    }
+
+    vels->first = v - w*l;
+    vels->second = v + w*l;
 }
 
-void Mover::defensive_midfielder(Robot *robo, int num_Robo){
+void Mover::defensive_midfielder(Robot *robo, int num_Robo, pair<float, float> *vels){
     //if(!grid_initialized){
         init_grid();
     //}
@@ -1165,9 +818,28 @@ void Mover::defensive_midfielder(Robot *robo, int num_Robo){
     }*/
     while(iterator_cph()>1E-6);
     set_direction();
+
+    // Calcula velocidades
+    Point robot_grid = convert_C_to_G(robo->get_pos());
+
+    theta = get_direction(robot_grid);
+    alpha = theta - robo->get_angle();
+
+    if (fabs(alpha) <= limiar_theta){
+        w = k*v_max*alpha/180;
+        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        w = k*v_max*alpha/180;
+        v = v_max*fabs(alpha)/limiar_theta - v_max;
+    }
+
+    vels->first = v - w*l;
+    vels->second = v + w*l;
 }
 
-void Mover::ofensive_midfielder(Robot *robo, int num_Robo){
+void Mover::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, float> *vels){
     Point2d eixo_x(1.0,0.0);
     Point2d meta2d;
     Point meta;
@@ -1293,9 +965,28 @@ void Mover::ofensive_midfielder(Robot *robo, int num_Robo){
    // cout<<"Orientação: "<<orientation<<endl;
     while(iterator_cpo()>1E-6);
     set_direction();
+
+    // Calcula velocidades
+    Point robot_grid = convert_C_to_G(robo->get_pos());
+
+    theta = get_direction(robot_grid);
+    alpha = theta - robo->get_angle();
+
+    if (fabs(alpha) <= limiar_theta){
+        w = k*v_max*alpha/180;
+        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        w = k*v_max*alpha/180;
+        v = v_max*fabs(alpha)/limiar_theta - v_max;
+    }
+
+    vels->first = v - w*l;
+    vels->second = v + w*l;
 }
 
-void Mover::striker(Robot *robo, int num_Robo){
+void Mover::striker(Robot *robo, int num_Robo, pair<float, float> *vels){
     Point2d eixo_x(1.0,0.0);
     //if(!grid_initialized){
         init_grid();
@@ -1374,4 +1065,23 @@ void Mover::striker(Robot *robo, int num_Robo){
     }
     while(iterator_cpo()>1E-6);
     set_direction();
+
+    // Calcula velocidades
+    Point robot_grid = convert_C_to_G(robo->get_pos());
+
+    theta = get_direction(robot_grid);
+    alpha = theta - robo->get_angle();
+
+    if (fabs(alpha) <= limiar_theta){
+        w = k*v_max*alpha/180;
+        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        w = k*v_max*alpha/180;
+        v = v_max*fabs(alpha)/limiar_theta - v_max;
+    }
+
+    vels->first = v - w*l;
+    vels->second = v + w*l;
 }

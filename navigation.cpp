@@ -7,13 +7,6 @@
 using namespace std;
 
 Navigation::Navigation(){
-    i = 0;
-    stop = true;
-    grid_initialized = false;
-    enemy_pos_grid = pVector(3);
-    team_pos_grid = pVector(3);
-    pGrid = dMatrix(28, vector<double>(36, 0.0));
-    tGrid = dMatrix(28, vector<double>(36, 0.0));
     //cout << "\n\nAMBIENTE CRIADO! \n";
 }
 
@@ -269,7 +262,6 @@ int Navigation::get_occupancy(int i, int j){
 
 void Navigation::set_direction(){
     int i,j;
-
     for(i=0;i<28;i++)
     {
         for(j=0;j<36;j++)
@@ -346,7 +338,7 @@ void Navigation::set_meta_aux(Point2d meta){
     this->meta = meta;
 }
 
-void Navigation::set_enemy_pos(p2dVector enemy_pos){
+/*void Navigation::set_enemy_pos(p2dVector enemy_pos){
     this->enemy_pos = enemy_pos;
 }
 
@@ -368,7 +360,7 @@ void Navigation::set_centroid_atk(Point2d centroid_atk){
 
 void Navigation::set_centroid_def(Point2d centroid_def){
     this->centroid_def = centroid_def;
-}
+}*/
 
 void Navigation::set_epsilon(double e){
     this->e = e;

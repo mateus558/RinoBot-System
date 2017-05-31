@@ -20,15 +20,6 @@ protected:
     QMutex mutex;
     dMatrix pGrid;
     dMatrix tGrid;
-    pVector enemy_pos_grid;
-    pVector team_pos_grid;
-    pVector def_area;
-    p2dVector enemy_pos;
-    p2dVector team_pos;
-    Point ball_pos_grid;
-    Point2d ball_pos;
-    Point2d centroid_atk;
-    Point2d centroid_def;
     Point2d meta;
     bool stop, grid_initialized, flag_finish_navegation;
 
@@ -49,7 +40,6 @@ public:
     void print_grid();
     void set_enemy_pos(p2dVector);
     void set_team_pos(p2dVector);
-    void set_ball_pos(Point2d);
     void set_ball_vel(pair<double, double>);
     void set_def_area(pVector);
     void set_centroid_atk(Point2d);
@@ -57,12 +47,6 @@ public:
     Point convert_C_to_G(Point2d); // colocar na utils
     Point2d get_meta_aux();
     void set_meta_aux(Point2d);
-    /*void set_enemy_pos(p2dVector);
-    void set_team_pos(p2dVector);
-    void set_ball_pos(Point2d);
-    void set_def_area(pVector);
-    void set_centroid_atk(Point2d);
-    void set_centroid_def(Point2d);*/
     void set_epsilon(double);
     void set_orientation(double);
     bool get_flag_finish();

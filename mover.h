@@ -15,21 +15,12 @@
 #include "navigation.h"
 #include "serial.h"
 
-struct Selec{
-    /*CPH *cph;
-    CPO *cpo;
-    CPH2 *cph2;
-    CPO2 *cpo2;
-    CPO3 *cpo3;
-    Navigation *Gandalf;
-    Navigation *Presto;
-    Navigation *Leona;*/
-};
-
 class Mover: public Navigation
 {
     Q_OBJECT
 private:
+    p2dVector team_pos;
+    Point ball_pos_grid;
     pVector enemy_pos_grid; //posicao em grid dos inimigos
     pVector team_pos_grid; //posicao em grid do time
     p2dVector enemy_pos; //posicao em cm dos inimigos
@@ -44,7 +35,6 @@ private:
     bool stop, mover_initialized; //variavel de controle de thread
     bool team_chang;
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
-    Selec selec_iterador;
 
 protected:
     void msleep(int ms);
@@ -58,16 +48,13 @@ public:
     pair<double, double> defenderGK(Robot r);
 
     void init_mover();
-    void goalkeeper(Robot *, int);
-    void defender(Robot *, int);
-    void defensive_midfielder(Robot *, int);
-    void ofensive_midfielder(Robot *, int);
-    void striker(Robot *, int);
+    void goalkeeper(Robot *, int, pair<float, float>*);
+    void defender(Robot *, int, pair<float, float>*);
+    void defensive_midfielder(Robot *, int, pair<float, float>*);
+    void ofensive_midfielder(Robot *, int, pair<float, float>*);
+    void striker(Robot *, int, pair<float, float>*);
     void calcula_velocidades(Robot *, CPH *,CPO *, CPH2 *, CPO2 *, CPO3 *, pair<float, float>*);
     void goalkeeper_orientation(Robot *, pair<float, float>*);
-    void goleiro(Robot r, pair<float, float> *vels);
-    double min_function(double, double);
-    double max_function(double, double);
     double ajusta_angulo(double);
     void Play();
     bool is_running();
@@ -79,6 +66,7 @@ public:
     void set_to_select(Robot, Robot, Robot);
     void set_to_select_iterador(CPH *,CPO *, CPH2 *, CPO2 *, CPO3 *);
     void set_enemy_pos(p2dVector);
+    void set_team_pos(p2dVector);
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);
     void set_centroid_def(Point2d);

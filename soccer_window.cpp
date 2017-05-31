@@ -189,9 +189,9 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         mover->set_centroid_def(centroid_def);
         mover->set_def_area(def_area);
 
-        navigation->set_centroid_atk(centroid_atk);  //salva a area de atk para o navigation
+        /*navigation->set_centroid_atk(centroid_atk);  //salva a area de atk para o navigation
         navigation->set_centroid_def(centroid_def); //salva a area de def para o navigation
-        navigation->set_def_area(def_area);
+        navigation->set_def_area(def_area);*/
     }
 
     /*gandalf.set_ball_vel(percep.ball_vel);
@@ -256,9 +256,9 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     cpo3->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo3
     cpo3->set_team_pos(team_pos); //Salva a posicao do time para o cpo3
 
-    navigation->set_ball_pos(ball_pos); //Salva a posicao da bola para o navigation
-    navigation->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o navigation
-    navigation->set_team_pos(team_pos); //Salva a posicao do time para o navigation
+    mover->set_ball_pos(ball_pos); //Salva a posicao da bola para o navigation
+    mover->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o navigation
+    mover->set_team_pos(team_pos); //Salva a posicao do time para o navigation
 
     //set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
 
@@ -497,6 +497,7 @@ void soccer_window::on_start_game_2_clicked()
 {
     if(!game_started){
         game_started = true;
+        Point convert_C_to_G(Point2d);
         run_cph = true;
         run_cpo = true;
         run_cph2 = true;
@@ -585,9 +586,9 @@ void soccer_window::on_switch_fields_clicked()
     cph->set_centroid_def(centroid_def); //salva a area de def para o cph
     cph->set_def_area(def_area);
 
-    navigation->set_centroid_atk(centroid_atk);  //salva a area de atk para o navigation
+    /*navigation->set_centroid_atk(centroid_atk);  //salva a area de atk para o navigation
     navigation->set_centroid_def(centroid_def); //salva a area de def para o navigation
-    navigation->set_def_area(def_area);
+    navigation->set_def_area(def_area);*/
 
     /*gandalf.set_centroid_atk(centroid_atk);
     gandalf.set_centroid_def(centroid_def);
@@ -623,6 +624,7 @@ void soccer_window::on_read_parameters_clicked()
     vector<Robot> robots = eye->get_robots();
     vector<int> low_color(3);
     vector<int> upper_color(3);
+    Point convert_C_to_G(Point2d);
     vector<int> low_team_color(3);
     vector<int> upper_team_color(3);
     pair<vector<int>, vector<int> > ball_range;
