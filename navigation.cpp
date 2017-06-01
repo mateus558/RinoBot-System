@@ -12,115 +12,6 @@ Navigation::Navigation(){
 
 void Navigation::run(){
 
-        //A ser editada - classe função de jogo
-        //if(!grid_initialized){
-        //init_grid();
-        //}
-
-        /*for(i = 0; i < 3; ++i){
-            if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
-                enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
-                //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-                if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
-                    set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
-            }else{
-                //tratar posição dos inimigos aqui
-            }
-
-            if(team_pos[i].x > 0 && team_pos[i].y > 0){
-                team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-                //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
-            }else{
-                //tratar posição dos miguxos aqui
-            }
-        }
-
-
-        double def_area_x = def_area[0].x*X_CONV_CONST;
-        double def_area_y1 = def_area[1].y*Y_CONV_CONST;
-        double def_area_y2 = def_area[6].y*Y_CONV_CONST;
-        Point meta;
-        Point2d meta2d;
-        meta2d.y = centroid_def.y;
-
-
-        if (centroid_atk.x > ball_pos.x){
-            if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
-                //cout << "Reconheceu a area de defesa" << endl;
-
-
-                if(ball_pos.x > 0 && ball_pos.y > 0){
-                    meta2d.x = centroid_def.x + 35;
-                    meta = convert_C_to_G(meta2d);
-                    //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                    if (meta.x > 0 && meta.y > 0)
-                        set_potential(meta.y, meta.x, 0);
-                }else{
-                    //tratar a meta aqui
-                }
-
-            }else{
-                if(ball_pos.x > 0 && ball_pos.y > 0){
-                    ball_pos_grid = convert_C_to_G(ball_pos);
-                    //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                    if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
-                        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
-                }else{
-                    //tratar a bola aqui
-                }
-
-                if(ball_pos.x > 0 && ball_pos.y > 0){
-                    ball_pos_grid = convert_C_to_G(ball_pos);
-                    //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                    if(ball_pos_grid.x+1 < 28 && ball_pos_grid.y+1 < 28){
-                        set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
-                        set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
-                        set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
-                    }
-                }else{
-                    //tratar a barreira aqui
-                }
-            }
-        }else{
-            if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
-                if(ball_pos.x > 0 && ball_pos.y > 0){
-                    meta2d.x = centroid_def.x - 35;
-                    meta = convert_C_to_G(meta2d);
-                    //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                    if (meta.x > 0 && meta.y > 0)
-                        set_potential(meta.y, meta.x, 0);
-                }else{
-                    //tratar a meta aqui
-                }
-            }else{
-                if(ball_pos.x > 0 && ball_pos.y > 0){
-                    ball_pos_grid = convert_C_to_G(ball_pos);
-                    //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                    if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
-                        set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
-                }else{
-                    //tratar a bola aqui
-                }
-
-                if(ball_pos.x > 0 && ball_pos.y > 0){
-                    ball_pos_grid = convert_C_to_G(ball_pos);
-                    //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                    if(ball_pos_grid.y+1 < 28){
-                        set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
-                        set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
-                        set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
-                    }
-                }else{
-                    //tratar a barreira aqui
-                }
-            }
-        } */
-
-
-    //while(iterator_cph()>1E-6);
-    //set_direction();
-
-    //print_grid();
 }
 
 
@@ -176,7 +67,7 @@ double Navigation::iterator_cpo(){
                  left = get_neighborhood(i,j,2);
                  right = get_neighborhood(i,j,3);
                  newPotencial = ((1+lambda*vec[0])*right+(1-lambda*vec[0])*left+(1+lambda*vec[1])*top+(1-lambda*vec[1])*botton)/4;
-                 //newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
+                 newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
                  erro = erro + pow((newPotencial - oldPotencial),2);
                  set_potential(i,j,newPotencial);
              }

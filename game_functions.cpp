@@ -72,6 +72,9 @@ void Game_functions::run(){
     }
 
     //Pro terceiro robô - Leona
+    /*cout << "Leona: " << calc_Leona << endl;
+    cout << "Presto: " << calc_Presto << endl;
+    cout << "Gandalf: " << calc_Gandalf << endl;*/
     if (calc_Leona)
     {
         int r3_flag = selec_robot.r3.get_flag_fuzzy();
@@ -656,9 +659,7 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
 
     theta = get_direction(robot_grid);
     alpha = theta - robo->get_angle();
-
-    //cout << num_Robo << ": " << theta << endl;
-    //cout << "Angulo: " << robo->get_angle() << endl;
+    alpha = ajusta_angulo(alpha);
 
     if (fabs(alpha) <= limiar_theta){
         w = k*v_max*alpha/180;
@@ -669,9 +670,31 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
         w = k*v_max*alpha/180;
         v = v_max*fabs(alpha)/limiar_theta - v_max;
     }
+    vels->first = v-w*l;
+    vels->second = v+w*l;
 
-    vels->first = v - w*l;
-    vels->second = v + w*l;
+    if (centroid_atk.x > ball_pos.x){
+        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            //cout << "1" << endl;
+            vels->first = -0.6;
+            vels->second = 0.6;
+        }
+        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            //cout << "2" << endl;
+            vels->first = 0.6;
+            vels->second = -0.6;
+        }
+    }
+    else{
+        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            vels->first = 0.6;
+            vels->second = -0.6;
+        }
+        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            vels->first = -0.6;
+            vels->second = 0.6;
+        }
+    }
 }
 
 void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float, float> *vels){
@@ -755,9 +778,7 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
 
     theta = get_direction(robot_grid);
     alpha = theta - robo->get_angle();
-
-    //cout << num_Robo << ": " << theta << endl;
-    //cout << "Angulo: " << robo->get_angle() << endl;
+    alpha = ajusta_angulo(alpha);
 
     if (fabs(alpha) <= limiar_theta){
         w = k*v_max*alpha/180;
@@ -768,9 +789,39 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
         w = k*v_max*alpha/180;
         v = v_max*fabs(alpha)/limiar_theta - v_max;
     }
+    vels->first = v-w*l;
+    vels->second = v+w*l;
 
-    vels->first = v - w*l;
-    vels->second = v + w*l;
+    if (centroid_atk.x > ball_pos.x){
+        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            //cout << "1" << endl;
+            vels->first = -0.6;
+            vels->second = 0.6;
+        }
+        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            //cout << "2" << endl;
+            vels->first = 0.6;
+            vels->second = -0.6;
+        }
+        else if (euclidean_dist(robo->get_pos(),meta) < 5){
+            vels->first = 0;
+            vels->second = 0;
+        }
+    }
+    else{
+        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            vels->first = 0.6;
+            vels->second = -0.6;
+        }
+        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            vels->first = -0.6;
+            vels->second = 0.6;
+        }
+        else if (euclidean_dist(robo->get_pos(),meta) < 5){
+            vels->first = 0;
+            vels->second = 0;
+        }
+    }
 }
 
 void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, float> *vels){
@@ -905,9 +956,7 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
 
     theta = get_direction(robot_grid);
     alpha = theta - robo->get_angle();
-
-    //cout << num_Robo << ": " << theta << endl;
-    //cout << "Angulo: " << robo->get_angle() << endl;
+    alpha = ajusta_angulo(alpha);
 
     if (fabs(alpha) <= limiar_theta){
         w = k*v_max*alpha/180;
@@ -918,9 +967,31 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
         w = k*v_max*alpha/180;
         v = v_max*fabs(alpha)/limiar_theta - v_max;
     }
+    vels->first = v-w*l;
+    vels->second = v+w*l;
 
-    vels->first = v - w*l;
-    vels->second = v + w*l;
+    if (centroid_atk.x > ball_pos.x){
+        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            //cout << "1" << endl;
+            vels->first = -0.6;
+            vels->second = 0.6;
+        }
+        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            //cout << "2" << endl;
+            vels->first = 0.6;
+            vels->second = -0.6;
+        }
+    }
+    else{
+        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            vels->first = 0.6;
+            vels->second = -0.6;
+        }
+        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            vels->first = -0.6;
+            vels->second = 0.6;
+        }
+    }
 }
 
 void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels){
@@ -1008,6 +1079,7 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
 
     theta = get_direction(robot_grid);
     alpha = theta - robo->get_angle();
+    alpha = ajusta_angulo(alpha);
 
     if (fabs(alpha) <= limiar_theta){
         w = k*v_max*alpha/180;
@@ -1018,12 +1090,31 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
         w = k*v_max*alpha/180;
         v = v_max*fabs(alpha)/limiar_theta - v_max;
     }
+    vels->first = v-w*l;
+    vels->second = v+w*l;
 
-    //cout << num_Robo << ": " << theta << endl;
-    //cout << "Angulo: " << robo->get_angle() << endl;
-
-    vels->first = v - w*l;
-    vels->second = v + w*l;
+    if (centroid_atk.x > ball_pos.x){
+        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            //cout << "1" << endl;
+            vels->first = -0.6;
+            vels->second = 0.6;
+        }
+        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            //cout << "2" << endl;
+            vels->first = 0.6;
+            vels->second = -0.6;
+        }
+    }
+    else{
+        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            vels->first = 0.6;
+            vels->second = -0.6;
+        }
+        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
+            vels->first = -0.6;
+            vels->second = 0.6;
+        }
+    }
 }
 
 double Game_functions::ajusta_angulo(double angle){

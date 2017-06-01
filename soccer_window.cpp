@@ -32,7 +32,6 @@ soccer_window::soccer_window(QWidget *parent) :
     leona = new Game_functions; //instancia o objeto leona na rotina do sistema
     presto = new Game_functions; //instancia o objeto presto na rotina do sistema
     gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
-    navigation = new Navigation; //instancia o objeto navigation na rotina do sistema
     run_fuzzy = false; //flag da thread do fuzzy
     run_leona = false; //flag da thread da leona
     run_presto = false; //flag da thread da presto
@@ -199,16 +198,25 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     leona->set_enemy_pos(enemy_pos);
     leona->set_ball_pos(ball_pos);
     leona->set_def_area(def_area);
+    leona->set_calc_Gandalf(false);
+    leona->set_calc_Presto(false);
+    leona->set_calc_Leona(true);
 
     presto->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
     presto->set_enemy_pos(enemy_pos);
     presto->set_ball_pos(ball_pos);
     presto->set_def_area(def_area);
+    presto->set_calc_Gandalf(false);
+    presto->set_calc_Presto(true);
+    presto->set_calc_Leona(false);
 
     gandalf->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
     gandalf->set_enemy_pos(enemy_pos);
     gandalf->set_ball_pos(ball_pos);
     gandalf->set_def_area(def_area);
+    gandalf->set_calc_Gandalf(true);
+    gandalf->set_calc_Presto(false);
+    gandalf->set_calc_Leona(false);
 
     if(percep.team_robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -234,6 +242,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
     fuzzy->zera_flag_finish();
 
+    //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(run_fuzzy){
         if(fuzzy->is_running()){
             fuzzy->wait();
@@ -241,7 +250,6 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         fuzzy->Play();
      }
 
-    //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(!run_leona && !run_presto && !run_gandalf){
         fuzzy->wait();
 
@@ -260,9 +268,6 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         if(leona->is_running()){
             leona->wait();
         }
-        leona->set_calc_Gandalf(false);
-        leona->set_calc_Presto(false);
-        leona->set_calc_Leona(true);
         leona->Play();
      }
 
@@ -270,9 +275,6 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         if(presto->is_running()){
             presto->wait();
         }
-        presto->set_calc_Gandalf(false);
-        presto->set_calc_Presto(true);
-        presto->set_calc_Leona(false);
         presto->Play();
      }
 
@@ -280,9 +282,6 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         if(gandalf->is_running()){
             gandalf->wait();
         }
-        gandalf->set_calc_Gandalf(true);
-        gandalf->set_calc_Presto(false);
-        gandalf->set_calc_Leona(false);
         gandalf->Play();
      }
 }

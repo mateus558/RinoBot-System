@@ -27,7 +27,7 @@ private:
 
     bool stop, game_functions_initialized; //variavel de controle de thread
     bool team_chang;
-    bool calc_Gandalf, calc_Presto, calc_Leona;
+    bool calc_Gandalf = false, calc_Presto = false, calc_Leona = false;
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
 
 protected:
