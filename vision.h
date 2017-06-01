@@ -63,7 +63,7 @@ private:
 
 public slots:
     void updateFuzzyRobots(rVector);
-    void updateMoverRobots(rVector);
+    void updateGameFunctionsRobots(rVector);
 
 signals:
     void infoPercepted(Vision::Perception);

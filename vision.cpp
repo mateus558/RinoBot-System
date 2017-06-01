@@ -613,7 +613,7 @@ void Vision::updateFuzzyRobots(rVector team_robots){
     robots[2].set_flag_fuzzy(team_robots[2].get_flag_fuzzy());
 }
 
-void Vision::updateMoverRobots(rVector team_robots){
+void Vision::updateGameFunctionsRobots(rVector team_robots){
     robots[0].set_lin_vel(make_pair(team_robots[0].get_l_vel(), team_robots[0].get_r_vel()));
     robots[1].set_lin_vel(make_pair(team_robots[1].get_l_vel(), team_robots[1].get_r_vel()));
     robots[2].set_lin_vel(make_pair(team_robots[2].get_l_vel(), team_robots[2].get_r_vel()));

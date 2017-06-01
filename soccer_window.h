@@ -4,15 +4,9 @@
 #include <QWidget>
 #include "settingsdialog.h"
 #include "vision.h"
-#include "cph.h"
-#include "cpo.h"
-#include "cph2.h"
-#include "cpo2.h"
-#include "cpo3.h"
 #include "fuzzy.h"
-#include "mover.h"
-#include "navigation.h"
 #include "game_functions.h"
+#include "navigation.h"
 
 namespace Ui {
 class soccer_window;
@@ -27,7 +21,7 @@ public:
     void load_serial_cfg();
     ~soccer_window();
 public slots:
-    void updateMoverRobots(Selector);
+    void updateGameFunctionsRobots(Selector);
     void updateFuzzyRobots(Selector);
     void updatePerceptionInfo(Vision::Perception);
     void updateSerialSettings(SettingsDialog::Settings);
@@ -55,15 +49,10 @@ private slots:
     void on_start_game_2_clicked();
 
 private:
-    //NAVEGATION *calc_Gandalf, *calc_Presto, *calc_Leona;
-    //GAME_FUNCTIONS gandalf, presto, leona;
-    CPH *cph;
-    CPH2 *cph2;
-    CPO *cpo;
-    CPO2 *cpo2;
-    CPO3 *cpo3;
     Fuzzy *fuzzy;
-    Mover *mover;
+    Game_functions *leona;
+    Game_functions *presto;
+    Game_functions *gandalf;
     Navigation *navigation;
     Vision *eye;
     Vision::Perception percep;
@@ -78,8 +67,7 @@ private:
     Point centroid_def;
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
     int cam_id;
-    bool started, area_read, run_cph, run_cpo, run_fuzzy, run_mover, run_cph2, run_cpo2, run_cpo3, game_started, team_changed;
-    bool run_Gandalf, run_Presto, run_Leona;
+    bool started, area_read, run_fuzzy, run_leona, run_presto, run_gandalf, game_started, team_changed;
 
 
     void closeEvent(QCloseEvent *event);

@@ -8,13 +8,10 @@
 #include <errno.h>
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
-#include "cph.h"
-#include "cpo.h"
 #include "fuzzy.h"
 #include "utils.h"
-#include "mover.h"
-#include "navigation.h"
 #include "game_functions.h"
+#include "navigation.h"
 
 using namespace std;
 
@@ -31,27 +28,16 @@ soccer_window::soccer_window(QWidget *parent) :
     ui->cam_id_spinBox->setValue(0);
     area_read = false;
     eye = new Vision;
-    /*calc_Gandalf = new NAVEGATION;
-    calc_Presto = new NAVEGATION;
-    calc_Leona = new NAVEGATION;*/
-    cph = new CPH; //instancia o objeto cph na rotina do sistema
-    cpo = new CPO; //instancia o objeto cpo na rotina do sistema
-    cph2 = new CPH2; //instancia o objeto cph2 na rotina do sistema
-    cpo2 = new CPO2; //instancia o objeto cpo2 na rotina do sistema
-    cpo3 = new CPO3; //instancia o objeto cpo3 na rotina do sistema
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
-    mover = new Mover; //instancia o objeto mover na rotina do sistema
+    leona = new Game_functions; //instancia o objeto leona na rotina do sistema
+    presto = new Game_functions; //instancia o objeto presto na rotina do sistema
+    gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
     navigation = new Navigation; //instancia o objeto navigation na rotina do sistema
-    run_Gandalf = false;
-    run_Presto = false;
-    run_Leona = false;
-    run_cph = false; //flag da thread do cph
-    run_cph2 = false; //flag da thread do cph2
-    run_cpo = false; //flag da thread do cpo
-    run_cpo2 = false; //flag da thread do cpo2
-    run_cpo3 = false; //flag da thread do cpo3
     run_fuzzy = false; //flag da thread do fuzzy
-    run_mover = false;
+    run_leona = false; //flag da thread da leona
+    run_presto = false; //flag da thread da presto
+    run_gandalf = false; //flag da thread da gandalf
+
     game_started = false;
     team_robots.resize(3);
 
@@ -63,9 +49,11 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
     connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);  
     connect(fuzzy, SIGNAL(emitRobots(Selector)), this, SLOT(updateFuzzyRobots(Selector)), Qt::QueuedConnection);
-    connect(mover, SIGNAL(emitRobots(Selector)), this, SLOT(updateMoverRobots(Selector)), Qt::QueuedConnection);
+    connect(leona, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    connect(presto, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    connect(gandalf, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
     connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateFuzzyRobots(rVector)), Qt::QueuedConnection);
-    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateMoverRobots(rVector)), Qt::QueuedConnection);
+    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateGameFunctionsRobots(rVector)), Qt::QueuedConnection);
 }
 
 void soccer_window::load_serial_cfg(){
@@ -118,7 +106,7 @@ void soccer_window::updateFuzzyRobots(Selector selec_robot){
     emit updateVisionInfo(team_robots);
 }
 
-void soccer_window::updateMoverRobots(Selector selec_robot){
+void soccer_window::updateGameFunctionsRobots(Selector selec_robot){
     team_robots[0].set_lin_vel(make_pair(selec_robot.r3.get_l_vel(), selec_robot.r3.get_r_vel()));
     team_robots[1].set_lin_vel(make_pair(selec_robot.r1.get_l_vel(), selec_robot.r1.get_r_vel()));
     team_robots[2].set_lin_vel(make_pair(selec_robot.r2.get_l_vel(), selec_robot.r2.get_r_vel()));
@@ -131,7 +119,6 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
     }
-    //cout << "ds" << team_robots[0].get_r_vel() << " " <<  endl;
     emit updateVisionInfo(team_robots);
 }
 
@@ -157,48 +144,22 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         fuzzy->set_centroid_atk(centroid_atk); //salva a area de atk para o fuzzy
         fuzzy->set_centroid_def(centroid_def); //salva a area de def para o fuzzy
 
-        cpo->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
-        cpo->set_centroid_def(centroid_def); //salva a area de def para o cpo
+        leona->set_centroid_atk(centroid_atk); //salva a area de atk para a leona
+        leona->set_centroid_def(centroid_def); //salva a area de def para a leona
+        leona->set_def_area(def_area);
 
-        cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-        cph->set_centroid_def(centroid_def); //salva a area de def para o cph
-        cph->set_def_area(def_area);
+        presto->set_centroid_atk(centroid_atk); //salva a area de atk para o presto
+        presto->set_centroid_def(centroid_def); //salva a area de def para o presto
+        presto->set_def_area(def_area);
 
-        /*gandalf.set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-        gandalf.set_centroid_def(centroid_def); //salva a area de def para o cph
-        gandalf.set_def_area(def_area);
-
-        presto.set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-        presto.set_centroid_def(centroid_def); //salva a area de def para o cph
-        presto.set_def_area(def_area);
-
-        leona.set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-        leona.set_centroid_def(centroid_def); //salva a area de def para o cph
-        leona.set_def_area(def_area);*/
-
-        cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo2
-        cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo2
-
-        cpo3->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo3
-        cpo3->set_centroid_def(centroid_def); //salva a area de def para o cpo3
-
-        cph2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-        cph2->set_centroid_def(centroid_def); //salva a area de def para o cph
-
-        mover->set_centroid_atk(centroid_atk);
-        mover->set_centroid_def(centroid_def);
-        mover->set_def_area(def_area);
-
-        /*navigation->set_centroid_atk(centroid_atk);  //salva a area de atk para o navigation
-        navigation->set_centroid_def(centroid_def); //salva a area de def para o navigation
-        navigation->set_def_area(def_area);*/
+        gandalf->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf
+        gandalf->set_centroid_def(centroid_def); //salva a area de def para o gandalf
+        gandalf->set_def_area(def_area);
     }
 
-    /*gandalf.set_ball_vel(percep.ball_vel);
-    presto.set_ball_vel(percep.ball_vel);
-    leona.set_ball_vel(percep.ball_vel);*/
-    mover->set_ball_vel(percep.ball_vel);
-    cpo3->set_ball_vel(percep.ball_vel);
+    leona->set_ball_vel(percep.ball_vel);
+    presto->set_ball_vel(percep.ball_vel);
+    gandalf->set_ball_vel(percep.ball_vel);
 
     if(percep.ball_found){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -213,82 +174,41 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     enemy_pos[1] = percep.enemy_robots[1].get_pos();
     enemy_pos[2] = percep.enemy_robots[2].get_pos();
 
-   /* cout << "Bola :" << "em x: "<< ball_pos.x << " em y: "<< ball_pos.y << endl;
-    cout << "Inimigo 1: " << "em x: "<< enemy_pos[0].x << " em y: "<< enemy_pos[0].y << endl;
-    cout << "Inimigo 2: " << "em x: "<< enemy_pos[1].x << " em y: "<< enemy_pos[1].y << endl;
-    cout << "Inimigo 3: " << "em x: "<< enemy_pos[2].x << " em y: "<< enemy_pos[2].y << endl;*/
-
     team_pos[0] = percep.team_robots[0].get_pos(); //Leona
     team_pos[1] = percep.team_robots[1].get_pos(); //Gandalf
     team_pos[2] = percep.team_robots[2].get_pos(); //Presto
     team_robots = percep.team_robots;
-    //cout << "Presto " << percep.team_robots[2].get_channel() << endl;
 
-    /*gandalf.set_ball_pos(ball_pos);
-    gandalf.set_enemy_pos(enemy_pos);
-    gandalf.set_team_pos(team_pos);
+    leona->set_ball_pos(ball_pos); //Salva a posicao da bola para a leona
+    leona->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para a leona
+    leona->set_team_pos(team_pos); //Salva a posicao do time para a leona
 
-    presto.set_ball_pos(ball_pos);
-    presto.set_enemy_pos(enemy_pos);
-    presto.set_team_pos(team_pos);
+    presto->set_ball_pos(ball_pos); //Salva a posicao da bola para o presto
+    presto->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o presto
+    presto->set_team_pos(team_pos); //Salva a posicao do time para o presto
 
-    leona.set_ball_pos(ball_pos);
-    leona.set_enemy_pos(enemy_pos);
-    leona.set_team_pos(team_pos);*/
-
-    cph->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
-    cph->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph
-    cph->set_team_pos(team_pos); //Salva a posicao do time para o cph
-
-    cpo->set_ball_pos(ball_pos); //Salva a posicao da bola para o cpo
-    cpo->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo
-    cpo->set_team_pos(team_pos); //Salva a posicao do time para o cpo
-
-    cph2->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph2
-    cph2->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph2
-    cph2->set_team_pos(team_pos); //Salva a posicao do time para o cph2
-
-    cpo2->set_ball_pos(ball_pos); //Salva a posicao da bola para o cpo2
-    cpo2->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo2
-    cpo2->set_team_pos(team_pos); //Salva a posicao do time para o cpo2
-
-    cpo3->set_ball_pos(ball_pos); //Salva a posicao da bola para o cpo3
-    cpo3->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo3
-    cpo3->set_team_pos(team_pos); //Salva a posicao do time para o cpo3
-
-    mover->set_ball_pos(ball_pos); //Salva a posicao da bola para o navigation
-    mover->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o navigation
-    mover->set_team_pos(team_pos); //Salva a posicao do time para o navigation
-
-    //set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-
-    /*gandalf.set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    //gandalf.set_to_select_iterador(calc_Gandalf, calc_Presto, calc_Leona);
-    gandalf.set_calc_Gandalf(true);
-    gandalf.set_calc_Presto(false);
-    gandalf.set_calc_Leona(false);
-
-    presto.set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    //presto.set_to_select_iterador(calc_Gandalf, calc_Presto, calc_Leona);
-    presto.set_calc_Gandalf(false);
-    presto.set_calc_Presto(true);
-    presto.set_calc_Leona(false);
-
-    leona.set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    //leona.set_to_select_iterador(calc_Gandalf, calc_Presto, calc_Leona);
-    leona.set_calc_Gandalf(false);
-    leona.set_calc_Presto(false);
-    leona.set_calc_Leona(true);*/
+    gandalf->set_ball_pos(ball_pos); //Salva a posicao da bola para o gandalf
+    gandalf->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o gandalf
+    gandalf->set_team_pos(team_pos); //Salva a posicao do time para o gandalf
 
     fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]); //Gandalf, Presto e Leona nesta ordem
     fuzzy->set_ball_pos(ball_pos); //Salva a posicao da bola para o fuzzy
     fuzzy->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o fuzzy
 
-    mover->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    mover->set_to_select_iterador(cph,cpo,cph2,cpo2,cpo3);
-    mover->set_enemy_pos(enemy_pos);
-    mover->set_ball_pos(ball_pos);
-    mover->set_def_area(def_area);
+    leona->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    leona->set_enemy_pos(enemy_pos);
+    leona->set_ball_pos(ball_pos);
+    leona->set_def_area(def_area);
+
+    presto->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    presto->set_enemy_pos(enemy_pos);
+    presto->set_ball_pos(ball_pos);
+    presto->set_def_area(def_area);
+
+    gandalf->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    gandalf->set_enemy_pos(enemy_pos);
+    gandalf->set_ball_pos(ball_pos);
+    gandalf->set_def_area(def_area);
 
     if(percep.team_robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -311,16 +231,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->presto_detec_label->setText("Not Detected");
     }
-    //cout << "Centroid atk = x: " << centroid_atk.x * X_CONV_CONST << " y: " << centroid_atk.y * Y_CONV_CONST << endl;
 
-    cph->zera_flag_finish();
-    cpo->zera_flag_finish();
-    cph2->zera_flag_finish();
-    cpo2->zera_flag_finish();
-    cpo3->zera_flag_finish();
-    /*gandalf.zera_flag_finish();
-    presto.zera_flag_finish();
-    leona.zera_flag_finish();*/
     fuzzy->zera_flag_finish();
 
     if(run_fuzzy){
@@ -330,159 +241,50 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         fuzzy->Play();
      }
 
-    /*if(!run_Gandalf || !run_Presto || !run_Leona){
-        fuzzy->wait();
-        cout << 1 << endl;
-        //cout << fuzzy->get_flag_finish() << endl;
-        if (fuzzy->get_flag_finish() && !run_mover){
-
-            run_Gandalf = true;
-            run_Presto = true;
-            run_Leona = true;
-        }else{
-            run_Gandalf = false;
-            run_Presto = false;
-            run_Leona = false;
-        }
-    }
-
-    if(run_Gandalf){
-        if(gandalf.is_running()){
-            gandalf.wait();
-        }
-        gandalf.Play();
-     }
-
-    if(run_Presto){
-        if(presto.is_running()){
-            presto.wait();
-        }
-        presto.Play();
-     }
-
-    if(run_Leona){
-        if(leona.is_running()){
-            leona.wait();
-        }
-        leona.Play();
-        cout << 3 << endl;
-    }
     //inicia a thread do fuzzy caso ela nao esteja em execucao
-    if(!run_mover){
-        /*cph->wait();
-        cpo->wait();
-        cph2->wait();
-        cpo2->wait();
-        cpo3->wait();
-        gandalf.wait();
-        presto.wait();
-        leona.wait();
-        //fuzzy->wait();
-
-
-        if (gandalf.get_flag_finish() && presto.get_flag_finish() && leona.get_flag_finish() && fuzzy->get_flag_finish() && !run_mover){
-            run_mover = true;
-        }else{
-            run_mover = false;
-        }
-    }
-
-    if(run_mover){
-        if(mover->is_running()){
-            mover->wait();
-        }
-        mover->Play();
-     }*/
-
-
-    //inicia a thread do cph caso ela nao esteja em execucao
-    /*if(run_cph){
-        if(cph->is_running()){
-            cph->wait();
-        }
-        //cph->print_grid();
-        cph->Play();
-     }
-    //inicia a thread do cph2 caso ela nao esteja em execucao
-    if(run_cph2){
-        if(cph2->is_running()){
-            cph2->wait();
-        }
-        //cph2->print_grid();
-        cph2->Play();
-     }
-
-    //inicia a thread do cpo caso ela nao esteja em execucao
-    if(run_cpo){
-        if(cpo->is_running()){
-            cpo->wait();
-        }
-        //cpo->print_grid();
-        cpo->Play();
-     }
-    //inicia a thread do cpo2 caso ela nao esteja em execucao
-    if(run_cpo2){
-        if(cpo2->is_running()){
-            cpo2->wait();
-        }
-        //cpo2->print_grid();
-        cpo2->Play();
-     }
-    //inicia a thread do cpo3 caso ela nao esteja em execucao
-    if(run_cpo3){
-        if(cpo3->is_running()){
-            cpo3->wait();
-        }
-        //cpo3->print_grid();
-        cpo3->Play();
-     }*/
-
-    //inicia a thread do fuzzy caso ela nao esteja em execucao
-    if(!run_mover){
-        /*cph->wait();
-        cpo->wait();
-        cph2->wait();
-        cpo2->wait();
-        cpo3->wait();*/
-        //gandalf.wait();
-        //presto.wait();
-        //leona.wait();
+    if(!run_leona && !run_presto && !run_gandalf){
         fuzzy->wait();
 
-
-        if (/*cph->get_flag_finish() && cpo->get_flag_finish() && cph2->get_flag_finish() && cpo2->get_flag_finish() && cpo3->get_flag_finish() &&*/ fuzzy->get_flag_finish() && !run_mover){
-            run_mover = true;
+        if (fuzzy->get_flag_finish() && !run_leona && !run_presto && !run_gandalf){
+            run_leona = true;
+            run_presto = true;
+            run_gandalf = true;
         }else{
-            run_mover = false;
+            run_leona = false;
+            run_presto = false;
+            run_gandalf = false;
         }
     }
 
-    if(run_mover){
-        if(mover->is_running()){
-            mover->wait();
+    if(run_leona){
+        if(leona->is_running()){
+            leona->wait();
         }
-        mover->Play();
+        leona->set_calc_Gandalf(false);
+        leona->set_calc_Presto(false);
+        leona->set_calc_Leona(true);
+        leona->Play();
      }
 
-    /*if(!run_cph || !run_cph2 || !run_cpo || !run_cpo2 || !run_cpo3){
-            fuzzy->wait();
-            cout << 1 << endl;
-            //cout << fuzzy->get_flag_finish() << endl;
-            if (fuzzy->get_flag_finish() && !run_mover){
-                run_cph = true;
-                run_cph2 = true;
-                run_cpo = true;
-                run_cpo2 = true;
-                run_cpo3 = true;
-            }else{
-                run_cph = false;
-                run_cph2 = false;
-                run_cpo = false;
-                run_cpo2 = false;
-                run_cpo3 = false;
-            }
-        }*/
+    if(run_presto){
+        if(presto->is_running()){
+            presto->wait();
+        }
+        presto->set_calc_Gandalf(false);
+        presto->set_calc_Presto(true);
+        presto->set_calc_Leona(false);
+        presto->Play();
+     }
 
+    if(run_gandalf){
+        if(gandalf->is_running()){
+            gandalf->wait();
+        }
+        gandalf->set_calc_Gandalf(true);
+        gandalf->set_calc_Presto(false);
+        gandalf->set_calc_Leona(false);
+        gandalf->Play();
+     }
 }
 
 void soccer_window::updateFPS(double fps){
@@ -498,13 +300,8 @@ void soccer_window::on_start_game_2_clicked()
     if(!game_started){
         game_started = true;
         Point convert_C_to_G(Point2d);
-        run_cph = true;
-        run_cpo = true;
-        run_cph2 = true;
-        run_cpo2 = true;
-        run_cpo3 = true;
-        run_fuzzy = true;
 
+        run_fuzzy = true;
 
         if(!Robot::is_serial_open()){
             Robot::open_serial();
@@ -513,16 +310,10 @@ void soccer_window::on_start_game_2_clicked()
         ui->start_game_2->setText("Stop Game");
     }else{
         game_started = false;
-        run_cph = false;
-        run_cpo = false;
-        run_cph2 = false;
-        run_cpo2 = false;
-        run_cpo3 = false;
-        /*run_Gandalf = false;
-        run_Presto = false;
-        run_Leona = false;*/
         run_fuzzy = false;
-        run_mover = false;
+        run_leona = false;
+        run_presto = false;
+        run_gandalf = false;
 
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
@@ -579,42 +370,20 @@ void soccer_window::on_switch_fields_clicked()
     fuzzy->set_centroid_atk(centroid_atk); //salva a area de atk para o fuzzy
     fuzzy->set_centroid_def(centroid_def); //salva a area de def para o fuzzy
 
-    cpo->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
-    cpo->set_centroid_def(centroid_def); //salva a area de def para o cpo
+    leona->set_centroid_atk(centroid_atk); //salva a area de atk para a leona
+    leona->set_centroid_def(centroid_def); //salva a area de def para a leona
+    leona->set_def_area(def_area);
+    leona->team_changed();
 
-    cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-    cph->set_centroid_def(centroid_def); //salva a area de def para o cph
-    cph->set_def_area(def_area);
+    presto->set_centroid_atk(centroid_atk); //salva a area de atk para o presto
+    presto->set_centroid_def(centroid_def); //salva a area de def para o presto
+    presto->set_def_area(def_area);
+    presto->team_changed();
 
-    /*navigation->set_centroid_atk(centroid_atk);  //salva a area de atk para o navigation
-    navigation->set_centroid_def(centroid_def); //salva a area de def para o navigation
-    navigation->set_def_area(def_area);*/
-
-    /*gandalf.set_centroid_atk(centroid_atk);
-    gandalf.set_centroid_def(centroid_def);
-    gandalf.set_def_area(def_area);
-
-    presto.set_centroid_atk(centroid_atk);
-    presto.set_centroid_def(centroid_def);
-    presto.set_def_area(def_area);
-
-    leona.set_centroid_atk(centroid_atk);
-    leona.set_centroid_def(centroid_def);
-    leona.set_def_area(def_area);*/
-
-    cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo2
-    cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo2
-
-    cph2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph2
-    cph2->set_centroid_def(centroid_def); //salva a area de def para o cph2
-
-    cpo3->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo3
-    cpo3->set_centroid_def(centroid_def); //salva a area de def para o cpo3
-
-    mover->set_centroid_atk(centroid_atk);
-    mover->set_centroid_def(centroid_def);
-    mover->set_def_area(def_area);
-    mover->team_changed();
+    gandalf->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf
+    gandalf->set_centroid_def(centroid_def); //salva a area de def para o gandalf
+    gandalf->set_def_area(def_area);
+    gandalf->team_changed();
 }
 
 void soccer_window::on_read_parameters_clicked()
