@@ -123,6 +123,7 @@ void Game_functions::run(){
     else if(calc_Presto)
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
+        cout << r2_flag << endl;
         switch (r2_flag){
             case 0:
                 defender(&selec_robot.r2, 1, &vels[1]);
@@ -539,6 +540,7 @@ void Game_functions::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
 
 void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *vels){
     //fazer depois
+    goalkeeper_orientation(robo,vels);
 }
 
 void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vels){
@@ -560,8 +562,8 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
         if(team_pos[i].x > 0 && team_pos[i].y > 0){
             team_pos_grid[i] = convert_C_to_G(team_pos[i]);
             //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
-            if(i != num_Robo)
-                set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
+            //if(i != num_Robo)
+                //set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
         }else{
             //tratar posição dos miguxos aqui
         }
@@ -711,8 +713,8 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
         if(team_pos[i].x > 0 && team_pos[i].y > 0){
             team_pos_grid[i] = convert_C_to_G(team_pos[i]);
             //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
-            if(i != num_Robo)
-                set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
+            //if(i != num_Robo)
+            //    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
         }else{
             //tratar posição dos miguxos aqui
         }
@@ -830,7 +832,6 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
         init_grid();
     //}
 
-    cout << "Striker" << endl;
     for(i = 0; i < 3; ++i){
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
             enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
@@ -844,8 +845,8 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
         if(team_pos[i].x > 0 && team_pos[i].y > 0){
             team_pos_grid[i] = convert_C_to_G(team_pos[i]);
             //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
-            if(i != num_Robo)
-                set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
+            //if(i != num_Robo)
+            //    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
         }else{
             //tratar posição dos miguxos aquieuclidean_dist(ball_pos,enemy_prox
         }
@@ -1014,8 +1015,8 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
         if(team_pos[i].x > 0 && team_pos[i].y > 0){
             team_pos_grid[i] = convert_C_to_G(team_pos[i]);
             //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
-            if(i != num_Robo)
-                set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
+            //if(i != num_Robo)
+            //    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
         }else{
             //tratar posição dos miguxos aquieuclidean_dist(ball_pos,enemy_prox
         }
