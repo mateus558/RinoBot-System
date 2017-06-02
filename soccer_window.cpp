@@ -156,9 +156,9 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         gandalf->set_def_area(def_area);
     }
 
-    leona->set_ball_vel(percep.ball_vel);
-    presto->set_ball_vel(percep.ball_vel);
-    gandalf->set_ball_vel(percep.ball_vel);
+    leona->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para a leona
+    presto->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o presto
+    gandalf->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o gandalf
 
     if(percep.ball_found){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -264,6 +264,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         }
     }
 
+    //inicia a thread da leona caso ela nao esteja em execucao
     if(run_leona){
         if(leona->is_running()){
             leona->wait();
@@ -271,13 +272,15 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         leona->Play();
      }
 
+    //inicia a thread do presto caso ela nao esteja em execucao
     if(run_presto){
         if(presto->is_running()){
             presto->wait();
         }
         presto->Play();
-     }
+    }
 
+    //inicia a thread do gandalf caso ela nao esteja em execucao
     if(run_gandalf){
         if(gandalf->is_running()){
             gandalf->wait();

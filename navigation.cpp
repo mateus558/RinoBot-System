@@ -14,8 +14,6 @@ void Navigation::run(){
 
 }
 
-
-
 double Navigation::iterator_cph(){
     double erro = 0;
     double top, botton, left, right;
@@ -157,7 +155,6 @@ void Navigation::set_direction(){
     {
         for(j=0;j<36;j++)
         {
-            //cout << "i = " << i << " j = " << j << endl;
             if(get_occupancy(i,j)==1)
                 tGrid[i][j] = -atan2(get_neighborhood(i,j,0)-get_neighborhood(i,j,1),get_neighborhood(i,j,2)-get_neighborhood(i,j,3))*180/PI;
             else
@@ -228,30 +225,6 @@ Point2d Navigation::get_meta_aux(){
 void Navigation::set_meta_aux(Point2d meta){
     this->meta = meta;
 }
-
-/*void Navigation::set_enemy_pos(p2dVector enemy_pos){
-    this->enemy_pos = enemy_pos;
-}
-
-void Navigation::set_team_pos(p2dVector team_pos){
-    this->team_pos = team_pos;
-}
-
-void Navigation::set_ball_pos(Point2d ball_pos){
-    this->ball_pos = ball_pos;
-}
-
-void Navigation::set_def_area(pVector def_area){
-    this->def_area = def_area;
-}
-
-void Navigation::set_centroid_atk(Point2d centroid_atk){
-    this->centroid_atk = centroid_atk;
-}
-
-void Navigation::set_centroid_def(Point2d centroid_def){
-    this->centroid_def = centroid_def;
-}*/
 
 void Navigation::set_epsilon(double e){
     this->e = e;

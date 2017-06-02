@@ -12,8 +12,8 @@ class Navigation : public QThread
 {
     Q_OBJECT
 protected:
-    static const int dx = 5;
-    static const int dy = 5;
+    static const int dx = 4;
+    static const int dy = 4;
     int i;
     double orientation;
     double e;

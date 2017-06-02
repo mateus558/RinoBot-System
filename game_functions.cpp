@@ -72,13 +72,9 @@ void Game_functions::run(){
     }
 
     //Pro terceiro robô - Leona
-    /*cout << "Leona: " << calc_Leona << endl;
-    cout << "Presto: " << calc_Presto << endl;
-    cout << "Gandalf: " << calc_Gandalf << endl;*/
     if (calc_Leona)
     {
         int r3_flag = selec_robot.r3.get_flag_fuzzy();
-        //cout << "Leona: " << r3_flag << endl;
         switch (r3_flag){
             case 0:
                 defender(&selec_robot.r3, 2, &vels[2]);
@@ -103,7 +99,6 @@ void Game_functions::run(){
     else if(calc_Gandalf)
     {
         int r1_flag = selec_robot.r1.get_flag_fuzzy();
-        //cout << "Gandalf: " << r1_flag << endl;
         switch (r1_flag){
             case 0:
                 defender(&selec_robot.r1, 0, &vels[0]);
@@ -128,7 +123,6 @@ void Game_functions::run(){
     else if(calc_Presto)
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
-        //cout << "Presto: " << r2_flag << endl;
         switch (r2_flag){
             case 0:
                 defender(&selec_robot.r2, 1, &vels[1]);
@@ -533,11 +527,11 @@ void Game_functions::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
     alpha = 90 - r->get_angle();
     alpha = ajusta_angulo(alpha);
     if (fabs(alpha) <= limiar_theta){
-        w = k*v_max*alpha/180,2;
+        w = k*v_max*alpha/180;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = k*v_max*alpha/180,2;
+        w = k*v_max*alpha/180;
     }
     vels->first = -w*l;
     vels->second = w*l;
@@ -566,6 +560,8 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
         if(team_pos[i].x > 0 && team_pos[i].y > 0){
             team_pos_grid[i] = convert_C_to_G(team_pos[i]);
             //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
+            if(i != num_Robo)
+                set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
         }else{
             //tratar posição dos miguxos aqui
         }
@@ -715,6 +711,8 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
         if(team_pos[i].x > 0 && team_pos[i].y > 0){
             team_pos_grid[i] = convert_C_to_G(team_pos[i]);
             //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
+            if(i != num_Robo)
+                set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
         }else{
             //tratar posição dos miguxos aqui
         }
@@ -832,6 +830,7 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
         init_grid();
     //}
 
+    cout << "Striker" << endl;
     for(i = 0; i < 3; ++i){
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
             enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
@@ -845,6 +844,8 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
         if(team_pos[i].x > 0 && team_pos[i].y > 0){
             team_pos_grid[i] = convert_C_to_G(team_pos[i]);
             //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
+            if(i != num_Robo)
+                set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
         }else{
             //tratar posição dos miguxos aquieuclidean_dist(ball_pos,enemy_prox
         }
@@ -948,6 +949,7 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
     }*/
 
    // cout<<"Orientação: "<<orientation<<endl;
+
     while(iterator_cpo()>1E-6);
     set_direction();
 
@@ -1012,6 +1014,8 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
         if(team_pos[i].x > 0 && team_pos[i].y > 0){
             team_pos_grid[i] = convert_C_to_G(team_pos[i]);
             //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
+            if(i != num_Robo)
+                set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
         }else{
             //tratar posição dos miguxos aquieuclidean_dist(ball_pos,enemy_prox
         }
@@ -1133,21 +1137,21 @@ Point Game_functions::convert_C_to_G(Point2d coord){
     coord.x = int(coord.x) + 5;
     coord.y = int(coord.y) + 5;
 
-    if(coord.x / 5 > 35){
-        i.x = 35;
+    if(coord.x / 5 > 34){
+        i.x = 34;
     }
-    else if(coord.x / 5 < 0){
-        i.x = 0;
+    else if(coord.x / 5 < 3){
+        i.x = 3;
     }
     else{
         i.x = coord.x / 5;
     }
 
-    if(coord.y / 5 > 27){
-        i.y = 27;
+    if(coord.y / 5 > 26){
+        i.y = 26;
     }
-    else if(coord.y / 5 < 0){
-        i.y = 0;
+    else if(coord.y / 5 < 1){
+        i.y = 1;
     }
     else{
         i.y = coord.y / 5;
