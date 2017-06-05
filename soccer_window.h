@@ -53,7 +53,6 @@ private:
     Game_functions *leona;
     Game_functions *presto;
     Game_functions *gandalf;
-    Navigation *navigation;
     Vision *eye;
     Vision::Perception percep;
     SettingsDialog::Settings serial_config;

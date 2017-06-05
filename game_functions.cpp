@@ -71,7 +71,7 @@ void Game_functions::run(){
         game_functions_initialized = true;
     }
     //Pro terceiro robô - Leona
-    if (calc_Leona)
+    /*if (calc_Leona)
     {
         int r3_flag = selec_robot.r3.get_flag_fuzzy();
         switch (r3_flag){
@@ -92,8 +92,6 @@ void Game_functions::run(){
                 break;
         }
         selec_robot.r3.set_lin_vel(vels[2]);
-        /*cout << 1 << vels[2].first << endl;
-        cout << 2 << vels[2].second << endl;*/
     }
 
     //Pro primeiro robô - Gandalf
@@ -117,8 +115,9 @@ void Game_functions::run(){
                 goalkeeper(&selec_robot.r1, 0, &vels[0]);
                 break;
         }
+        //cout << "Gandalf metax: " << meta.x << " y: " << meta.y << endl;
         selec_robot.r1.set_lin_vel(vels[0]);
-    }
+    }*/
 
     //Pro segundo robô - Presto
     else if(calc_Presto)
@@ -142,6 +141,8 @@ void Game_functions::run(){
                 goalkeeper(&selec_robot.r2, 1, &vels[1]);
             break;
         }
+        //print_grid();
+        //cout << "Presto metax: " << meta.x << " y: " << meta.y << endl;
         selec_robot.r2.set_lin_vel(vels[1]);
     }
 
@@ -637,8 +638,6 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
     if (centroid_atk.x > ball_pos.x){
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
             //cout << "Reconheceu a area de defesa" << endl;
-
-
             if(ball_pos.x > 0 && ball_pos.y > 0){
                 meta2d.x = centroid_def.x + 35;
                 meta = convert_C_to_G(meta2d);
@@ -778,7 +777,7 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
     }
 
     //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-    Point2d meta;
+    Point meta;
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
         if ((ball_pos.y > centroid_def.y+55 || ball_pos.y < centroid_def.y-55) && fabs(ball_pos.x - centroid_def.x) < 70){
@@ -807,10 +806,10 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
             //cout << "Meta: " << endl;
             //cout << " x: " << meta.x << " y: " << meta.y << endl;
             if(meta.x > 0 && meta.y > 0){
-                 Point meta_pos_grid = convert_C_to_G(meta);
+                 meta = convert_C_to_G(meta);
                  //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                 if (meta_pos_grid.x > 0 && meta_pos_grid.y > 0)
-                     set_potential(meta_pos_grid.y, meta_pos_grid.x, 0);
+                 if (meta.x > 0 && meta.y > 0)
+                     set_potential(meta.y, meta.x, 0);
             }else{
                 //tratar a meta aqui
             }

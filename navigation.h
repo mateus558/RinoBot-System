@@ -20,7 +20,6 @@ protected:
     QMutex mutex;
     dMatrix pGrid;
     dMatrix tGrid;
-    Point2d meta;
     bool stop, grid_initialized, flag_finish_navegation;
 
     void msleep(int ms);
@@ -45,8 +44,6 @@ public:
     void set_centroid_atk(Point2d);
     void set_centroid_def(Point2d);
     Point convert_C_to_G(Point2d); // colocar na utils
-    Point2d get_meta_aux();
-    void set_meta_aux(Point2d);
     void set_epsilon(double);
     void set_orientation(double);
     bool get_flag_finish();

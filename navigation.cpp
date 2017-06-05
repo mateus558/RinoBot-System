@@ -218,13 +218,6 @@ void Navigation::print_grid(){
     cout<<"\n\n\n";
 }
 
-Point2d Navigation::get_meta_aux(){
-    return this->meta;
-}
-
-void Navigation::set_meta_aux(Point2d meta){
-    this->meta = meta;
-}
 
 void Navigation::set_epsilon(double e){
     this->e = e;
