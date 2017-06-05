@@ -70,7 +70,6 @@ void Game_functions::run(){
         //init_game_functions();
         game_functions_initialized = true;
     }
-
     //Pro terceiro robô - Leona
     if (calc_Leona)
     {
@@ -93,6 +92,8 @@ void Game_functions::run(){
                 break;
         }
         selec_robot.r3.set_lin_vel(vels[2]);
+        /*cout << 1 << vels[2].first << endl;
+        cout << 2 << vels[2].second << endl;*/
     }
 
     //Pro primeiro robô - Gandalf
@@ -123,7 +124,7 @@ void Game_functions::run(){
     else if(calc_Presto)
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
-        cout << r2_flag << endl;
+        //cout << r2_flag << endl;
         switch (r2_flag){
             case 0:
                 defender(&selec_robot.r2, 1, &vels[1]);
@@ -528,19 +529,74 @@ void Game_functions::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
     alpha = 90 - r->get_angle();
     alpha = ajusta_angulo(alpha);
     if (fabs(alpha) <= limiar_theta){
-        w = k*v_max*alpha/180;
+        w = 20*k*v_max*alpha/180;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = k*v_max*alpha/180;
+        w = 20*k*v_max*alpha/180;
     }
     vels->first = -w*l;
     vels->second = w*l;
 }
 
 void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *vels){
-    //fazer depois
     goalkeeper_orientation(robo,vels);
+    Point2d ball_v;
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = -ball_vel.second / 100;
+    Point2d robot_pos = robo->get_pos();
+    goalkeeper_orientation(robo,vels);
+
+    // previsao de bola - perigo de gol
+
+   /*double tempo;
+   double aux_position_y;
+   if (robo->get_angle() > 0 && ball_pos.y < robot_pos.y ){
+       if (ball_v.x < -0.1){
+           tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
+           aux_position_y = ball_pos.y - tempo*ball_v.y;
+           //if (aux_position_y > robot_pos.y){
+               v = -(aux_position_y-robot_pos.y)/tempo;
+               vels->first = v;
+               vels->second = v;
+           //}
+       }
+   }
+   else if (robo->get_angle() > 0 && ball_pos.y > robot_pos.y){
+       if (ball_v.x < -0.1){
+           tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
+           aux_position_y = ball_pos.y - tempo*ball_v.y;
+           //if (aux_position_y < robot_pos.y){
+               v = -(aux_position_y-robot_pos.y)/tempo;
+               vels->first = v;
+               vels->second = v;
+           //}
+       }
+   }
+   else if (robo->get_angle() < 0 && ball_pos.y < robot_pos.y ){
+       if (ball_v.x < -0.1){
+           tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
+           aux_position_y = ball_pos.y - tempo*ball_v.y;
+           //if (aux_position_y > robot_pos.y){
+               v = (aux_position_y-robot_pos.y)/tempo;
+               vels->first = v;
+               vels->second = v;
+           //}
+       }
+   }
+   else if (robo->get_angle() < 0 && ball_pos.y > robot_pos.y ){
+       if (ball_v.x < -0.1){
+           tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
+           aux_position_y = ball_pos.y - tempo*ball_v.y;
+           //if (aux_position_y < robot_pos.y){
+               v = (aux_position_y-robot_pos.y)/tempo;
+               vels->first = v;
+               vels->second = v;
+           //}
+       }
+   }*/
+
+
 }
 
 void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vels){
@@ -666,7 +722,8 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
     else{
         alpha = ajusta_angulo(alpha+180);
         w = k*v_max*alpha/180;
-        v = v_max*fabs(alpha)/limiar_theta - v_max;
+        v = v_max*fabs(alpha)/limiar_theta - v_max
+                ;
     }
     vels->first = v-w*l;
     vels->second = v+w*l;
@@ -1123,41 +1180,57 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
 }
 
 double Game_functions::ajusta_angulo(double angle){
-    if (angle < -180)
+    while (angle < -180)
         angle = angle + 360;
-    else if (angle > 180)
+    while (angle > 180)
         angle = angle - 360;
-    else
-        angle = angle;
     return angle;
 }
 
 Point Game_functions::convert_C_to_G(Point2d coord){
-    Point i;
+    /*Point i;
 
     coord.x = int(coord.x) + 5;
     coord.y = int(coord.y) + 5;
 
-    if(coord.x / 5 > 34){
-        i.x = 34;
+    if(coord.x / 5 != 35){
+        i.x = coord.x / 5;
     }
     else if(coord.x / 5 < 3){
         i.x = 3;
     }
     else{
-        i.x = coord.x / 5;
+        i.x = 35;
     }
 
-    if(coord.y / 5 > 26){
-        i.y = 26;
+    if(coord.y / 5 != 27){
+        i.y = coord.y / 5;
     }
     else if(coord.y / 5 < 1){
         i.y = 1;
     }
     else{
-        i.y = coord.y / 5;
+        i.y = 27;
+    }
+    return i;*/
+
+    Point i;
+
+    coord.x = int(coord.x) + 5;
+    coord.y = int(coord.y) + 5;
+
+    if(coord.x / dx != 35){
+        i.x = coord.x / dx;
+    }else{
+        i.x = coord.x / dx - 1;
     }
 
+    if(coord.y / dy != 27){
+        i.y = coord.y / dy;
+    }else{
+        i.y = coord.y / dy - 1;
+    }
+    //cout << "i.x = " << i.x << " i.y = " << i.y << endl;
     return i;
 }
 
