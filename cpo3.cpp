@@ -348,53 +348,54 @@ void CPO3::run(){
 void CPO3::return2goal(){
     if(ball_pos.x > 0 && ball_pos.y > 0){
             if (ball_pos.x < centroid_atk.x){
-                if(ball_pos.y < 45 &&  ball_pos.x < 90){
-                    meta_aux.x = centroid_def.x + 8;
-                    meta_aux.y = centroid_def.y - 20;
+                if (ball_pos.x < 90){
+                    if(ball_pos.y < 45){
+                        meta_aux.x = centroid_def.x + 8;
+                        meta_aux.y = centroid_def.y - 20;
+                    }
+                    else if(ball_pos.y > 95){
+                        meta_aux.x = centroid_def.x + 8;
+                        meta_aux.y = centroid_def.y + 20;
+                    }
+                    else{
+                        meta_aux.x = centroid_def.x + 8;
+                        meta_aux.y = centroid_def.y;
+                    }
                 }
-                else if(ball_pos.y > 95 &&  ball_pos.x < 90){
-                    meta_aux.x = centroid_def.x + 8;
-                    meta_aux.y = centroid_def.y + 20;
-                }
-                else if (ball_pos.x > 90){
+                else{
                     meta_aux.x = centroid_def.x + 8;
                     meta_aux.y = centroid_def.y;
                 }
-                else
-
-                meta = convert_C_to_G(meta_aux); //cm to grid
-                if (meta_aux.x > 0 && meta_aux.y > 0){
-                    //cout << "ataque: " << centroid_atk << " defesa: " << centroid_def << endl;
-                    set_potential(meta.y, meta.x, 0);
-                    //cout << "Metax: " << meta_aux.x << " Metay: " << meta_aux.y << endl;
-
-                }
-
             }
-
             if (ball_pos.x >= centroid_atk.x){
-                if(ball_pos.y < 45 &&  ball_pos.x > 90){
-                    meta_aux.x = centroid_def.x - 8;
-                    meta_aux.y = centroid_def.y - 20;
+                if (ball_pos.x > 90){
+                    if(ball_pos.y < 45){
+                        meta_aux.x = centroid_def.x - 8;
+                        meta_aux.y = centroid_def.y - 20;
+                    }
+                    else if(ball_pos.y > 95){
+                        meta_aux.x = centroid_def.x - 8;
+                        meta_aux.y = centroid_def.y + 20;
+                    }
+                    else{
+                        meta_aux.x = centroid_def.x - 8;
+                        meta_aux.y = centroid_def.y;
+                    }
                 }
-                else if(ball_pos.y > 95 &&  ball_pos.x > 90){
-                    meta_aux.x = centroid_def.x - 8;
-                    meta_aux.y = centroid_def.y + 20;
-                }
-                else if(ball_pos.x < 90){
+                else{
                     meta_aux.x = centroid_def.x - 8;
                     meta_aux.y = centroid_def.y;
                 }
-                else
-
-                meta = convert_C_to_G(meta_aux);
-                if (meta_aux.x > 0 && meta_aux.y > 0){
-                    //cout << "ataque: " << centroid_atk << " defesa: " << centroid_def << endl;
-                    set_potential(meta.y, meta.x, 0);
-                    //cout << "Metax: " << meta_aux.x << " Metay: " << meta_aux.y << endl;
-
-                }
             }
+
+            meta = convert_C_to_G(meta_aux); //cm to grid
+            if (meta_aux.x > 0 && meta_aux.y > 0){
+                //cout << "ataque: " << centroid_atk << " defesa: " << centroid_def << endl;
+                set_potential(meta.y, meta.x, 0);
+                //cout << "Metax: " << meta_aux.x << " Metay: " << meta_aux.y << endl;
+
+            }
+
             while(iterator()>1E-6);
             set_direction();
             set_grid_orientation();
