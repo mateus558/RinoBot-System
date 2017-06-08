@@ -22,6 +22,11 @@
 using namespace std;
 using namespace cv;
 
+/*!
+ * \brief The Vision class is used to extract useful information from an image for robot soccer using
+ * computer vision algorithms.
+ */
+
 class Vision: public QThread {  Q_OBJECT
 public:
     struct Perception{
@@ -74,31 +79,54 @@ protected:
     void msleep(int ms);
 public:
     Vision(QObject *parent = 0);
-    Mat detect_colors(Mat vision_frame, vector<int> low, vector<int> upper);
-    pair<vector<vector<Vec4i> >, vector<pMatrix> > detect_objects(Mat frame, vector<Robot> robots);
-    Mat setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper);
+
+    /*
+     * Functions for pre-processing of the image.
+     */
+
+    Mat train_kmeans(Mat img, int nClusters);
+    Mat apply_kmeans(Mat img, Mat centers);
     Mat adjust_gamma(double gamma, Mat org);
     Mat crop_image(Mat org);
     Mat CLAHE_algorithm(Mat org);
-    vector<Robot> get_robots();
+    Mat proccess_frame(Mat, Mat);
+
+    /*
+     * Functions for the detection and drawing of the robots.
+     */
+
     vector<Robot> fill_robots(vector<pMatrix> contours, vector<Robot> robots);
     Mat draw_robots(Mat frame, vector<Robot> robots);
-    Mat proccess_frame(Mat, Mat);
-    int get_camID();
-    void set_robots(vector<Robot> robots);
-    void set_ball(pair<vector<int>, vector<int> > ball);
+    Mat detect_colors(Mat vision_frame, vector<int> low, vector<int> upper);
+    pair<vector<vector<Vec4i> >, vector<pMatrix> > detect_objects(Mat frame, vector<Robot> robots);
+
+    /*
+     * Configuration functions.
+     */
+
+    Mat setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper);
     bool open_camera(int camid = CV_CAP_FIREWIRE);
     void Play();
     void Stop();
     void switch_teams_areas();
-    void set_low(vector<int> low);
-    void set_def_area(pVector def_points);
-    void set_atk_area(pVector atk_points);
     void show_area(bool show);
     void show_centers(bool show);
     void show_names(bool show);
     void show_errors(bool show);
     void save_image();
+    void release_cam();
+
+    /*
+     * Get and set functions.
+     */
+
+    vector<Robot> get_robots();
+    int get_camID();
+    void set_robots(vector<Robot> robots);
+    void set_ball(pair<vector<int>, vector<int> > ball);   
+    void set_low(vector<int> low);
+    void set_def_area(pVector def_points);
+    void set_atk_area(pVector atk_points);
     void set_upper(vector<int> upper);
     void set_camid(int cam);
     vector<int> get_low();
@@ -106,7 +134,6 @@ public:
     void set_mode(int m = 0);
     bool isStopped() const;
     bool is_open();
-    void release_cam();
     ~Vision();
 };
 

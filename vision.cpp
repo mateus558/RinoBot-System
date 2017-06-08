@@ -319,6 +319,35 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     return ret;
 }
 
+Mat Vision::train_kmeans(Mat img, int nClusters)
+{
+    int x, y, z;
+    double elapsed_secs;
+    clock_t begin, end;
+    Mat samples(img.rows * img.cols, 3, CV_32F), labels, centers;
+
+    for(y = 0; y < img.rows; y++){
+        for(x = 0; x < img.cols; x++){
+            for(z = 0; z < 3; z++){
+                samples.at<float>(y + x*img.rows, z) = img.at<Vec3b>(y,x)[z];
+            }
+        }
+    }
+
+    clog << "Training K-means model with " << nClusters << " clusters." << endl;
+    begin  = clock();
+    kmeans(samples, nClusters, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.001), attempts, KMEANS_PP_CENTERS, centers );
+    end  = clock();
+    elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    clog << "End of training in " << elapsed_secs << " seconds." << endl;
+
+    return centers;
+}
+
+Mat Vision::apply_kmeans(Mat img, Mat centers){
+
+}
+
 Mat Vision::adjust_gamma(double gamma, Mat org)
 {
     if(gamma == 1.0)
