@@ -58,12 +58,12 @@ void SetColorRange::showEvent(QShowEvent *event){
     ui->horizontalSlider_4->setValue(upper[0]);
     ui->horizontalSlider_5->setValue(upper[1]);
     ui->horizontalSlider_6->setValue(upper[2]);
-    cout << 1 << endl;
+    //cout << 1 << endl;
     if(eye == NULL){
         eye = new Vision;
         eye->set_mode(1);
     }
-    cout << 2 << endl;
+    //cout << 2 << endl;
 }
 
 void SetColorRange::closeEvent(QCloseEvent *event){

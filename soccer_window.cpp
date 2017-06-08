@@ -457,7 +457,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
     if(!run_cph || !run_cph2 || !run_cpo || !run_cpo2 || !run_cpo3){
             fuzzy->wait();
-            cout << 1 << endl;
+            //cout << 1 << endl;
             //cout << fuzzy->get_flag_finish() << endl;
             if (fuzzy->get_flag_finish() && !run_mover){
                 run_cph = true;

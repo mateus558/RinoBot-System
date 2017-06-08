@@ -398,7 +398,7 @@ void CPO3::return2goal(){
 
             while(iterator()>1E-6);
             set_direction();
-            set_grid_orientation();
+            //set_grid_orientation();
 
     }
 }
