@@ -17,7 +17,7 @@ Vision::Vision(QObject *parent): QThread(parent)
 {
     Point a, b;
     stop = true;
-    showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters= false;
+    showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters = trained= false;
     mode = 0;
     cont = 0;
     tracker = Tracker::create("KCF");
@@ -321,22 +321,14 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
 
 Mat Vision::train_kmeans(Mat img, int nClusters)
 {
-    int x, y, z;
+    int x, y, z, attempts = 5;
     double elapsed_secs;
     clock_t begin, end;
-    Mat samples(img.rows * img.cols, 3, CV_32F), labels, centers;
-
-    for(y = 0; y < img.rows; y++){
-        for(x = 0; x < img.cols; x++){
-            for(z = 0; z < 3; z++){
-                samples.at<float>(y + x*img.rows, z) = img.at<Vec3b>(y,x)[z];
-            }
-        }
-    }
+    Mat centers;
 
     clog << "Training K-means model with " << nClusters << " clusters." << endl;
     begin  = clock();
-    kmeans(samples, nClusters, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.001), attempts, KMEANS_PP_CENTERS, centers );
+    kmeans(img, nClusters, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.001), attempts, KMEANS_PP_CENTERS, centers );
     end  = clock();
     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     clog << "End of training in " << elapsed_secs << " seconds." << endl;
@@ -344,7 +336,19 @@ Mat Vision::train_kmeans(Mat img, int nClusters)
     return centers;
 }
 
-Mat Vision::apply_kmeans(Mat img, Mat centers){
+Mat Vision::apply_kmeans(Mat img, Mat centers, Mat _labels){
+    bool isrow = img.rows == 1;
+    int N = isrow ? img.cols : img.rows, x, y, z;
+    int dims = (isrow ? 1 : img.cols)*img.channels();
+
+    // assign labels
+    Mat dists(1, N, CV_64F);
+    Mat data(N, dims, CV_32F, img.ptr(), isrow ? dims * sizeof(float) : static_cast<size_t>(img.step));
+    double* dist = dists.ptr<double>(0);
+    int* labels = _labels.ptr<int>();
+    parallel_for_(Range(0, N),
+                 KMeansDistanceComputer(dist, labels, data, centers));
+    this->labels = _labels;
 
 }
 
@@ -440,15 +444,36 @@ Mat Vision::crop_image(Mat org){
 
 Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
 {
+    int x, y, z;
+    Mat samples(orig.rows * orig.cols, 3, CV_32F);
+
     dest = orig.clone();
     //Gamma correction
     dest = adjust_gamma(1.3 , dest);
-    //Apply histogram normalization
-    //dest = CLAHE_algorithm(dest);
     //Apply gaussian blur
-     GaussianBlur(dest, dest, Size(5,5), 1.8);
+    GaussianBlur(dest, dest, Size(5,5), 1.8);
 
-     return dest;
+    for(y = 0; y < orig.rows; y++){
+        for(x = 0; x < orig.cols; x++){
+            for(z = 0; z < 3; z++){
+                samples.at<float>(x + y*orig.rows, z) = orig.at<Vec3b>(y,x)[z];
+            }
+        }
+    }
+    if(!trained){
+        trained = true;
+        centers = train_kmeans(samples, 18);
+    }
+    apply_kmeans(samples, centers, labels);
+    for(y = 0; y < dest.rows; y++){
+        for(x = 0; x < dest.cols; x++){
+          int cluster_idx = labels.at<int>(x + y*orig.rows,0);
+          dest.at<Vec3b>(y,x)[0] = centers.at<float>(cluster_idx, 0);
+          dest.at<Vec3b>(y,x)[1] = centers.at<float>(cluster_idx, 1);
+          dest.at<Vec3b>(y,x)[2] = centers.at<float>(cluster_idx, 2);
+        }
+    }
+    return dest;
 }
 
 Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper)   //Detect colors in [low,upper] range

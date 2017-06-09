@@ -9,6 +9,7 @@
 //#include <opencv2/core/core.hpp>
 //#include <opencv2/imgproc/imgproc.hpp>
 //#include <opencv2/highgui/highgui.hpp>
+//#include <opencv2/
 #include <queue>
 #include <utility>
 #include <vector>
@@ -21,6 +22,60 @@
 
 using namespace std;
 using namespace cv;
+
+class KMeansDistanceComputer : public ParallelLoopBody
+{
+public:
+    KMeansDistanceComputer( double *_distances,
+                            int *_labels,
+                            const Mat& _data,
+                            const Mat& _centers )
+        : distances(_distances),
+          labels(_labels),
+          data(_data),
+          centers(_centers)
+    {
+    }
+
+    void operator()( const Range& range ) const
+    {
+        const int begin = range.start;
+        const int end = range.end;
+        const int K = centers.rows;
+        const int dims = centers.cols;
+
+        for( int i = begin; i<end; ++i)
+        {
+            const float *sample = data.ptr<float>(i);
+            int k_best = 0;
+            double min_dist = DBL_MAX;
+
+            for( int k = 0; k < K; k++ )
+            {
+                const float* center = centers.ptr<float>(k);
+                const double dist = normL2Sqr(sample, center, dims);
+
+                if( min_dist > dist )
+                {
+                    min_dist = dist;
+                    k_best = k;
+                }
+            }
+
+            distances[i] = min_dist;
+            labels[i] = k_best;
+        }
+    }
+
+private:
+    KMeansDistanceComputer& operator=(const KMeansDistanceComputer&); // to quiet MSVC
+
+    double *distances;
+    int *labels;
+    const Mat& data;
+    const Mat& centers;
+};
+
 
 /*!
  * \brief The Vision class is used to extract useful information from an image for robot soccer using
@@ -38,9 +93,10 @@ public:
         pVector map_area, atk_area, def_area;
     };
 private:
-    bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters, showErrors;
+    bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters, showErrors, trained;
     int mode, rows, cols, camid, x_offset, y_offset, cont;
     double FPS;
+    Mat kmeans_centers, labels, centers;
     Perception info;
     QMutex mutex;
     QWaitCondition condition;
@@ -85,7 +141,7 @@ public:
      */
 
     Mat train_kmeans(Mat img, int nClusters);
-    Mat apply_kmeans(Mat img, Mat centers);
+    Mat apply_kmeans(Mat img, Mat centers, Mat _labels);
     Mat adjust_gamma(double gamma, Mat org);
     Mat crop_image(Mat org);
     Mat CLAHE_algorithm(Mat org);
