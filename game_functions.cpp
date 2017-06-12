@@ -71,9 +71,8 @@ void Game_functions::run(){
         game_functions_initialized = true;
     }
     //Pro terceiro robô - Leona
-    if (calc_Leona)
-    {
-        int r3_flag = selec_robot.r3.get_flag_fuzzy();
+    if (!calc_Presto && !calc_Gandalf){
+        /*int r3_flag = selec_robot.r3.get_flag_fuzzy();
         switch (r3_flag){
             case 0:
                 defender(&selec_robot.r3, 2, &vels[2]);
@@ -91,11 +90,13 @@ void Game_functions::run(){
                 goalkeeper(&selec_robot.r3, 2, &vels[2]);
                 break;
         }
+        selec_robot.r3.set_lin_vel(vels[2]);*/
+        vels[2].first = 0.5;
+        vels[2].second = -0.5;
         selec_robot.r3.set_lin_vel(vels[2]);
     }
-
     //Pro primeiro robô - Gandalf
-    else if(calc_Gandalf)
+    if(calc_Gandalf)
     {
         int r1_flag = selec_robot.r1.get_flag_fuzzy();
         switch (r1_flag){
@@ -530,11 +531,11 @@ void Game_functions::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
     alpha = 90 - r->get_angle();
     alpha = ajusta_angulo(alpha);
     if (fabs(alpha) <= limiar_theta){
-        w = 20*k*v_max*alpha/180;
+        w = k*v_max*alpha/180;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = 20*k*v_max*alpha/180;
+        w = k*v_max*alpha/180;
     }
     vels->first = -w*l;
     vels->second = w*l;
@@ -599,7 +600,7 @@ void Game_functions::return2goal(){
 
 void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *vels){
 
-    Point2d robot_pos = robo->get_pos();
+    /*Point2d robot_pos = robo->get_pos();
     Point robot_grid = convert_C_to_G(robot_pos);
 
     Point2d ball_v;
@@ -755,9 +756,11 @@ void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *v
             }
         }
     }
-    cout << "v " << v << endl;
-    cout << "w " << w << endl;
 
+    cout << "v " << v << endl;
+    cout << "w " << w << endl; */
+    vels->first = 1;
+    vels->second = -1;
 
 }
 
