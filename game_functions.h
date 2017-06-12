@@ -12,6 +12,7 @@ class Game_functions: public Navigation
 {
     Q_OBJECT
 private:
+    Point2d meta_goalkeeper;
     p2dVector team_pos;
     Point ball_pos_grid;
     pVector enemy_pos_grid; //posicao em grid dos inimigos
@@ -45,6 +46,7 @@ public:
     void striker(Robot *, int, pair<float, float>*);
     //void calcula_velocidades(Robot *, CPH *,CPO *, CPH2 *, CPO2 *, CPO3 *, pair<float, float>*);
     void goalkeeper_orientation(Robot *, pair<float, float>*);
+    void return2goal();
     double ajusta_angulo(double);
     void set_def_area(pVector def_area);
     void set_ball_vel(pair<double, double>);

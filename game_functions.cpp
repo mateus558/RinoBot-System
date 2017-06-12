@@ -540,62 +540,223 @@ void Game_functions::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
     vels->second = w*l;
 }
 
+void Game_functions::return2goal(){
+    Point2d meta;
+    Point meta_grid;
+    if(ball_pos.x > 0 && ball_pos.y > 0){
+                if (ball_pos.x < centroid_atk.x){
+                    if (ball_pos.x < 90){
+                        if(ball_pos.y < 45){
+                            meta.x = centroid_def.x + 8;
+                            meta.y = centroid_def.y - 20;
+                        }
+                        else if(ball_pos.y > 95){
+                            meta.x = centroid_def.x + 8;
+                            meta.y = centroid_def.y + 20;
+                        }
+                        else{
+                            meta.x = centroid_def.x + 8;
+                            meta.y = centroid_def.y;
+                        }
+                    }
+                    else{
+                        meta.x = centroid_def.x + 8;
+                        meta.y = centroid_def.y;
+                    }
+                }
+                if (ball_pos.x >= centroid_atk.x){
+                    if (ball_pos.x > 90){
+                        if(ball_pos.y < 45){
+                            meta.x = centroid_def.x - 8;
+                            meta.y = centroid_def.y - 20;
+                        }
+                        else if(ball_pos.y > 95){
+                            meta.x = centroid_def.x - 8;
+                            meta.y = centroid_def.y + 20;
+                        }
+                        else{
+                            meta.x = centroid_def.x - 8;
+                            meta.y = centroid_def.y;
+                        }
+                    }
+                    else{
+                        meta.x = centroid_def.x - 8;
+                        meta.y = centroid_def.y;
+                    }
+                }
+                meta_goalkeeper = meta;
+
+                meta_grid = convert_C_to_G(meta); //cm to grid
+                if (meta_grid.x > 0 && meta_grid.y > 0){
+                    set_potential(meta_grid.y, meta_grid.x, 0);
+                }
+
+                while(iterator_cph()>1E-6);
+                set_direction();
+                //set_grid_orientation();
+    }
+}
+
 void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *vels){
-    goalkeeper_orientation(robo,vels);
+
+    Point2d robot_pos = robo->get_pos();
+    Point robot_grid = convert_C_to_G(robot_pos);
+
     Point2d ball_v;
+
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
-    Point2d robot_pos = robo->get_pos();
-    goalkeeper_orientation(robo,vels);
 
-    // previsao de bola - perigo de gol
+    vels->first = 0;
+    vels->second = 0;
 
-   /*double tempo;
-   double aux_position_y;
-   if (robo->get_angle() > 0 && ball_pos.y < robot_pos.y ){
-       if (ball_v.x < -0.1){
-           tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
-           aux_position_y = ball_pos.y - tempo*ball_v.y;
-           //if (aux_position_y > robot_pos.y){
-               v = -(aux_position_y-robot_pos.y)/tempo;
-               vels->first = v;
-               vels->second = v;
-           //}
-       }
-   }
-   else if (robo->get_angle() > 0 && ball_pos.y > robot_pos.y){
-       if (ball_v.x < -0.1){
-           tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
-           aux_position_y = ball_pos.y - tempo*ball_v.y;
-           //if (aux_position_y < robot_pos.y){
-               v = -(aux_position_y-robot_pos.y)/tempo;
-               vels->first = v;
-               vels->second = v;
-           //}
-       }
-   }
-   else if (robo->get_angle() < 0 && ball_pos.y < robot_pos.y ){
-       if (ball_v.x < -0.1){
-           tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
-           aux_position_y = ball_pos.y - tempo*ball_v.y;
-           //if (aux_position_y > robot_pos.y){
-               v = (aux_position_y-robot_pos.y)/tempo;
-               vels->first = v;
-               vels->second = v;
-           //}
-       }
-   }
-   else if (robo->get_angle() < 0 && ball_pos.y > robot_pos.y ){
-       if (ball_v.x < -0.1){
-           tempo = (centroid_def.x+5-ball_pos.x)/ball_v.x;
-           aux_position_y = ball_pos.y - tempo*ball_v.y;
-           //if (aux_position_y < robot_pos.y){
-               v = (aux_position_y-robot_pos.y)/tempo;
-               vels->first = v;
-               vels->second = v;
-           //}
-       }
-   }*/
+    alpha = 90 - robo->get_angle();
+    alpha = ajusta_angulo(alpha);
+    if (fabs(alpha) <= limiar_theta){
+        w = k*v_max*alpha/180;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        w = k*v_max*alpha/180;
+    }
+    if (ball_pos.x <= centroid_atk.x){
+        double tempo;
+        double aux_position_y;
+        tempo = (robot_pos.x-ball_pos.x)/ball_v.x;
+        aux_position_y = ball_pos.y - tempo*ball_v.y;
+        if (ball_v.x < 0 && (aux_position_y > centroid_def.y-25) && (aux_position_y < centroid_def.y+25)){
+            if (robo->get_angle() > 0){
+                v = -(aux_position_y-robot_pos.y)/tempo;
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+            else if (robo->get_angle() < 0){
+                v = (aux_position_y-robot_pos.y)/tempo;
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+        }
+        else{
+            if (ball_pos.x < 90 && ball_pos.y > 45 && ball_pos.y < 95 && robot_pos.x < centroid_def.x+20){
+                //FollowBall
+                if (fabs(ball_v.y < 0.4))
+                {
+                    //ball_v.y = (ball_v.y / fabs(ball_v.y)) * 0.4;
+
+                    if (robo->get_angle() > 0 && ball_pos.y < robot_pos.y ){
+                        v = fabs(ball_v.y) - 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (robo->get_angle() > 0 && ball_pos.y > robot_pos.y){
+                        v = -fabs(ball_v.y) - 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (robo->get_angle() < 0 && ball_pos.y < robot_pos.y ){
+                        v = -fabs(ball_v.y) + 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (robo->get_angle() < 0 && ball_pos.y > robot_pos.y ){
+                        v = fabs(ball_v.y) + 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                }
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+            else {
+                theta = get_direction(robot_grid);
+                alpha = theta - robo->get_angle();
+                alpha = ajusta_angulo(alpha);
+                if (fabs(alpha) <= limiar_theta){
+                    w = k*v_max_gol*alpha/180;
+                    v = -v_max_gol*fabs(alpha)/limiar_theta + v_max_gol;
+                }
+                else{
+                    alpha = ajusta_angulo(alpha+180);
+                    w = k*v_max_gol*alpha/180;
+                    v = v_max_gol*fabs(alpha)/limiar_theta - v_max_gol;
+                }
+
+                //Return2Goal
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+                //AdjustRobo
+                if((euclidean_dist(robot_pos, meta_goalkeeper) < 5) && (fabs(robo->get_angle()) > 85) && (fabs(robo->get_angle()) < 95)){
+                    vels->first = 0;
+                    vels->second = 0;
+                }
+                else if (euclidean_dist(robot_pos, meta_goalkeeper) < 5){
+                    goalkeeper_orientation(robo,vels);
+                }
+            }
+        }
+    }
+    else if (ball_pos.x < centroid_def.x){
+        double tempo;
+        double aux_position_y;
+        tempo = -(robot_pos.x-ball_pos.x)/ball_v.x;
+        aux_position_y = ball_pos.y - tempo*ball_v.y;
+        if (ball_v.x < 0 && (aux_position_y > centroid_def.y-25) && (aux_position_y < centroid_def.y+25)){
+            if (robo->get_angle() > 0){
+                v = -(aux_position_y-robot_pos.y)/tempo;
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+            else if (robo->get_angle() < 0){
+                v = (aux_position_y-robot_pos.y)/tempo;
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+        }
+        else{
+            if (ball_pos.x > 90 && ball_pos.y > 45 && ball_pos.y < 95 && robot_pos.x > centroid_def.x-20){
+                //FollowBall
+                if (fabs(ball_v.y < 0.4))
+                {
+                    //ball_v.y = (ball_v.y / fabs(ball_v.y)) * 0.4;
+
+                    if (robo->get_angle() > 0 && ball_pos.y < robot_pos.y ){
+                        v = fabs(ball_v.y) - 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (robo->get_angle() > 0 && ball_pos.y > robot_pos.y){
+                        v = -fabs(ball_v.y) - 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (robo->get_angle() < 0 && ball_pos.y < robot_pos.y ){
+                        v = -fabs(ball_v.y) + 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                    else if (robo->get_angle() < 0 && ball_pos.y > robot_pos.y ){
+                        v = fabs(ball_v.y) + 0.01*(ball_pos.y-robot_pos.y);
+                    }
+                }
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+            else {
+                theta = get_direction(robot_grid);
+                alpha = theta - robo->get_angle();
+                alpha = ajusta_angulo(alpha);
+                if (fabs(alpha) <= limiar_theta){
+                    w = k*v_max_gol*alpha/180;
+                    v = -v_max_gol*fabs(alpha)/limiar_theta + v_max_gol;
+                }
+                else{
+                    alpha = ajusta_angulo(alpha+180);
+                    w = k*v_max_gol*alpha/180;
+                    v = v_max_gol*fabs(alpha)/limiar_theta - v_max_gol;
+                }
+
+                //Return2Goal
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+                //AdjustRobo
+                if((euclidean_dist(robot_pos, meta_goalkeeper) < 5) && (fabs(robo->get_angle()) > 85) && (fabs(robo->get_angle()) < 95)){
+                    vels->first = 0;
+                    vels->second = 0;
+                }
+                else if (euclidean_dist(robot_pos, meta_goalkeeper) < 5){
+                    goalkeeper_orientation(robo,vels);
+                }
+            }
+        }
+    }
+    cout << "v " << v << endl;
+    cout << "w " << w << endl;
 
 
 }
