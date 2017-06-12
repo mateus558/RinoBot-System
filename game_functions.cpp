@@ -71,7 +71,7 @@ void Game_functions::run(){
         game_functions_initialized = true;
     }
     //Pro terceiro robô - Leona
-    /*if (calc_Leona)
+    if (calc_Leona)
     {
         int r3_flag = selec_robot.r3.get_flag_fuzzy();
         switch (r3_flag){
@@ -117,7 +117,7 @@ void Game_functions::run(){
         }
         //cout << "Gandalf metax: " << meta.x << " y: " << meta.y << endl;
         selec_robot.r1.set_lin_vel(vels[0]);
-    }*/
+    }
 
     //Pro segundo robô - Presto
     else if(calc_Presto)
@@ -629,21 +629,20 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
     double def_area_x = def_area[0].x*X_CONV_CONST;
     double def_area_y1 = def_area[1].y*Y_CONV_CONST;
     double def_area_y2 = def_area[6].y*Y_CONV_CONST;
-    Point meta;
-    Point2d meta2d;
-    meta2d.y = centroid_def.y;
-
+    Point meta_grid;
+    Point2d meta;
 
 
     if (centroid_atk.x > ball_pos.x){
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
             //cout << "Reconheceu a area de defesa" << endl;
             if(ball_pos.x > 0 && ball_pos.y > 0){
-                meta2d.x = centroid_def.x + 35;
-                meta = convert_C_to_G(meta2d);
+                meta.x = centroid_def.x + 35;
+                meta.y = centroid_def.y;
+                meta_grid = convert_C_to_G(meta);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                if (meta.x > 0 && meta.y > 0)
-                    set_potential(meta.y, meta.x, 0);
+                if (meta_grid.x > 0 && meta_grid.y > 0)
+                    set_potential(meta_grid.y, meta_grid.x, 0);
             }else{
                 //tratar a meta aqui
             }
@@ -673,11 +672,12 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
     }else{
         if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
             if(ball_pos.x > 0 && ball_pos.y > 0){
-                meta2d.x = centroid_def.x - 35;
-                meta = convert_C_to_G(meta2d);
+                meta.x = centroid_def.x - 35;
+                meta.y = centroid_def.y;
+                meta_grid = convert_C_to_G(meta);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                if (meta.x > 0 && meta.y > 0)
-                    set_potential(meta.y, meta.x, 0);
+                if (meta_grid.x > 0 && meta_grid.y > 0)
+                    set_potential(meta_grid.y, meta_grid.x, 0);
             }else{
                 //tratar a meta aqui
             }
@@ -755,7 +755,8 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
     //if(!grid_initialized){
         init_grid();
     //}
-    Point2d meta_aux;
+    Point2d meta;
+    Point meta_grid;
 
     for(i = 0; i < 3; ++i){
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
@@ -777,7 +778,6 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
     }
 
     //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-    Point meta;
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
         if ((ball_pos.y > centroid_def.y+55 || ball_pos.y < centroid_def.y-55) && fabs(ball_pos.x - centroid_def.x) < 70){
@@ -787,7 +787,7 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
                 //cout << 2 << endl;
                 //cout<<"Meta: "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
                 set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
-                meta_aux = ball_pos;
+                meta = ball_pos;
                 /*if(ball_pos.x < centroid_atk.x){
                     set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
                     set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
@@ -803,24 +803,22 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
             double aux = (0.45/150)*euclidean_dist(centroid_def,ball_pos);
 
             meta = ball_pos + vec_ball_def*aux;
-            //cout << "Meta: " << endl;
-            //cout << " x: " << meta.x << " y: " << meta.y << endl;
+            //cout << "Meta x: " << meta.x << " y: " << meta.y << endl;
             if(meta.x > 0 && meta.y > 0){
-                 meta = convert_C_to_G(meta);
+                 meta_grid = convert_C_to_G(meta);
                  //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                 if (meta.x > 0 && meta.y > 0)
-                     set_potential(meta.y, meta.x, 0);
+                 if (meta_grid.x > 0 && meta_grid.y > 0)
+                     set_potential(meta_grid.y, meta_grid.x, 0);
             }else{
                 //tratar a meta aqui
             }
-            meta_aux = meta;
         }
     }else{
         //tratar a bola aqui
     }
 
     /*if(ball_pos.x > 0 && ball_pos.y > 0){
-        ball_pos_grid = convert_C_to_G(ball_pos);
+        ball_pos_grid = convert_C_to_G(ball_pos);2d meta;
         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
         set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
     }else{
@@ -847,6 +845,7 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
     }
     vels->first = v-w*l;
     vels->second = v+w*l;
+    //cout << "Robo " << robo->get_pos() << endl;
 
     if (centroid_atk.x > ball_pos.x){
         if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
@@ -859,7 +858,7 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
             vels->first = 0.6;
             vels->second = -0.6;
         }
-        else if (euclidean_dist(robo->get_pos(),meta) < 5){
+        else if (euclidean_dist(robo->get_pos(),meta) < 6){
             vels->first = 0;
             vels->second = 0;
         }
@@ -873,7 +872,8 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
             vels->first = -0.6;
             vels->second = 0.6;
         }
-        else if (euclidean_dist(robo->get_pos(),meta) < 5){
+        else if (euclidean_dist(robo->get_pos(),meta) < 6){
+            cout << "foi" << endl;
             vels->first = 0;
             vels->second = 0;
         }
@@ -882,8 +882,8 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
 
 void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, float> *vels){
     Point2d eixo_x(1.0,0.0);
-    Point2d meta2d;
-    Point meta;
+    Point2d meta;
+    Point meta_grid;
     //if(!grid_initialized){
         init_grid();
     //}
@@ -913,21 +913,21 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
             set_epsilon(0);
             set_orientation(0);
             if (ball_pos.x < centroid_atk.x){
-                meta2d.x = centroid_def.x + 75;
-                meta2d.y  = centroid_def.y;
-                meta = convert_C_to_G(meta2d);
-                if(meta.x > 0 && meta.y > 0){
-                         set_potential(meta.y, meta.x, 0);
+                meta.x = centroid_def.x + 75;
+                meta.y  = centroid_def.y;
+                meta_grid = convert_C_to_G(meta);
+                if(meta_grid.x > 0 && meta_grid.y > 0){
+                         set_potential(meta_grid.y, meta_grid.x, 0);
                 }else{
                     //tratar a meta aqui
                 }
             }
             else{
-                meta2d.x = centroid_def.x - 75;
-                meta2d.y  = centroid_def.y;
-                meta = convert_C_to_G(meta2d);
-                if(meta.x > 0 && meta.y > 0){
-                         set_potential(meta.y, meta.x, 0);
+                meta.x = centroid_def.x - 75;
+                meta.y  = centroid_def.y;
+                meta_grid = convert_C_to_G(meta);
+                if(meta_grid.x > 0 && meta_grid.y > 0){
+                         set_potential(meta_grid.y, meta_grid.x, 0);
                 }else{
                     //tratar a meta aqui
                 }
@@ -1054,6 +1054,7 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
 }
 
 void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels){
+    Point meta_grid;
     Point2d eixo_x(1.0,0.0);
     //if(!grid_initialized){
         init_grid();
@@ -1111,14 +1112,14 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
         ball_pos.y = -ball_pos.y;
         centroid_atk.y=-centroid_atk.y;
 
-        Point meta;
+        // temos que mudar urgente
         if (euclidean_dist(ball_pos,team_prox) < 5){
             if (centroid_atk.x > 0 && centroid_atk.y > 0){
-                meta = convert_C_to_G(centroid_atk);
+                meta_grid = convert_C_to_G(centroid_atk);
                 set_epsilon(0);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                if (meta.x > 0 && meta.y > 0)
-                    set_potential(meta.y, meta.x, 0);
+                if (meta_grid.x > 0 && meta_grid.y > 0)
+                    set_potential(meta_grid.y, meta_grid.x, 0);
             }else{
                 //tratar o gol aqui
             }

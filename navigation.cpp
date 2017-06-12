@@ -24,7 +24,7 @@ double Navigation::iterator_cph(){
         for(j=0;j<36;j++)
         {
             if(get_occupancy(i,j))
-            {
+            {newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
                 oldPotencial = get_potential(i,j);
                 top = get_neighborhood(i,j,0);
                 botton = get_neighborhood(i,j,1);
@@ -65,7 +65,9 @@ double Navigation::iterator_cpo(){
                  left = get_neighborhood(i,j,2);
                  right = get_neighborhood(i,j,3);
                  newPotencial = ((1+lambda*vec[0])*right+(1-lambda*vec[0])*left+(1+lambda*vec[1])*top+(1-lambda*vec[1])*botton)/4;
-                 newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
+                 if (e < 0.5){
+                     newPotencial = newPotencial + 0.8*(newPotencial-oldPotencial);
+                 }
                  erro = erro + pow((newPotencial - oldPotencial),2);
                  set_potential(i,j,newPotencial);
              }
