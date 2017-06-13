@@ -458,11 +458,15 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
          }
         //cout << "Robo deve Atacar Ferozmente!" << endl;
     }
-    else
+    else if(output == 4)
     {
         this->flag_fuzzy = 4;
         //cout << nick <<" deve Catar Ferozmente!" << endl;
     }
+    else{
+        //tratar aqui
+    }
+
 
 }
 

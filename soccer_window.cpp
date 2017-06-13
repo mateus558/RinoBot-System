@@ -33,7 +33,7 @@ soccer_window::soccer_window(QWidget *parent) :
     presto = new Game_functions; //instancia o objeto presto na rotina do sistema
     gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
     run_fuzzy = false; //flag da thread do fuzzy
-    run_leona = false; //flag da thread da leona
+    run_leona = false; //frlag da thread da leona
     run_presto = false; //flag da thread da presto
     run_gandalf = false; //flag da thread da gandalf
 
@@ -51,7 +51,7 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(leona, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
     connect(presto, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
     connect(gandalf, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
-    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateFuzzyRobots(rVector)), Qt::QueuedConnection);
+    connect(this, SIGNAL(rupdateVisionInfo(rVector)), eye, SLOT(updateFuzzyRobots(rVector)), Qt::QueuedConnection);
     connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateGameFunctionsRobots(rVector)), Qt::QueuedConnection);
 }
 
@@ -250,7 +250,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         fuzzy->Play();
      }
 
-    if(!run_leona && !run_presto && !run_gandalf){
+    if(!run_leona || !run_presto || !run_gandalf){
         fuzzy->wait();
 
         if (fuzzy->get_flag_finish() && !run_leona && !run_presto && !run_gandalf){

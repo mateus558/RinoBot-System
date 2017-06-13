@@ -151,6 +151,22 @@ int Navigation::get_occupancy(int i, int j){
     }
 }
 
+void Navigation::set_grid_orientation(Point meta){
+    int i, j;
+    for (i = 0; i < 28; i++){
+        for (j = 0; j < 36; j++){
+            if (i > 7 && i < 20 && (j == 3 || j == 33)){
+                if (meta.y < i){
+                    tGrid[i][j] = 90;
+                }
+                else if (meta.y > i){
+                    tGrid[i][j] = -90;
+                }
+            }
+        }
+    }
+}
+
 void Navigation::set_direction(){
     int i,j;
     for(i=0;i<28;i++)

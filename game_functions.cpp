@@ -71,8 +71,8 @@ void Game_functions::run(){
         game_functions_initialized = true;
     }
     //Pro terceiro robô - Leona
-    if (!calc_Presto && !calc_Gandalf){
-        /*int r3_flag = selec_robot.r3.get_flag_fuzzy();
+/*    if (calc_Leona){
+        int r3_flag = selec_robot.r3.get_flag_fuzzy();
         switch (r3_flag){
             case 0:
                 defender(&selec_robot.r3, 2, &vels[2]);
@@ -90,12 +90,10 @@ void Game_functions::run(){
                 goalkeeper(&selec_robot.r3, 2, &vels[2]);
                 break;
         }
-        selec_robot.r3.set_lin_vel(vels[2]);*/
-        vels[2].first = 0.5;
-        vels[2].second = -0.5;
         selec_robot.r3.set_lin_vel(vels[2]);
-    }
-    //Pro primeiro robô - Gandalf
+    }*/
+
+    //Pro primeiro robô - Gandalf    
     if(calc_Gandalf)
     {
         int r1_flag = selec_robot.r1.get_flag_fuzzy();
@@ -121,7 +119,7 @@ void Game_functions::run(){
     }
 
     //Pro segundo robô - Presto
-    else if(calc_Presto)
+    if(calc_Presto)
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
         //cout << r2_flag << endl;
@@ -146,7 +144,6 @@ void Game_functions::run(){
         //cout << "Presto metax: " << meta.x << " y: " << meta.y << endl;
         selec_robot.r2.set_lin_vel(vels[1]);
     }
-
 
     emit emitRobots(selec_robot);
 }
@@ -594,13 +591,17 @@ void Game_functions::return2goal(){
 
                 while(iterator_cph()>1E-6);
                 set_direction();
-                //set_grid_orientation();
+                set_grid_orientation(meta_grid);
     }
 }
 
 void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *vels){
+    // Gera o grid
+    //if(!grid_initialized){
+        init_grid();
+    //}
 
-    /*Point2d robot_pos = robo->get_pos();
+    Point2d robot_pos = robo->get_pos();
     Point robot_grid = convert_C_to_G(robot_pos);
 
     Point2d ball_v;
@@ -661,6 +662,7 @@ void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *v
                 vels->second = v + w*l;
             }
             else {
+                return2goal();
                 theta = get_direction(robot_grid);
                 alpha = theta - robo->get_angle();
                 alpha = ajusta_angulo(alpha);
@@ -673,7 +675,9 @@ void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *v
                     w = k*v_max_gol*alpha/180;
                     v = v_max_gol*fabs(alpha)/limiar_theta - v_max_gol;
                 }
-
+                if (fabs(alpha) > 65 && fabs(alpha) < 115){
+                    v = 0;
+                }
                 //Return2Goal
                 vels->first = v - w*l;
                 vels->second = v + w*l;
@@ -729,6 +733,7 @@ void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *v
                 vels->second = v + w*l;
             }
             else {
+                return2goal();
                 theta = get_direction(robot_grid);
                 alpha = theta - robo->get_angle();
                 alpha = ajusta_angulo(alpha);
@@ -741,7 +746,9 @@ void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *v
                     w = k*v_max_gol*alpha/180;
                     v = v_max_gol*fabs(alpha)/limiar_theta - v_max_gol;
                 }
-
+                if (fabs(alpha) > 65 && fabs(alpha) < 115){
+                    v = 0;
+                }
                 //Return2Goal
                 vels->first = v - w*l;
                 vels->second = v + w*l;
@@ -757,10 +764,7 @@ void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *v
         }
     }
 
-    cout << "v " << v << endl;
-    cout << "w " << w << endl; */
-    vels->first = 1;
-    vels->second = -1;
+
 
 }
 
@@ -1037,7 +1041,7 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
             vels->second = 0.6;
         }
         else if (euclidean_dist(robo->get_pos(),meta) < 6){
-            cout << "foi" << endl;
+
             vels->first = 0;
             vels->second = 0;
         }
