@@ -9,6 +9,7 @@ using namespace std;
 
 double parameters[][3] = {{-0.3, 0, 0.3},{0.111, 0.333, 0.555},{0.444, 0.666, 0.888},{0.7, 1 , 1.3}};
 Point2d eixo_x(1.0,0.0);
+int cont_fuzzy = 0;
 
 
 //no construtor define as entradas do sistema FD, FC e FA
@@ -109,9 +110,19 @@ void Fuzzy::run(){
         }
         decisao_robo[2] = 4;
 
-        selec_robot.r1.set_flag_fuzzy(decisao_robo[0], centroid_atk, centroid_def, ball_pos);
-        selec_robot.r2.set_flag_fuzzy(decisao_robo[1], centroid_atk, centroid_def, ball_pos);
-        selec_robot.r3.set_flag_fuzzy(decisao_robo[2], centroid_atk, centroid_def, ball_pos);
+
+        if (cont_fuzzy == 0){
+            selec_robot.r1.set_flag_fuzzy(decisao_robo[0], centroid_atk, centroid_def, ball_pos);
+            selec_robot.r2.set_flag_fuzzy(decisao_robo[1], centroid_atk, centroid_def, ball_pos);
+            selec_robot.r3.set_flag_fuzzy(decisao_robo[2], centroid_atk, centroid_def, ball_pos);
+        }
+
+        cont_fuzzy++;
+
+        if (cont_fuzzy == 20){
+            cont_fuzzy = 0;
+        }
+
 
     }else{
         //tratar bola aqui

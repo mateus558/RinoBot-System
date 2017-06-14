@@ -71,8 +71,9 @@ void Game_functions::run(){
         game_functions_initialized = true;
     }
     //Pro terceiro robô - Leona
-/*    if (calc_Leona){
+     /*if (calc_Leona){
         int r3_flag = selec_robot.r3.get_flag_fuzzy();
+        //cout << "Leona: " << r3_flag << endl;
         switch (r3_flag){
             case 0:
                 defender(&selec_robot.r3, 2, &vels[2]);
@@ -94,9 +95,10 @@ void Game_functions::run(){
     }*/
 
     //Pro primeiro robô - Gandalf    
-    if(calc_Gandalf)
+    /*if(calc_Gandalf)
     {
         int r1_flag = selec_robot.r1.get_flag_fuzzy();
+        //cout << "Gandalf: " << r1_flag << endl;
         switch (r1_flag){
             case 0:
                 defender(&selec_robot.r1, 0, &vels[0]);
@@ -116,13 +118,13 @@ void Game_functions::run(){
         }
         //cout << "Gandalf metax: " << meta.x << " y: " << meta.y << endl;
         selec_robot.r1.set_lin_vel(vels[0]);
-    }
+    }*/
 
     //Pro segundo robô - Presto
     if(calc_Presto)
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
-        //cout << r2_flag << endl;
+        //cout << "Presto: " << r2_flag << endl;
         switch (r2_flag){
             case 0:
                 defender(&selec_robot.r2, 1, &vels[1]);
@@ -624,7 +626,7 @@ void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *v
     if (ball_pos.x <= centroid_atk.x){
         double tempo;
         double aux_position_y;
-        tempo = (robot_pos.x-ball_pos.x)/ball_v.x;
+        tempo = (robot_pos.x - 3.75 - ball_pos.x)/ball_v.x;
         aux_position_y = ball_pos.y - tempo*ball_v.y;
         if (ball_v.x < 0 && (aux_position_y > centroid_def.y-25) && (aux_position_y < centroid_def.y+25)){
             if (robo->get_angle() > 0){
@@ -695,7 +697,7 @@ void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *v
     else if (ball_pos.x < centroid_def.x){
         double tempo;
         double aux_position_y;
-        tempo = -(robot_pos.x-ball_pos.x)/ball_v.x;
+        tempo = -(robot_pos.x - 3.75 - ball_pos.x)/ball_v.x;
         aux_position_y = ball_pos.y - tempo*ball_v.y;
         if (ball_v.x < 0 && (aux_position_y > centroid_def.y-25) && (aux_position_y < centroid_def.y+25)){
             if (robo->get_angle() > 0){
@@ -774,25 +776,36 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
         init_grid();
     //}
 
-    for(i = 0; i < 3; ++i){
-        if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
-            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
-            //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
-                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
-        }else{
-            //tratar posição dos inimigos aqui
-        }
+        for(i = 0; i < 3; ++i){
+            if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+                enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+                //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+                if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                    set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+            }else{
+                //tratar posição dos inimigos aqui
+            }
 
-        if(team_pos[i].x > 0 && team_pos[i].y > 0){
-            team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
-            //if(i != num_Robo)
-                //set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
-        }else{
-            //tratar posição dos miguxos aqui
+            if(team_pos[i].x > 0 && team_pos[i].y > 0)//Encherga os amigos como obstáculos
+            {
+                if(team_pos[i] == robo->get_pos())//Verifica o robo usado
+                {
+                }
+                else//Seta como 1 o potencial dos robos restantes
+                {
+                    team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+                    if(team_pos_grid[i].x > 0 && team_pos_grid[i].y > 0){
+                        set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
+                    }
+                    else{
+                        //Tratar Aqui
+                    }
+                }
+            }
+            else{
+                //tratar posição dos miguxos aqui
+            }
         }
-    }
 
     double def_area_x = def_area[0].x*X_CONV_CONST;
     double def_area_y1 = def_area[1].y*Y_CONV_CONST;
@@ -892,6 +905,10 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
         v = v_max*fabs(alpha)/limiar_theta - v_max
                 ;
     }
+    //Desvio obstáculos
+    if (fabs(alpha) > 70 && fabs(alpha) < 110){
+        v = 0;
+    }
     vels->first = v-w*l;
     vels->second = v+w*l;
 
@@ -930,17 +947,29 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
         if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
             enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
             //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-            set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
         }else{
             //tratar posição dos inimigos aqui
         }
 
-        if(team_pos[i].x > 0 && team_pos[i].y > 0){
-            team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
-            //if(i != num_Robo)
-            //    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
-        }else{
+        if(team_pos[i].x > 0 && team_pos[i].y > 0)//Encherga os amigos como obstáculos
+        {
+            if(team_pos[i] == robo->get_pos())//Verifica o robo usado
+            {
+            }
+            else//Seta como 1 o potencial dos robos restantes
+            {
+                team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+                if(team_pos_grid[i].x > 0 && team_pos_grid[i].y > 0){
+                    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
+                }
+                else{
+                    //Tratar Aqui
+                }
+            }
+        }
+        else{
             //tratar posição dos miguxos aqui
         }
     }
@@ -1011,6 +1040,10 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
         w = k*v_max*alpha/180;
         v = v_max*fabs(alpha)/limiar_theta - v_max;
     }
+    //Desvio obstáculos
+    if (fabs(alpha) > 70 && fabs(alpha) < 110){
+        v = 0;
+    }
     vels->first = v-w*l;
     vels->second = v+w*l;
     //cout << "Robo " << robo->get_pos() << endl;
@@ -1056,25 +1089,36 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
         init_grid();
     //}
 
-    for(i = 0; i < 3; ++i){
-        if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
-            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
-            //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
-                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
-        }else{
-            //tratar posição dos inimigos aqui
-        }
+        for(i = 0; i < 3; ++i){
+            if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+                enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+                //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+                if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                    set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+            }else{
+                //tratar posição dos inimigos aqui
+            }
 
-        if(team_pos[i].x > 0 && team_pos[i].y > 0){
-            team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
-            //if(i != num_Robo)
-            //    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
-        }else{
-            //tratar posição dos miguxos aquieuclidean_dist(ball_pos,enemy_prox
+            if(team_pos[i].x > 0 && team_pos[i].y > 0)//Encherga os amigos como obstáculos
+            {
+                if(team_pos[i] == robo->get_pos())//Verifica o robo usado
+                {
+                }
+                else//Seta como 1 o potencial dos robos restantes
+                {
+                    team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+                    if(team_pos_grid[i].x > 0 && team_pos_grid[i].y > 0){
+                        set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
+                    }
+                    else{
+                        //Tratar Aqui
+                    }
+                }
+            }
+            else{
+                //tratar posição dos miguxos aqui
+            }
         }
-    }
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
         if (fabs(ball_pos.x - centroid_def.x) < 40){
@@ -1194,8 +1238,12 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
         w = k*v_max*alpha/180;
         v = v_max*fabs(alpha)/limiar_theta - v_max;
     }
-    vels->first = v-w*l;
-    vels->second = v+w*l;
+    //Desvio obstáculos
+    if (fabs(alpha) > 70 && fabs(alpha) < 110){
+        v = 0;
+    }
+    vels->first = v - w*l;
+    vels->second = v + w*l;
 
     if (centroid_atk.x > ball_pos.x){
         if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 5)){
@@ -1227,26 +1275,36 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
     //if(!grid_initialized){
         init_grid();
     //}
-    for(i = 0; i < 3; ++i){
-        if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
-            enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
-            //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-            if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
-                set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
-        }else{
-            //tratar posição dos inimigos aqui
-        }
+        for(i = 0; i < 3; ++i){
+            if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+                enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+                //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+                if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                    set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+            }else{
+                //tratar posição dos inimigos aqui
+            }
 
-        if(team_pos[i].x > 0 && team_pos[i].y > 0){
-            team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-            //cout<<"Amigo "<<team_pos_grid[i].x<<" "<<team_pos_grid[i].y<<endl;
-            //if(i != num_Robo)
-            //    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
-        }else{
-            //tratar posição dos miguxos aquieuclidean_dist(ball_pos,enemy_prox
+            if(team_pos[i].x > 0 && team_pos[i].y > 0)//Encherga os amigos como obstáculos
+            {
+                if(team_pos[i] == robo->get_pos())//Verifica o robo usado
+                {
+                }
+                else//Seta como 1 o potencial dos robos restantes
+                {
+                    team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+                    if(team_pos_grid[i].x > 0 && team_pos_grid[i].y > 0){
+                        set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
+                    }
+                    else{
+                        //Tratar Aqui
+                    }
+                }
+            }
+            else{
+                //tratar posição dos miguxos aqui
+            }
         }
-    }
-
     if(ball_pos.x > 0 && ball_pos.y > 0){
         //Utiliza o robo amigo mais próximo para definição do epsilon
         Point2d team_prox;
@@ -1320,6 +1378,10 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
         w = k*v_max*alpha/180;
         v = v_max*fabs(alpha)/limiar_theta - v_max;
     }
+    //Desvio obstáculos
+    if (fabs(alpha) > 70 && fabs(alpha) < 110){
+        v = 0;
+    }
     vels->first = v-w*l;
     vels->second = v+w*l;
 
@@ -1384,19 +1446,28 @@ Point Game_functions::convert_C_to_G(Point2d coord){
 
     Point i;
 
+
     coord.x = int(coord.x) + 5;
     coord.y = int(coord.y) + 5;
 
-    if(coord.x / dx != 35){
+    if((coord.x / dx < 35) && (coord.x / dx > 0)){
         i.x = coord.x / dx;
-    }else{
-        i.x = coord.x / dx - 1;
+    }
+    else if(coord.x / dx >=35){
+        i.x = 34;
+    }
+    else if(coord.x / dx <=0){
+        i.x = 1;
     }
 
-    if(coord.y / dy != 27){
+    if((coord.y / dy < 27) && (coord.y / dy > 0)){
         i.y = coord.y / dy;
-    }else{
-        i.y = coord.y / dy - 1;
+    }
+    else if(coord.y / dy >= 27){
+        i.y = 26;
+    }
+    else if(coord.y / dy <= 0){
+        i.y = 1;
     }
     //cout << "i.x = " << i.x << " i.y = " << i.y << endl;
     return i;
