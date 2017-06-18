@@ -464,7 +464,11 @@ Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
     //Apply gaussian blur
     GaussianBlur(dest, dest, Size(5,5), 1.8);
 
-   for(y = 0; y < orig.rows; y++){
+    /****************************************
+     *  K-means training and classification.*
+     ****************************************/
+    //Training
+    for(y = 0; y < orig.rows; y++){
         for(x = 0; x < orig.cols; x++){
             for(z = 0; z < 3; z++){
                 samples.at<float>(y + x*orig.rows, z) = orig.at<Vec3b>(y,x)[z];
@@ -474,6 +478,7 @@ Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
 
     centers = train_kmeans(samples, 18);
 
+    //Classification
     for(y = 0; y < dest.rows; y++){
         for(x = 0; x < dest.cols; x++){
           int cluster_idx = labels.at<int>(y + x*dest.rows,0);
