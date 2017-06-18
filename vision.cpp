@@ -20,9 +20,6 @@ Vision::Vision(QObject *parent): QThread(parent)
     showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters = trained= false;
     mode = 0;
     cont = 0;
-    tracker = Tracker::create("KCF");
-    track_init.assign(7, false);
-    objects_tracker.resize(7);
     robots.resize(6);
     robots[0].set_nick("Leona");
     robots[1].set_nick("Gandalf");
@@ -321,14 +318,40 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
 
 Mat Vision::train_kmeans(Mat img, int nClusters)
 {
-    int x, y, z, attempts = 5;
-    double elapsed_secs;
+    int k, i, z, attempts = 1;
+    double elapsed_secs, dist;
     clock_t begin, end;
-    Mat centers;
+    Mat centers = this->centers;
 
     clog << "Training K-means model with " << nClusters << " clusters." << endl;
     begin  = clock();
-    kmeans(img, nClusters, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.001), attempts, KMEANS_PP_CENTERS, centers );
+    if(!trained){
+        kmeans(img, nClusters, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 1), attempts, KMEANS_PP_CENTERS, centers );
+        this->labels = labels;
+        this->centers = centers;
+        trained = true;
+    }else{
+        //kmeans(img, nClusters, this->labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 1), attempts, KMEANS_USE_INITIAL_LABELS, centers );
+        cout << img.rows << endl;
+        const int dims = centers.cols;
+
+        for(i = 0; i < img.rows; i++){
+            const float *sample = img.ptr<float>(i);
+            int k_best = 0;
+            double min_dist = DBL_MAX;
+
+            for(k = 0; k < centers.rows; k++){
+                const float *center = centers.ptr<float>(k);
+                dist = normL2Sqr(sample, center, dims);
+
+                if(min_dist > dist){
+                    min_dist = dist;
+                    k_best = k;
+                }
+            }
+            labels.at<int>(i, 0) = k_best;
+        }
+    }
     end  = clock();
     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     clog << "End of training in " << elapsed_secs << " seconds." << endl;
@@ -337,18 +360,6 @@ Mat Vision::train_kmeans(Mat img, int nClusters)
 }
 
 Mat Vision::apply_kmeans(Mat img, Mat centers, Mat _labels){
-    bool isrow = img.rows == 1;
-    int N = isrow ? img.cols : img.rows, x, y, z;
-    int dims = (isrow ? 1 : img.cols)*img.channels();
-
-    // assign labels
-    Mat dists(1, N, CV_64F);
-    Mat data(N, dims, CV_32F, img.ptr(), isrow ? dims * sizeof(float) : static_cast<size_t>(img.step));
-    double* dist = dists.ptr<double>(0);
-    int* labels = _labels.ptr<int>();
-    parallel_for_(Range(0, N),
-                 KMeansDistanceComputer(dist, labels, data, centers));
-    this->labels = _labels;
 
 }
 
@@ -453,26 +464,25 @@ Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
     //Apply gaussian blur
     GaussianBlur(dest, dest, Size(5,5), 1.8);
 
-    for(y = 0; y < orig.rows; y++){
+   for(y = 0; y < orig.rows; y++){
         for(x = 0; x < orig.cols; x++){
             for(z = 0; z < 3; z++){
-                samples.at<float>(x + y*orig.rows, z) = orig.at<Vec3b>(y,x)[z];
+                samples.at<float>(y + x*orig.rows, z) = orig.at<Vec3b>(y,x)[z];
             }
         }
     }
-    if(!trained){
-        trained = true;
-        centers = train_kmeans(samples, 18);
-    }
-    apply_kmeans(samples, centers, labels);
+
+    centers = train_kmeans(samples, 18);
+
     for(y = 0; y < dest.rows; y++){
         for(x = 0; x < dest.cols; x++){
-          int cluster_idx = labels.at<int>(x + y*orig.rows,0);
+          int cluster_idx = labels.at<int>(y + x*dest.rows,0);
           dest.at<Vec3b>(y,x)[0] = centers.at<float>(cluster_idx, 0);
           dest.at<Vec3b>(y,x)[1] = centers.at<float>(cluster_idx, 1);
           dest.at<Vec3b>(y,x)[2] = centers.at<float>(cluster_idx, 2);
         }
     }
+
     return dest;
 }
 

@@ -15,67 +15,13 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <opencv2/opencv.hpp>
-#include <opencv2/tracking.hpp>
+//#include <opencv2/tracking.hpp>
 
 #include "robot.h"
 #include "utils.h"
 
 using namespace std;
 using namespace cv;
-
-class KMeansDistanceComputer : public ParallelLoopBody
-{
-public:
-    KMeansDistanceComputer( double *_distances,
-                            int *_labels,
-                            const Mat& _data,
-                            const Mat& _centers )
-        : distances(_distances),
-          labels(_labels),
-          data(_data),
-          centers(_centers)
-    {
-    }
-
-    void operator()( const Range& range ) const
-    {
-        const int begin = range.start;
-        const int end = range.end;
-        const int K = centers.rows;
-        const int dims = centers.cols;
-
-        for( int i = begin; i<end; ++i)
-        {
-            const float *sample = data.ptr<float>(i);
-            int k_best = 0;
-            double min_dist = DBL_MAX;
-
-            for( int k = 0; k < K; k++ )
-            {
-                const float* center = centers.ptr<float>(k);
-                const double dist = normL2Sqr(sample, center, dims);
-
-                if( min_dist > dist )
-                {
-                    min_dist = dist;
-                    k_best = k;
-                }
-            }
-
-            distances[i] = min_dist;
-            labels[i] = k_best;
-        }
-    }
-
-private:
-    KMeansDistanceComputer& operator=(const KMeansDistanceComputer&); // to quiet MSVC
-
-    double *distances;
-    int *labels;
-    const Mat& data;
-    const Mat& centers;
-};
-
 
 /*!
  * \brief The Vision class is used to extract useful information from an image for robot soccer using
@@ -105,7 +51,6 @@ private:
     Mat vision_frame;
     VideoCapture cam;
     vector<int> low;
-    Ptr<Tracker> tracker;
     Rect2d ball_tracker;
     vector<Rect2d> objects_tracker;
     vector<bool> track_init;
@@ -140,20 +85,70 @@ public:
      * Functions for pre-processing of the image.
      */
 
+    /**
+     * @brief train_kmeans Train kmeans to classify the pixels of the img.
+     * @param img  Image used as sample.
+     * @param nClusters Number of clusters used.
+     * @return  Mat
+     */
     Mat train_kmeans(Mat img, int nClusters);
-    Mat apply_kmeans(Mat img, Mat centers, Mat _labels);
+    /**
+     * @brief adjust_gamma  Adjust the luminosity of the image.
+     * @param gamma Gamma value for the algorithm.
+     * @param org Image to apply the adjustment.
+     * @return Mat
+     */
     Mat adjust_gamma(double gamma, Mat org);
+    /**
+     * @brief crop_image Crop a region from the image.
+     * @param org Image to use.
+     * @return Mat
+     */
     Mat crop_image(Mat org);
+    /**
+     * @brief CLAHE_algorithm Used to improve the contrast of the image.
+     * @param org Image to use.
+     * @return Mat
+     */
     Mat CLAHE_algorithm(Mat org);
+    /**
+     * @brief proccess_frame Pre-proccess the image for improvements.
+     * @return Mat
+     */
     Mat proccess_frame(Mat, Mat);
 
     /*
      * Functions for the detection and drawing of the robots.
      */
 
+    /**
+     * @brief fill_robots Identify the game objects and compute the centroids and angles.
+     * @param contours Candidates to game objects.
+     * @param robots Where the robots information will be stored.
+     * @return vector<Robot>
+     */
     vector<Robot> fill_robots(vector<pMatrix> contours, vector<Robot> robots);
+    /**
+     * @brief draw_robots Draw the robots and their info to the screen.
+     * @param frame Frame where they will be draw.
+     * @param robots Robots to draw.
+     * @return Mat
+     */
     Mat draw_robots(Mat frame, vector<Robot> robots);
+    /**
+     * @brief detect_colors Returns a mask with the pixels in the given range (Thresholding).
+     * @param vision_frame Frame where the thresholding will be applied.
+     * @param low Lower limit of the pixel range.
+     * @param upper Upper limit of the pixel range.
+     * @return Mat
+     */
     Mat detect_colors(Mat vision_frame, vector<int> low, vector<int> upper);
+    /**
+     * @brief detect_objects Detect the contours of the game objects.
+     * @param frame Frame used for the detection.
+     * @param robots Where the robots info will be stored.
+     * @return vector of Contours
+     */
     pair<vector<vector<Vec4i> >, vector<pMatrix> > detect_objects(Mat frame, vector<Robot> robots);
 
     /*
