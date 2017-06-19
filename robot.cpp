@@ -199,6 +199,24 @@ double Robot::get_angle()
     return this->angle;
 }
 
+void Robot::get_ang_vel(){
+    return w;
+}
+
+void Robot::compute_velocity(double deltaT, Point2d def_centroid, Point2d atk_centroid){
+    _vel.first = (centroid.x - get_from_pos_hist(1).x) / deltaT;
+    _vel.second = (centroid.y - get_from_pos_hist(1).y) / deltaT;
+
+    if(euclidean_dist(def_centroid, Point2d(0,0)) > euclidean_dist(atk_centroid, Point2d(0,0))){
+        _vel.first *= -1;
+    }
+    //Convert from pixels/s to cm/s
+    _vel.first *= X_CONV_CONST;
+    _vel.second *= Y_CONV_CONST;
+
+    w = (angle - last_angle) / deltaT;
+}
+
 double Robot::get_last_angle()
 {
     return this->last_angle;

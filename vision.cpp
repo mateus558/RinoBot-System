@@ -612,14 +612,18 @@ void Vision::run()
         img.bits();
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        info.ball_vel.first /= elapsed_secs;
-        info.ball_vel.second /= elapsed_secs;
+        deltaT = elapsed_secs;
+
+        info.ball_vel.first /= deltaT;
+        info.ball_vel.second /= deltaT;
 
         if(euclidean_dist(def_centroid, Point2d(0,0)) > euclidean_dist(atk_centroid, Point2d(0,0))){
             info.ball_vel.first *= -1;
         }
 
-        FPS = 1/elapsed_secs;
+        for(i = 0; i < 6; i++){
+            robots[i].compute_velocity(deltaT, def_centroid, atk_centroid);
+        }
 
         info.enemy_robots[0] = robots[3];
         info.enemy_robots[1] = robots[4];
@@ -639,6 +643,7 @@ void Vision::run()
             info.ball_last_pos = Point(0, 0);
         }
 
+        FPS = 1/elapsed_secs;
         emit infoPercepted(info);
         emit processedImage(img);
         if(i%10 == 0){

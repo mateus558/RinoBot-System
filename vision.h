@@ -41,7 +41,7 @@ public:
 private:
     bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters, showErrors, trained;
     int mode, rows, cols, camid, x_offset, y_offset, cont;
-    double FPS;
+    double FPS, deltaT;
     Mat kmeans_centers, labels, centers;
     Perception info;
     QMutex mutex;
