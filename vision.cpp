@@ -359,10 +359,6 @@ Mat Vision::train_kmeans(Mat img, int nClusters)
     return centers;
 }
 
-Mat Vision::apply_kmeans(Mat img, Mat centers, Mat _labels){
-
-}
-
 Mat Vision::adjust_gamma(double gamma, Mat org)
 {
     if(gamma == 1.0)

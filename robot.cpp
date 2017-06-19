@@ -199,7 +199,7 @@ double Robot::get_angle()
     return this->angle;
 }
 
-void Robot::get_ang_vel(){
+double Robot::get_ang_vel(){
     return w;
 }
 
