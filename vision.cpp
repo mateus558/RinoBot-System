@@ -318,21 +318,22 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
 
 Mat Vision::train_kmeans(Mat img, int nClusters)
 {
-    int k, i, z, attempts = 1;
+    int k, i, attempts = 1;
     double elapsed_secs, dist;
     clock_t begin, end;
     Mat centers = this->centers;
 
-    clog << "Training K-means model with " << nClusters << " clusters." << endl;
-    begin  = clock();
     if(!trained){
+        begin  = clock();
+        clog << "Training K-means model with " << nClusters << " clusters." << endl;
         kmeans(img, nClusters, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 1), attempts, KMEANS_PP_CENTERS, centers );
+        end  = clock();
+        elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+        clog << "End of training in " << elapsed_secs << " seconds." << endl;
         this->labels = labels;
         this->centers = centers;
         trained = true;
     }else{
-        //kmeans(img, nClusters, this->labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 1), attempts, KMEANS_USE_INITIAL_LABELS, centers );
-        cout << img.rows << endl;
         const int dims = centers.cols;
 
         for(i = 0; i < img.rows; i++){
@@ -352,9 +353,6 @@ Mat Vision::train_kmeans(Mat img, int nClusters)
             labels.at<int>(i, 0) = k_best;
         }
     }
-    end  = clock();
-    elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    clog << "End of training in " << elapsed_secs << " seconds." << endl;
 
     return centers;
 }
@@ -464,7 +462,7 @@ Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
      *  K-means training and classification.*
      ****************************************/
     //Training
-    for(y = 0; y < orig.rows; y++){
+    /*for(y = 0; y < orig.rows; y++){
         for(x = 0; x < orig.cols; x++){
             for(z = 0; z < 3; z++){
                 samples.at<float>(y + x*orig.rows, z) = orig.at<Vec3b>(y,x)[z];
@@ -482,7 +480,7 @@ Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
           dest.at<Vec3b>(y,x)[1] = centers.at<float>(cluster_idx, 1);
           dest.at<Vec3b>(y,x)[2] = centers.at<float>(cluster_idx, 2);
         }
-    }
+    }*/
 
     return dest;
 }
@@ -577,7 +575,6 @@ void Vision::run()
             default:
                 break;
         }
-        imwrite("2.jpg", raw_frame);
 
         if(showArea && map_size > 0){
             //Draw map area points
@@ -639,7 +636,7 @@ void Vision::run()
             info.ball_last_pos = Point(0, 0);
         }
 
-        FPS = 1/elapsed_secs;
+        FPS = 1.0/deltaT;
         emit infoPercepted(info);
         emit processedImage(img);
         if(i%10 == 0){
