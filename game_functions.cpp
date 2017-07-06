@@ -71,7 +71,7 @@ void Game_functions::run(){
         game_functions_initialized = true;
     }
     //Pro terceiro robô - Leona
-     /*if (calc_Leona){
+     if (calc_Leona){
         int r3_flag = selec_robot.r3.get_flag_fuzzy();
         //cout << "Leona: " << r3_flag << endl;
         switch (r3_flag){
@@ -92,10 +92,10 @@ void Game_functions::run(){
                 break;
         }
         selec_robot.r3.set_lin_vel(vels[2]);
-    }*/
+    }
 
     //Pro primeiro robô - Gandalf    
-    /*if(calc_Gandalf)
+    if(calc_Gandalf)
     {
         int r1_flag = selec_robot.r1.get_flag_fuzzy();
         //cout << "Gandalf: " << r1_flag << endl;
@@ -118,13 +118,13 @@ void Game_functions::run(){
         }
         //cout << "Gandalf metax: " << meta.x << " y: " << meta.y << endl;
         selec_robot.r1.set_lin_vel(vels[0]);
-    }*/
+    }
 
     //Pro segundo robô - Presto
     if(calc_Presto)
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
-        //cout << "Presto: " << r2_flag << endl;
+        cout << "Presto: " << r2_flag << endl;
         switch (r2_flag){
             case 0:
                 defender(&selec_robot.r2, 1, &vels[1]);
@@ -148,6 +148,8 @@ void Game_functions::run(){
     }
 
     emit emitRobots(selec_robot);
+
+    flag_finish_functions = true;
 }
 
 void Game_functions::set_to_select(Robot r1, Robot r2, Robot r3){
@@ -1415,6 +1417,14 @@ double Game_functions::ajusta_angulo(double angle){
     while (angle > 180)
         angle = angle - 360;
     return angle;
+}
+
+bool Game_functions::get_flag_finish(){
+    return this->flag_finish_functions;
+}
+
+void Game_functions::zera_flag_finish(){
+    flag_finish_functions = false;
 }
 
 Point Game_functions::convert_C_to_G(Point2d coord){

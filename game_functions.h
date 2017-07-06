@@ -26,7 +26,7 @@ private:
     vector<pair<float, float> > vels;
     static Serial serial;
 
-    bool stop, game_functions_initialized; //variavel de controle de thread
+    bool stop, game_functions_initialized, flag_finish_functions; //variavel de controle de thread
     bool team_chang;
     bool calc_Gandalf, calc_Presto, calc_Leona;
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
@@ -48,6 +48,8 @@ public:
     void goalkeeper_orientation(Robot *, pair<float, float>*);
     void return2goal();
     double ajusta_angulo(double);
+    bool get_flag_finish();
+    void zera_flag_finish();
     void set_def_area(pVector def_area);
     void set_ball_vel(pair<double, double>);
     void set_to_select(Robot, Robot, Robot);
