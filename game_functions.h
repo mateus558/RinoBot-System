@@ -13,6 +13,7 @@ class Game_functions: public Navigation
     Q_OBJECT
 private:
     Point2d meta_goalkeeper;
+    Point2d meta;
     p2dVector team_pos;
     Point ball_pos_grid;
     pVector enemy_pos_grid; //posicao em grid dos inimigos
@@ -45,8 +46,6 @@ public:
     void defensive_midfielder(Robot *, int, pair<float, float>*);
     void ofensive_midfielder(Robot *, int, pair<float, float>*);
     void striker(Robot *, int, pair<float, float>*);
-    //void calcula_velocidades(Robot *, CPH *,CPO *, CPH2 *, CPO2 *, CPO3 *, pair<float, float>*);
-    void goalkeeper_orientation(Robot *, pair<float, float>*);
     void return2goal();
     double ajusta_angulo(double);
     bool get_flag_finish();
@@ -67,6 +66,8 @@ public:
     void Stop();
     bool isStopped() const;
     void team_changed();
+    Point2d get_meta_goalkeeper();
+    Point2d get_meta();
     Point convert_C_to_G(Point2d);
     ~Game_functions();
 };

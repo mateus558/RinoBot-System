@@ -7,6 +7,7 @@
 #include "fuzzy.h"
 #include "game_functions.h"
 #include "navigation.h"
+#include "mover.h"
 
 namespace Ui {
 class soccer_window;
@@ -21,7 +22,7 @@ public:
     void load_serial_cfg();
     ~soccer_window();
 public slots:
-    void updateGameFunctionsRobots(Selector);
+    void updateMoverRobots(Selector);
     void updateFuzzyRobots(Selector);
     void updatePerceptionInfo(Vision::Perception);
     void updateSerialSettings(SettingsDialog::Settings);
@@ -53,6 +54,7 @@ private:
     Game_functions *leona;
     Game_functions *presto;
     Game_functions *gandalf;
+    Mover *mover;
     Vision *eye;
     Vision::Perception percep;
     SettingsDialog::Settings serial_config;
@@ -66,7 +68,7 @@ private:
     Point centroid_def;
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
     int cam_id;
-    bool started, area_read, run_fuzzy, run_leona, run_presto, run_gandalf, game_started, team_changed;
+    bool started, area_read, run_fuzzy, run_leona, run_presto, run_gandalf, run_mover, game_started, team_changed;
     std::vector<bool> vel_computed;
 
 
