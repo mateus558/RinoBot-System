@@ -67,6 +67,7 @@ private:
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
     int cam_id;
     bool started, area_read, run_fuzzy, run_leona, run_presto, run_gandalf, game_started, team_changed;
+    std::vector<bool> vel_computed;
 
 
     void closeEvent(QCloseEvent *event);

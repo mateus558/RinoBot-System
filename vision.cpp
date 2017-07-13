@@ -541,6 +541,7 @@ void Vision::run()
         cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
         img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
         img.bits();
+        msleep(delay);
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         info.ball_vel.first /= elapsed_secs;
@@ -577,7 +578,6 @@ void Vision::run()
             i = 0;
         }
 
-        msleep(delay);
         i++;
     }
 }

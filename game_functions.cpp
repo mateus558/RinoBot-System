@@ -30,7 +30,7 @@ Game_functions::Game_functions()
 
     i = 0;
     stop = true;
-    grid_initialized = false;
+    grid_initialized = vel_Computed = false;
     enemy_pos_grid = pVector(3);
     team_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
@@ -72,7 +72,7 @@ void Game_functions::run(){
     }
     //Pro terceiro robô - Leona
      if (calc_Leona){
-        int r3_flag = selec_robot.r3.get_flag_fuzzy();
+        /*int r3_flag = selec_robot.r3.get_flag_fuzzy();
         //cout << "Leona: " << r3_flag << endl;
         switch (r3_flag){
             case 0:
@@ -90,8 +90,9 @@ void Game_functions::run(){
             case 4:
                 goalkeeper(&selec_robot.r3, 2, &vels[2]);
                 break;
-        }
+        }*/
         selec_robot.r3.set_lin_vel(vels[2]);
+        selec_robot.flags[2] = true;
     }
 
     //Pro primeiro robô - Gandalf    
@@ -118,12 +119,13 @@ void Game_functions::run(){
         }
         //cout << "Gandalf metax: " << meta.x << " y: " << meta.y << endl;
         selec_robot.r1.set_lin_vel(vels[0]);
+        selec_robot.flags[0] = true;
     }
 
     //Pro segundo robô - Presto
     if(calc_Presto)
     {
-        int r2_flag = selec_robot.r2.get_flag_fuzzy();
+        /*int r2_flag = selec_robot.r2.get_flag_fuzzy();
         cout << "Presto: " << r2_flag << endl;
         switch (r2_flag){
             case 0:
@@ -143,13 +145,14 @@ void Game_functions::run(){
             break;
         }
         //print_grid();
-        //cout << "Presto metax: " << meta.x << " y: " << meta.y << endl;
+        //cout << "Presto metax: " << meta.x << " y: " << meta.y << endl;*/
         selec_robot.r2.set_lin_vel(vels[1]);
+        selec_robot.flags[1] = true;
     }
 
-    emit emitRobots(selec_robot);
-
     flag_finish_functions = true;
+
+    emit emitRobots(selec_robot);
 }
 
 void Game_functions::set_to_select(Robot r1, Robot r2, Robot r3){

@@ -36,6 +36,7 @@ soccer_window::soccer_window(QWidget *parent) :
     run_leona = false; //flag da thread da leona
     run_presto = false; //flag da thread da presto
     run_gandalf = false; //flag da thread da gandalf
+    vel_computed.assign(3, false);
 
     game_started = false;
     team_robots.resize(3);
@@ -119,15 +120,71 @@ void soccer_window::updateGameFunctionsRobots(Selector selec_robot){
     team_robots[1].set_lin_vel(make_pair(selec_robot.r1.get_l_vel(), selec_robot.r1.get_r_vel()));
     team_robots[2].set_lin_vel(make_pair(selec_robot.r2.get_l_vel(), selec_robot.r2.get_r_vel()));
 
+
+
+    if(selec_robot.flags[0]){
+        vel_computed[0] = true;
+    }else if(selec_robot.flags[1]){
+        vel_computed[1] = true;
+    }else if(selec_robot.flags[2]){
+        vel_computed[2] = true;
+    }
+
+    cout << "Leona: " << vel_computed[0] << endl;
+    cout << "Presto: " << vel_computed[1] << endl;
+    cout << "Gandalf: " << vel_computed[2] << endl;
+
     if(game_started){
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
+
+        /*if(vel_computed[0] && vel_computed[1] && vel_computed[2]){
+            cout << "Presto: " << team_robots[1].get_r_vel() << " " << team_robots[1].get_r_vel() << endl;
+            cout << "Gandalf: " << team_robots[2].get_r_vel() << " " << team_robots[2].get_r_vel() << endl;
+            cout << "Leona: " << team_robots[0].get_r_vel() << " " << team_robots[0].get_r_vel() << endl;
+            Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
+            Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
+            Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
+            vel_computed[0] = false;
+            vel_computed[1] = false;
+            vel_computed[2] = false;
+            selec_robot.flags[0] = false;
+            selec_robot.flags[1] = false;
+            selec_robot.flags[2] = false;
+        }*/
+        /*if(selec_robot.flags[0]){
+            cout << "Presto: " << team_robots[1].get_r_vel() << " " << team_robots[1].get_r_vel() << endl;
+            Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
+            selec_robot.flags[0] = false;
+        }else if(selec_robot.flags[1]){
+            cout << "Gandalf: " << team_robots[2].get_r_vel() << " " << team_robots[2].get_r_vel() << endl;
+            Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
+            selec_robot.flags[1] = false;
+        }else if(selec_robot.flags[2]){
+            cout << "Leona: " << team_robots[0].get_r_vel() << " " << team_robots[0].get_r_vel() << endl;
+            Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
+            selec_robot.flags[2] = false;
+        }*/
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
     }
+
+    if(leona->is_running()){
+        cout << "Leona running" << endl;
+        leona->wait();
+    }
+    if(presto->is_running()){
+        cout << "Leona running" << endl;
+        presto->wait();
+    }
+    if(gandalf->is_running()){
+        cout << "Leona running" << endl;
+        gandalf->wait();
+    }
+
     emit updateVisionInfo(team_robots);
 }
 
