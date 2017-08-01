@@ -35,12 +35,15 @@ private:
     int n_loss, n_detected;
     int flag_fuzzy;
     double output_fuzzy;
-    double angle, last_angle;   //Rotation angle
+    double angle, last_angle, ang_predict;   //Rotation angle
+    double ang_tolerance;
     double w;   //Angular velocity
     double loss_rate;   //Rate of detection failure of the robot.
     bool detected;
-    Point centroid; //Robot general centroid
+    Point centroid, last_centroid; //Robot general centroid
     Point2d centroid_cm;
+    Point centroid_predict;
+    double pos_tolerance;
     Point color_cent, team_cent;    //Centroid from the half role color and from team color
     Point line_slope;
     string nick, ID, role;
@@ -70,12 +73,20 @@ public:
     float get_l_vel();
     float get_r_vel();
     double get_ang_vel(); //get angular velocity w
+    pair<float, float> get_velocities();
     Point get_centroid();
+    Point get_last_centroid();
     Point2d get_pos();
+
+    Point get_predic_centroid();
+
     double get_output_fuzzy();
     int get_flag_fuzzy();
     int get_channel();
     double get_angle();
+
+    double get_predic_angle();
+
     double get_last_angle();
     double get_loss_rate();
     Point get_line_slope();
@@ -118,7 +129,8 @@ public:
 
     double min_function(double, double);
     double max_function(double, double);
-    void compute_velocity(double deltaT, Point2d def_centroid, Point2d atk_centroid);  //Compute the percepted velocity
+    void compute_velocity(double deltaT);  //Compute the percepted velocity
+    void predict_info(double deltaT);
     pair<float, float> get_velocity();
     bool is_detected();
     void was_detected(bool detected);
@@ -128,4 +140,5 @@ public:
 };
 
 #endif // ROBOT_H
+
 

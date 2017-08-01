@@ -53,7 +53,7 @@ Vision::Vision(QObject *parent): QThread(parent)
     ball_pos = null_point;
     ball_last_pos = null_point;
 
-    last_P = MatrixXd::Identity(3,3);
+ // last_P = MatrixXd::Identity(3,3);
 }
 
 Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) //Detect colors in [low,upper] range
@@ -100,7 +100,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
-
         ball_found = true;
     }else{
         ball_cent = ball_last_pos;
@@ -121,6 +120,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
     sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
     remove_if(contours[1].begin(), contours[1].end(), area_limit);
+
     sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
     remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
     remove_if(contours[2].begin(), contours[2].end(), area_limit);
@@ -211,7 +211,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             angle = fabs(angle_two_points(line_slope, x_axis_slope));
             angle = (col_select.first.y <= unk_robot.y)?angle:-angle;
 
-            pos_cam << centroid.x * X_CONV_CONST / 100,
+            /*pos_cam << centroid.x * X_CONV_CONST / 100,
                        centroid.y * Y_CONV_CONST / 100,
                        angle;
             last_pos << last_cent.x * X_CONV_CONST / 100,
@@ -221,7 +221,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                    2;
 
             kalman_res = kalman_filter(pos_cam, v_w, last_pos, 9, last_P);
-            last_P = kalman_res.first;
+            last_P = kalman_res.first;*/
             //centroid.x = kalman_res.second(0) * 100;
             //centroid.y = kalman_res.second(1) * 100;
 
@@ -499,30 +499,46 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
 Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
 {
     int i, size = robots.size();
-    double angle;
-    Point cent, team_cent, color_cent, inter;
+    double angle, predic_angle;
+    Point cent, predic_cent, team_cent, color_cent, inter;
 
     if(ball_pos != null_point){
         circle(frame, ball_pos, 10, Scalar(255, 0, 0));
     }
     for(i = 0; i < size-3; ++i){
         cent = robots[i].get_centroid();
+        predic_cent = robots[i].get_predic_centroid();
         team_cent = robots[i].get_team_cent();
         color_cent = robots[i].get_color_cent();
         angle = robots[i].get_angle();
+        predic_angle = robots[i].get_predic_angle();
+
         if(cent == null_point) continue;
+
+        // Funcao que desenha as circunferencias com centros nos centroides das cores da equipa e do robo
         if(showCenters){
             circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
             circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
         }
+
+        // Desenha as circunferencia com centro no centroide do robo
+        // e a linha que indica a orientacao da direcao do robo (para onde ele esta olhando)
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
         inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y - 20 * sin(angle * PI / 180.0));
         line(frame, cent, inter, Scalar(0, 255, 0), 1);
+
+        // Desenha a posicao prevista do robo
+        if(predic_cent != cent){
+            circle(frame, predic_cent, 20, Scalar(255, 0, 255), 1.5);
+            inter = Point(predic_cent.x + 20 * cos(predic_angle * PI / 180.0), predic_cent.y - 20 * sin(predic_angle * PI / 180.0));
+            line(frame, predic_cent, inter, Scalar(255, 0, 255), 1);
+        }
 
         if(showNames)
             putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
 
+    // Desenha o time adversario (por meio de circunferencias)
     for(i = size-3; i < size; ++i){
         cent = robots[i].get_centroid();
         if(cent == null_point) continue;
@@ -565,7 +581,6 @@ void Vision::run()
             case 0: //Visualization mode
                 obj_contours = detect_objects(vision_frame, robots).second;
                 robots = fill_robots(obj_contours, robots);
-                vision_frame = draw_robots(vision_frame, robots);
 
                 break;
             case 1: //Set color mode
@@ -600,9 +615,7 @@ void Vision::run()
         }
 
         //img = QImage((uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
-        cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
-        img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
-        img.bits();
+
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         deltaT = elapsed_secs;
@@ -610,13 +623,18 @@ void Vision::run()
         info.ball_vel.first /= deltaT;
         info.ball_vel.second /= deltaT;
 
-        if(euclidean_dist(def_centroid, Point2d(0,0)) > euclidean_dist(atk_centroid, Point2d(0,0))){
+        /*if(euclidean_dist(def_centroid, Point2d(0,0)) > euclidean_dist(atk_centroid, Point2d(0,0))){
             info.ball_vel.first *= -1;
-        }
-
+        }*/
         for(i = 0; i < 6; i++){
-            robots[i].compute_velocity(deltaT, def_centroid, atk_centroid);
+            robots[i].compute_velocity(deltaT);
+            robots[i].predict_info(deltaT*2);
         }
+        vision_frame = draw_robots(vision_frame, robots);
+
+        cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
+        img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
+        img.bits();
 
         info.enemy_robots[0] = robots[3];
         info.enemy_robots[1] = robots[4];
@@ -814,3 +832,4 @@ Vision::~Vision(){
     mutex.unlock();
     wait();
 }
+

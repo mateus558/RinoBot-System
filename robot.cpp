@@ -12,6 +12,7 @@ Serial Robot::serial;
 Robot::Robot(){
     channel = -1;
     centroid = Point(-1, -1);
+    last_centroid = centroid;
     centroid_cm = Point2d(0.0, 0.0);
     team_cent = Point(-1, -1);
     color_cent = Point(-1, -1);
@@ -25,6 +26,8 @@ Robot::Robot(){
     pos_hist.push_back(Point(-1, -1));
     last_angle = loss_rate = 0.0;
     detected = false;
+    pos_tolerance = 2.0; //2cm
+    ang_tolerance = 3;
     flag_fuzzy = 0;
 }
 
@@ -200,21 +203,51 @@ double Robot::get_angle()
 }
 
 double Robot::get_ang_vel(){
-    return w;
+    return this->w;
 }
 
-void Robot::compute_velocity(double deltaT, Point2d def_centroid, Point2d atk_centroid){
-    _vel.first = (centroid.x - get_from_pos_hist(1).x) / deltaT;
-    _vel.second = (centroid.y - get_from_pos_hist(1).y) / deltaT;
+double Robot::get_predic_angle()
+{
+    return this->ang_predict;
+}
 
-    if(euclidean_dist(def_centroid, Point2d(0,0)) > euclidean_dist(atk_centroid, Point2d(0,0))){
-        _vel.first *= -1;
-    }
+/**
+ * @brief Robot::compute_velocity
+ * Computa a velocidade linear e angular do robo em px/s e graus/s, respectivamente
+ * @param deltaT - intervalo de tempo entre os frames
+ *
+ */
+void Robot::compute_velocity(double deltaT){
+    if(centroid.x != -1)
+        cout << centroid.x << " " << get_from_pos_hist(0).x << endl;
+    _vel.first = (centroid.x - last_centroid.x) / deltaT;
+    _vel.second = (centroid.y - last_centroid.y) / deltaT;
+    if(_vel.first != 0.0)
+        cout << _vel.first << " " << _vel.second << endl;
+    /*
     //Convert from pixels/s to cm/s
     _vel.first *= X_CONV_CONST;
     _vel.second *= Y_CONV_CONST;
+    */
 
     w = (angle - last_angle) / deltaT;
+}
+
+/**
+ * @brief Robot::predict_info - Preve a posicao o angulo do robo no proximo frame.
+ * @param deltaT - intervalo de tempo entre os frames
+ */
+void Robot::predict_info(double deltaT){
+
+   centroid_predict.x = centroid.x + (_vel.first)*deltaT;
+   centroid_predict.y = centroid.y + (_vel.second)*deltaT;
+   ang_predict = angle + w*deltaT;
+
+}
+
+
+pair<float, float> Robot::get_velocities(){
+    return this->_vel;
 }
 
 double Robot::get_last_angle()
@@ -224,6 +257,7 @@ double Robot::get_last_angle()
 
 void Robot::set_centroid(Point p)
 {
+    last_centroid = centroid;
     this->centroid = p;
     centroid_cm.x = centroid.x * X_CONV_CONST;
     centroid_cm.y = centroid.y * Y_CONV_CONST;
@@ -234,6 +268,15 @@ void Robot::set_centroid(Point p)
 Point Robot::get_centroid()
 {
     return this->centroid;
+}
+
+Point Robot::get_last_centroid(){
+    return last_centroid;
+}
+
+Point Robot::get_predic_centroid()
+{
+    return this->centroid_predict;
 }
 
 
@@ -528,3 +571,4 @@ float Robot::get_l_vel(){
 float Robot::get_r_vel(){
     return vel.second;
 }
+
