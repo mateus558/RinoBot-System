@@ -88,9 +88,9 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     vector<pVector > r_col_cent(3, pVector());
     vector<pVector > tirj_cent(2, pVector());
     pair<Point, pair<int, int> > col_select;
-    Vector3d pos_cam, last_pos;
+    /*Vector3d pos_cam, last_pos;
     Vector2d v_w;
-    pair<Matrix3d, Vector3d> kalman_res;
+    pair<Matrix3d, Vector3d> kalman_res;*/
 
     //Get the ball moment from the contour
     if(contours[0].size() != 0){
@@ -449,8 +449,8 @@ Mat Vision::crop_image(Mat org){
 
 Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
 {
-    int x, y, z;
-    Mat samples(orig.rows * orig.cols, 3, CV_32F);
+   /* int x, y, z;
+    Mat samples(orig.rows * orig.cols, 3, CV_32F);*/
 
     dest = orig.clone();
     //Gamma correction
@@ -557,24 +557,24 @@ Mat Vision::draw_field(Mat frame)
     if(showArea && map_size > 0){
         //Draw map area points
         for(i = 0; i < map_size; ++i){
-            circle(vision_frame, tmap_points[i], 1, Scalar(0,0,255), 2);
+            circle(frame, tmap_points[i], 1, Scalar(0,0,255), 2);
         }
 
         //Draw attack area points
         for(i = 0; i < atk_size; ++i){
-            circle(vision_frame, tatk_points[i], 1, Scalar(255,0,0), 2);
+            circle(frame, tatk_points[i], 1, Scalar(255,0,0), 2);
         }
 
         atk_cent = (tatk_points[0]+tatk_points[7])/2;
-        putText(vision_frame, "ATK Area", atk_cent, FONT_HERSHEY_PLAIN, 1, Scalar(255, 0, 0), 2);
+        putText(frame, "ATK Area", atk_cent, FONT_HERSHEY_PLAIN, 1, Scalar(255, 0, 0), 2);
 
         //Draw defense area points
         for(i = 0; i < def_size; ++i){
-            circle(vision_frame, tdef_points[i], 1, Scalar(0,255,0), 2);
+            circle(frame, tdef_points[i], 1, Scalar(0,255,0), 2);
         }
 
         def_cent = (tdef_points[0]+tdef_points[7])/2;
-        putText(vision_frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
+        putText(frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
 
     return vision_frame;
