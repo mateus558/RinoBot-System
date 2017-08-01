@@ -136,6 +136,12 @@ public:
      */
     Mat draw_robots(Mat frame, vector<Robot> robots);
     /**
+     * @brief draw_field Draw the field points to the screen.
+     * @param frame Frame where they will be draw.
+     * @return Mat
+     */
+    Mat draw_field(Mat frame);
+    /**
      * @brief detect_colors Returns a mask with the pixels in the given range (Thresholding).
      * @param vision_frame Frame where the thresholding will be applied.
      * @param low Lower limit of the pixel range.

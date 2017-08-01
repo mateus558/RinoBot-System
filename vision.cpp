@@ -549,15 +549,46 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
     return frame;
 }
 
+Mat Vision::draw_field(Mat frame)
+{
+    int i = 0, atk_size = atk_points.size(), map_size = map_points.size(), def_size = def_points.size();
+    Point def_cent, atk_cent;
+
+    if(showArea && map_size > 0){
+        //Draw map area points
+        for(i = 0; i < map_size; ++i){
+            circle(vision_frame, tmap_points[i], 1, Scalar(0,0,255), 2);
+        }
+
+        //Draw attack area points
+        for(i = 0; i < atk_size; ++i){
+            circle(vision_frame, tatk_points[i], 1, Scalar(255,0,0), 2);
+        }
+
+        atk_cent = (tatk_points[0]+tatk_points[7])/2;
+        putText(vision_frame, "ATK Area", atk_cent, FONT_HERSHEY_PLAIN, 1, Scalar(255, 0, 0), 2);
+
+        //Draw defense area points
+        for(i = 0; i < def_size; ++i){
+            circle(vision_frame, tdef_points[i], 1, Scalar(0,255,0), 2);
+        }
+
+        def_cent = (tdef_points[0]+tdef_points[7])/2;
+        putText(vision_frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
+    }
+
+    return vision_frame;
+}
+
+
 void Vision::run()
 {
     int delay = (1000/this->FPS);
-    int i = 0, atk_size = atk_points.size(), map_size = map_points.size(), def_size = def_points.size();
+    int i = 0;
     double elapsed_secs;
     clock_t begin, end;
     vector<pMatrix> obj_contours;
     IplImage ipl_img;
-    Point def_cent, atk_cent;
 
     while(!stop){
         begin = clock();
@@ -581,7 +612,16 @@ void Vision::run()
             case 0: //Visualization mode
                 obj_contours = detect_objects(vision_frame, robots).second;
                 robots = fill_robots(obj_contours, robots);
+                elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+                deltaT = elapsed_secs;
 
+                for(i = 0; i < 6; i++){
+                    robots[i].compute_velocity(deltaT);
+                    robots[i].predict_info(deltaT*2);
+                }
+
+                vision_frame = draw_robots(vision_frame, robots);
+                vision_frame = draw_field(vision_frame);
                 break;
             case 1: //Set color mode
                 vision_frame = setting_mode(raw_frame, vision_frame, low, upper);
@@ -591,30 +631,9 @@ void Vision::run()
                 break;
         }
 
-        if(showArea && map_size > 0){
-            //Draw map area points
-            for(i = 0; i < map_size; ++i){
-                circle(vision_frame, tmap_points[i], 1, Scalar(0,0,255), 2);
-            }
-
-            //Draw attack area points
-            for(i = 0; i < atk_size; ++i){
-                circle(vision_frame, tatk_points[i], 1, Scalar(255,0,0), 2);
-            }
-
-            atk_cent = (tatk_points[0]+tatk_points[7])/2;
-            putText(vision_frame, "ATK Area", atk_cent, FONT_HERSHEY_PLAIN, 1, Scalar(255, 0, 0), 2);
-
-            //Draw defense area points
-            for(i = 0; i < def_size; ++i){
-                circle(vision_frame, tdef_points[i], 1, Scalar(0,255,0), 2);
-            }
-
-            def_cent = (tdef_points[0]+tdef_points[7])/2;
-            putText(vision_frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
-        }
-
-        //img = QImage((uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
+        cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
+        img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
+        img.bits();
 
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
@@ -622,26 +641,6 @@ void Vision::run()
 
         info.ball_vel.first /= deltaT;
         info.ball_vel.second /= deltaT;
-
-        /*if(euclidean_dist(def_centroid, Point2d(0,0)) > euclidean_dist(atk_centroid, Point2d(0,0))){
-            info.ball_vel.first *= -1;
-        }*/
-        for(i = 0; i < 6; i++){
-            robots[i].compute_velocity(deltaT);
-            robots[i].predict_info(deltaT*2);
-        }
-        vision_frame = draw_robots(vision_frame, robots);
-
-        cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
-        img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
-        img.bits();
-
-        info.enemy_robots[0] = robots[3];
-        info.enemy_robots[1] = robots[4];
-        info.enemy_robots[2] = robots[5];
-        info.team_robots[0] = robots[0];
-        info.team_robots[1] = robots[1];
-        info.team_robots[2] = robots[2];
         info.ball_found = ball_found;
 
         if(ball_pos != null_point){
@@ -654,7 +653,15 @@ void Vision::run()
             info.ball_last_pos = Point(0, 0);
         }
 
+        info.enemy_robots[0] = robots[3];
+        info.enemy_robots[1] = robots[4];
+        info.enemy_robots[2] = robots[5];
+        info.team_robots[0] = robots[0];
+        info.team_robots[1] = robots[1];
+        info.team_robots[2] = robots[2];
+
         FPS = 1.0/deltaT;
+
         emit infoPercepted(info);
         emit processedImage(img);
         if(i%10 == 0){
