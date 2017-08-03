@@ -571,4 +571,3 @@ float Robot::get_l_vel(){
 float Robot::get_r_vel(){
     return vel.second;
 }
-

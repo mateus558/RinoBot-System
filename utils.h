@@ -16,8 +16,8 @@
 #define MAX_CENT_DIST 20
 #define DEFAULT_NROWS 382   //Default number of the rows of the frame
 #define DEFAULT_NCOLS 505   //Default number of the columns of the frame
-#define X_CONV_CONST 0.346534653   //Conversion constant for the X axis
-#define Y_CONV_CONST 0.345549738 //Conversion constant for the Y axis
+#define X_CONV_CONST 0.346534653   //Conversion constant for the X axis (cm/px) height/cols
+#define Y_CONV_CONST 0.345549738 //Conversion constant for the Y axis (cm/px) width/rows
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000

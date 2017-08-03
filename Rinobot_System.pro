@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     fuzzy.cpp \
     navigation.cpp \
     game_functions.cpp \
-    video4linuxconfig.cpp
+    video4linuxconfig.cpp \
+    drawobjects.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -41,7 +42,8 @@ HEADERS  += mainwindow.h \
     serial.h \
     navigation.h \
     game_functions.h \
-    video4linuxconfig.h
+    video4linuxconfig.h \
+    drawobjects.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

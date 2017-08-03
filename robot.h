@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include <opencv2/core.hpp>
+
 #include "serial.h"
 #include "settingsdialog.h"
 

@@ -5,6 +5,7 @@
 #include <string>
 #include <unistd.h>
 #include <stdio.h>
+#include <QPainterPath>
 #include <errno.h>
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
@@ -25,7 +26,6 @@ soccer_window::soccer_window(QWidget *parent) :
 
 
     ui->setupUi(this);
-    ui->cam_id_spinBox->setValue(0);
     area_read = false;
     eye = new Vision;
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
@@ -36,11 +36,12 @@ soccer_window::soccer_window(QWidget *parent) :
     run_leona = false; //flag da thread da leona
     run_presto = false; //flag da thread da presto
     run_gandalf = false; //flag da thread da gandalf
-
     game_started = false;
-    team_robots.resize(3);
+    game_scene = new QGraphicsScene;
+    field = new FieldDraw;
+    ball = new BallDraw;
 
-    eye->set_mode(0);
+    prepare_game_scene();
     load_serial_cfg();
     Robot::config_serial(serial_config);
 
@@ -78,6 +79,35 @@ void soccer_window::load_serial_cfg(){
     serial_config.dataBits = QSerialPort::DataBits(dataBits);
 }
 
+void soccer_window::prepare_game_scene()
+{
+    game_scene->setBackgroundBrush(Qt::black);
+    game_scene->setSceneRect(0, 0, DEFAULT_NCOLS, DEFAULT_NROWS);
+    ui->game_view->setScene(game_scene);
+    ui->game_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    team_robots.resize(3);
+    eye->set_mode(0);
+
+    if(!read_points("Config/map", map_area)){
+        cerr << "The map could not be read from the file!" << endl;
+    }else{
+        field->fieldPoints = map_area;
+    }
+    if(!read_points("Config/attack_area", atk_area)){
+        cerr << "The attack area could not be read from the file!" << endl;
+    }else{
+        field->atkPoints = atk_area;
+    }
+    if(!read_points("Config/defense_area", def_area)){
+        cerr << "The defense area could not be read from the file!" << endl;
+    }else{
+        field->defPoints = def_area;
+    }
+    game_scene->addItem(field);
+    game_scene->addItem(ball);
+    ball->setPos(317, 250);
+}
+
 void soccer_window::closeEvent(QCloseEvent *event){
     QWidget::closeEvent(event);
     Robot::close_serial();
@@ -92,8 +122,8 @@ void soccer_window::receiveSerialSettings(SettingsDialog::Settings serial_config
 
 void soccer_window::updateVisionUI(QImage img){
     if(!img.isNull()){
-        ui->game_view->setAlignment(Qt::AlignCenter);
-        ui->game_view->setPixmap(QPixmap::fromImage(img).scaled(ui->game_view->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
+        //ui->game_view->setAlignment(Qt::AlignCenter);
+        //ui->game_view->setPixmap(QPixmap::fromImage(img).scaled(ui->game_view->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
     }
 }
 

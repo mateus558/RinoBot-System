@@ -6,16 +6,12 @@
 #include <QImage>
 #include <QWaitCondition>
 #include <QtConcurrent/QtConcurrent>
-//#include <opencv2/core/core.hpp>
-//#include <opencv2/imgproc/imgproc.hpp>
-//#include <opencv2/highgui/highgui.hpp>
-//#include <opencv2/
+#include <QGraphicsScene>
+#include <Eigen/Dense>
+#include <opencv2/opencv.hpp>
 #include <queue>
 #include <utility>
 #include <vector>
-#include <Eigen/Dense>
-#include <opencv2/opencv.hpp>
-//#include <opencv2/tracking.hpp>
 
 #include "robot.h"
 #include "utils.h"

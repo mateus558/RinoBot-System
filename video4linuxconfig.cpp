@@ -2,6 +2,8 @@
 #include "ui_video4linuxconfig.h"
 #include <string>
 
+using namespace std;
+
 video4linuxConfig::video4linuxConfig(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::video4linuxConfig)
@@ -27,7 +29,7 @@ void video4linuxConfig::on_bright_slider_sliderMoved(int position)
     std::string command("v4l2-ctl --set-ctrl brightness=");
 
     command = command + to_string(position);
-    system(val);
+    system(command.c_str());
     ui->bright_lcd->display(position);
 }
 
@@ -36,7 +38,7 @@ void video4linuxConfig::on_contrast_slider_sliderMoved(int position)
     std::string command("v4l2-ctl --set-ctrl contrast=");
 
     command = command + to_string(position);
-    system(command);
+    system(command.c_str());
     ui->contrast_lcd->display(position);
 }
 
@@ -47,7 +49,7 @@ void video4linuxConfig::on_saturation_slider_sliderMoved(int position)
     std::string command("v4l2-ctl --set-ctrl saturation=");
 
     command = command + to_string(position);
-    system(command);
+    system(command.c_str());
     ui->saturation_lcd->display(position);
 }
 
@@ -56,7 +58,7 @@ void video4linuxConfig::on_white_bal_slider_sliderMoved(int position)
     std::string command("v4l2-ctl --set-ctrl white_balance_temperature=");
 
     command = command + to_string(position);
-    system(command);
+    system(command.c_str());
     ui->white_bal_lcd->display(position);
 }
 
@@ -65,7 +67,7 @@ void video4linuxConfig::on_sharpness_slider_sliderMoved(int position)
     std::string command("v4l2-ctl --set-ctrl sharpness=");
 
     command = command + to_string(position);
-    system(command);
+    system(command.c_str());
     ui->sharpness_lcd->display(position);
 }
 
@@ -74,7 +76,7 @@ void video4linuxConfig::on_exposure_slider_sliderMoved(int position)
     std::string command("v4l2-ctl --set-ctrl exposure_absolute=");
 
     command = command + to_string(position);
-    system(command);
+    system(command.c_str());
     ui->exposure_lcd->display(position);
 }
 
@@ -83,6 +85,6 @@ void video4linuxConfig::on_focus_slider_sliderMoved(int position)
     std::string command("v4l2-ctl --set-ctrl focus_absolute=");
 
     command = command + to_string(position);
-    system(val);
+    system(command.c_str());
     ui->focus_lcd->display(position);
 }
