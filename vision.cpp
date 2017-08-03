@@ -214,7 +214,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             angle = fabs(angle_two_points(line_slope, x_axis_slope));
             angle = (col_select.first.y <= unk_robot.y)?angle:-angle;
 
-            pos_cam << centroid.x * X_CONV_CONST / 100,
+            /*pos_cam << centroid.x * X_CONV_CONST / 100,
                        centroid.y * Y_CONV_CONST / 100,
                        angle;
             last_pos << last_cent.x * X_CONV_CONST / 100,
@@ -224,7 +224,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                    2;
 
             kalman_res = kalman_filter(pos_cam, v_w, last_pos, 9, last_P);
-            last_P = kalman_res.first;
+            last_P = kalman_res.first;*/
             //centroid.x = kalman_res.second(0) * 100;
             //centroid.y = kalman_res.second(1) * 100;
 
