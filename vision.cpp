@@ -588,7 +588,11 @@ void Vision::run()
     double elapsed_secs;
     clock_t begin, end;
     vector<pMatrix> obj_contours;
+    vector<Point> to_transf, transf;
     IplImage ipl_img;
+
+    to_transf.resize(6);
+    transf.resize(6);
 
     while(!stop){
         begin = clock();
@@ -603,6 +607,8 @@ void Vision::run()
         rows = raw_frame.rows;
         cols = raw_frame.cols;
         raw_frame = crop_image(raw_frame);
+        info.img_size.x = raw_frame.cols;
+        info.img_size.y = raw_frame.rows;
         ipl_img = raw_frame;
         vision_frame = cvarrToMat(img_resize(&ipl_img, DEFAULT_NCOLS, DEFAULT_NROWS));  // default additional arguments: don't copy data.
         raw_frame = vision_frame.clone();

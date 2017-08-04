@@ -41,7 +41,7 @@ soccer_window::soccer_window(QWidget *parent) :
     field = new FieldDraw;
     ball = new BallDraw;
 
-    prepare_game_scene();
+
     load_serial_cfg();
     Robot::config_serial(serial_config);
 
@@ -79,10 +79,10 @@ void soccer_window::load_serial_cfg(){
     serial_config.dataBits = QSerialPort::DataBits(dataBits);
 }
 
-void soccer_window::prepare_game_scene()
+void soccer_window::prepare_game_scene(int w, int h)
 {
     game_scene->setBackgroundBrush(Qt::black);
-    game_scene->setSceneRect(0, 0, DEFAULT_NCOLS, DEFAULT_NROWS);
+    game_scene->setSceneRect(0, 0, w, h);
     ui->game_view->setScene(game_scene);
     ui->game_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     team_robots.resize(3);
@@ -105,7 +105,6 @@ void soccer_window::prepare_game_scene()
     }
     game_scene->addItem(field);
     game_scene->addItem(ball);
-    ball->setPos(317, 250);
 }
 
 void soccer_window::closeEvent(QCloseEvent *event){
@@ -160,6 +159,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         map_area = percep.map_area;
         atk_area = percep.atk_area;
         def_area = percep.def_area;
+        prepare_game_scene(percep.img_size.x, percep.img_size.y);
         area_read = true;
         centroid_atk = (atk_area[2] + atk_area[3] + atk_area[4] + atk_area[5])/4;
         centroid_def = (def_area[2] + def_area[3] + def_area[4] + def_area[5])/4;
@@ -185,7 +185,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         gandalf->set_centroid_def(centroid_def); //salva a area de def para o gandalf
         gandalf->set_def_area(def_area);
     }
-
+    game_scene->update();
     leona->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para a leona
     presto->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o presto
     gandalf->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o gandalf
@@ -194,6 +194,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->ball_detec_label->setText("Ball found");
         ball_pos = percep.ball_pos_cm;
+        ball->setPos(percep.ball_pos.x, percep.ball_pos.y);
     }else{
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->ball_detec_label->setText("Ball not found");

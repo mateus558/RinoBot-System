@@ -21,7 +21,7 @@ class soccer_window : public QWidget
 public:
     explicit soccer_window(QWidget *parent = 0);
     void load_serial_cfg();
-    void prepare_game_scene();
+    void prepare_game_scene(int w, int h);
     ~soccer_window();
 public slots:
     void updateGameFunctionsRobots(Selector);

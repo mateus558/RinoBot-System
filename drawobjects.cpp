@@ -37,7 +37,6 @@ void FieldDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     defPath.moveTo(defPoints[0].x, defPoints[0].y);
     atkPath.moveTo(atkPoints[0].x, atkPoints[0].y);
     for(i = 1; i < defPoints.size(); i++){
-        qDebug() << "Point: " << defPoints[i].x << " " << defPoints[i].y;
         defPath.lineTo(defPoints[i].x, defPoints[i].y);
         atkPath.lineTo(atkPoints[i].x, atkPoints[i].y);
     }

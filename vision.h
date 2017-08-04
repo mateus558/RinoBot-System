@@ -30,6 +30,7 @@ public:
         bool ball_found;
         pair<double, double> ball_vel;
         Point ball_pos, ball_last_pos;
+        Point img_size;
         Point2d ball_pos_cm;
         rVector enemy_robots, team_robots;
         pVector map_area, atk_area, def_area;
@@ -38,6 +39,7 @@ private:
     bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters, showErrors, trained;
     int mode, rows, cols, camid, x_offset, y_offset, cont;
     double FPS, deltaT;
+
     Mat kmeans_centers, labels, centers;
     Perception info;
     QMutex mutex;
