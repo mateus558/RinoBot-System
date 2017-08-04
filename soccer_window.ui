@@ -548,7 +548,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="ball_detec_label_2">
+   <widget class="QLabel" name="serial_status_label">
     <property name="geometry">
      <rect>
       <x>40</x>

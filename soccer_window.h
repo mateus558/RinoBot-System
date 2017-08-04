@@ -32,7 +32,7 @@ public slots:
     void receiveSerialSettings(SettingsDialog::Settings);
     void updateFPS(double);
 signals:
-    void updateVisionInfo(rVector);
+    void updateVisionInfo(std::vector<Robot>);
 private slots:
 
     void on_start_game_clicked();
@@ -71,6 +71,7 @@ private:
     QGraphicsScene *game_scene;
     FieldDraw *field;
     BallDraw *ball;
+    std::vector<RobotDraw*> team_shapes;
     int cam_id;
     bool started, area_read, run_fuzzy, run_leona, run_presto, run_gandalf, game_started, team_changed;
 

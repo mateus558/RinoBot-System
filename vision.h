@@ -32,7 +32,7 @@ public:
         Point ball_pos, ball_last_pos;
         Point img_size;
         Point2d ball_pos_cm;
-        rVector enemy_robots, team_robots;
+        std::vector<Robot> enemy_robots, team_robots;
         pVector map_area, atk_area, def_area;
     };
 private:
@@ -66,8 +66,8 @@ private:
     vector<Robot> robots;
 
 public slots:
-    void updateFuzzyRobots(rVector);
-    void updateGameFunctionsRobots(rVector);
+    void updateFuzzyRobots(std::vector<Robot>);
+    void updateGameFunctionsRobots(std::vector<Robot>);
 
 signals:
     void infoPercepted(Vision::Perception);

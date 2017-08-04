@@ -14,8 +14,11 @@ QRectF RobotDraw::boundingRect() const
 void RobotDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->setBrush(Qt::green);
+    if(pos == Point(-1, -1)){
+        pos = Point(1, 1);
+    }
     painter->drawEllipse(pos.x, pos.y, radius, radius);
-}
+ }
 
 FieldDraw::FieldDraw(QGraphicsItem *parent) : QGraphicsItem(parent)
 {
@@ -63,7 +66,6 @@ QPainterPath FieldDraw::shape()
     fieldPath.moveTo(fieldPoints[0].x, fieldPoints[0].y);
 
     for(i = 1; i < n; i++){
-        qDebug() << "Point:" << fieldPoints[i].x << " " << fieldPoints[i].y;
         fieldPath.lineTo(fieldPoints[i].x, fieldPoints[i].y);
     }
     fieldPath.closeSubpath();

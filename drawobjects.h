@@ -23,14 +23,15 @@ protected:
 class RobotDraw : public QGraphicsItem
 {
 public:
-    int radius;
+    int radius = 25;
+    double angle = 0;
     cv::Point pos;
     RobotDraw(QGraphicsItem* parent = NULL);
 
 protected:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QPainterPath shape();
+   // QPainterPath shape();
 };
 
 class FieldDraw : public QGraphicsItem

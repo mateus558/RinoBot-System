@@ -20,9 +20,10 @@ soccer_window::soccer_window(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::soccer_window)
 {
+    int i;
     qRegisterMetaType<Vision::Perception>("Vision::Perception");
     qRegisterMetaType<Selector>("Selector");
-    qRegisterMetaType<rVector>("rVector");
+    //qRegisterMetaType<rVector>("rVector");
 
 
     ui->setupUi(this);
@@ -42,6 +43,11 @@ soccer_window::soccer_window(QWidget *parent) :
     ball = new BallDraw;
 
     team_robots.resize(3);
+    team_shapes.resize(3);
+
+    for(i = 0; i < 3; i++){
+        team_shapes[i] = new RobotDraw;
+    }
     eye->set_mode(0);
     eye->togglePlay(true);
 
@@ -55,8 +61,8 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(leona, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
     connect(presto, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
     connect(gandalf, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
-    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateFuzzyRobots(rVector)), Qt::QueuedConnection);
-    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateGameFunctionsRobots(rVector)), Qt::QueuedConnection);
+    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateFuzzyRobots(std::vector<Robot>)));
+    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateGameFunctionsRobots(std::vector<Robot>)));
 }
 
 void soccer_window::load_serial_cfg(){
@@ -84,12 +90,16 @@ void soccer_window::load_serial_cfg(){
 
 void soccer_window::prepare_game_scene(int w, int h)
 {
+    int i;
+
     game_scene->setBackgroundBrush(Qt::black);
     game_scene->setSceneRect(0, 0, w, h);
-   // ui->game_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     ui->game_view->setScene(game_scene);
 
-
+    for(i = 0; i < 3; i++){
+        team_shapes[i]->pos = team_robots[i].get_centroid();
+        game_scene->addItem(team_shapes[i]);
+    }
     game_scene->addItem(field);
     game_scene->addItem(ball);
 }
@@ -139,6 +149,7 @@ void soccer_window::updateGameFunctionsRobots(Selector selec_robot){
 
 void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     p2dVector enemy_pos(3), team_pos(3);
+    int i;
 
     percep = percep_info;
 
@@ -175,7 +186,13 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         gandalf->set_centroid_def(centroid_def); //salva a area de def para o gandalf
         gandalf->set_def_area(def_area);
     }
+    for(i = 0; i < 3; i++){
+        Point c = team_robots[i].get_centroid();
+        team_shapes[i]->angle = team_robots[i].get_angle();
+        team_shapes[i]->pos = c;
+    }
     game_scene->update();
+
     leona->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para a leona
     presto->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o presto
     gandalf->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o gandalf
@@ -312,7 +329,6 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
 void soccer_window::updateFPS(double fps){
     ui->fps_lcd->display(fps);
-
 }
 
 void soccer_window::updateSerialSettings(SettingsDialog::Settings settings){
@@ -329,6 +345,8 @@ void soccer_window::on_start_game_2_clicked()
 
         if(!Robot::is_serial_open()){
             Robot::open_serial();
+            ui->serial_status_col_label->setStyleSheet("QLabel { background-color : green; }");
+            ui->serial_status_label->setText("Serial Open");
         }
 
         ui->start_game_2->setText("Stop Game");
@@ -344,6 +362,8 @@ void soccer_window::on_start_game_2_clicked()
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
 
         ui->start_game_2->setText("Start Game");
+        ui->serial_status_col_label->setStyleSheet("QLabel { background-color : red; }");
+        ui->serial_status_label->setText("Serial Closed");
     }
 }
 

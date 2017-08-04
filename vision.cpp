@@ -639,7 +639,7 @@ void Vision::run()
                 break;
         }
 
-       if(mode == 1){
+       if(!play){
             cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
             img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
             img.bits();
@@ -708,13 +708,13 @@ void Vision::Play()
     }
 }
 
-void Vision::updateFuzzyRobots(rVector team_robots){
+void Vision::updateFuzzyRobots(std::vector<Robot> team_robots){
     robots[0].set_flag_fuzzy(team_robots[0].get_flag_fuzzy());
     robots[1].set_flag_fuzzy(team_robots[1].get_flag_fuzzy());
     robots[2].set_flag_fuzzy(team_robots[2].get_flag_fuzzy());
 }
 
-void Vision::updateGameFunctionsRobots(rVector team_robots){
+void Vision::updateGameFunctionsRobots(std::vector<Robot> team_robots){
     robots[0].set_lin_vel(make_pair(team_robots[0].get_l_vel(), team_robots[0].get_r_vel()));
     robots[1].set_lin_vel(make_pair(team_robots[1].get_l_vel(), team_robots[1].get_r_vel()));
     robots[2].set_lin_vel(make_pair(team_robots[2].get_l_vel(), team_robots[2].get_r_vel()));

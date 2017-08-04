@@ -1,5 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
+
 #include <vector>
 #include <utility>
 #include <Eigen/Dense>
@@ -26,7 +27,7 @@
 using namespace cv;
 using namespace Eigen;
 
-typedef std::vector<Robot> rVector; //Robots vector
+//typedef std::vector<Robot> rVector; //Robots vector
 typedef std::vector<Point> pVector; //Point vector
 typedef std::vector<Point2d> p2dVector; //Point of doubles vector
 typedef std::vector<std::vector<int> > iMatrix; //int matrix template
@@ -44,8 +45,8 @@ bool sort_by_smallest_y(Point a, Point b);
 bool sort_by_smallest_x(Point a, Point b);
 bool sort_by_largest_y(Point a, Point b);
 bool sort_by_largest_x(Point a, Point b);
-bool area_limit(vector<Point> p);
-bool ball_area_limit(vector<Point> p);
+bool area_limit(std::vector<Point> p);
+bool ball_area_limit(std::vector<Point> p);
 
 
 #endif // UTILS_H
