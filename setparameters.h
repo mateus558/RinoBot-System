@@ -5,6 +5,7 @@
 #include <vision.h>
 #include <configrobots.h>
 #include "settingsdialog.h"
+#include "video4linuxconfig.h"
 
 namespace Ui {
 class SetParameters;
@@ -60,6 +61,7 @@ private:
     SettingsDialog *serial_settings_dialog;
     SettingsDialog::Settings serial_settings;
     SetColorRange *set_team_color;
+    video4linuxConfig *calib_camera;
 };
 
 #endif // SETPARAMETERS_H

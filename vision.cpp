@@ -142,8 +142,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             }
         }
     }
-    //cout << tirj_cent[1].size() << " robots found on team 2" << endl;
-    //cout << tirj_cent[0].size() << " robots found on team 1" << endl;
+
     //Get the robots moments (their color half)
     for(i = 0; i < 3; ++i){
         remove_if(contours[i + 3].begin(), contours[i + 3].end(), invalid_contour);
@@ -161,7 +160,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
         }else{
             r_col_cent[i].push_back(null_point);
-            //cout << robots[i].get_nick() << " not found!" << endl;
             robots[i].set_centroid(robots[i].get_from_pos_hist(0));
             robots[i].was_detected(false);
         }
@@ -239,10 +237,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             robots[r_label].was_detected(false);
             r_set[r_label] = true;
         }
-
-        //cout << "Robo " << r_label << ", team cent = (" << unk_robot.x << "," <<unk_robot.y << "), "
-        //    << "color cent= (" << col_select.first.x << "," << col_select.first.y << "), angle=" <<robots[i].get_angle() << endl;
-
     }
 
     error = false;

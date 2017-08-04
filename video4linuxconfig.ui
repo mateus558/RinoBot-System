@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>video4linuxConfig</class>
  <widget class="QWidget" name="video4linuxConfig">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -361,6 +364,19 @@
    </property>
    <property name="text">
     <string>Set to Default</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>220</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Init Capture</string>
    </property>
   </widget>
  </widget>
