@@ -401,12 +401,13 @@ Mat Vision::crop_image(Mat org){
     Size size;
     Point2f pts[4], pts1[3], pts2[3];
     RotatedRect box;
-    pVector roi(4), aux_y;
+    pVector roi(4), aux_y, map_points1;
 
     pts2[0] = Point(0, 0);
     pts2[1] = Point(0, size.height-1);
     pts2[2] = Point(size.width-1, 0);
 
+    map_points1 = map_points;
     aux_y = map_points;
     sort(map_points.begin(), map_points.end(), sort_by_smallest_x);
     sort(aux_y.begin(), aux_y.end(), sort_by_smallest_y);
@@ -430,7 +431,7 @@ Mat Vision::crop_image(Mat org){
 
     if(!sentPoints){
         transf_matrix = getAffineTransform(pts1, pts2);
-        transform(map_points, tmap_points, transf_matrix);
+        transform(map_points1, tmap_points, transf_matrix);
         transform(def_points, tdef_points, transf_matrix);
         transform(atk_points, tatk_points, transf_matrix);
 
@@ -625,9 +626,10 @@ void Vision::run()
                     robots[i].compute_velocity(deltaT);
                     robots[i].predict_info(deltaT*2);
                 }
-
-                vision_frame = draw_robots(vision_frame, robots);
-                vision_frame = draw_field(vision_frame);
+                if(!play){
+                    vision_frame = draw_robots(vision_frame, robots);
+                    vision_frame = draw_field(vision_frame);
+                }
                 break;
             case 1: //Set color mode
                 vision_frame = setting_mode(raw_frame, vision_frame, low, upper);
@@ -637,10 +639,11 @@ void Vision::run()
                 break;
         }
 
-        cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
-        img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
-        img.bits();
-
+       if(mode == 1){
+            cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
+            img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
+            img.bits();
+        }
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         deltaT = elapsed_secs;
@@ -811,6 +814,11 @@ void Vision::show_centers(bool show){
 
 void Vision::show_errors(bool show){
     showErrors = show;
+}
+
+void Vision::togglePlay(bool play)
+{
+    this->play = play;
 }
 
 void Vision::save_image(){

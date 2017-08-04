@@ -36,8 +36,10 @@ void FieldDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     defPath.moveTo(defPoints[0].x, defPoints[0].y);
     atkPath.moveTo(atkPoints[0].x, atkPoints[0].y);
-    for(i = 1; i < defPoints.size(); i++){
+    for(i = 1; i < defPoints.size(); i++){   
         defPath.lineTo(defPoints[i].x, defPoints[i].y);
+    }
+    for(i = 1; i < atkPoints.size(); i++){
         atkPath.lineTo(atkPoints[i].x, atkPoints[i].y);
     }
     defPath.closeSubpath();
@@ -61,6 +63,7 @@ QPainterPath FieldDraw::shape()
     fieldPath.moveTo(fieldPoints[0].x, fieldPoints[0].y);
 
     for(i = 1; i < n; i++){
+        qDebug() << "Point:" << fieldPoints[i].x << " " << fieldPoints[i].y;
         fieldPath.lineTo(fieldPoints[i].x, fieldPoints[i].y);
     }
     fieldPath.closeSubpath();

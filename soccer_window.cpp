@@ -41,6 +41,9 @@ soccer_window::soccer_window(QWidget *parent) :
     field = new FieldDraw;
     ball = new BallDraw;
 
+    team_robots.resize(3);
+    eye->set_mode(0);
+    eye->togglePlay(true);
 
     load_serial_cfg();
     Robot::config_serial(serial_config);
@@ -83,26 +86,10 @@ void soccer_window::prepare_game_scene(int w, int h)
 {
     game_scene->setBackgroundBrush(Qt::black);
     game_scene->setSceneRect(0, 0, w, h);
+   // ui->game_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     ui->game_view->setScene(game_scene);
-    ui->game_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    team_robots.resize(3);
-    eye->set_mode(0);
 
-    if(!read_points("Config/map", map_area)){
-        cerr << "The map could not be read from the file!" << endl;
-    }else{
-        field->fieldPoints = map_area;
-    }
-    if(!read_points("Config/attack_area", atk_area)){
-        cerr << "The attack area could not be read from the file!" << endl;
-    }else{
-        field->atkPoints = atk_area;
-    }
-    if(!read_points("Config/defense_area", def_area)){
-        cerr << "The defense area could not be read from the file!" << endl;
-    }else{
-        field->defPoints = def_area;
-    }
+
     game_scene->addItem(field);
     game_scene->addItem(ball);
 }
@@ -159,6 +146,9 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         map_area = percep.map_area;
         atk_area = percep.atk_area;
         def_area = percep.def_area;
+        field->fieldPoints = map_area;
+        field->atkPoints = atk_area;
+        field->defPoints = def_area;
         prepare_game_scene(percep.img_size.x, percep.img_size.y);
         area_read = true;
         centroid_atk = (atk_area[2] + atk_area[3] + atk_area[4] + atk_area[5])/4;
@@ -322,6 +312,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 
 void soccer_window::updateFPS(double fps){
     ui->fps_lcd->display(fps);
+
 }
 
 void soccer_window::updateSerialSettings(SettingsDialog::Settings settings){

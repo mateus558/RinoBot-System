@@ -497,44 +497,18 @@
      <x>740</x>
      <y>440</y>
      <width>161</width>
-     <height>121</height>
+     <height>91</height>
     </rect>
    </property>
    <property name="title">
     <string>Other Info:</string>
    </property>
-   <widget class="QLCDNumber" name="fps_lcd">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>90</y>
-      <width>81</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">Background-color: #000;</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="fps_label">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>90</y>
-      <width>31</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>FPS:</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="ball_detec_label">
     <property name="geometry">
      <rect>
       <x>40</x>
       <y>30</y>
-      <width>91</width>
+      <width>111</width>
       <height>20</height>
      </rect>
     </property>
@@ -588,6 +562,32 @@
     </property>
    </widget>
   </widget>
+  <widget class="QLCDNumber" name="fps_lcd">
+   <property name="geometry">
+    <rect>
+     <x>810</x>
+     <y>560</y>
+     <width>81</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">Background-color: #000;</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="fps_label">
+   <property name="geometry">
+    <rect>
+     <x>750</x>
+     <y>560</y>
+     <width>31</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>FPS:</string>
+   </property>
+  </widget>
   <zorder>optionsGroupBox</zorder>
   <zorder>start_game</zorder>
   <zorder>switch_fields</zorder>
@@ -603,6 +603,8 @@
   <zorder>start_game_2</zorder>
   <zorder>game_view</zorder>
   <zorder>groupBox</zorder>
+  <zorder>fps_lcd</zorder>
+  <zorder>fps_label</zorder>
  </widget>
  <resources/>
  <connections/>
