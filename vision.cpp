@@ -444,6 +444,7 @@ Mat Vision::crop_image(Mat org){
         sentPoints = true;
     }
     warpAffine(org, cropped, transf_matrix, size, INTER_LINEAR, BORDER_CONSTANT);
+    map_points = map_points1;
 
     return cropped;
 }
