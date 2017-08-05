@@ -585,7 +585,7 @@ Mat Vision::draw_field(Mat frame)
 void Vision::run()
 {
     int delay = (1000/this->FPS);
-    int i = 0;
+    int i = 0, itr = 0;
     double elapsed_secs;
     clock_t begin, end;
     vector<pMatrix> obj_contours;
@@ -597,6 +597,7 @@ void Vision::run()
 
     while(!stop){
         begin = clock();
+        itr++;
 
         if(!cam.read(raw_frame)){
             stop = true;
@@ -673,13 +674,12 @@ void Vision::run()
 
         emit infoPercepted(info);
         emit processedImage(img);
-        if(i%10 == 0){
+        if(itr%10 == 0){
             emit framesPerSecond(FPS);
-            i = 0;
+            itr = 0;
         }
 
         msleep(delay);
-        i++;
     }
 }
 

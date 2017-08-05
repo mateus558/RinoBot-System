@@ -328,6 +328,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 }
 
 void soccer_window::updateFPS(double fps){
+    cout << fps << endl;
     ui->fps_lcd->display(fps);
 }
 
