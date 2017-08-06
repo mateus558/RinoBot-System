@@ -279,6 +279,16 @@ Point Robot::get_predic_centroid()
     return this->centroid_predict;
 }
 
+pair<vector<Point>, vector<Point> > Robot::get_contour()
+{
+    pair<pVector, pVector> p;
+
+    p.first = team_contour;
+    p.second = role_contour;
+
+    return p;
+}
+
 
 Point2d Robot::get_pos(){
     return centroid_cm;
@@ -336,6 +346,12 @@ Point Robot::get_color_cent()
 void Robot::set_team_cent(Point p)
 {
     this->team_cent = p;
+}
+
+void Robot::set_contour(pair<vector<Point>, vector<Point> > contour)
+{
+    this->team_contour = contour.first;
+    this->role_contour = contour.second;
 }
 
 Point Robot::get_team_cent()

@@ -13,12 +13,50 @@ QRectF RobotDraw::boundingRect() const
 
 void RobotDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    int i, size = team_contour.size(), size1 = role_contour.size();
+    QPainterPath team_shape, role_shape;
+
+    if(size > 0){
+        team_shape.moveTo(team_contour[0].x, team_contour[0].y);
+
+        for(i = 1; i < size; i++){
+            team_shape.lineTo(team_contour[i].x, team_contour[i].y);
+        }
+        team_shape.closeSubpath();
+    }
+    if(size1 > 0){
+        role_shape.moveTo(role_contour[0].x, role_contour[0].y);
+        for(i = 1; i < size1; i++){
+            role_shape.lineTo(role_contour[i].x, role_contour[i].y);
+        }
+        role_shape.closeSubpath();
+    }
+
     painter->setBrush(Qt::green);
     if(pos == Point(-1, -1)){
         pos = Point(1, 1);
     }
     painter->drawEllipse(pos.x, pos.y, radius, radius);
- }
+}
+
+QPainterPath RobotDraw::shape()
+{
+    int i, size = team_contour.size(), size1 = role_contour.size();
+    QPainterPath shape;
+
+    shape.moveTo(team_contour[0].x, team_contour[0].y);
+
+    for(i = 1; i < size; i++){
+        shape.lineTo(team_contour[i].x, team_contour[i].y);
+    }
+    shape.moveTo(role_contour[0].x, role_contour[0].y);
+    for(i = 1; i < size1; i++){
+        shape.lineTo(role_contour[i].x, role_contour[i].y);
+    }
+    shape.closeSubpath();
+
+    return shape;
+}
 
 FieldDraw::FieldDraw(QGraphicsItem *parent) : QGraphicsItem(parent)
 {
@@ -75,7 +113,7 @@ QPainterPath FieldDraw::shape()
 
 BallDraw::BallDraw(QGraphicsItem *parent)
 {
-
+    color.resize(3, 0);
 }
 
 QRectF BallDraw::boundingRect() const
@@ -85,8 +123,26 @@ QRectF BallDraw::boundingRect() const
 
 void BallDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    QBrush orangeBrush(QColor(255,165,0));
+    QPainterPath obj = shape();
+    QBrush brush(QColor(color[0],color[1],color[2]));
 
-    painter->setBrush(orangeBrush);
-    painter->drawEllipse(pos.x, pos.y, radius, radius);
+    painter->setBrush(brush);
+    painter->drawPath(obj);
+}
+
+QPainterPath BallDraw::shape()
+{
+    int i = 0, size = contour.size();
+    QPainterPath shape;
+
+    if(size > 0){
+        shape.moveTo(contour[i].x, contour[i].y);
+
+        for(i = 1; i < size; i++){
+            shape.lineTo(contour[i].x, contour[i].y);
+        }
+        shape.closeSubpath();
+    }
+
+    return shape;
 }

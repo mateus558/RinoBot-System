@@ -101,9 +101,11 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
         ball_found = true;
+        info.ball_contour = contours[0][contours[0].size()-1];
     }else{
         ball_cent = ball_last_pos;
         ball_found = false;
+        info.ball_contour = pVector();
     }
 
 
@@ -300,6 +302,7 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
 
     low = ball_color.first;
     upper = ball_color.second;
+    info.ball_color = ball_color;
 
     out_ball = detect_colors(frame, low, upper);
 

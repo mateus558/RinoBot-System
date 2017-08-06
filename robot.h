@@ -48,7 +48,8 @@ private:
     Point color_cent, team_cent;    //Centroid from the half role color and from team color
     Point line_slope;
     string nick, ID, role;
-    vector<Point> pos_hist;    
+    vector<Point> pos_hist;
+    vector<Point> team_contour, role_contour;
     vector<int> low_color_team, upper_color_team, low_color, upper_color;
     pair<float,float> vel;  //Velocity sent to the robots by the estrategy
     pair<float, float> _vel; //Velocity percepted by the camera Vx, Vy
@@ -78,16 +79,13 @@ public:
     Point get_centroid();
     Point get_last_centroid();
     Point2d get_pos();
-
     Point get_predic_centroid();
-
+    pair<vector<Point>, vector<Point> > get_contour();
     double get_output_fuzzy();
     int get_flag_fuzzy();
     int get_channel();
     double get_angle();
-
     double get_predic_angle();
-
     double get_last_angle();
     double get_loss_rate();
     Point get_line_slope();
@@ -116,6 +114,7 @@ public:
     void set_line_slope(Point p);
     void set_color_cent(Point p);
     void set_team_cent(Point p);
+    void set_contour(pair<vector<Point>, vector<Point> > contour);
     void set_nick(string nick);
     void set_role(string role);
     void set_ID(string ID);

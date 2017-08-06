@@ -189,9 +189,9 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     for(i = 0; i < 3; i++){
         Point c = team_robots[i].get_centroid();
         team_shapes[i]->angle = team_robots[i].get_angle();
+        //team_shapes[i]->contour = team_robots[i].get_contour();
         team_shapes[i]->pos = c;
     }
-    game_scene->update();
 
     leona->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para a leona
     presto->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o presto
@@ -202,10 +202,16 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->ball_detec_label->setText("Ball found");
         ball_pos = percep.ball_pos_cm;
         ball->setPos(percep.ball_pos.x, percep.ball_pos.y);
+        ball->contour = percep.ball_contour;
+        for(i = 0; i < ball->color.size(); i++){
+            ball->color[i] = percep_info.ball_color.second[i] + percep.ball_color.first[i];
+            ball->color[i] /= 2;
+        }
     }else{
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->ball_detec_label->setText("Ball not found");
     }
+    game_scene->update();
 
     enemy_pos[0] = percep.enemy_robots[0].get_pos();
     enemy_pos[1] = percep.enemy_robots[1].get_pos();
@@ -328,7 +334,6 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
 }
 
 void soccer_window::updateFPS(double fps){
-    cout << fps << endl;
     ui->fps_lcd->display(fps);
 }
 

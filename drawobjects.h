@@ -13,11 +13,14 @@ class BallDraw : public QGraphicsItem
 public:
     int radius = 15;
     cv::Point pos;
+    pVector contour;
+    vector<int> color;
     BallDraw(QGraphicsItem* parent = NULL);
 
 protected:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QPainterPath shape();
 };
 
 class RobotDraw : public QGraphicsItem
@@ -25,13 +28,15 @@ class RobotDraw : public QGraphicsItem
 public:
     int radius = 25;
     double angle = 0;
+    cv::Point team_cent, role_cent;
     cv::Point pos;
+    pVector team_contour, role_contour;
     RobotDraw(QGraphicsItem* parent = NULL);
 
 protected:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-   // QPainterPath shape();
+    QPainterPath shape();
 };
 
 class FieldDraw : public QGraphicsItem

@@ -34,6 +34,8 @@ public:
         Point2d ball_pos_cm;
         std::vector<Robot> enemy_robots, team_robots;
         pVector map_area, atk_area, def_area;
+        pVector ball_contour;
+        pair<vector<int>, vector<int> > ball_color;
     };
 private:
     bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters, showErrors, trained, play = false;
