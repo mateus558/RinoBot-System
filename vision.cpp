@@ -88,9 +88,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     vector<pVector > r_col_cent(3, pVector());
     vector<pVector > tirj_cent(2, pVector());
     pair<Point, pair<int, int> > col_select;
-    /*Vector3d pos_cam, last_pos;
-    Vector2d v_w;
-    pair<Matrix3d, Vector3d> kalman_res;*/
 
     //Get the ball moment from the contour
     if(contours[0].size() != 0){
@@ -123,8 +120,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
     remove_if(contours[1].begin(), contours[1].end(), area_limit);
 
-    sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
     remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
+    sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
     remove_if(contours[2].begin(), contours[2].end(), area_limit);
 
 
@@ -144,8 +141,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             }
         }
     }
-    //cout << tirj_cent[1].size() << " robots found on team 2" << endl;
-    //cout << tirj_cent[0].size() << " robots found on team 1" << endl;
+
     //Get the robots moments (their color half)
     for(i = 0; i < 3; ++i){
         remove_if(contours[i + 3].begin(), contours[i + 3].end(), invalid_contour);
@@ -163,7 +159,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
         }else{
             r_col_cent[i].push_back(null_point);
-            //cout << robots[i].get_nick() << " not found!" << endl;
             robots[i].set_centroid(robots[i].get_from_pos_hist(0));
             robots[i].was_detected(false);
         }
@@ -188,7 +183,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                 if(dista < min && dista < 20){
                     min = dista;
                     tmin = min;
-                    col_select = make_pair(r_col_cent[j][k], make_pair(j, k));
+                    pair<int, int> ind = make_pair(j, k);
+                    col_select = make_pair(r_col_cent[j][k], ind);
                 }
             }
         }
@@ -213,21 +209,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             angle = fabs(angle_two_points(line_slope, x_axis_slope));
             angle = (col_select.first.y <= unk_robot.y)?angle:-angle;
 
-            /*pos_cam << centroid.x * X_CONV_CONST / 100,
-                       centroid.y * Y_CONV_CONST / 100,
-                       angle;
-            last_pos << last_cent.x * X_CONV_CONST / 100,
-                        last_cent.y * Y_CONV_CONST / 100,
-                        last_angle;
-            v_w << 2,
-                   2;
-
-            kalman_res = kalman_filter(pos_cam, v_w, last_pos, 9, last_P);
-            last_P = kalman_res.first;*/
-            //centroid.x = kalman_res.second(0) * 100;
-            //centroid.y = kalman_res.second(1) * 100;
-
-            //angle = kalman_res.second(2);
+            robots[r_label].set_team_contour(contours[1][i]);
+            robots[r_label].set_role_contour(contours[r_label + 3][col_select.second.second]);
             robots[r_label].set_team_cent(unk_robot);
             robots[r_label].set_color_cent(col_select.first);
             robots[r_label].set_line_slope(line_slope);
@@ -241,9 +224,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             robots[r_label].was_detected(false);
             r_set[r_label] = true;
         }
-
-        //cout << "Robo " << r_label << ", team cent = (" << unk_robot.x << "," <<unk_robot.y << "), "
-        //    << "color cent= (" << col_select.first.x << "," << col_select.first.y << "), angle=" <<robots[i].get_angle() << endl;
 
     }
 

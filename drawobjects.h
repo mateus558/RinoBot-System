@@ -23,6 +23,18 @@ protected:
     QPainterPath shape();
 };
 
+class Enemy : public QGraphicsItem
+{
+public:
+    int radius = 20;
+    cv::Point pos;
+    Enemy(QGraphicsItem* parent = NULL);
+
+protected:
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+};
+
 class RobotDraw : public QGraphicsItem
 {
 public:
@@ -30,6 +42,7 @@ public:
     double angle = 0;
     cv::Point team_cent, role_cent;
     cv::Point pos;
+    vector<int> team_color, role_color;
     pVector team_contour, role_contour;
     RobotDraw(QGraphicsItem* parent = NULL);
 

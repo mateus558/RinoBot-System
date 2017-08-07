@@ -3,7 +3,8 @@
 
 RobotDraw::RobotDraw(QGraphicsItem *parent) : QGraphicsItem(parent)
 {
-
+    team_color.resize(3);
+    role_color.resize(3);
 }
 
 QRectF RobotDraw::boundingRect() const
@@ -15,6 +16,8 @@ void RobotDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 {
     int i, size = team_contour.size(), size1 = role_contour.size();
     QPainterPath team_shape, role_shape;
+    QBrush team_brush(QColor(team_color[2], team_color[1], team_color[0]));
+    QBrush role_brush(QColor(role_color[2], role_color[1], role_color[0]));
 
     if(size > 0){
         team_shape.moveTo(team_contour[0].x, team_contour[0].y);
@@ -36,7 +39,11 @@ void RobotDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     if(pos == Point(-1, -1)){
         pos = Point(1, 1);
     }
-    painter->drawEllipse(pos.x, pos.y, radius, radius);
+
+    painter->setBrush(team_brush);
+    painter->drawPath(team_shape);
+    painter->setBrush(role_brush);
+    painter->drawPath(role_shape);
 }
 
 QPainterPath RobotDraw::shape()
@@ -124,7 +131,7 @@ QRectF BallDraw::boundingRect() const
 void BallDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QPainterPath obj = shape();
-    QBrush brush(QColor(color[0],color[1],color[2]));
+    QBrush brush(QColor(color[2],color[1],color[0]));
 
     painter->setBrush(brush);
     painter->drawPath(obj);
@@ -145,4 +152,22 @@ QPainterPath BallDraw::shape()
     }
 
     return shape;
+}
+
+Enemy::Enemy(QGraphicsItem *parent)
+{
+
+}
+
+QRectF Enemy::boundingRect() const
+{
+    return QRectF(0, 0, radius, radius);
+}
+
+void Enemy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QBrush red_brush(Qt::red);
+
+    painter->setBrush(red_brush);
+    painter->drawEllipse(pos.x, pos.y, radius, radius);
 }

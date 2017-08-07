@@ -114,7 +114,8 @@ public:
     void set_line_slope(Point p);
     void set_color_cent(Point p);
     void set_team_cent(Point p);
-    void set_contour(pair<vector<Point>, vector<Point> > contour);
+    void set_team_contour(vector<Point> team_contour);
+    void set_role_contour(vector<Point> role_contour);
     void set_nick(string nick);
     void set_role(string role);
     void set_ID(string ID);

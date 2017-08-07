@@ -218,17 +218,8 @@ double Robot::get_predic_angle()
  *
  */
 void Robot::compute_velocity(double deltaT){
-    if(centroid.x != -1)
-        cout << centroid.x << " " << get_from_pos_hist(0).x << endl;
     _vel.first = (centroid.x - last_centroid.x) / deltaT;
     _vel.second = (centroid.y - last_centroid.y) / deltaT;
-    if(_vel.first != 0.0)
-        cout << _vel.first << " " << _vel.second << endl;
-    /*
-    //Convert from pixels/s to cm/s
-    _vel.first *= X_CONV_CONST;
-    _vel.second *= Y_CONV_CONST;
-    */
 
     w = (angle - last_angle) / deltaT;
 }
@@ -348,10 +339,14 @@ void Robot::set_team_cent(Point p)
     this->team_cent = p;
 }
 
-void Robot::set_contour(pair<vector<Point>, vector<Point> > contour)
+void Robot::set_team_contour(vector<Point> team_contour)
 {
-    this->team_contour = contour.first;
-    this->role_contour = contour.second;
+    this->team_contour = team_contour;
+}
+
+void Robot::set_role_contour(vector<Point> role_contour)
+{
+    this->role_contour = role_contour;
 }
 
 Point Robot::get_team_cent()

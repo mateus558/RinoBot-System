@@ -28,7 +28,6 @@ public slots:
     void updateFuzzyRobots(Selector);
     void updatePerceptionInfo(Vision::Perception);
     void updateSerialSettings(SettingsDialog::Settings);
-    void updateVisionUI(QImage);
     void receiveSerialSettings(SettingsDialog::Settings);
     void updateFPS(double);
 signals:
@@ -71,6 +70,7 @@ private:
     QGraphicsScene *game_scene;
     FieldDraw *field;
     BallDraw *ball;
+    vector<Enemy*> enemy;
     std::vector<RobotDraw*> team_shapes;
     int cam_id;
     bool started, area_read, run_fuzzy, run_leona, run_presto, run_gandalf, game_started, team_changed;
