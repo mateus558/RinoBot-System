@@ -9,9 +9,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>905</width>
+    <width>916</width>
     <height>592</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>916</width>
+    <height>592</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Play Soccer</string>
@@ -23,22 +35,6 @@
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
-  <widget class="QLabel" name="game_view">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>10</y>
-     <width>701</width>
-     <height>461</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">Background-color: #000;</string>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="start_game">
    <property name="geometry">
     <rect>
@@ -48,60 +44,27 @@
      <height>41</height>
     </rect>
    </property>
+   <property name="maximumSize">
+    <size>
+     <width>171</width>
+     <height>41</height>
+    </size>
+   </property>
    <property name="text">
-    <string>Start Game</string>
+    <string>Start Capture</string>
    </property>
   </widget>
   <widget class="QPushButton" name="switch_fields">
    <property name="geometry">
     <rect>
      <x>730</x>
-     <y>70</y>
+     <y>110</y>
      <width>171</width>
      <height>41</height>
     </rect>
    </property>
    <property name="text">
     <string>Switch ATK/DEF Area</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="CPH">
-   <property name="geometry">
-    <rect>
-     <x>760</x>
-     <y>190</y>
-     <width>111</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>CPH</string>
-   </property>
-  </widget>
-  <widget class="QLCDNumber" name="fps_lcd">
-   <property name="geometry">
-    <rect>
-     <x>820</x>
-     <y>550</y>
-     <width>64</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">Background-color: #000;</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="fps_label">
-   <property name="geometry">
-    <rect>
-     <x>780</x>
-     <y>550</y>
-     <width>31</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>FPS:</string>
    </property>
   </widget>
   <widget class="QGroupBox" name="battery_level_group">
@@ -257,8 +220,8 @@
    <property name="geometry">
     <rect>
      <x>740</x>
-     <y>290</y>
-     <width>141</width>
+     <y>300</y>
+     <width>161</width>
      <height>121</height>
     </rect>
    </property>
@@ -270,7 +233,7 @@
      <rect>
       <x>10</x>
       <y>30</y>
-      <width>85</width>
+      <width>101</width>
       <height>20</height>
      </rect>
     </property>
@@ -283,7 +246,7 @@
      <rect>
       <x>10</x>
       <y>50</y>
-      <width>101</width>
+      <width>111</width>
       <height>20</height>
      </rect>
     </property>
@@ -296,7 +259,7 @@
      <rect>
       <x>10</x>
       <y>70</y>
-      <width>121</width>
+      <width>131</width>
       <height>20</height>
      </rect>
     </property>
@@ -309,7 +272,7 @@
      <rect>
       <x>10</x>
       <y>90</y>
-      <width>131</width>
+      <width>141</width>
       <height>20</height>
      </rect>
     </property>
@@ -322,7 +285,7 @@
    <property name="geometry">
     <rect>
      <x>730</x>
-     <y>130</y>
+     <y>170</y>
      <width>171</width>
      <height>41</height>
     </rect>
@@ -348,7 +311,7 @@
      <rect>
       <x>40</x>
       <y>30</y>
-      <width>81</width>
+      <width>91</width>
       <height>20</height>
      </rect>
     </property>
@@ -374,7 +337,7 @@
      <rect>
       <x>40</x>
       <y>70</y>
-      <width>81</width>
+      <width>91</width>
       <height>20</height>
      </rect>
     </property>
@@ -470,40 +433,11 @@
     </property>
    </widget>
   </widget>
-  <widget class="QLabel" name="ball_detec_label">
-   <property name="geometry">
-    <rect>
-     <x>770</x>
-     <y>430</y>
-     <width>91</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Ball not found</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="ball_detec_col_label">
-   <property name="geometry">
-    <rect>
-     <x>740</x>
-     <y>430</y>
-     <width>21</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color : red</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
   <widget class="QLabel" name="cam_id_label">
    <property name="geometry">
     <rect>
      <x>740</x>
-     <y>250</y>
+     <y>260</y>
      <width>59</width>
      <height>14</height>
     </rect>
@@ -516,7 +450,7 @@
    <property name="geometry">
     <rect>
      <x>800</x>
-     <y>250</y>
+     <y>260</y>
      <width>47</width>
      <height>23</height>
     </rect>
@@ -525,129 +459,138 @@
     <number>999</number>
    </property>
    <property name="value">
-    <number>300</number>
+    <number>0</number>
    </property>
   </widget>
-  <widget class="QGroupBox" name="serial_status_group">
+  <widget class="QPushButton" name="start_game_2">
    <property name="geometry">
     <rect>
-     <x>550</x>
-     <y>480</y>
-     <width>101</width>
-     <height>101</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Serial Status:</string>
-   </property>
-   <widget class="QLabel" name="gandalf_serial_label">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>30</y>
-      <width>51</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Closed</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="leona_serial_label">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>50</y>
-      <width>51</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Closed</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="presto_serial_label">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>70</y>
-      <width>51</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Closed</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="gandalf_serial_col">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>21</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color : red</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="leona_detec_col">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>21</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color : red</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="presto_detec_col">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>70</y>
-      <width>21</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color : red</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>760</x>
-     <y>460</y>
-     <width>80</width>
-     <height>22</height>
+     <x>730</x>
+     <y>60</y>
+     <width>171</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
-    <string>PushButton</string>
+    <string>Start Game</string>
+   </property>
+  </widget>
+  <widget class="QGraphicsView" name="game_view">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>711</width>
+     <height>461</height>
+    </rect>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>721</width>
+     <height>471</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>740</x>
+     <y>440</y>
+     <width>161</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Other Info:</string>
+   </property>
+   <widget class="QLabel" name="ball_detec_label">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>30</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Ball not found</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ball_detec_col_label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>21</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color : red</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="serial_status_col_label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>21</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color : red</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="serial_status_label">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>60</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Serial Closed</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLCDNumber" name="fps_lcd">
+   <property name="geometry">
+    <rect>
+     <x>810</x>
+     <y>560</y>
+     <width>81</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">Background-color: #000;</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="fps_label">
+   <property name="geometry">
+    <rect>
+     <x>750</x>
+     <y>560</y>
+     <width>31</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>FPS:</string>
    </property>
   </widget>
   <zorder>optionsGroupBox</zorder>
-  <zorder>game_view</zorder>
   <zorder>start_game</zorder>
   <zorder>switch_fields</zorder>
-  <zorder>CPH</zorder>
-  <zorder>fps_lcd</zorder>
-  <zorder>fps_label</zorder>
   <zorder>battery_level_group</zorder>
   <zorder>robots_roles_group</zorder>
   <zorder>gandalf_label</zorder>
@@ -655,12 +598,13 @@
   <zorder>presto_label</zorder>
   <zorder>read_parameters</zorder>
   <zorder>detection_status_group</zorder>
-  <zorder>ball_detec_label</zorder>
-  <zorder>ball_detec_col_label</zorder>
   <zorder>cam_id_label</zorder>
   <zorder>cam_id_spinBox</zorder>
-  <zorder>serial_status_group</zorder>
-  <zorder>pushButton</zorder>
+  <zorder>start_game_2</zorder>
+  <zorder>game_view</zorder>
+  <zorder>groupBox</zorder>
+  <zorder>fps_lcd</zorder>
+  <zorder>fps_label</zorder>
  </widget>
  <resources/>
  <connections/>

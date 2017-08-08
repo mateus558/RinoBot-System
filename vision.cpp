@@ -17,12 +17,9 @@ Vision::Vision(QObject *parent): QThread(parent)
 {
     Point a, b;
     stop = true;
-    showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters= false;
+    showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters = trained= false;
     mode = 0;
     cont = 0;
-    tracker = Tracker::create("KCF");
-    track_init.assign(7, false);
-    objects_tracker.resize(7);
     robots.resize(6);
     robots[0].set_nick("Leona");
     robots[1].set_nick("Gandalf");
@@ -56,7 +53,7 @@ Vision::Vision(QObject *parent): QThread(parent)
     ball_pos = null_point;
     ball_last_pos = null_point;
 
-    last_P = MatrixXd::Identity(3,3);
+ // last_P = MatrixXd::Identity(3,3);
 }
 
 Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) //Detect colors in [low,upper] range
@@ -91,9 +88,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     vector<pVector > r_col_cent(3, pVector());
     vector<pVector > tirj_cent(2, pVector());
     pair<Point, pair<int, int> > col_select;
-    Vector3d pos_cam, last_pos;
-    Vector2d v_w;
-    pair<Matrix3d, Vector3d> kalman_res;
 
     //Get the ball moment from the contour
     if(contours[0].size() != 0){
@@ -103,23 +97,31 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
-        ball_last_pos = ball_cent;
         ball_found = true;
+        info.ball_contour = contours[0][contours[0].size()-1];
     }else{
         ball_cent = ball_last_pos;
         ball_found = false;
+        info.ball_contour = pVector();
     }
 
-    ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
-    ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
+
     ball_pos_cm = ball_pos_cm;
     ball_pos = ball_cent;
+    ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
+    ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
+
+    info.ball_vel.first = double(ball_pos.x - ball_last_pos.x) * X_CONV_CONST;
+    info.ball_vel.second = double(ball_pos.y - ball_last_pos.y) * Y_CONV_CONST;
+
+    ball_last_pos = ball_cent;
 
     remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
     sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
     remove_if(contours[1].begin(), contours[1].end(), area_limit);
-    sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
+
     remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
+    sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
     remove_if(contours[2].begin(), contours[2].end(), area_limit);
 
 
@@ -139,8 +141,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             }
         }
     }
-    //cout << tirj_cent[1].size() << " robots found on team 2" << endl;
-    //cout << tirj_cent[0].size() << " robots found on team 1" << endl;
+
     //Get the robots moments (their color half)
     for(i = 0; i < 3; ++i){
         remove_if(contours[i + 3].begin(), contours[i + 3].end(), invalid_contour);
@@ -158,7 +159,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
         }else{
             r_col_cent[i].push_back(null_point);
-            //cout << robots[i].get_nick() << " not found!" << endl;
             robots[i].set_centroid(robots[i].get_from_pos_hist(0));
             robots[i].was_detected(false);
         }
@@ -183,7 +183,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                 if(dista < min && dista < 20){
                     min = dista;
                     tmin = min;
-                    col_select = make_pair(r_col_cent[j][k], make_pair(j, k));
+                    pair<int, int> ind = make_pair(j, k);
+                    col_select = make_pair(r_col_cent[j][k], ind);
                 }
             }
         }
@@ -208,21 +209,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             angle = fabs(angle_two_points(line_slope, x_axis_slope));
             angle = (col_select.first.y <= unk_robot.y)?angle:-angle;
 
-            pos_cam << centroid.x * X_CONV_CONST / 100,
-                       centroid.y * Y_CONV_CONST / 100,
-                       angle;
-            last_pos << last_cent.x * X_CONV_CONST / 100,
-                        last_cent.y * Y_CONV_CONST / 100,
-                        last_angle;
-            v_w << 2,
-                   2;
-
-            kalman_res = kalman_filter(pos_cam, v_w, last_pos, 9, last_P);
-            last_P = kalman_res.first;
-            //centroid.x = kalman_res.second(0) * 100;
-            //centroid.y = kalman_res.second(1) * 100;
-
-            //angle = kalman_res.second(2);
+            robots[r_label].set_team_contour(contours[1][i]);
+            robots[r_label].set_role_contour(contours[r_label + 3][col_select.second.second]);
             robots[r_label].set_team_cent(unk_robot);
             robots[r_label].set_color_cent(col_select.first);
             robots[r_label].set_line_slope(line_slope);
@@ -236,9 +224,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             robots[r_label].was_detected(false);
             r_set[r_label] = true;
         }
-
-        //cout << "Robo " << r_label << ", team cent = (" << unk_robot.x << "," <<unk_robot.y << "), "
-        //    << "color cent= (" << col_select.first.x << "," << col_select.first.y << "), angle=" <<robots[i].get_angle() << endl;
 
     }
 
@@ -297,6 +282,7 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
 
     low = ball_color.first;
     upper = ball_color.second;
+    info.ball_color = ball_color;
 
     out_ball = detect_colors(frame, low, upper);
 
@@ -311,6 +297,47 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     ret.second = contours;
 
     return ret;
+}
+
+Mat Vision::train_kmeans(Mat img, int nClusters)
+{
+    int k, i, attempts = 1;
+    double elapsed_secs, dist;
+    clock_t begin, end;
+    Mat centers = this->centers;
+
+    if(!trained){
+        begin  = clock();
+        clog << "Training K-means model with " << nClusters << " clusters." << endl;
+        kmeans(img, nClusters, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 1), attempts, KMEANS_PP_CENTERS, centers );
+        end  = clock();
+        elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+        clog << "End of training in " << elapsed_secs << " seconds." << endl;
+        this->labels = labels;
+        this->centers = centers;
+        trained = true;
+    }else{
+        const int dims = centers.cols;
+
+        for(i = 0; i < img.rows; i++){
+            const float *sample = img.ptr<float>(i);
+            int k_best = 0;
+            double min_dist = DBL_MAX;
+
+            for(k = 0; k < centers.rows; k++){
+                const float *center = centers.ptr<float>(k);
+                dist = normL2Sqr(sample, center, dims);
+
+                if(min_dist > dist){
+                    min_dist = dist;
+                    k_best = k;
+                }
+            }
+            labels.at<int>(i, 0) = k_best;
+        }
+    }
+
+    return centers;
 }
 
 Mat Vision::adjust_gamma(double gamma, Mat org)
@@ -357,12 +384,13 @@ Mat Vision::crop_image(Mat org){
     Size size;
     Point2f pts[4], pts1[3], pts2[3];
     RotatedRect box;
-    pVector roi(4), aux_y;
+    pVector roi(4), aux_y, map_points1;
 
     pts2[0] = Point(0, 0);
     pts2[1] = Point(0, size.height-1);
     pts2[2] = Point(size.width-1, 0);
 
+    map_points1 = map_points;
     aux_y = map_points;
     sort(map_points.begin(), map_points.end(), sort_by_smallest_x);
     sort(aux_y.begin(), aux_y.end(), sort_by_smallest_y);
@@ -386,10 +414,12 @@ Mat Vision::crop_image(Mat org){
 
     if(!sentPoints){
         transf_matrix = getAffineTransform(pts1, pts2);
-        transform(map_points, tmap_points, transf_matrix);
+        transform(map_points1, tmap_points, transf_matrix);
         transform(def_points, tdef_points, transf_matrix);
         transform(atk_points, tatk_points, transf_matrix);
 
+        atk_centroid = (tatk_points[2] + tatk_points[3] + tatk_points[4] + tatk_points[5])/4;
+        def_centroid = (tdef_points[2] + tdef_points[3] + tdef_points[4] + tdef_points[5])/4;
         info.map_area = tmap_points;
         info.atk_area = tatk_points;
         info.def_area = tdef_points;
@@ -397,21 +427,47 @@ Mat Vision::crop_image(Mat org){
         sentPoints = true;
     }
     warpAffine(org, cropped, transf_matrix, size, INTER_LINEAR, BORDER_CONSTANT);
+    map_points = map_points1;
 
     return cropped;
 }
 
 Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
 {
+   /* int x, y, z;
+    Mat samples(orig.rows * orig.cols, 3, CV_32F);*/
+
     dest = orig.clone();
     //Gamma correction
     dest = adjust_gamma(1.3 , dest);
-    //Apply histogram normalization
-    //dest = CLAHE_algorithm(dest);
     //Apply gaussian blur
-     GaussianBlur(dest, dest, Size(5,5), 1.8);
+    GaussianBlur(dest, dest, Size(5,5), 1.8);
 
-     return dest;
+    /****************************************
+     *  K-means training and classification.*
+     ****************************************/
+    //Training
+    /*for(y = 0; y < orig.rows; y++){
+        for(x = 0; x < orig.cols; x++){
+            for(z = 0; z < 3; z++){
+                samples.at<float>(y + x*orig.rows, z) = orig.at<Vec3b>(y,x)[z];
+            }
+        }
+    }
+
+    centers = train_kmeans(samples, 18);
+
+    //Classification
+    for(y = 0; y < dest.rows; y++){
+        for(x = 0; x < dest.cols; x++){
+          int cluster_idx = labels.at<int>(y + x*dest.rows,0);
+          dest.at<Vec3b>(y,x)[0] = centers.at<float>(cluster_idx, 0);
+          dest.at<Vec3b>(y,x)[1] = centers.at<float>(cluster_idx, 1);
+          dest.at<Vec3b>(y,x)[2] = centers.at<float>(cluster_idx, 2);
+        }
+    }*/
+
+    return dest;
 }
 
 Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper)   //Detect colors in [low,upper] range
@@ -419,7 +475,7 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
     Mat mask, res;
 
     mask = detect_colors(vision_frame, low, upper);
-    cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
+    //cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
     raw_frame.copyTo(res, mask);
 
     return res;
@@ -428,30 +484,46 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
 Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
 {
     int i, size = robots.size();
-    double angle;
-    Point cent, team_cent, color_cent, inter;
+    double angle, predic_angle;
+    Point cent, predic_cent, team_cent, color_cent, inter;
 
-    if(ball_pos != null_point)
+    if(ball_pos != null_point){
         circle(frame, ball_pos, 10, Scalar(255, 0, 0));
-
+    }
     for(i = 0; i < size-3; ++i){
         cent = robots[i].get_centroid();
+        predic_cent = robots[i].get_predic_centroid();
         team_cent = robots[i].get_team_cent();
         color_cent = robots[i].get_color_cent();
         angle = robots[i].get_angle();
+        predic_angle = robots[i].get_predic_angle();
+
         if(cent == null_point) continue;
+
+        // Funcao que desenha as circunferencias com centros nos centroides das cores da equipa e do robo
         if(showCenters){
             circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
             circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
         }
+
+        // Desenha as circunferencia com centro no centroide do robo
+        // e a linha que indica a orientacao da direcao do robo (para onde ele esta olhando)
         circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
         inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y - 20 * sin(angle * PI / 180.0));
         line(frame, cent, inter, Scalar(0, 255, 0), 1);
+
+        // Desenha a posicao prevista do robo
+        if(predic_cent != cent){
+            circle(frame, predic_cent, 20, Scalar(255, 0, 255), 1.5);
+            inter = Point(predic_cent.x + 20 * cos(predic_angle * PI / 180.0), predic_cent.y - 20 * sin(predic_angle * PI / 180.0));
+            line(frame, predic_cent, inter, Scalar(255, 0, 255), 1);
+        }
 
         if(showNames)
             putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
     }
 
+    // Desenha o time adversario (por meio de circunferencias)
     for(i = size-3; i < size; ++i){
         cent = robots[i].get_centroid();
         if(cent == null_point) continue;
@@ -462,17 +534,54 @@ Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
     return frame;
 }
 
+Mat Vision::draw_field(Mat frame)
+{
+    int i = 0, atk_size = atk_points.size(), map_size = map_points.size(), def_size = def_points.size();
+    Point def_cent, atk_cent;
+
+    if(showArea && map_size > 0){
+        //Draw map area points
+        for(i = 0; i < map_size; ++i){
+            circle(frame, tmap_points[i], 1, Scalar(0,0,255), 2);
+        }
+
+        //Draw attack area points
+        for(i = 0; i < atk_size; ++i){
+            circle(frame, tatk_points[i], 1, Scalar(255,0,0), 2);
+        }
+
+        atk_cent = (tatk_points[0]+tatk_points[7])/2;
+        putText(frame, "ATK Area", atk_cent, FONT_HERSHEY_PLAIN, 1, Scalar(255, 0, 0), 2);
+
+        //Draw defense area points
+        for(i = 0; i < def_size; ++i){
+            circle(frame, tdef_points[i], 1, Scalar(0,255,0), 2);
+        }
+
+        def_cent = (tdef_points[0]+tdef_points[7])/2;
+        putText(frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
+    }
+
+    return vision_frame;
+}
+
+
 void Vision::run()
 {
     int delay = (1000/this->FPS);
-    int i = 0, atk_size = atk_points.size(), map_size = map_points.size(), def_size = def_points.size();
+    int i = 0, itr = 0;
     double elapsed_secs;
     clock_t begin, end;
     vector<pMatrix> obj_contours;
-    Point def_cent, atk_cent;
+    vector<Point> to_transf, transf;
+    IplImage ipl_img;
+
+    to_transf.resize(6);
+    transf.resize(6);
 
     while(!stop){
         begin = clock();
+        itr++;
 
         if(!cam.read(raw_frame)){
             stop = true;
@@ -483,17 +592,29 @@ void Vision::run()
 
         rows = raw_frame.rows;
         cols = raw_frame.cols;
-        vision_frame = crop_image(raw_frame.clone());
         raw_frame = crop_image(raw_frame);
+        info.img_size.x = raw_frame.cols;
+        info.img_size.y = raw_frame.rows;
+        ipl_img = raw_frame;
+        vision_frame = cvarrToMat(img_resize(&ipl_img, DEFAULT_NCOLS, DEFAULT_NROWS));  // default additional arguments: don't copy data.
+        raw_frame = vision_frame.clone();
         vision_frame = proccess_frame(vision_frame, vision_frame);
 
         switch(mode){
             case 0: //Visualization mode
                 obj_contours = detect_objects(vision_frame, robots).second;
                 robots = fill_robots(obj_contours, robots);
-                vision_frame = draw_robots(vision_frame, robots);
+                elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+                deltaT = elapsed_secs;
 
-                cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
+                for(i = 0; i < 6; i++){
+                    robots[i].compute_velocity(deltaT);
+                    robots[i].predict_info(deltaT*2);
+                }
+                if(!play){
+                    vision_frame = draw_robots(vision_frame, robots);
+                    vision_frame = draw_field(vision_frame);
+                }
                 break;
             case 1: //Set color mode
                 vision_frame = setting_mode(raw_frame, vision_frame, low, upper);
@@ -503,42 +624,19 @@ void Vision::run()
                 break;
         }
 
-        if(showArea && map_size > 0){
-            //Draw map area points
-            for(i = 0; i < map_size; ++i){
-                circle(vision_frame, tmap_points[i], 1, Scalar(0,0,255), 2);
-            }
-
-            //Draw attack area points
-            for(i = 0; i < atk_size; ++i){
-                circle(vision_frame, tatk_points[i], 1, Scalar(255,0,0), 2);
-            }
-
-            atk_cent = (tatk_points[0]+tatk_points[7])/2;
-            putText(vision_frame, "ATK Area", atk_cent, FONT_HERSHEY_PLAIN, 1, Scalar(255, 0, 0), 2);
-
-            //Draw defense area points
-            for(i = 0; i < def_size; ++i){
-                circle(vision_frame, tdef_points[i], 1, Scalar(0,255,0), 2);
-            }
-
-            def_cent = (tdef_points[0]+tdef_points[7])/2;
-            putText(vision_frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
+       if(!play){
+            cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
+            img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
+            img.bits();
         }
-        //cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
-        //img = QImage((uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
-        img = QImage((uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        FPS = 1/elapsed_secs;
+        deltaT = elapsed_secs;
 
-        info.enemy_robots[0] = robots[3];
-        info.enemy_robots[1] = robots[4];
-        info.enemy_robots[2] = robots[5];
-        info.team_robots[0] = robots[0];
-        info.team_robots[1] = robots[1];
-        info.team_robots[2] = robots[2];
+        info.ball_vel.first /= deltaT;
+        info.ball_vel.second /= deltaT;
         info.ball_found = ball_found;
+
         if(ball_pos != null_point){
             info.ball_pos_cm = ball_pos_cm;
             info.ball_pos = ball_pos;
@@ -549,15 +647,23 @@ void Vision::run()
             info.ball_last_pos = Point(0, 0);
         }
 
+        info.enemy_robots[0] = robots[3];
+        info.enemy_robots[1] = robots[4];
+        info.enemy_robots[2] = robots[5];
+        info.team_robots[0] = robots[0];
+        info.team_robots[1] = robots[1];
+        info.team_robots[2] = robots[2];
+
+        FPS = 1.0/deltaT;
+
         emit infoPercepted(info);
         emit processedImage(img);
-        if(i%10 == 0){
+        if(itr%10 == 0){
             emit framesPerSecond(FPS);
-            i = 0;
+            itr = 0;
         }
 
         msleep(delay);
-        i++;
     }
 }
 
@@ -586,19 +692,23 @@ void Vision::Play()
     }
 }
 
-void Vision::updateFuzzyRobots(rVector team_robots){
+void Vision::updateFuzzyRobots(std::vector<Robot> team_robots){
     robots[0].set_flag_fuzzy(team_robots[0].get_flag_fuzzy());
     robots[1].set_flag_fuzzy(team_robots[1].get_flag_fuzzy());
     robots[2].set_flag_fuzzy(team_robots[2].get_flag_fuzzy());
 }
 
-void Vision::updateMoverRobots(rVector team_robots){
+void Vision::updateGameFunctionsRobots(std::vector<Robot> team_robots){
     robots[0].set_lin_vel(make_pair(team_robots[0].get_l_vel(), team_robots[0].get_r_vel()));
     robots[1].set_lin_vel(make_pair(team_robots[1].get_l_vel(), team_robots[1].get_r_vel()));
     robots[2].set_lin_vel(make_pair(team_robots[2].get_l_vel(), team_robots[2].get_r_vel()));
 }
 
 void Vision::switch_teams_areas(){
+    Point temp = atk_centroid;
+    atk_centroid = def_centroid;
+    def_centroid = temp;
+
     teamsChanged = (teamsChanged)?false:true;
 }
 
@@ -690,6 +800,11 @@ void Vision::show_errors(bool show){
     showErrors = show;
 }
 
+void Vision::togglePlay(bool play)
+{
+    this->play = play;
+}
+
 void Vision::save_image(){
     time_t t;
     string fname, path;
@@ -722,3 +837,4 @@ Vision::~Vision(){
     mutex.unlock();
     wait();
 }
+

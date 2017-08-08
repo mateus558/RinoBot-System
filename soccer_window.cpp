@@ -5,14 +5,14 @@
 #include <string>
 #include <unistd.h>
 #include <stdio.h>
+#include <QPainterPath>
 #include <errno.h>
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
-#include "cph.h"
-#include "cpo.h"
 #include "fuzzy.h"
 #include "utils.h"
-#include "mover.h"
+#include "game_functions.h"
+#include "navigation.h"
 
 using namespace std;
 
@@ -20,38 +20,70 @@ soccer_window::soccer_window(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::soccer_window)
 {
+    int i;
     qRegisterMetaType<Vision::Perception>("Vision::Perception");
     qRegisterMetaType<Selector>("Selector");
-    qRegisterMetaType<rVector>("rVector");
+    //qRegisterMetaType<rVector>("rVector");
 
 
     ui->setupUi(this);
-    ui->cam_id_spinBox->setValue(0);
     area_read = false;
     eye = new Vision;
-    cph = new CPH; //instancia o objeto cph na rotina do sistema
-    cpo = new CPO; //instancia o objeto cpo na rotina do sistema
-    cph2 = new CPH2; //instancia o objeto cph na rotina do sistema
-    cpo2 = new CPO2;
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
-    mover = new Mover; //instancia o objeto mover na rotina do sistema
-    run_cph = false; //flag da thread do cph
-    run_cpo = false; //flag da thread do cpo
+    leona = new Game_functions; //instancia o objeto leona na rotina do sistema
+    presto = new Game_functions; //instancia o objeto presto na rotina do sistema
+    gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
     run_fuzzy = false; //flag da thread do fuzzy
-    run_mover = false;
-    team_robots.resize(3);
+    run_leona = false; //flag da thread da leona
+    run_presto = false; //flag da thread da presto
+    run_gandalf = false; //flag da thread da gandalf
+    game_started = false;
+    game_scene = new QGraphicsScene;
+    field = new FieldDraw;
+    ball = new BallDraw;
 
+    field->setZValue(-1000);
+    team_robots.resize(3);
+    team_shapes.resize(3);
+    enemy.resize(3);
+
+    for(i = 0; i < 3; i++){
+        team_shapes[i] = new RobotDraw;
+        enemy[i] = new Enemy;
+    }
     eye->set_mode(0);
+    eye->togglePlay(true);
+
     load_serial_cfg();
     Robot::config_serial(serial_config);
 
-    connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
-    connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);
+    connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);  
     connect(fuzzy, SIGNAL(emitRobots(Selector)), this, SLOT(updateFuzzyRobots(Selector)), Qt::QueuedConnection);
-    connect(mover, SIGNAL(emitRobots(Selector)), this, SLOT(updateMoverRobots(Selector)), Qt::QueuedConnection);
-    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateFuzzyRobots(rVector)), Qt::QueuedConnection);
-    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateMoverRobots(rVector)), Qt::QueuedConnection);
+    connect(leona, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    connect(presto, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    connect(gandalf, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateFuzzyRobots(std::vector<Robot>)));
+    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateGameFunctionsRobots(std::vector<Robot>)));
+}
+
+soccer_window::~soccer_window()
+{
+    int i = 0;
+
+    delete eye;
+    delete ball;
+    delete field;
+
+    for(i = 0; i < team_shapes.size(); i++){
+        delete team_shapes[i];
+    }
+    for(i = 0; i < enemy.size(); i++){
+        delete enemy[i];
+    }
+
+    delete game_scene;
+    delete ui;
 }
 
 void soccer_window::load_serial_cfg(){
@@ -77,9 +109,26 @@ void soccer_window::load_serial_cfg(){
     serial_config.dataBits = QSerialPort::DataBits(dataBits);
 }
 
+void soccer_window::prepare_game_scene(int w, int h)
+{
+    int i;
+
+    game_scene->setBackgroundBrush(Qt::black);
+    game_scene->setSceneRect(0, 0, w, h);
+    ui->game_view->setScene(game_scene);
+
+    for(i = 0; i < 3; i++){
+        team_shapes[i]->pos = team_robots[i].get_centroid();
+        game_scene->addItem(team_shapes[i]);
+        game_scene->addItem(enemy[i]);
+    }
+    game_scene->addItem(field);
+    game_scene->addItem(ball);
+}
+
 void soccer_window::closeEvent(QCloseEvent *event){
     QWidget::closeEvent(event);
-
+    Robot::close_serial();
     eye->Stop();
     eye->wait();
     eye->release_cam();
@@ -89,36 +138,34 @@ void soccer_window::receiveSerialSettings(SettingsDialog::Settings serial_config
     Robot::config_serial(serial_config);
 }
 
-void soccer_window::updateVisionUI(QImage img){
-    if(!img.isNull()){
-        ui->game_view->setAlignment(Qt::AlignCenter);
-        ui->game_view->setPixmap(QPixmap::fromImage(img).scaled(ui->game_view->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
-    }
-}
-
 void soccer_window::updateFuzzyRobots(Selector selec_robot){
     team_robots[0].set_flag_fuzzy(selec_robot.r3.get_flag_fuzzy());
     team_robots[1].set_flag_fuzzy(selec_robot.r1.get_flag_fuzzy());
     team_robots[2].set_flag_fuzzy(selec_robot.r2.get_flag_fuzzy());
 
     emit updateVisionInfo(team_robots);
-
-   /* cout << team_robots[0].get_nick() << " " << team_robots[0].get_l_vel() << " " << team_robots[0].get_flag_fuzzy() << endl;
-    cout << team_robots[1].get_nick() << " " << team_robots[1].get_l_vel() << " " << team_robots[1].get_flag_fuzzy() << endl;
-    cout << team_robots[2].get_nick() << " " << team_robots[2].get_l_vel() << " " << team_robots[2].get_flag_fuzzy() << endl;
-*/
 }
 
-void soccer_window::updateMoverRobots(Selector selec_robot){
+void soccer_window::updateGameFunctionsRobots(Selector selec_robot){
     team_robots[0].set_lin_vel(make_pair(selec_robot.r3.get_l_vel(), selec_robot.r3.get_r_vel()));
     team_robots[1].set_lin_vel(make_pair(selec_robot.r1.get_l_vel(), selec_robot.r1.get_r_vel()));
     team_robots[2].set_lin_vel(make_pair(selec_robot.r2.get_l_vel(), selec_robot.r2.get_r_vel()));
-
+    if(game_started){
+        Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
+        Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
+        Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
+    }else{
+        Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
+        Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
+        Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
+    }
     emit updateVisionInfo(team_robots);
 }
 
 void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     p2dVector enemy_pos(3), team_pos(3);
+    pair<vector<Point>, vector<Point> > cont;
+    int i,j;
 
     percep = percep_info;
 
@@ -126,6 +173,10 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         map_area = percep.map_area;
         atk_area = percep.atk_area;
         def_area = percep.def_area;
+        field->fieldPoints = map_area;
+        field->atkPoints = atk_area;
+        field->defPoints = def_area;
+        prepare_game_scene(percep.img_size.x, percep.img_size.y);
         area_read = true;
         centroid_atk = (atk_area[2] + atk_area[3] + atk_area[4] + atk_area[5])/4;
         centroid_def = (def_area[2] + def_area[3] + def_area[4] + def_area[5])/4;
@@ -139,71 +190,108 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         fuzzy->set_centroid_atk(centroid_atk); //salva a area de atk para o fuzzy
         fuzzy->set_centroid_def(centroid_def); //salva a area de def para o fuzzy
 
-        cpo->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
-        cpo->set_centroid_def(centroid_def); //salva a area de def para o cpo
+        leona->set_centroid_atk(centroid_atk); //salva a area de atk para a leona
+        leona->set_centroid_def(centroid_def); //salva a area de def para a leona
+        leona->set_def_area(def_area);
 
-        cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-        cph->set_centroid_def(centroid_def); //salva a area de def para o cph
-        cph->set_def_area(def_area);
+        presto->set_centroid_atk(centroid_atk); //salva a area de atk para o presto
+        presto->set_centroid_def(centroid_def); //salva a area de def para o presto
+        presto->set_def_area(def_area);
 
-        cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
-        cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo
-
-        cph2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-        cph2->set_centroid_def(centroid_def); //salva a area de def para o cph
-
-        mover->set_centroid_atk(centroid_atk);
-        mover->set_centroid_def(centroid_def);
+        gandalf->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf
+        gandalf->set_centroid_def(centroid_def); //salva a area de def para o gandalf
+        gandalf->set_def_area(def_area);
     }
+    for(i = 0; i < team_robots.size(); i++){
+        cont = team_robots[i].get_contour();
+        Point c = team_robots[i].get_centroid();
+        team_shapes[i]->angle = team_robots[i].get_angle();
+        team_shapes[i]->team_contour = cont.first;
+        team_shapes[i]->role_contour = cont.second;
+        enemy[i]->pos = percep.enemy_robots[i].get_centroid();
+        for(j = 0; j < 3; j++){
+            vector<int> lower, upper;
+
+            lower = team_robots[i].get_team_low_color();
+            upper = team_robots[i].get_team_upper_color();
+
+            team_shapes[i]->team_color[j] = (lower[j]+upper[j])/2;
+
+            lower = team_robots[i].get_low_color();
+            upper = team_robots[i].get_upper_color();
+
+            team_shapes[i]->role_color[j] = (lower[j]+upper[j])/2;
+        }
+        team_shapes[i]->pos = c;
+    }
+
+    leona->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para a leona
+    presto->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o presto
+    gandalf->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o gandalf
 
     if(percep.ball_found){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->ball_detec_label->setText("Ball found");
         ball_pos = percep.ball_pos_cm;
+        ball->contour = percep.ball_contour;
+        for(i = 0; i < ball->color.size(); i++){
+            ball->color[i] = percep_info.ball_color.second[i] + percep.ball_color.first[i];
+            ball->color[i] /= 2;
+        }
     }else{
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->ball_detec_label->setText("Ball not found");
     }
+    game_scene->update();
 
     enemy_pos[0] = percep.enemy_robots[0].get_pos();
     enemy_pos[1] = percep.enemy_robots[1].get_pos();
     enemy_pos[2] = percep.enemy_robots[2].get_pos();
 
-   /* cout << "Bola :" << "em x: "<< ball_pos.x << " em y: "<< ball_pos.y << endl;
-    cout << "Inimigo 1: " << "em x: "<< enemy_pos[0].x << " em y: "<< enemy_pos[0].y << endl;
-    cout << "Inimigo 2: " << "em x: "<< enemy_pos[1].x << " em y: "<< enemy_pos[1].y << endl;
-    cout << "Inimigo 3: " << "em x: "<< enemy_pos[2].x << " em y: "<< enemy_pos[2].y << endl;*/
-
     team_pos[0] = percep.team_robots[0].get_pos(); //Leona
     team_pos[1] = percep.team_robots[1].get_pos(); //Gandalf
     team_pos[2] = percep.team_robots[2].get_pos(); //Presto
     team_robots = percep.team_robots;
-    //cout << "Presto " << percep.team_robots[2].get_channel() << endl;
 
-    cph->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
-    cph->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph
-    cph->set_team_pos(team_pos); //Salva a posicao do time para o cph
+    leona->set_ball_pos(ball_pos); //Salva a posicao da bola para a leona
+    leona->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para a leona
+    leona->set_team_pos(team_pos); //Salva a posicao do time para a leona
 
-    cpo->set_ball_pos(ball_pos); //Salva a posicao da bola para o cpo
-    cpo->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo
-    cpo->set_team_pos(team_pos); //Salva a posicao do time para o cpo
-    cph2->set_ball_pos(ball_pos); //Salva a posicao da bola para o cph
-    cph2->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cph
-    cph2->set_team_pos(team_pos); //Salva a posicao do time para o cph
+    presto->set_ball_pos(ball_pos); //Salva a posicao da bola para o presto
+    presto->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o presto
+    presto->set_team_pos(team_pos); //Salva a posicao do time para o presto
 
-    cpo2->set_ball_pos(ball_pos); //Salva a posicao da bola para o cpo
-    cpo2->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o cpo
-    cpo2->set_team_pos(team_pos); //Salva a posicao do time para o cpo
-    //set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    gandalf->set_ball_pos(ball_pos); //Salva a posicao da bola para o gandalf
+    gandalf->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o gandalf
+    gandalf->set_team_pos(team_pos); //Salva a posicao do time para o gandalf
 
     fuzzy->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]); //Gandalf, Presto e Leona nesta ordem
     fuzzy->set_ball_pos(ball_pos); //Salva a posicao da bola para o fuzzy
     fuzzy->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o fuzzy
 
-    mover->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    mover->set_to_select_iterador(cph,cpo,cph2,cpo2);
-    mover->set_enemy_pos(enemy_pos);
-    mover->set_ball_pos(ball_pos);
+    leona->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    leona->set_enemy_pos(enemy_pos);
+    leona->set_ball_pos(ball_pos);
+    leona->set_def_area(def_area);
+    leona->set_calc_Gandalf(false);
+    leona->set_calc_Presto(false);
+    leona->set_calc_Leona(true);
+
+    presto->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    presto->set_enemy_pos(enemy_pos);
+    presto->set_ball_pos(ball_pos);
+    presto->set_def_area(def_area);
+    presto->set_calc_Gandalf(false);
+    presto->set_calc_Presto(true);
+    presto->set_calc_Leona(false);
+
+    gandalf->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    gandalf->set_enemy_pos(enemy_pos);
+    gandalf->set_ball_pos(ball_pos);
+    gandalf->set_def_area(def_area);
+    gandalf->set_calc_Gandalf(true);
+    gandalf->set_calc_Presto(false);
+    gandalf->set_calc_Leona(false);
 
     if(percep.team_robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -226,48 +314,8 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->presto_detec_label->setText("Not Detected");
     }
-    //cout << "Centroid atk = x: " << centroid_atk.x * X_CONV_CONST << " y: " << centroid_atk.y * Y_CONV_CONST << endl;
 
-
-    cph->zera_flag_finish();
-    cpo->zera_flag_finish();
-    cph2->zera_flag_finish();
-    cpo2->zera_flag_finish();
     fuzzy->zera_flag_finish();
-
-    //inicia a thread do cph caso ela nao esteja em execucao
-    if(run_cph){
-        if(cph->is_running()){
-            cph->wait();
-        }
-        //cph->print_grid();
-        cph->Play();
-     }
-
-    if(run_cph2){
-        if(cph2->is_running()){
-            cph2->wait();
-        }
-        //cph2->print_grid();
-        cph2->Play();
-     }
-
-    //inicia a thread do cpo caso ela nao esteja em execucao
-    if(run_cpo){
-        if(cpo->is_running()){
-            cpo->wait();
-        }
-        //cpo->print_grid();
-        cpo->Play();
-     }
-
-    if(run_cpo2){
-        if(cpo2->is_running()){
-            cpo2->wait();
-        }
-        //cpo2->print_grid();
-        cpo2->Play();
-     }
 
     //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(run_fuzzy){
@@ -277,28 +325,43 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         fuzzy->Play();
      }
 
-    if(run_mover){
-        if(mover->is_running()){
-            mover->wait();
+    if(!run_leona && !run_presto && !run_gandalf){
+        fuzzy->wait();
+
+        if (fuzzy->get_flag_finish() && !run_leona && !run_presto && !run_gandalf){
+            run_leona = true;
+            run_presto = true;
+            run_gandalf = true;
+        }else{
+            run_leona = false;
+            run_presto = false;
+            run_gandalf = false;
         }
-        mover->Play();
+    }
+
+    //inicia a thread da leona caso ela nao esteja em execucao
+    if(run_leona){
+        if(leona->is_running()){
+            leona->wait();
+        }
+        leona->Play();
      }
 
-   //cout<<percep.team_robots[1].get_channel()<<endl;
-   float vel = percep.team_robots[1].get_l_vel();
-   float ver = percep.team_robots[1].get_r_vel();
-   //cout<<vel<<endl;
-   //cout<<ver<<endl;
+    //inicia a thread do presto caso ela nao esteja em execucao
+    if(run_presto){
+        if(presto->is_running()){
+            presto->wait();
+        }
+        presto->Play();
+    }
 
-   /*if(euclidean_dist(cph2->get_meta_aux(), team_robots[1].get_pos()) < 8){
-       Robot::send_velocities(team_robots[1].get_channel(),make_pair(0, 0));
-   }else{
-       Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
-   }*/
-
-   Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
-   //cout << "channel " << team_robots[1].get_channel() << endl;
-
+    //inicia a thread do gandalf caso ela nao esteja em execucao
+    if(run_gandalf){
+        if(gandalf->is_running()){
+            gandalf->wait();
+        }
+        gandalf->Play();
+     }
 }
 
 void soccer_window::updateFPS(double fps){
@@ -306,13 +369,44 @@ void soccer_window::updateFPS(double fps){
 }
 
 void soccer_window::updateSerialSettings(SettingsDialog::Settings settings){
-    //this->settings = settings;
-    //serial->set_serial_settings(settings);
+    Robot::config_serial(settings);
+}
+
+void soccer_window::on_start_game_2_clicked()
+{
+    if(!game_started){
+        game_started = true;
+        Point convert_C_to_G(Point2d);
+
+        run_fuzzy = true;
+
+        if(!Robot::is_serial_open()){
+            Robot::open_serial();
+            ui->serial_status_col_label->setStyleSheet("QLabel { background-color : green; }");
+            ui->serial_status_label->setText("Serial Open");
+        }
+
+        ui->start_game_2->setText("Stop Game");
+    }else{
+        game_started = false;
+        run_fuzzy = false;
+        run_leona = false;
+        run_presto = false;
+        run_gandalf = false;
+
+        Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
+        Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
+        Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
+
+        ui->start_game_2->setText("Start Game");
+        ui->serial_status_col_label->setStyleSheet("QLabel { background-color : red; }");
+        ui->serial_status_label->setText("Serial Closed");
+    }
 }
 
 void soccer_window::on_start_game_clicked()
 {
-    int cam_id = ui->cam_id_spinBox->value();
+    cam_id = ui->cam_id_spinBox->value();
 
     if(eye->isStopped()){
         if(!eye->open_camera(cam_id)){
@@ -323,15 +417,13 @@ void soccer_window::on_start_game_clicked()
         }
 
         eye->Play();
-        Robot::open_serial();
-        ui->start_game->setText("Stop Game");
+        ui->start_game->setText("Stop Capture");
     }else{
         eye->Stop();
         eye->wait();
         eye->release_cam();
-        Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
-        Robot::close_serial();
-        ui->start_game->setText("Start Game");
+
+        ui->start_game->setText("Start Capture");
     }
 }
 
@@ -359,26 +451,20 @@ void soccer_window::on_switch_fields_clicked()
     fuzzy->set_centroid_atk(centroid_atk); //salva a area de atk para o fuzzy
     fuzzy->set_centroid_def(centroid_def); //salva a area de def para o fuzzy
 
-    cpo->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
-    cpo->set_centroid_def(centroid_def); //salva a area de def para o cpo
+    leona->set_centroid_atk(centroid_atk); //salva a area de atk para a leona
+    leona->set_centroid_def(centroid_def); //salva a area de def para a leona
+    leona->set_def_area(def_area);
+    leona->team_changed();
 
-    cph->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-    cph->set_centroid_def(centroid_def); //salva a area de def para o cph
+    presto->set_centroid_atk(centroid_atk); //salva a area de atk para o presto
+    presto->set_centroid_def(centroid_def); //salva a area de def para o presto
+    presto->set_def_area(def_area);
+    presto->team_changed();
 
-    cpo2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cpo
-    cpo2->set_centroid_def(centroid_def); //salva a area de def para o cpo
-
-    cph2->set_centroid_atk(centroid_atk);  //salva a area de atk para o cph
-    cph2->set_centroid_def(centroid_def); //salva a area de def para o cph
-
-    mover->set_centroid_atk(centroid_atk);
-    mover->set_centroid_def(centroid_def);
-}
-
-soccer_window::~soccer_window()
-{
-    delete eye;
-    delete ui;
+    gandalf->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf
+    gandalf->set_centroid_def(centroid_def); //salva a area de def para o gandalf
+    gandalf->set_def_area(def_area);
+    gandalf->team_changed();
 }
 
 void soccer_window::on_read_parameters_clicked()
@@ -388,6 +474,7 @@ void soccer_window::on_read_parameters_clicked()
     vector<Robot> robots = eye->get_robots();
     vector<int> low_color(3);
     vector<int> upper_color(3);
+    Point convert_C_to_G(Point2d);
     vector<int> low_team_color(3);
     vector<int> upper_team_color(3);
     pair<vector<int>, vector<int> > ball_range;
@@ -474,38 +561,6 @@ void soccer_window::on_read_parameters_clicked()
     eye->set_ball(ball_range);
 }
 
-void soccer_window::on_CPH_clicked()
-{
-    if(!run_cph){
-        run_cph = true;
-    }else{
-        run_cph = false;
-    }
-    if(!run_cpo){
-        run_cpo = true;
-    }else{
-        run_cpo = false;
-    }
-    if(!run_cph2){
-        run_cph2 = true;
-    }else{
-        run_cph2 = false;
-    }
-    if(!run_cpo2){
-        run_cpo2 = true;
-    }else{
-        run_cpo2 = false;
-    }
- /*   if(!run_mover){
-        run_mover = true;
-    }else run_mover = false;*/
-    if(!run_fuzzy){
-        run_fuzzy = true;
-    }else{
-        run_fuzzy = false;
-    }
-}
-
 void soccer_window::on_show_field_areas_checkbox_toggled(bool checked)
 {
     eye->show_area(checked);
@@ -526,43 +581,4 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
     eye->show_errors(checked);
 }
 
-void soccer_window::on_pushButton_clicked()
-{
-    /*static int contador = 0;
-    if(contador == 0)
-    {
-        Robot::open_serial();
-        Robot::send_velocities(3, make_pair(-0.1, -0.1));
-        //Robot::send_velocities(2, make_pair(0.5, 0.5));
-        contador++;
-    }
-    else if(contador == 1)
-    {
-        Robot::send_velocities(3, make_pair(0, 0));
-        //Robot::send_velocities(2, make_pair(0, 0));
-        contador++;
-    }
-    else if(contador == 2)
-    {
-        Robot::send_velocities(3, make_pair(-0.5, -0.5));
-        //Robot::send_velocities(2, make_pair(0.2, 0.2));
-        contador=1;
-    }*/
 
-    /*if(!run_mover){
-        run_mover = true;
-    }else{
-        run_mover = false;
-    }*/
-
-    if (cph->get_flag_finish() && cpo->get_flag_finish() && cph2->get_flag_finish() && cpo2->get_flag_finish() &&  fuzzy->get_flag_finish() && !run_mover){
-        run_mover = true;
-    }else{
-        run_mover = false;
-    }
-   /* if (cph2->get_flag_finish() && cpo2->get_flag_finish() && fuzzy->get_flag_finish() && !run_mover){
-        run_mover = true;
-    }else{
-        run_mover = false;
-    }*/
-}

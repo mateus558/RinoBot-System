@@ -2,14 +2,13 @@
 #define SOCCER_WINDOW_H
 #include <QMainWindow>
 #include <QWidget>
+#include <QGraphicsScene>
 #include "settingsdialog.h"
 #include "vision.h"
-#include "cph.h"
-#include "cpo.h"
-#include "cph2.h"
-#include "cpo2.h"
 #include "fuzzy.h"
-#include "mover.h"
+#include "game_functions.h"
+#include "navigation.h"
+#include "drawobjects.h"
 
 namespace Ui {
 class soccer_window;
@@ -22,17 +21,17 @@ class soccer_window : public QWidget
 public:
     explicit soccer_window(QWidget *parent = 0);
     void load_serial_cfg();
+    void prepare_game_scene(int w, int h);
     ~soccer_window();
 public slots:
-    void updateMoverRobots(Selector);
+    void updateGameFunctionsRobots(Selector);
     void updateFuzzyRobots(Selector);
     void updatePerceptionInfo(Vision::Perception);
     void updateSerialSettings(SettingsDialog::Settings);
-    void updateVisionUI(QImage);
     void receiveSerialSettings(SettingsDialog::Settings);
     void updateFPS(double);
 signals:
-    void updateVisionInfo(rVector);
+    void updateVisionInfo(std::vector<Robot>);
 private slots:
 
     void on_start_game_clicked();
@@ -40,8 +39,6 @@ private slots:
     void on_switch_fields_clicked();
 
     void on_read_parameters_clicked();
-
-    void on_CPH_clicked();
 
     void on_show_field_areas_checkbox_toggled(bool checked);
 
@@ -51,15 +48,13 @@ private slots:
 
     void on_show_visionlogs_checkbox_toggled(bool checked);
 
-    void on_pushButton_clicked();
+    void on_start_game_2_clicked();
 
 private:
-    CPH *cph;
-    CPH2 *cph2;
-    CPO *cpo;
-    CPO2 *cpo2;
     Fuzzy *fuzzy;
-    Mover *mover;
+    Game_functions *leona;
+    Game_functions *presto;
+    Game_functions *gandalf;
     Vision *eye;
     Vision::Perception percep;
     SettingsDialog::Settings serial_config;
@@ -71,13 +66,17 @@ private:
     std::vector<cv::Point> atk_area;
     Point centroid_atk;
     Point centroid_def;
-    void closeEvent(QCloseEvent *event);
-
-    bool started, area_read, run_cph, run_cpo, run_fuzzy, run_mover, run_cph2, run_cpo2;
-
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
+    QGraphicsScene *game_scene;
+    FieldDraw *field;
+    BallDraw *ball;
+    vector<Enemy*> enemy;
+    std::vector<RobotDraw*> team_shapes;
+    int cam_id;
+    bool started, area_read, run_fuzzy, run_leona, run_presto, run_gandalf, game_started, team_changed;
 
 
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // SOCCER_WINDOW_H
