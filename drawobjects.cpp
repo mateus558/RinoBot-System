@@ -35,15 +35,18 @@ void RobotDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         role_shape.closeSubpath();
     }
 
-    painter->setBrush(Qt::green);
     if(pos == Point(-1, -1)){
         pos = Point(1, 1);
     }
-
+    painter->setPen(Qt::green);
+    painter->drawEllipse(pos.x-15, pos.y-15, radius, radius);
+    painter->setPen(Qt::black);
     painter->setBrush(team_brush);
     painter->drawPath(team_shape);
     painter->setBrush(role_brush);
     painter->drawPath(role_shape);
+    painter->setPen(Qt::green);
+    painter->drawLine(pos.x, pos.y, pos.x + (radius/2) * cos(angle * PI / 180.0), pos.y - (radius/2) * sin(angle * PI / 180.0));
 }
 
 QPainterPath RobotDraw::shape()

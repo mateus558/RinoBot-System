@@ -26,7 +26,7 @@ protected:
 class Enemy : public QGraphicsItem
 {
 public:
-    int radius = 20;
+    int radius = 25;
     cv::Point pos;
     Enemy(QGraphicsItem* parent = NULL);
 
@@ -38,7 +38,7 @@ protected:
 class RobotDraw : public QGraphicsItem
 {
 public:
-    int radius = 25;
+    int radius = 30;
     double angle = 0;
     cv::Point team_cent, role_cent;
     cv::Point pos;
