@@ -251,6 +251,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->ball_detec_label->setText("Ball found");
         ball_pos = percep.ball_pos_cm;
+        ball->pos = percep.ball_pos;
         ball->contour = percep.ball_contour;
         for(i = 0; i < ball->color.size(); i++){
             ball->color[i] = percep_info.ball_color.second[i] + percep.ball_color.first[i];

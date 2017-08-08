@@ -155,7 +155,7 @@ bool area_limit(vector<Point> p){
 }
 
 bool ball_area_limit(vector<Point> p){
-    if(contourArea(p) < MIN_BALL_AREA || contourArea(p) > MAX_BALL_AREA){
+    if(contourArea(p) > MAX_BALL_AREA){
         return 1;
     }
     return 0;

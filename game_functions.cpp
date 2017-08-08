@@ -135,7 +135,7 @@ void Game_functions::run(){
                 goalkeeper(&selec_robot.r2, 1, &vels[1]);
             break;
         }
-        print_grid();
+        //print_grid();
         //cout << "Presto metax: " << meta.x << " y: " << meta.y << endl;
         /*selec_robot.r2.set_lin_vel(vels[1]);
         selec_robot.flags[1] = true;*/

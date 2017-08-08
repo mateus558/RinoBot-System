@@ -257,7 +257,7 @@ void Robot::set_centroid(Point p)
 }
 
 Point Robot::get_centroid()
-{
+{   if(centroid == Point(-1, -1)) return last_centroid;
     return this->centroid;
 }
 

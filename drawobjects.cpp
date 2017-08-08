@@ -136,6 +136,7 @@ void BallDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     QPainterPath obj = shape();
     QBrush brush(QColor(color[2],color[1],color[0]));
 
+    painter->setPen(Qt::blue);
     painter->setBrush(brush);
     painter->drawPath(obj);
 }
