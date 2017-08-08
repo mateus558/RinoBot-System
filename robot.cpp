@@ -12,6 +12,7 @@ Serial Robot::serial;
 Robot::Robot(){
     channel = -1;
     centroid = Point(-1, -1);
+    last_centroid = centroid;
     centroid_cm = Point2d(0.0, 0.0);
     team_cent = Point(-1, -1);
     color_cent = Point(-1, -1);
@@ -25,6 +26,8 @@ Robot::Robot(){
     pos_hist.push_back(Point(-1, -1));
     last_angle = loss_rate = 0.0;
     detected = false;
+    pos_tolerance = 2.0; //2cm
+    ang_tolerance = 3;
     flag_fuzzy = 0;
 }
 
@@ -199,6 +202,45 @@ double Robot::get_angle()
     return this->angle;
 }
 
+double Robot::get_ang_vel(){
+    return this->w;
+}
+
+double Robot::get_predic_angle()
+{
+    return this->ang_predict;
+}
+
+/**
+ * @brief Robot::compute_velocity
+ * Computa a velocidade linear e angular do robo em px/s e graus/s, respectivamente
+ * @param deltaT - intervalo de tempo entre os frames
+ *
+ */
+void Robot::compute_velocity(double deltaT){
+    _vel.first = (centroid.x - last_centroid.x) / deltaT;
+    _vel.second = (centroid.y - last_centroid.y) / deltaT;
+
+    w = (angle - last_angle) / deltaT;
+}
+
+/**
+ * @brief Robot::predict_info - Preve a posicao o angulo do robo no proximo frame.
+ * @param deltaT - intervalo de tempo entre os frames
+ */
+void Robot::predict_info(double deltaT){
+
+   centroid_predict.x = centroid.x + (_vel.first)*deltaT;
+   centroid_predict.y = centroid.y + (_vel.second)*deltaT;
+   ang_predict = angle + w*deltaT;
+
+}
+
+
+pair<float, float> Robot::get_velocities(){
+    return this->_vel;
+}
+
 double Robot::get_last_angle()
 {
     return this->last_angle;
@@ -206,6 +248,7 @@ double Robot::get_last_angle()
 
 void Robot::set_centroid(Point p)
 {
+    last_centroid = centroid;
     this->centroid = p;
     centroid_cm.x = centroid.x * X_CONV_CONST;
     centroid_cm.y = centroid.y * Y_CONV_CONST;
@@ -216,6 +259,25 @@ void Robot::set_centroid(Point p)
 Point Robot::get_centroid()
 {
     return this->centroid;
+}
+
+Point Robot::get_last_centroid(){
+    return last_centroid;
+}
+
+Point Robot::get_predic_centroid()
+{
+    return this->centroid_predict;
+}
+
+pair<vector<Point>, vector<Point> > Robot::get_contour()
+{
+    pair<pVector, pVector> p;
+
+    p.first = team_contour;
+    p.second = role_contour;
+
+    return p;
 }
 
 
@@ -275,6 +337,16 @@ Point Robot::get_color_cent()
 void Robot::set_team_cent(Point p)
 {
     this->team_cent = p;
+}
+
+void Robot::set_team_contour(vector<Point> team_contour)
+{
+    this->team_contour = team_contour;
+}
+
+void Robot::set_role_contour(vector<Point> role_contour)
+{
+    this->role_contour = role_contour;
 }
 
 Point Robot::get_team_cent()

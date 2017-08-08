@@ -5,6 +5,7 @@
 #include <string>
 #include <unistd.h>
 #include <stdio.h>
+#include <QPainterPath>
 #include <errno.h>
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
@@ -20,13 +21,13 @@ soccer_window::soccer_window(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::soccer_window)
 {
+    int i;
     qRegisterMetaType<Vision::Perception>("Vision::Perception");
     qRegisterMetaType<Selector>("Selector");
-    qRegisterMetaType<rVector>("rVector");
+    //qRegisterMetaType<rVector>("rVector");
 
 
     ui->setupUi(this);
-    ui->cam_id_spinBox->setValue(0);
     area_read = false;
     eye = new Vision;
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
@@ -39,21 +40,55 @@ soccer_window::soccer_window(QWidget *parent) :
     run_presto = false; //flag da thread da presto
     run_gandalf = false; //flag da thread da gandalf
     run_mover = false; //flag da thread da mover
-
     game_started = false;
-    team_robots.resize(3);
+    game_scene = new QGraphicsScene;
+    field = new FieldDraw;
+    ball = new BallDraw;
 
+    field->setZValue(-1000);
+    team_robots.resize(3);
+    team_shapes.resize(3);
+    enemy.resize(3);
+
+    for(i = 0; i < 3; i++){
+        team_shapes[i] = new RobotDraw;
+        enemy[i] = new Enemy;
+    }
     eye->set_mode(0);
+    eye->togglePlay(true);
+
     load_serial_cfg();
     Robot::config_serial(serial_config);
 
-    connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
     connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);  
     connect(fuzzy, SIGNAL(emitRobots(Selector)), this, SLOT(updateFuzzyRobots(Selector)), Qt::QueuedConnection);
+    connect(leona, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    connect(presto, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    connect(gandalf, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateFuzzyRobots(std::vector<Robot>)));
+    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateGameFunctionsRobots(std::vector<Robot>)));
     connect(mover, SIGNAL(emitRobots(Selector)), this, SLOT(updateMoverRobots(Selector)), Qt::QueuedConnection);
-    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateFuzzyRobots(rVector)), Qt::QueuedConnection);
-    connect(this, SIGNAL(updateVisionInfo(rVector)), eye, SLOT(updateMoverRobots(rVector)), Qt::QueuedConnection);
+
+}
+
+soccer_window::~soccer_window()
+{
+    int i = 0;
+
+    delete eye;
+    delete ball;
+    delete field;
+
+    for(i = 0; i < team_shapes.size(); i++){
+        delete team_shapes[i];
+    }
+    for(i = 0; i < enemy.size(); i++){
+        delete enemy[i];
+    }
+
+    delete game_scene;
+    delete ui;
 }
 
 void soccer_window::load_serial_cfg(){
@@ -79,6 +114,23 @@ void soccer_window::load_serial_cfg(){
     serial_config.dataBits = QSerialPort::DataBits(dataBits);
 }
 
+void soccer_window::prepare_game_scene(int w, int h)
+{
+    int i;
+
+    game_scene->setBackgroundBrush(Qt::black);
+    game_scene->setSceneRect(0, 0, w, h);
+    ui->game_view->setScene(game_scene);
+
+    for(i = 0; i < 3; i++){
+        team_shapes[i]->pos = team_robots[i].get_centroid();
+        game_scene->addItem(team_shapes[i]);
+        game_scene->addItem(enemy[i]);
+    }
+    game_scene->addItem(field);
+    game_scene->addItem(ball);
+}
+
 void soccer_window::closeEvent(QCloseEvent *event){
     QWidget::closeEvent(event);
     Robot::close_serial();
@@ -89,13 +141,6 @@ void soccer_window::closeEvent(QCloseEvent *event){
 
 void soccer_window::receiveSerialSettings(SettingsDialog::Settings serial_config){
     Robot::config_serial(serial_config);
-}
-
-void soccer_window::updateVisionUI(QImage img){
-    if(!img.isNull()){
-        ui->game_view->setAlignment(Qt::AlignCenter);
-        ui->game_view->setPixmap(QPixmap::fromImage(img).scaled(ui->game_view->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
-    }
 }
 
 void soccer_window::updateFuzzyRobots(Selector selec_robot){
@@ -132,6 +177,8 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
 
 void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     p2dVector enemy_pos(3), team_pos(3);
+    pair<vector<Point>, vector<Point> > cont;
+    int i,j;
 
     percep = percep_info;
 
@@ -139,6 +186,10 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         map_area = percep.map_area;
         atk_area = percep.atk_area;
         def_area = percep.def_area;
+        field->fieldPoints = map_area;
+        field->atkPoints = atk_area;
+        field->defPoints = def_area;
+        prepare_game_scene(percep.img_size.x, percep.img_size.y);
         area_read = true;
         centroid_atk = (atk_area[2] + atk_area[3] + atk_area[4] + atk_area[5])/4;
         centroid_def = (def_area[2] + def_area[3] + def_area[4] + def_area[5])/4;
@@ -168,6 +219,28 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         mover->set_centroid_def(centroid_def); //salva a area de def para o gandalf
         mover->set_def_area(def_area);
     }
+    for(i = 0; i < team_robots.size(); i++){
+        cont = team_robots[i].get_contour();
+        Point c = team_robots[i].get_centroid();
+        team_shapes[i]->angle = team_robots[i].get_angle();
+        team_shapes[i]->team_contour = cont.first;
+        team_shapes[i]->role_contour = cont.second;
+        enemy[i]->pos = percep.enemy_robots[i].get_centroid();
+        for(j = 0; j < 3; j++){
+            vector<int> lower, upper;
+
+            lower = team_robots[i].get_team_low_color();
+            upper = team_robots[i].get_team_upper_color();
+
+            team_shapes[i]->team_color[j] = (lower[j]+upper[j])/2;
+
+            lower = team_robots[i].get_low_color();
+            upper = team_robots[i].get_upper_color();
+
+            team_shapes[i]->role_color[j] = (lower[j]+upper[j])/2;
+        }
+        team_shapes[i]->pos = c;
+    }
 
     leona->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para a leona
     presto->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o presto
@@ -178,10 +251,16 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->ball_detec_label->setText("Ball found");
         ball_pos = percep.ball_pos_cm;
+        ball->contour = percep.ball_contour;
+        for(i = 0; i < ball->color.size(); i++){
+            ball->color[i] = percep_info.ball_color.second[i] + percep.ball_color.first[i];
+            ball->color[i] /= 2;
+        }
     }else{
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->ball_detec_label->setText("Ball not found");
     }
+    game_scene->update();
 
     enemy_pos[0] = percep.enemy_robots[0].get_pos();
     enemy_pos[1] = percep.enemy_robots[1].get_pos();
@@ -346,6 +425,8 @@ void soccer_window::on_start_game_2_clicked()
 
         if(!Robot::is_serial_open()){
             Robot::open_serial();
+            ui->serial_status_col_label->setStyleSheet("QLabel { background-color : green; }");
+            ui->serial_status_label->setText("Serial Open");
         }
 
         ui->start_game_2->setText("Stop Game");
@@ -362,6 +443,8 @@ void soccer_window::on_start_game_2_clicked()
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
 
         ui->start_game_2->setText("Start Game");
+        ui->serial_status_col_label->setStyleSheet("QLabel { background-color : red; }");
+        ui->serial_status_label->setText("Serial Closed");
     }
 }
 
@@ -547,8 +630,4 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
     eye->show_errors(checked);
 }
 
-soccer_window::~soccer_window()
-{
-    delete eye;
-    delete ui;
-}
+

@@ -26,6 +26,8 @@ SOURCES += main.cpp\
     fuzzy.cpp \
     navigation.cpp \
     game_functions.cpp \
+    video4linuxconfig.cpp \
+    drawobjects.cpp
     mover.cpp
 
 HEADERS  += mainwindow.h \
@@ -41,6 +43,8 @@ HEADERS  += mainwindow.h \
     serial.h \
     navigation.h \
     game_functions.h \
+    video4linuxconfig.h \
+    drawobjects.h
     mover.h
 
 FORMS    += mainwindow.ui \
@@ -48,7 +52,8 @@ FORMS    += mainwindow.ui \
     configrobots.ui \
     setcolorrange.ui \
     settingsdialog.ui \
-    soccer_window.ui
+    soccer_window.ui \
+    video4linuxconfig.ui
 
 INCLUDEPATH += "/usr/local/include/opencv2"
 LIBS += `pkg-config --cflags --libs opencv`

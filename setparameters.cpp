@@ -333,13 +333,16 @@ SetParameters::~SetParameters()
 
 void SetParameters::on_calibrate_camera_clicked()
 {
-    /*vector<vector<Point3f> > object_points;
-    vector<vector<Point2f> > image_points;
-    vector<Point2f> corners;
+    /*if (getcwd(cwd, sizeof(cwd)) != NULL)
+        fprintf(stdout, "Current working dir: %s\n", cwd);
+    else
+        perror("getcwd() error");
 */
+    system("./Config/camera_calib.sh");
 }
 
 void SetParameters::on_save_image_clicked()
 {
     eye->save_image();
 }
+

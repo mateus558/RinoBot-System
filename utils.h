@@ -1,5 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
+
 #include <vector>
 #include <utility>
 #include <Eigen/Dense>
@@ -16,8 +17,8 @@
 #define MAX_CENT_DIST 20
 #define DEFAULT_NROWS 382   //Default number of the rows of the frame
 #define DEFAULT_NCOLS 505   //Default number of the columns of the frame
-#define X_CONV_CONST 0.346534653   //Conversion constant for the X axis
-#define Y_CONV_CONST 0.345549738 //Conversion constant for the Y axis
+#define X_CONV_CONST 0.346534653   //Conversion constant for the X axis (cm/px) height/cols
+#define Y_CONV_CONST 0.345549738 //Conversion constant for the Y axis (cm/px) width/rows
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000
@@ -26,7 +27,7 @@
 using namespace cv;
 using namespace Eigen;
 
-typedef std::vector<Robot> rVector; //Robots vector
+//typedef std::vector<Robot> rVector; //Robots vector
 typedef std::vector<Point> pVector; //Point vector
 typedef std::vector<Point2d> p2dVector; //Point of doubles vector
 typedef std::vector<std::vector<int> > iMatrix; //int matrix template
@@ -44,8 +45,8 @@ bool sort_by_smallest_y(Point a, Point b);
 bool sort_by_smallest_x(Point a, Point b);
 bool sort_by_largest_y(Point a, Point b);
 bool sort_by_largest_x(Point a, Point b);
-bool area_limit(vector<Point> p);
-bool ball_area_limit(vector<Point> p);
+bool area_limit(std::vector<Point> p);
+bool ball_area_limit(std::vector<Point> p);
 
 
 #endif // UTILS_H
