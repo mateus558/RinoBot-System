@@ -28,6 +28,7 @@ SOURCES += main.cpp\
     game_functions.cpp \
     video4linuxconfig.cpp \
     drawobjects.cpp
+    mover.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -44,6 +45,7 @@ HEADERS  += mainwindow.h \
     game_functions.h \
     video4linuxconfig.h \
     drawobjects.h
+    mover.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

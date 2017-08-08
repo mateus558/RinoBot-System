@@ -13,6 +13,7 @@
 #include "utils.h"
 #include "game_functions.h"
 #include "navigation.h"
+#include "mover.h"
 
 using namespace std;
 
@@ -33,10 +34,12 @@ soccer_window::soccer_window(QWidget *parent) :
     leona = new Game_functions; //instancia o objeto leona na rotina do sistema
     presto = new Game_functions; //instancia o objeto presto na rotina do sistema
     gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
+    mover = new Mover; //instancia o objeto mover na rotina do sistema
     run_fuzzy = false; //flag da thread do fuzzy
     run_leona = false; //flag da thread da leona
     run_presto = false; //flag da thread da presto
     run_gandalf = false; //flag da thread da gandalf
+    run_mover = false; //flag da thread da mover
     game_started = false;
     game_scene = new QGraphicsScene;
     field = new FieldDraw;
@@ -65,6 +68,8 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(gandalf, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
     connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateFuzzyRobots(std::vector<Robot>)));
     connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateGameFunctionsRobots(std::vector<Robot>)));
+    connect(mover, SIGNAL(emitRobots(Selector)), this, SLOT(updateMoverRobots(Selector)), Qt::QueuedConnection);
+
 }
 
 soccer_window::~soccer_window()
@@ -146,19 +151,27 @@ void soccer_window::updateFuzzyRobots(Selector selec_robot){
     emit updateVisionInfo(team_robots);
 }
 
-void soccer_window::updateGameFunctionsRobots(Selector selec_robot){
+void soccer_window::updateMoverRobots(Selector selec_robot){
+
     team_robots[0].set_lin_vel(make_pair(selec_robot.r3.get_l_vel(), selec_robot.r3.get_r_vel()));
     team_robots[1].set_lin_vel(make_pair(selec_robot.r1.get_l_vel(), selec_robot.r1.get_r_vel()));
     team_robots[2].set_lin_vel(make_pair(selec_robot.r2.get_l_vel(), selec_robot.r2.get_r_vel()));
+
+
     if(game_started){
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
+
+        /*cout << "Presto: " << team_robots[1].get_r_vel() << " " << team_robots[1].get_r_vel() << endl;
+        cout << "Gandalf: " << team_robots[2].get_r_vel() << " " << team_robots[2].get_r_vel() << endl;
+        cout << "Leona: " << team_robots[0].get_r_vel() << " " << team_robots[0].get_r_vel() << endl;*/
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
     }
+
     emit updateVisionInfo(team_robots);
 }
 
@@ -201,6 +214,10 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         gandalf->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf
         gandalf->set_centroid_def(centroid_def); //salva a area de def para o gandalf
         gandalf->set_def_area(def_area);
+
+        mover->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf
+        mover->set_centroid_def(centroid_def); //salva a area de def para o gandalf
+        mover->set_def_area(def_area);
     }
     for(i = 0; i < team_robots.size(); i++){
         cont = team_robots[i].get_contour();
@@ -228,6 +245,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     leona->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para a leona
     presto->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o presto
     gandalf->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o gandalf
+    mover->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para a mover
 
     if(percep.ball_found){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -270,28 +288,28 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     fuzzy->set_enemy_pos(enemy_pos); //Salva a posicao dos inimigos para o fuzzy
 
     leona->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    leona->set_enemy_pos(enemy_pos);
-    leona->set_ball_pos(ball_pos);
     leona->set_def_area(def_area);
     leona->set_calc_Gandalf(false);
     leona->set_calc_Presto(false);
     leona->set_calc_Leona(true);
 
     presto->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    presto->set_enemy_pos(enemy_pos);
-    presto->set_ball_pos(ball_pos);
     presto->set_def_area(def_area);
     presto->set_calc_Gandalf(false);
     presto->set_calc_Presto(true);
     presto->set_calc_Leona(false);
 
     gandalf->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
-    gandalf->set_enemy_pos(enemy_pos);
-    gandalf->set_ball_pos(ball_pos);
     gandalf->set_def_area(def_area);
     gandalf->set_calc_Gandalf(true);
     gandalf->set_calc_Presto(false);
     gandalf->set_calc_Leona(false);
+
+    mover->set_to_select(percep.team_robots[1], percep.team_robots[2], percep.team_robots[0]);
+    mover->set_to_select_iterador(gandalf, presto, leona);
+    mover->set_enemy_pos(enemy_pos);
+    mover->set_ball_pos(ball_pos);
+    mover->set_def_area(def_area);
 
     if(percep.team_robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
@@ -316,6 +334,9 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     }
 
     fuzzy->zera_flag_finish();
+    gandalf->zera_flag_finish();
+    presto->zera_flag_finish();
+    leona->zera_flag_finish();
 
     //inicia a thread do fuzzy caso ela nao esteja em execucao
     if(run_fuzzy){
@@ -325,10 +346,10 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         fuzzy->Play();
      }
 
-    if(!run_leona && !run_presto && !run_gandalf){
+    if(!run_leona || !run_presto || !run_gandalf){
         fuzzy->wait();
 
-        if (fuzzy->get_flag_finish() && !run_leona && !run_presto && !run_gandalf){
+        if (fuzzy->get_flag_finish() && !run_mover){
             run_leona = true;
             run_presto = true;
             run_gandalf = true;
@@ -362,6 +383,28 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         }
         gandalf->Play();
      }
+
+    //inicia a thread da mover caso ela nao esteja em execucao
+    if(run_mover){
+        if(mover->is_running()){
+            mover->wait();
+        }
+        mover->Play();
+    }
+
+    if(!run_mover){
+        gandalf->wait();
+        presto->wait();
+        leona->wait();
+        fuzzy->wait();
+
+        if(gandalf->get_flag_finish() && presto->get_flag_finish() && leona->get_flag_finish() && !run_mover){
+            run_mover = true;
+        }
+        else{
+            run_mover = false;
+        }
+    }
 }
 
 void soccer_window::updateFPS(double fps){
@@ -376,7 +419,7 @@ void soccer_window::on_start_game_2_clicked()
 {
     if(!game_started){
         game_started = true;
-        Point convert_C_to_G(Point2d);
+        //Point convert_C_to_G(Point2d);
 
         run_fuzzy = true;
 
@@ -393,6 +436,7 @@ void soccer_window::on_start_game_2_clicked()
         run_leona = false;
         run_presto = false;
         run_gandalf = false;
+        run_mover = false;
 
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
@@ -465,6 +509,11 @@ void soccer_window::on_switch_fields_clicked()
     gandalf->set_centroid_def(centroid_def); //salva a area de def para o gandalf
     gandalf->set_def_area(def_area);
     gandalf->team_changed();
+
+    mover->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf
+    mover->set_centroid_def(centroid_def); //salva a area de def para o gandalf
+    mover->set_def_area(def_area);
+    mover->team_changed();
 }
 
 void soccer_window::on_read_parameters_clicked()

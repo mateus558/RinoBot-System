@@ -629,6 +629,7 @@ void Vision::run()
             img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
             img.bits();
         }
+
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         deltaT = elapsed_secs;
