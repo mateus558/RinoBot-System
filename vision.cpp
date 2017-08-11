@@ -473,6 +473,7 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
 {
     Mat mask, res;
 
+    cvtColor(vision_frame, vision_frame, CV_BGR2HSV);
     mask = detect_colors(vision_frame, low, upper);
     //cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
     raw_frame.copyTo(res, mask);
@@ -601,6 +602,7 @@ void Vision::run()
 
         switch(mode){
             case 0: //Visualization mode
+                cvtColor(vision_frame, vision_frame, CV_BGR2HSV);
                 obj_contours = detect_objects(vision_frame, robots).second;
                 robots = fill_robots(obj_contours, robots);
                 elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
@@ -616,7 +618,7 @@ void Vision::run()
                 }
                 break;
             case 1: //Set color mode
-                vision_frame = setting_mode(raw_frame, vision_frame, low, upper);
+                raw_frame = setting_mode(raw_frame, vision_frame, low, upper);
 
                 break;
             default:
@@ -624,8 +626,8 @@ void Vision::run()
         }
 
        if(!play){
-            cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
-            img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
+            cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
+            img = QImage((const uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
             img.bits();
         }
 
