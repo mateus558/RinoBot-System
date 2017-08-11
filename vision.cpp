@@ -224,7 +224,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             robots[r_label].was_detected(false);
             r_set[r_label] = true;
         }
-
     }
 
     error = false;
