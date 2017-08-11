@@ -237,9 +237,9 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
     else if (ball_pos.x < centroid_def.x){
         double tempo;
         double aux_position_y;
-        tempo = -(robot_pos.x - 3.75 - ball_pos.x)/ball_v.x;
+        tempo = (robot_pos.x - 3.75 - ball_pos.x)/ball_v.x;
         aux_position_y = ball_pos.y - tempo*ball_v.y;
-        if (ball_v.x < 0 && (aux_position_y > centroid_def.y-25) && (aux_position_y < centroid_def.y+25)){
+        if (ball_v.x > 0 && (aux_position_y > centroid_def.y-25) && (aux_position_y < centroid_def.y+25)){
             if (robo->get_angle() > 0){
                 v = -(aux_position_y-robot_pos.y)/tempo;
                 vels->first = v - w*l;

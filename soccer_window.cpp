@@ -9,8 +9,8 @@
 #include <errno.h>
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
-#include "fuzzy.h"
 #include "utils.h"
+#include "fuzzy.h"
 #include "game_functions.h"
 #include "navigation.h"
 #include "mover.h"
@@ -36,9 +36,9 @@ soccer_window::soccer_window(QWidget *parent) :
     gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
     mover = new Mover; //instancia o objeto mover na rotina do sistema
     run_fuzzy = false; //flag da thread do fuzzy
+    run_gandalf = false; //flag da thread da gandalf
     run_leona = false; //flag da thread da leona
     run_presto = false; //flag da thread da presto
-    run_gandalf = false; //flag da thread da gandalf
     run_mover = false; //flag da thread da mover
     game_started = false;
     game_scene = new QGraphicsScene;
@@ -63,12 +63,13 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
     connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);  
     connect(fuzzy, SIGNAL(emitRobots(Selector)), this, SLOT(updateFuzzyRobots(Selector)), Qt::QueuedConnection);
-    connect(leona, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
-    connect(presto, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
-    connect(gandalf, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
-    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateFuzzyRobots(std::vector<Robot>)));
-    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateGameFunctionsRobots(std::vector<Robot>)));
     connect(mover, SIGNAL(emitRobots(Selector)), this, SLOT(updateMoverRobots(Selector)), Qt::QueuedConnection);
+    //connect(leona, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    //connect(presto, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    //connect(gandalf, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateFuzzyRobots(std::vector<Robot>)));
+    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateMoverRobots(std::vector<Robot>)));
+
 
 }
 

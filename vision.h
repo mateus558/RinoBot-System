@@ -69,7 +69,7 @@ private:
 
 public slots:
     void updateFuzzyRobots(std::vector<Robot>);
-    void updateGameFunctionsRobots(std::vector<Robot>);
+    void updateMoverRobots(std::vector<Robot>);
 
 signals:
     void infoPercepted(Vision::Perception);
