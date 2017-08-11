@@ -218,17 +218,8 @@ double Robot::get_predic_angle()
  *
  */
 void Robot::compute_velocity(double deltaT){
-    if(centroid.x != -1)
-        cout << centroid.x << " " << get_from_pos_hist(0).x << endl;
     _vel.first = (centroid.x - last_centroid.x) / deltaT;
     _vel.second = (centroid.y - last_centroid.y) / deltaT;
-    if(_vel.first != 0.0)
-        cout << _vel.first << " " << _vel.second << endl;
-    /*
-    //Convert from pixels/s to cm/s
-    _vel.first *= X_CONV_CONST;
-    _vel.second *= Y_CONV_CONST;
-    */
 
     w = (angle - last_angle) / deltaT;
 }
@@ -277,6 +268,16 @@ Point Robot::get_last_centroid(){
 Point Robot::get_predic_centroid()
 {
     return this->centroid_predict;
+}
+
+pair<vector<Point>, vector<Point> > Robot::get_contour()
+{
+    pair<pVector, pVector> p;
+
+    p.first = team_contour;
+    p.second = role_contour;
+
+    return p;
 }
 
 
@@ -336,6 +337,16 @@ Point Robot::get_color_cent()
 void Robot::set_team_cent(Point p)
 {
     this->team_cent = p;
+}
+
+void Robot::set_team_contour(vector<Point> team_contour)
+{
+    this->team_contour = team_contour;
+}
+
+void Robot::set_role_contour(vector<Point> role_contour)
+{
+    this->role_contour = role_contour;
 }
 
 Point Robot::get_team_cent()
@@ -428,7 +439,7 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
     else if(output == 1)
     {
         if (ball.x < centroid_atk.x){
-            if (ball.x < centroid_def.x + 75 && ball.y < centroid_def.y + 45 && ball.y > centroid_def.y - 45){
+            if (ball.x < centroid_def.x + 75 && ball.y < centroid_def.y + 47 && ball.y > centroid_def.y - 47){
                 this->flag_fuzzy = 0;
                 //cout << nick <<" deve Defender Arduamente!"<< endl;
             }
@@ -438,7 +449,7 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
             }
         }
         else{
-            if (ball.x > centroid_def.x - 75 && ball.y < centroid_def.y + 45 && ball.y > centroid_def.y - 45){
+            if (ball.x > centroid_def.x - 75 && ball.y < centroid_def.y + 47 && ball.y > centroid_def.y - 47){
                 this->flag_fuzzy = 0;
                 //cout << nick <<" deve Defender Arduamente2!"<< endl;
             }
@@ -519,11 +530,15 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
          }
         //cout << "Robo deve Atacar Ferozmente!" << endl;
     }
-    else
+    else if(output == 4)
     {
         this->flag_fuzzy = 4;
         //cout << nick <<" deve Catar Ferozmente!" << endl;
     }
+    else{
+        //tratar aqui
+    }
+
 
 }
 
@@ -571,4 +586,3 @@ float Robot::get_l_vel(){
 float Robot::get_r_vel(){
     return vel.second;
 }
-

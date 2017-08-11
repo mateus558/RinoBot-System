@@ -69,7 +69,6 @@ void ConfigRobots::on_save_clicked()
 
     while(getline(file, line)){
         if(i < 2){
-            cout << line << endl;
             ss << line << endl;
         }
         i++;

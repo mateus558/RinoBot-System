@@ -8,6 +8,8 @@
 
 using namespace std;
 
+using namespace std;
+
 video4linuxConfig::video4linuxConfig(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::video4linuxConfig)

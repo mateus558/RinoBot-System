@@ -88,9 +88,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     vector<pVector > r_col_cent(3, pVector());
     vector<pVector > tirj_cent(2, pVector());
     pair<Point, pair<int, int> > col_select;
-    /*Vector3d pos_cam, last_pos;
-    Vector2d v_w;
-    pair<Matrix3d, Vector3d> kalman_res;*/
 
     //Get the ball moment from the contour
     if(contours[0].size() != 0){
@@ -101,9 +98,11 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
         ball_found = true;
+        info.ball_contour = contours[0][contours[0].size()-1];
     }else{
         ball_cent = ball_last_pos;
         ball_found = false;
+        info.ball_contour = pVector();
     }
 
 
@@ -121,8 +120,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
     remove_if(contours[1].begin(), contours[1].end(), area_limit);
 
-    sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
     remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
+    sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
     remove_if(contours[2].begin(), contours[2].end(), area_limit);
 
 
@@ -184,7 +183,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                 if(dista < min && dista < 20){
                     min = dista;
                     tmin = min;
-                    col_select = make_pair(r_col_cent[j][k], make_pair(j, k));
+                    pair<int, int> ind = make_pair(j, k);
+                    col_select = make_pair(r_col_cent[j][k], ind);
                 }
             }
         }
@@ -209,21 +209,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             angle = fabs(angle_two_points(line_slope, x_axis_slope));
             angle = (col_select.first.y <= unk_robot.y)?angle:-angle;
 
-            /*pos_cam << centroid.x * X_CONV_CONST / 100,
-                       centroid.y * Y_CONV_CONST / 100,
-                       angle;
-            last_pos << last_cent.x * X_CONV_CONST / 100,
-                        last_cent.y * Y_CONV_CONST / 100,
-                        last_angle;
-            v_w << 2,
-                   2;
-
-            kalman_res = kalman_filter(pos_cam, v_w, last_pos, 9, last_P);
-            last_P = kalman_res.first;*/
-            //centroid.x = kalman_res.second(0) * 100;
-            //centroid.y = kalman_res.second(1) * 100;
-
-            //angle = kalman_res.second(2);
+            robots[r_label].set_team_contour(contours[1][i]);
+            robots[r_label].set_role_contour(contours[r_label + 3][col_select.second.second]);
             robots[r_label].set_team_cent(unk_robot);
             robots[r_label].set_color_cent(col_select.first);
             robots[r_label].set_line_slope(line_slope);
@@ -294,6 +281,7 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
 
     low = ball_color.first;
     upper = ball_color.second;
+    info.ball_color = ball_color;
 
     out_ball = detect_colors(frame, low, upper);
 
@@ -395,12 +383,13 @@ Mat Vision::crop_image(Mat org){
     Size size;
     Point2f pts[4], pts1[3], pts2[3];
     RotatedRect box;
-    pVector roi(4), aux_y;
+    pVector roi(4), aux_y, map_points1;
 
     pts2[0] = Point(0, 0);
     pts2[1] = Point(0, size.height-1);
     pts2[2] = Point(size.width-1, 0);
 
+    map_points1 = map_points;
     aux_y = map_points;
     sort(map_points.begin(), map_points.end(), sort_by_smallest_x);
     sort(aux_y.begin(), aux_y.end(), sort_by_smallest_y);
@@ -424,7 +413,7 @@ Mat Vision::crop_image(Mat org){
 
     if(!sentPoints){
         transf_matrix = getAffineTransform(pts1, pts2);
-        transform(map_points, tmap_points, transf_matrix);
+        transform(map_points1, tmap_points, transf_matrix);
         transform(def_points, tdef_points, transf_matrix);
         transform(atk_points, tatk_points, transf_matrix);
 
@@ -437,6 +426,7 @@ Mat Vision::crop_image(Mat org){
         sentPoints = true;
     }
     warpAffine(org, cropped, transf_matrix, size, INTER_LINEAR, BORDER_CONSTANT);
+    map_points = map_points1;
 
     return cropped;
 }
@@ -578,14 +568,19 @@ Mat Vision::draw_field(Mat frame)
 void Vision::run()
 {
     int delay = (1000/this->FPS);
-    int i = 0;
+    int i = 0, itr = 0;
     double elapsed_secs;
     clock_t begin, end;
     vector<pMatrix> obj_contours;
+    vector<Point> to_transf, transf;
     IplImage ipl_img;
+
+    to_transf.resize(6);
+    transf.resize(6);
 
     while(!stop){
         begin = clock();
+        itr++;
 
         if(!cam.read(raw_frame)){
             stop = true;
@@ -597,6 +592,8 @@ void Vision::run()
         rows = raw_frame.rows;
         cols = raw_frame.cols;
         raw_frame = crop_image(raw_frame);
+        info.img_size.x = raw_frame.cols;
+        info.img_size.y = raw_frame.rows;
         ipl_img = raw_frame;
         vision_frame = cvarrToMat(img_resize(&ipl_img, DEFAULT_NCOLS, DEFAULT_NROWS));  // default additional arguments: don't copy data.
         raw_frame = vision_frame.clone();
@@ -613,9 +610,10 @@ void Vision::run()
                     robots[i].compute_velocity(deltaT);
                     robots[i].predict_info(deltaT*2);
                 }
-
-                vision_frame = draw_robots(vision_frame, robots);
-                vision_frame = draw_field(vision_frame);
+                if(!play){
+                    vision_frame = draw_robots(vision_frame, robots);
+                    vision_frame = draw_field(vision_frame);
+                }
                 break;
             case 1: //Set color mode
                 vision_frame = setting_mode(raw_frame, vision_frame, low, upper);
@@ -625,9 +623,11 @@ void Vision::run()
                 break;
         }
 
-        cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
-        img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
-        img.bits();
+       if(!play){
+            cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
+            img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
+            img.bits();
+        }
 
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
@@ -658,13 +658,12 @@ void Vision::run()
 
         emit infoPercepted(info);
         emit processedImage(img);
-        if(i%10 == 0){
+        if(itr%10 == 0){
             emit framesPerSecond(FPS);
-            i = 0;
+            itr = 0;
         }
 
         msleep(delay);
-        i++;
     }
 }
 
@@ -693,13 +692,13 @@ void Vision::Play()
     }
 }
 
-void Vision::updateFuzzyRobots(rVector team_robots){
+void Vision::updateFuzzyRobots(std::vector<Robot> team_robots){
     robots[0].set_flag_fuzzy(team_robots[0].get_flag_fuzzy());
     robots[1].set_flag_fuzzy(team_robots[1].get_flag_fuzzy());
     robots[2].set_flag_fuzzy(team_robots[2].get_flag_fuzzy());
 }
 
-void Vision::updateGameFunctionsRobots(rVector team_robots){
+void Vision::updateGameFunctionsRobots(std::vector<Robot> team_robots){
     robots[0].set_lin_vel(make_pair(team_robots[0].get_l_vel(), team_robots[0].get_r_vel()));
     robots[1].set_lin_vel(make_pair(team_robots[1].get_l_vel(), team_robots[1].get_r_vel()));
     robots[2].set_lin_vel(make_pair(team_robots[2].get_l_vel(), team_robots[2].get_r_vel()));
@@ -799,6 +798,11 @@ void Vision::show_centers(bool show){
 
 void Vision::show_errors(bool show){
     showErrors = show;
+}
+
+void Vision::togglePlay(bool play)
+{
+    this->play = play;
 }
 
 void Vision::save_image(){
