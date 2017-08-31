@@ -90,10 +90,14 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     pair<Point, pair<int, int> > col_select;
 
     //Get the ball moment from the contour
-    if(contours[0].size() != 0){
-        remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
-        remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
+    if(contours[0].size() > 0){
+        auto at = remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
+        contours[0].erase(at, contours[0].end());
+        at = remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
+        contours[0].erase(at, contours[0].end());
+
         sort(contours[0].begin(), contours[0].end(), sort_by_larger_area);
+
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
@@ -115,29 +119,35 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     info.ball_vel.second = double(ball_pos.y - ball_last_pos.y) * Y_CONV_CONST;
 
     ball_last_pos = ball_cent;
-
-    remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
-    sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
-    remove_if(contours[1].begin(), contours[1].end(), area_limit);
-
-    remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
-    sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
-    remove_if(contours[2].begin(), contours[2].end(), area_limit);
-
-
+    if(contours[1].size() > 0){
+        auto at = remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
+        contours[1].erase(at, contours[1].end());
+        sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
+        at = remove_if(contours[1].begin(), contours[1].end(), area_limit);
+        contours[1].erase(at, contours[1].end());
+    }
+    if(contours[2].size() > 0){
+        auto at = remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
+        contours[2].erase(at, contours[2].end());
+        sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
+        at = remove_if(contours[2].begin(), contours[2].end(), area_limit);
+        contours[2].erase(at, contours[2].end());
+    }
     //Get the robots moments (their team color half)
     for(i = 0; i < 2; ++i){
-        for(j = 0; j < contours[i+1].size(); ++j){
-            temp_moment = moments(contours[i+1][j]);
-            t_m[i].push_back(temp_moment);
-            //Get centroid from robot team color half
-            tirj_cent[i].push_back(Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00));
+        if(contours[i+1].size() > 0){
+            for(j = 0; j < contours[i+1].size(); ++j){
+                temp_moment = moments(contours[i+1][j]);
+                t_m[i].push_back(temp_moment);
+                //Get centroid from robot team color half
+                tirj_cent[i].push_back(Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00));
 
-        }
-        if(contours[i+1].size() < 3){
-            l = 3 - contours[i+1].size();
-            for(j = 0; j < l; ++j){
-                tirj_cent[i].push_back(null_point);
+            }
+            if(contours[i+1].size() < 3){
+                l = 3 - contours[i+1].size();
+                for(j = 0; j < l; ++j){
+                    tirj_cent[i].push_back(null_point);
+                }
             }
         }
     }
@@ -575,6 +585,7 @@ void Vision::run()
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
     IplImage ipl_img;
+    ofstream ang_out("ang");
 
     to_transf.resize(6);
     transf.resize(6);
@@ -608,10 +619,14 @@ void Vision::run()
                 elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
                 deltaT = elapsed_secs;
 
-                for(i = 0; i < 6; i++){
+                for(i = 0; i < 3; i++){
+                    ang_out << robots[i].get_angle() << " " << robots[i].get_predic_angle() << " ";
+                    robots[i].correct_angle();
+                    ang_out << robots[i].get_angle() << endl;
                     robots[i].compute_velocity(deltaT);
-                    robots[i].predict_info(deltaT*2);
+                    robots[i].predict_info(deltaT);
                 }
+                ang_out << endl;
                 if(!play){
                     vision_frame = draw_robots(vision_frame, robots);
                     vision_frame = draw_field(vision_frame);
@@ -655,7 +670,9 @@ void Vision::run()
         info.team_robots[0] = robots[0];
         info.team_robots[1] = robots[1];
         info.team_robots[2] = robots[2];
-
+        cout << robots[0].get_pos().x << " " << robots[0].get_pos().y << " " << robots[0].get_angle()  << endl;
+        cout << robots[1].get_pos().x << " " << robots[1].get_pos().y << " " << robots[1].get_angle()<< endl;
+        cout << robots[2].get_pos().x << " " << robots[2].get_pos().y << " " << robots[2].get_angle()<< endl;
         FPS = 1.0/deltaT;
 
         emit infoPercepted(info);

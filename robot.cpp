@@ -224,6 +224,13 @@ void Robot::compute_velocity(double deltaT){
     w = (angle - last_angle) / deltaT;
 }
 
+void Robot::correct_angle()
+{
+    if((angle - ang_predict) > 4.5){
+        angle = (angle + ang_predict) / 2;
+    }
+}
+
 /**
  * @brief Robot::predict_info - Preve a posicao o angulo do robo no proximo frame.
  * @param deltaT - intervalo de tempo entre os frames
