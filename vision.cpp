@@ -91,9 +91,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Get the ball moment from the contour
     if(contours[0].size() > 0){
-        remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
-        remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
-
         sort(contours[0].begin(), contours[0].end(), sort_by_larger_area);
 
         ball_moment = moments(contours[0][contours[0].size()-1]);
@@ -117,15 +114,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     info.ball_vel.second = double(ball_pos.y - ball_last_pos.y) * Y_CONV_CONST;
 
     ball_last_pos = ball_cent;
-    remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
-    sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
-    remove_if(contours[1].begin(), contours[1].end(), area_limit);
-
-
-
-    remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
-    sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
-    remove_if(contours[2].begin(), contours[2].end(), area_limit);
 
     //Get the robots moments (their team color half)
     for(i = 0; i < 2; ++i){
@@ -148,8 +136,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Get the robots moments (their color half)
     for(i = 0; i < 3; ++i){
-        remove_if(contours[i + 3].begin(), contours[i + 3].end(), invalid_contour);
-        remove_if(contours[i + 3].begin(), contours[i + 3].end(), area_limit);
         csize = contours[i + 3].size();
         if(csize > 0){
             for(j = 0; j < csize; ++j){
@@ -303,47 +289,6 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     return ret;
 }
 
-Mat Vision::train_kmeans(Mat img, int nClusters)
-{
-    int k, i, attempts = 1;
-    double elapsed_secs, dist;
-    clock_t begin, end;
-    Mat centers = this->centers;
-
-    if(!trained){
-        begin  = clock();
-        clog << "Training K-means model with " << nClusters << " clusters." << endl;
-        kmeans(img, nClusters, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 1), attempts, KMEANS_PP_CENTERS, centers );
-        end  = clock();
-        elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        clog << "End of training in " << elapsed_secs << " seconds." << endl;
-        this->labels = labels;
-        this->centers = centers;
-        trained = true;
-    }else{
-        const int dims = centers.cols;
-
-        for(i = 0; i < img.rows; i++){
-            const float *sample = img.ptr<float>(i);
-            int k_best = 0;
-            double min_dist = DBL_MAX;
-
-            for(k = 0; k < centers.rows; k++){
-                const float *center = centers.ptr<float>(k);
-                dist = normL2Sqr(sample, center, dims);
-
-                if(min_dist > dist){
-                    min_dist = dist;
-                    k_best = k;
-                }
-            }
-            labels.at<int>(i, 0) = k_best;
-        }
-    }
-
-    return centers;
-}
-
 Mat Vision::adjust_gamma(double gamma, Mat org)
 {
     if(gamma == 1.0)
@@ -360,27 +305,6 @@ Mat Vision::adjust_gamma(double gamma, Mat org)
      LUT( org, lut_matrix, result );
 
     return result;
-}
-
-Mat Vision::CLAHE_algorithm(Mat org)    //Normalize frame histogram
-{
-    Mat lab_image, dst;
-    vector<Mat> lab_planes(3);
-
-    cvtColor(org, lab_image, CV_BGR2Lab);
-    split(lab_image, lab_planes);
-
-    //Apply CLAHE to the luminosity plane of the LAB frame
-    Ptr<CLAHE> clahe = createCLAHE(2.0, Size(8,8));
-    clahe->apply(lab_planes[0], dst);
-
-    //Merge back the planes
-    dst.copyTo(lab_planes[0]);
-    merge(lab_planes, lab_image);
-
-    cvtColor(lab_image, dst, CV_Lab2BGR);
-
-    return dst;
 }
 
 Mat Vision::crop_image(Mat org){
@@ -438,38 +362,11 @@ Mat Vision::crop_image(Mat org){
 
 Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
 {
-   /* int x, y, z;
-    Mat samples(orig.rows * orig.cols, 3, CV_32F);*/
-
     dest = orig.clone();
     //Gamma correction
     dest = adjust_gamma(1.3 , dest);
     //Apply gaussian blur
     GaussianBlur(dest, dest, Size(5,5), 1.8);
-
-    /****************************************
-     *  K-means training and classification.*
-     ****************************************/
-    //Training
-    /*for(y = 0; y < orig.rows; y++){
-        for(x = 0; x < orig.cols; x++){
-            for(z = 0; z < 3; z++){
-                samples.at<float>(y + x*orig.rows, z) = orig.at<Vec3b>(y,x)[z];
-            }
-        }
-    }
-
-    centers = train_kmeans(samples, 18);
-
-    //Classification
-    for(y = 0; y < dest.rows; y++){
-        for(x = 0; x < dest.cols; x++){
-          int cluster_idx = labels.at<int>(y + x*dest.rows,0);
-          dest.at<Vec3b>(y,x)[0] = centers.at<float>(cluster_idx, 0);
-          dest.at<Vec3b>(y,x)[1] = centers.at<float>(cluster_idx, 1);
-          dest.at<Vec3b>(y,x)[2] = centers.at<float>(cluster_idx, 2);
-        }
-    }*/
 
     return dest;
 }
@@ -480,7 +377,6 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
 
     cvtColor(vision_frame, vision_frame, CV_BGR2HSV);
     mask = detect_colors(vision_frame, low, upper);
-    //cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
     raw_frame.copyTo(res, mask);
 
     return res;
@@ -580,7 +476,6 @@ void Vision::run()
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
     IplImage ipl_img;
-    ofstream ang_out("ang");
 
     to_transf.resize(6);
     transf.resize(6);
@@ -614,14 +509,6 @@ void Vision::run()
                 elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
                 deltaT = elapsed_secs;
 
-                for(i = 0; i < 3; i++){
-                    ang_out << robots[i].get_angle() << " " << robots[i].get_predic_angle() << " ";
-                    robots[i].correct_angle();
-                    ang_out << robots[i].get_angle() << endl;
-                    robots[i].compute_velocity(deltaT);
-                    robots[i].predict_info(deltaT);
-                }
-                ang_out << endl;
                 if(!play){
                     vision_frame = draw_robots(vision_frame, robots);
                     vision_frame = draw_field(vision_frame);
@@ -665,9 +552,7 @@ void Vision::run()
         info.team_robots[0] = robots[0];
         info.team_robots[1] = robots[1];
         info.team_robots[2] = robots[2];
-        cout << robots[0].get_pos().x << " " << robots[0].get_pos().y << " " << robots[0].get_angle()  << endl;
-        cout << robots[1].get_pos().x << " " << robots[1].get_pos().y << " " << robots[1].get_angle()<< endl;
-        cout << robots[2].get_pos().x << " " << robots[2].get_pos().y << " " << robots[2].get_angle()<< endl;
+
         FPS = 1.0/deltaT;
 
         emit infoPercepted(info);
