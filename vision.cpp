@@ -91,10 +91,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Get the ball moment from the contour
     if(contours[0].size() > 0){
-        auto at = remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
-        contours[0].erase(at, contours[0].end());
-        at = remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
-        contours[0].erase(at, contours[0].end());
+        remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
+        remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
 
         sort(contours[0].begin(), contours[0].end(), sort_by_larger_area);
 
@@ -119,20 +117,16 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     info.ball_vel.second = double(ball_pos.y - ball_last_pos.y) * Y_CONV_CONST;
 
     ball_last_pos = ball_cent;
-    if(contours[1].size() > 0){
-        auto at = remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
-        contours[1].erase(at, contours[1].end());
-        sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
-        at = remove_if(contours[1].begin(), contours[1].end(), area_limit);
-        contours[1].erase(at, contours[1].end());
-    }
-    if(contours[2].size() > 0){
-        auto at = remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
-        contours[2].erase(at, contours[2].end());
-        sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
-        at = remove_if(contours[2].begin(), contours[2].end(), area_limit);
-        contours[2].erase(at, contours[2].end());
-    }
+    remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
+    sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
+    remove_if(contours[1].begin(), contours[1].end(), area_limit);
+
+
+
+    remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
+    sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
+    remove_if(contours[2].begin(), contours[2].end(), area_limit);
+
     //Get the robots moments (their team color half)
     for(i = 0; i < 2; ++i){
         if(contours[i+1].size() > 0){
@@ -249,6 +243,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Define team 2 centroids and angles
     for(i = 3, j = 0, dista = INFINITY; i < 6; ++i, ++j){
+        if(tirj_cent[1].size() == 0) continue;
         robots[i].set_team_cent(tirj_cent[1][i-3]);
         robots[i].set_centroid(robots[i].get_team_cent());
         robots[i].was_detected(true);
