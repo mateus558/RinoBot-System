@@ -17,6 +17,7 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
     conf = new ConfigRobots;
     set_team_color = new SetColorRange;
     serial_settings_dialog = new SettingsDialog;
+    calib_camera = new video4linuxConfig;
 
     eye->set_mode(0);
     ui->setupUi(this);
@@ -333,12 +334,8 @@ SetParameters::~SetParameters()
 
 void SetParameters::on_calibrate_camera_clicked()
 {
-    /*if (getcwd(cwd, sizeof(cwd)) != NULL)
-        fprintf(stdout, "Current working dir: %s\n", cwd);
-    else
-        perror("getcwd() error");
-*/
-    system("./Config/camera_calib.sh");
+    calib_camera->show();
+    //system("./Config/camera_calib.sh");
 }
 
 void SetParameters::on_save_image_clicked()

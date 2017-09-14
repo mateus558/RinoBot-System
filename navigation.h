@@ -33,6 +33,7 @@ public:
     void set_potential(int, int, double);
     double get_potential(int, int);
     int get_occupancy(int, int);
+    void set_grid_orientation(Point);
     void set_direction();
     double get_direction(Point);
     void init_grid();

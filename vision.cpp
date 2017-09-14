@@ -90,10 +90,12 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     pair<Point, pair<int, int> > col_select;
 
     //Get the ball moment from the contour
-    if(contours[0].size() != 0){
+    if(contours[0].size() > 0){
         remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
         remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
+
         sort(contours[0].begin(), contours[0].end(), sort_by_larger_area);
+
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
@@ -115,29 +117,31 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     info.ball_vel.second = double(ball_pos.y - ball_last_pos.y) * Y_CONV_CONST;
 
     ball_last_pos = ball_cent;
-
     remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
     sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
     remove_if(contours[1].begin(), contours[1].end(), area_limit);
+
+
 
     remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
     sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
     remove_if(contours[2].begin(), contours[2].end(), area_limit);
 
-
     //Get the robots moments (their team color half)
     for(i = 0; i < 2; ++i){
-        for(j = 0; j < contours[i+1].size(); ++j){
-            temp_moment = moments(contours[i+1][j]);
-            t_m[i].push_back(temp_moment);
-            //Get centroid from robot team color half
-            tirj_cent[i].push_back(Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00));
+        if(contours[i+1].size() > 0){
+            for(j = 0; j < contours[i+1].size(); ++j){
+                temp_moment = moments(contours[i+1][j]);
+                t_m[i].push_back(temp_moment);
+                //Get centroid from robot team color half
+                tirj_cent[i].push_back(Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00));
 
-        }
-        if(contours[i+1].size() < 3){
-            l = 3 - contours[i+1].size();
-            for(j = 0; j < l; ++j){
-                tirj_cent[i].push_back(null_point);
+            }
+            if(contours[i+1].size() < 3){
+                l = 3 - contours[i+1].size();
+                for(j = 0; j < l; ++j){
+                    tirj_cent[i].push_back(null_point);
+                }
             }
         }
     }
@@ -224,7 +228,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             robots[r_label].was_detected(false);
             r_set[r_label] = true;
         }
-
     }
 
     error = false;
@@ -240,6 +243,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Define team 2 centroids and angles
     for(i = 3, j = 0, dista = INFINITY; i < 6; ++i, ++j){
+        if(tirj_cent[1].size() == 0) continue;
         robots[i].set_team_cent(tirj_cent[1][i-3]);
         robots[i].set_centroid(robots[i].get_team_cent());
         robots[i].was_detected(true);
@@ -474,6 +478,7 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
 {
     Mat mask, res;
 
+    cvtColor(vision_frame, vision_frame, CV_BGR2HSV);
     mask = detect_colors(vision_frame, low, upper);
     //cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
     raw_frame.copyTo(res, mask);
@@ -575,6 +580,7 @@ void Vision::run()
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
     IplImage ipl_img;
+    ofstream ang_out("ang");
 
     to_transf.resize(6);
     transf.resize(6);
@@ -602,22 +608,27 @@ void Vision::run()
 
         switch(mode){
             case 0: //Visualization mode
+                cvtColor(vision_frame, vision_frame, CV_BGR2HSV);
                 obj_contours = detect_objects(vision_frame, robots).second;
                 robots = fill_robots(obj_contours, robots);
                 elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
                 deltaT = elapsed_secs;
 
-                for(i = 0; i < 6; i++){
+                for(i = 0; i < 3; i++){
+                    ang_out << robots[i].get_angle() << " " << robots[i].get_predic_angle() << " ";
+                    robots[i].correct_angle();
+                    ang_out << robots[i].get_angle() << endl;
                     robots[i].compute_velocity(deltaT);
-                    robots[i].predict_info(deltaT*2);
+                    robots[i].predict_info(deltaT);
                 }
+                ang_out << endl;
                 if(!play){
                     vision_frame = draw_robots(vision_frame, robots);
                     vision_frame = draw_field(vision_frame);
                 }
                 break;
             case 1: //Set color mode
-                vision_frame = setting_mode(raw_frame, vision_frame, low, upper);
+                raw_frame = setting_mode(raw_frame, vision_frame, low, upper);
 
                 break;
             default:
@@ -625,10 +636,11 @@ void Vision::run()
         }
 
        if(!play){
-            cvtColor(vision_frame, vision_frame, CV_BGR2RGB);
-            img = QImage((const uchar*)(vision_frame.data), vision_frame.cols, vision_frame.rows, vision_frame.step, QImage::Format_RGB888);
+            cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
+            img = QImage((const uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
             img.bits();
         }
+
         end = clock();
         elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         deltaT = elapsed_secs;
@@ -653,7 +665,9 @@ void Vision::run()
         info.team_robots[0] = robots[0];
         info.team_robots[1] = robots[1];
         info.team_robots[2] = robots[2];
-
+        cout << robots[0].get_pos().x << " " << robots[0].get_pos().y << " " << robots[0].get_angle()  << endl;
+        cout << robots[1].get_pos().x << " " << robots[1].get_pos().y << " " << robots[1].get_angle()<< endl;
+        cout << robots[2].get_pos().x << " " << robots[2].get_pos().y << " " << robots[2].get_angle()<< endl;
         FPS = 1.0/deltaT;
 
         emit infoPercepted(info);

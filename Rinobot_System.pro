@@ -27,7 +27,9 @@ SOURCES += main.cpp\
     navigation.cpp \
     game_functions.cpp \
     video4linuxconfig.cpp \
-    drawobjects.cpp
+    drawobjects.cpp \
+    mover.cpp
+    mover.cpp
 
 HEADERS  += mainwindow.h \
     vision.h \
@@ -43,7 +45,9 @@ HEADERS  += mainwindow.h \
     navigation.h \
     game_functions.h \
     video4linuxconfig.h \
-    drawobjects.h
+    drawobjects.h \
+    mover.h
+    mover.h
 
 FORMS    += mainwindow.ui \
     setparameters.ui \

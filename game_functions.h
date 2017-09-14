@@ -12,6 +12,8 @@ class Game_functions: public Navigation
 {
     Q_OBJECT
 private:
+    Point2d meta_goalkeeper;
+    Point2d meta;
     p2dVector team_pos;
     Point ball_pos_grid;
     pVector enemy_pos_grid; //posicao em grid dos inimigos
@@ -25,9 +27,10 @@ private:
     vector<pair<float, float> > vels;
     static Serial serial;
 
-    bool stop, game_functions_initialized; //variavel de controle de thread
+    bool stop, game_functions_initialized, flag_finish_functions; //variavel de controle de thread
     bool team_chang;
-    bool calc_Gandalf = false, calc_Presto = false, calc_Leona = false;
+    bool calc_Gandalf, calc_Presto, calc_Leona;
+    bool vel_Computed;
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
 
 protected:
@@ -43,9 +46,10 @@ public:
     void defensive_midfielder(Robot *, int, pair<float, float>*);
     void ofensive_midfielder(Robot *, int, pair<float, float>*);
     void striker(Robot *, int, pair<float, float>*);
-    //void calcula_velocidades(Robot *, CPH *,CPO *, CPH2 *, CPO2 *, CPO3 *, pair<float, float>*);
-    void goalkeeper_orientation(Robot *, pair<float, float>*);
+    void return2goal();
     double ajusta_angulo(double);
+    bool get_flag_finish();
+    void zera_flag_finish();
     void set_def_area(pVector def_area);
     void set_ball_vel(pair<double, double>);
     void set_to_select(Robot, Robot, Robot);
@@ -62,6 +66,8 @@ public:
     void Stop();
     bool isStopped() const;
     void team_changed();
+    Point2d get_meta_goalkeeper();
+    Point2d get_meta();
     Point convert_C_to_G(Point2d);
     ~Game_functions();
 };

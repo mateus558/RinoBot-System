@@ -224,6 +224,13 @@ void Robot::compute_velocity(double deltaT){
     w = (angle - last_angle) / deltaT;
 }
 
+void Robot::correct_angle()
+{
+    if((angle - ang_predict) > 4.5){
+        angle = (angle + ang_predict) / 2;
+    }
+}
+
 /**
  * @brief Robot::predict_info - Preve a posicao o angulo do robo no proximo frame.
  * @param deltaT - intervalo de tempo entre os frames
@@ -439,7 +446,7 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
     else if(output == 1)
     {
         if (ball.x < centroid_atk.x){
-            if (ball.x < centroid_def.x + 75 && ball.y < centroid_def.y + 45 && ball.y > centroid_def.y - 45){
+            if (ball.x < centroid_def.x + 75 && ball.y < centroid_def.y + 47 && ball.y > centroid_def.y - 47){
                 this->flag_fuzzy = 0;
                 //cout << nick <<" deve Defender Arduamente!"<< endl;
             }
@@ -449,7 +456,7 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
             }
         }
         else{
-            if (ball.x > centroid_def.x - 75 && ball.y < centroid_def.y + 45 && ball.y > centroid_def.y - 45){
+            if (ball.x > centroid_def.x - 75 && ball.y < centroid_def.y + 47 && ball.y > centroid_def.y - 47){
                 this->flag_fuzzy = 0;
                 //cout << nick <<" deve Defender Arduamente2!"<< endl;
             }
@@ -530,11 +537,15 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
          }
         //cout << "Robo deve Atacar Ferozmente!" << endl;
     }
-    else
+    else if(output == 4)
     {
         this->flag_fuzzy = 4;
         //cout << nick <<" deve Catar Ferozmente!" << endl;
     }
+    else{
+        //tratar aqui
+    }
+
 
 }
 

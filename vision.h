@@ -81,117 +81,220 @@ protected:
 public:
     Vision(QObject *parent = 0);
 
-    /*
-     * Functions for pre-processing of the image.
-     */
+    /************************************************************************************
+     * PRÉ-PROCESSAMENTO DA IMAGEM                                                      *
+     ************************************************************************************/
 
-    /**
-     * @brief train_kmeans Train kmeans to classify the pixels of the img.
-     * @param img  Image used as sample.
-     * @param nClusters Number of clusters used.
-     * @return  Mat
-     */
-    Mat train_kmeans(Mat img, int nClusters);
-    /**
-     * @brief adjust_gamma  Adjust the luminosity of the image.
-     * @param gamma Gamma value for the algorithm.
-     * @param org Image to apply the adjustment.
-     * @return Mat
-     */
+    /************************************************************************************
+        @brief adjust_gamma Ajusta a luminosidade da imagem.
+
+        @param gamma Valor de Gamma para o algoritmo.
+        @param org Matriz com a imagem a ser aplicada o tratamento.
+        @return a matriz com a luminosidade ajustada.
+    ************************************************************************************/
     Mat adjust_gamma(double gamma, Mat org);
-    /**
-     * @brief crop_image Crop a region from the image.
-     * @param org Image to use.
-     * @return Mat
-     */
-    Mat crop_image(Mat org);
-    /**
-     * @brief CLAHE_algorithm Used to improve the contrast of the image.
-     * @param org Image to use.
-     * @return Mat
-     */
+
+    /************************************************************************************
+        @brief CLAHE_algorithm Usado para aumetar o contraste da imagem.
+
+        @param org Matriz com a imagem à ser ajustada.
+        @return Mat a Matriz ajustada.
+     ************************************************************************************/
     Mat CLAHE_algorithm(Mat org);
-    /**
-     * @brief proccess_frame Pre-proccess the image for improvements.
-     * @return Mat
-     */
+
+    /************************************************************************************
+        @brief crop_image Corta uma determinada região da imagem. De acordo com o tamanho do campo
+
+        @param org Image to use.
+        @return Mat
+     *************************************************************************************/
+    Mat crop_image(Mat org);
+
+    /************************************************************************************
+        @brief proccess_frame Pré-processa a imagem.
+
+        @return Mat
+     *************************************************************************************/
     Mat proccess_frame(Mat, Mat);
 
-    /*
-     * Functions for the detection and drawing of the robots.
-     */
+    /************************************************************************************
+        @brief train_kmeans "Treina" o k-means para classificas os pixels da imagem.
 
-    /**
-     * @brief fill_robots Identify the game objects and compute the centroids and angles.
-     * @param contours Candidates to game objects.
-     * @param robots Where the robots information will be stored.
-     * @return vector<Robot>
-     */
-    vector<Robot> fill_robots(vector<pMatrix> contours, vector<Robot> robots);
-    /**
-     * @brief draw_robots Draw the robots and their info to the screen.
-     * @param frame Frame where they will be draw.
-     * @param robots Robots to draw.
-     * @return Mat
-     */
-    Mat draw_robots(Mat frame, vector<Robot> robots);
-    /**
-     * @brief draw_field Draw the field points to the screen.
-     * @param frame Frame where they will be draw.
-     * @return Mat
-     */
+        @param img  Imagem amostra utilizada.
+        @param nClusters Número de clusters.
+        @return  Mat Imagem segmentada.
+     *************************************************************************************/
+    Mat train_kmeans(Mat img, int nClusters);
+
+
+    /************************************************************************************
+     * DETECÇÃO E REPRESENTAÇÃO DOS ROBÔS                                               *
+     ************************************************************************************/
+
+    /************************************************************************************
+        @brief draw_field Desenha os pontos-chave do campo. (Borda)
+
+        @param frame Frame aonde os pontos-chave serão desenhados.
+        @return Mat Frame com os pontos já desenhado.
+     ************************************************************************************/
     Mat draw_field(Mat frame);
-    /**
-     * @brief detect_colors Returns a mask with the pixels in the given range (Thresholding).
-     * @param vision_frame Frame where the thresholding will be applied.
-     * @param low Lower limit of the pixel range.
-     * @param upper Upper limit of the pixel range.
-     * @return Mat
-     */
+
+    /************************************************************************************
+        @brief draw_robots Desenha os robôs e suas informações na tela.
+
+        @param frame Frame where they will be draw.
+        @param robots Robots to draw.
+        @return Mat
+    ************************************************************************************/
+    Mat draw_robots(Mat frame, vector<Robot> robots);
+
+    /************************************************************************************
+        @brief detect_colors Returns a mask with the pixels in the given range (Thresholding).
+
+        @param vision_frame Frame where the thresholding will be applied.
+        @param low Lower limit of the pixel range.
+        @param upper Upper limit of the pixel range.
+        @return Mat
+     ************************************************************************************/
     Mat detect_colors(Mat vision_frame, vector<int> low, vector<int> upper);
-    /**
-     * @brief detect_objects Detect the contours of the game objects.
-     * @param frame Frame used for the detection.
-     * @param robots Where the robots info will be stored.
-     * @return vector of Contours
-     */
+
+    /************************************************************************************
+        @brief detect_objects Detecta o contorno dos objetos do jogo. Utilizando de um
+                                    vetor com as informações de cor dos objetos.
+
+        @param frame Frame utilizado para a detecção.
+        @param robots Vetor dos robôs.
+        @return Vetor de contorno dos objetos de jogo
+     ************************************************************************************/
     pair<vector<vector<Vec4i> >, vector<pMatrix> > detect_objects(Mat frame, vector<Robot> robots);
 
-    /*
-     * Configuration functions.
-     */
+    /************************************************************************************
+        @brief fill_robots Identifica os robôs e computa suas centróides.
 
-    Mat setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper);
+        @param contours Candidatos à robôs (contornos).
+        @param robots Vetor de robôs com as informações que se tem até o momento.
+        @return vector<Robot> O vetor de robôs com informações preenchidas.
+     ************************************************************************************/
+    vector<Robot> fill_robots(vector<pMatrix> contours, vector<Robot> robots);
+
+    /************************************************************************************
+     * FUNÇÕES DE CONFIGURAÇÃO                                                          *
+     ************************************************************************************/
+
+    /************************************************************************************
+        @brief is_stopped Verifica se a thread continua executando.
+     ************************************************************************************/
+    bool isStopped() const;
+
+    /************************************************************************************
+        @brief is_open Verifica se o canal da câmera está aberto.
+     ************************************************************************************/
+    bool is_open();
+
+    /************************************************************************************
+        @brief open_camera Abre o recurso da câmera utilizando a identificação desta.
+
+        @param camid Identificação da camera.
+        @return Se a câmera foi aberta (ou não).
+     ************************************************************************************/
     bool open_camera(int camid = CV_CAP_FIREWIRE);
+
+    /************************************************************************************
+        @brief Play Inicia a execução do Thread da visão.
+     ************************************************************************************/
     void Play();
-    void Stop();
-    void switch_teams_areas();
-    void show_area(bool show);
-    void show_centers(bool show);
-    void show_names(bool show);
-    void show_errors(bool show);
-    void togglePlay(bool play);
-    void save_image();
+
+    /************************************************************************************
+        @brief release_cam Libera o recurso da câmera.
+     ************************************************************************************/
     void release_cam();
 
-    /*
-     * Get and set functions.
-     */
+    /************************************************************************************
+        @brief save_image Salva a imagem do frame atual.
+     ************************************************************************************/
+    void save_image();
 
-    vector<Robot> get_robots();
-    int get_camID();
-    void set_robots(vector<Robot> robots);
-    void set_ball(pair<vector<int>, vector<int> > ball);   
-    void set_low(vector<int> low);
-    void set_def_area(pVector def_points);
+    /************************************************************************************
+        @brief setting_mode Processa o frame de acordo com o modo de configuração.
+
+        @param raw_frame Frame "cru" capturado da câmera.
+        @param vision_frame Frame processado da visão.
+        @param low Limite inferior de Cor RGB.
+        @param upper Limite superior de Cor RGB.
+        @return Mat retorna o frame processado.
+     ************************************************************************************/
+    Mat setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper);
+
+    /************************************************************************************
+        @brief show_area Informa se os pontos-chave do campo devem ser exibidos(ou não).
+
+        @param show Flag iformando se deve exibir ou não os pontos-chave do campo.
+     ************************************************************************************/
+    void show_area(bool show);
+
+    /************************************************************************************
+        @brief show_centers Informa se as centróides dos obetos de jogo devem ser exibidos(ou não).
+
+        @param show Flag iformando se deve exibir ou não os pontos-chave do campo.
+     ************************************************************************************/
+    void show_centers(bool show);
+
+    /************************************************************************************
+        @brief show_names Informa se os nomes dos objetos de jogo devem ser exibidos(ou não).
+
+        @param show Flag iformando se deve exibir ou não os pontos-chave do campo.
+     ************************************************************************************/
+    void show_names(bool show);
+
+    //TODO REMOVE
+    void show_errors(bool show);
+
+    /************************************************************************************
+        @brief Stop Para a execução do Thread da visão.
+     ************************************************************************************/
+    void Stop();
+
+    /************************************************************************************
+        @brief switch_teams_areas Informa que as àreas dos times foram trocadas.
+     ************************************************************************************/
+    void switch_teams_areas();
+
+    /************************************************************************************
+        @brief switch_teams_areas Informa que as àreas dos times foram trocadas.
+     ************************************************************************************/
+    void togglePlay(bool play);
+
+    /************************************************************************************
+     * GETS & SETS                                                                      *
+     ************************************************************************************/
+    /*  atk_area                                                                     (s)*/
     void set_atk_area(pVector atk_points);
-    void set_upper(vector<int> upper);
+
+    /*  ball                                                                         (s)*/
+    void set_ball(pair<vector<int>, vector<int> > ball);
+
+    /*  camID                                                                      (g,s)*/
+    int get_camID();
     void set_camid(int cam);
+
+    /*  def_area                                                                     (s)*/
+    void set_def_area(pVector def_points);
+
+    /*  low                                                                          (g)*/
     vector<int> get_low();
-    vector<int> get_upper();
+    void set_low(vector<int> low);
+
+    /*  mode                                                                         (s)*/
     void set_mode(int m = 0);
-    bool isStopped() const;
-    bool is_open();
+
+    /*  robots                                                                     (g,s)*/
+    vector<Robot> get_robots();
+    void set_robots(vector<Robot> robots);
+
+    /*  upper                                                                        (s)*/
+    void set_upper(vector<int> upper);
+    vector<int> get_upper();
+
     ~Vision();
 };
 

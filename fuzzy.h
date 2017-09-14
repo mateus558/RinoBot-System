@@ -8,7 +8,12 @@
 #include "utils.h" //Utils library
 
 struct Selector{
+    std::vector<bool> flags;
     Robot r1, r2,r3;
+
+    Selector(){
+        flags.assign(3, false);
+    }
 };
 
 class Fuzzy: public QThread
