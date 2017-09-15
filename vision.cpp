@@ -703,6 +703,10 @@ void Vision::updateFuzzyRobots(std::vector<Robot> team_robots){
     robots[0].set_flag_fuzzy(team_robots[0].get_flag_fuzzy());
     robots[1].set_flag_fuzzy(team_robots[1].get_flag_fuzzy());
     robots[2].set_flag_fuzzy(team_robots[2].get_flag_fuzzy());
+
+    robots[0].set_output_fuzzy(team_robots[0].get_output_fuzzy());
+    robots[1].set_output_fuzzy(team_robots[1].get_output_fuzzy());
+    robots[2].set_output_fuzzy(team_robots[2].get_output_fuzzy());
 }
 
 void Vision::updateMoverRobots(std::vector<Robot> team_robots){

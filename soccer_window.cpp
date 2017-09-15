@@ -149,6 +149,10 @@ void soccer_window::updateFuzzyRobots(Selector selec_robot){
     team_robots[1].set_flag_fuzzy(selec_robot.r1.get_flag_fuzzy());
     team_robots[2].set_flag_fuzzy(selec_robot.r2.get_flag_fuzzy());
 
+    team_robots[0].set_output_fuzzy(selec_robot.r3.get_output_fuzzy());
+    team_robots[1].set_output_fuzzy(selec_robot.r1.get_output_fuzzy());
+    team_robots[2].set_output_fuzzy(selec_robot.r2.get_output_fuzzy());
+
     emit updateVisionInfo(team_robots);
 }
 

@@ -63,6 +63,7 @@ void Mover::run(){
     //Pro primeiro robô - Gandalf
     calcula_velocidades(&selec_robot.r1,selec_iterador.gandalf, &vels[0]);
     selec_robot.r1.set_lin_vel(vels[0]);
+    cout << "Velocidades: " << vels[0].first << " " <<  vels[0].second << endl;
 
     //Pro segundo robô - Presto
     calcula_velocidades(&selec_robot.r2,selec_iterador.presto, &vels[1]);

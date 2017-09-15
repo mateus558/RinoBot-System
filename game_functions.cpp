@@ -57,6 +57,8 @@ void Game_functions::msleep(int ms){
 }
 
 void Game_functions::run(){
+     //cout << ball_pos.y << endl;
+
     if(!game_functions_initialized){
         //init_game_functions();
         game_functions_initialized = true;
@@ -80,7 +82,7 @@ void Game_functions::run(){
                 break;
             case 4:
                 goalkeeper(&selec_robot.r3, 2, &vels[2]);
-                break;
+                break; cout << ball_pos.y << endl;
         }
         /*selec_robot.r3.set_lin_vel(vels[2]);
         selec_robot.flags[2] = true;*/
