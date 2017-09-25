@@ -75,20 +75,29 @@ void Fuzzy::run(){
         init_funcao_pertinencia();
         duniverse_initialized = true;
     }
+    if (num_strategy == 1){
+        if(ball_pos.x > 0 && ball_pos.y > 0){
+            //Pro primeiro robô
+            calcula_input(selec_robot.r1);
+            fuzzification();
+            decisao_robo[0] = defuzzification();
 
-    if(ball_pos.x > 0 && ball_pos.y > 0){
-        //Pro primeiro robô
-        calcula_input(selec_robot.r1);
-        fuzzification();        
-        decisao_robo[0] = defuzzification();
+            //Pro segundo robô
+            calcula_input(selec_robot.r2);
+            fuzzification();
+            decisao_robo[1] = defuzzification();
 
-        //Pro segundo robô
-        calcula_input(selec_robot.r2);
-        fuzzification();
-        decisao_robo[1] = defuzzification();
-
-    }else{
-        //tratar bola aqui
+        }else{
+            //tratar bola aqui
+        }
+    }
+    else if (num_strategy == 2){
+        calcula_another_input();
+        another_fuzzification();
+        another_defuzzification();
+    }
+    else{
+        // tratar aqui
     }
 
     set_objectives();
@@ -147,7 +156,7 @@ void Fuzzy::calcula_input(Robot r){
         //Calcula angulo entre robo e bola
         Point2d vec_ball_robot = ball_pos-robot_pos;
         double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
-        cout << ball_pos.x << endl;
+        //cout << ball_pos.x << endl;
         //Corrige o angulo
         if (vec_ball_robot.y < 0)
                 ang_vec_ball_eixox = -ang_vec_ball_eixox;
@@ -206,16 +215,12 @@ void Fuzzy::another_fuzzification(){
     int i=0, j=0, k=0, cont = 0, aux1;
     double aux2 = 0, aux3;
 
-
-    pertinencia[0] = input[0];
-    pertinencia[1] = input[1];
-
     //Criando matriz de possibilidade 2x4
     for(i=0;i<2;i++)
     {
         for(j=0;j<4;j++)
         {
-            aux1 = pertinencia[i];
+            aux1 = input[i];
             if(j == 0)
             {
                 mi[i][j] = y_baixo[aux1];
@@ -255,7 +260,7 @@ void Fuzzy::another_fuzzification(){
                 limite[i][j] = min_function(D[i],y_baixo[j]); //Gera o grafico para ser gerado o max
             }
         }
-        else if((i >= 8 && i <= 11)){
+        else if(i >= 8 && i <= 11){
             for(j=0;j<=100;j++)
             {
                 limite[i][j] = min_function(D[i],y_medio1[j]);
@@ -269,20 +274,17 @@ void Fuzzy::another_fuzzification(){
                 limite[i][j] = min_function(D[i],y_alto[j]);
             }
         }
+    }
 
     for(i=0;i<=100;i++)
     {
-        for(int k = 0; k < cont; k++)
+        for(k=0; k < cont; k++)
         {
             aux2 = max_function(limite[k][i],aux2);
         }
         y_output1[i] = aux2;//Grafico resultante do max dos limites gerados anteriormente
         aux2 = 0;
     }
-
-    }
-
-
 
     for(i=0;i<cont;i++)//Percorre o vetor D
     {
@@ -299,16 +301,16 @@ void Fuzzy::another_fuzzification(){
                 limite[i][j] = min_function(D[i],y_medio2[j]);
             }
         }
+    }
 
-        for(i=0;i<=100;i++)
+    for(i=0;i<=100;i++)
+    {
+        for(int k = 0; k < cont; k++)
         {
-            for(int k = 0; k < cont; k++)
-            {
-                aux2 = max_function(limite[k][i],aux2);
-            }
-            y_output2[i] = aux2;//Grafico resultante do max dos limites gerados anteriormente
-            aux2 = 0;
+            aux2 = max_function(limite[k][i],aux2);
         }
+        y_output2[i] = aux2;//Grafico resultante do max dos limites gerados anteriormente
+        aux2 = 0;
     }
 
 }
@@ -333,15 +335,16 @@ void Fuzzy::another_defuzzification(){
         sum1 = sum1 + d_universe[i]*y_output2[i];
         sum2 = sum2 + y_output2[i];
     }
-    output2 = sum1/sum2; //posição de saida em y
+    output2 = sum1/sum2; //posição de saida em y    
+
     //Passando saidas para gamefunction
     if(centroid_atk.x > ball_pos.x ){
-       output_meta.x = output1 +10;
-       output_meta.y = output2;
+       output_meta.x = output1*150 +10;
+       output_meta.y = output2*130;
     }
     else if (centroid_atk.x <= ball_pos.x ){
-       output_meta.x = 160 - output1;
-       output_meta.y = 130 - output2;
+       output_meta.x = 160 - output1*150;
+       output_meta.y = 130 - output2*130;
     }
 
 }
@@ -496,42 +499,90 @@ int Fuzzy::defuzzification(){
 
 void Fuzzy::set_objectives(){
 
-    if (decisao_robo[0] >= 2 && decisao_robo[1] >= 2){
-            if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
-                decisao_robo[1] = 1;
+    if (num_strategy == 1){
+        if (decisao_robo[0] >= 2 && decisao_robo[1] >= 2){
+                if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+                    decisao_robo[1] = 1;
+                }
+                else {
+                    decisao_robo[0] = 1;
+                }
             }
-            else {
-                decisao_robo[0] = 1;
+            else{
+                //tratar aqui
             }
-        }
-        else{
-            //tratar aqui
-        }
-        if (decisao_robo[0] <= 1 && decisao_robo[1] <= 1){
-            if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
-                decisao_robo[0] = 2;
+            if (decisao_robo[0] <= 1 && decisao_robo[1] <= 1){
+                if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+                    decisao_robo[0] = 2;
+                }
+                else {
+                    decisao_robo[1] = 2;
+                }
             }
-            else {
-                decisao_robo[1] = 2;
+            else{
+                //tratar aqui
             }
-        }
-        else{
-            //tratar aqui
-        }
-        decisao_robo[2] = 4;
+            decisao_robo[2] = 4;
 
 
-        if (cont_fuzzy == 0){
-            selec_robot.r1.set_flag_fuzzy(decisao_robo[0], centroid_atk, centroid_def, ball_pos);
-            selec_robot.r2.set_flag_fuzzy(decisao_robo[1], centroid_atk, centroid_def, ball_pos);
-            selec_robot.r3.set_flag_fuzzy(decisao_robo[2], centroid_atk, centroid_def, ball_pos);
-        }
+            if (cont_fuzzy == 0){
+                selec_robot.r1.set_flag_fuzzy(decisao_robo[0], centroid_atk, centroid_def, ball_pos);
+                selec_robot.r2.set_flag_fuzzy(decisao_robo[1], centroid_atk, centroid_def, ball_pos);
+                selec_robot.r3.set_flag_fuzzy(decisao_robo[2], centroid_atk, centroid_def, ball_pos);
+            }
 
-        cont_fuzzy++;
+            cont_fuzzy++;
 
-        if (cont_fuzzy == 20){
-            cont_fuzzy = 0;
+            if (cont_fuzzy == 20){
+                cont_fuzzy = 0;
+            }
+    }
+    else if(num_strategy == 2){
+        int i = 0;
+        if (euclidean_dist(selec_robot.r1.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r2.get_pos(),centroid_def) && euclidean_dist(selec_robot.r1.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r3.get_pos(),centroid_def)){
+            decisao_robo[0] = 4; // goleiro
+            if (euclidean_dist(selec_robot.r2.get_pos(),ball_pos) <= euclidean_dist(selec_robot.r3.get_pos(),ball_pos)){
+                decisao_robo[1] = 10; // o que vai na bola (killer)
+                decisao_robo[2] = 11; // o que guarda a posição (guardian)
+            }
+            else{
+                decisao_robo[1] = 11;
+                decisao_robo[2] = 10;
+            }
         }
+        else if (euclidean_dist(selec_robot.r2.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r3.get_pos(),centroid_def) && euclidean_dist(selec_robot.r2.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r1.get_pos(),centroid_def)){
+            decisao_robo[1] = 4; //goleiro
+            if (euclidean_dist(selec_robot.r1.get_pos(),ball_pos) <= euclidean_dist(selec_robot.r3.get_pos(),ball_pos)){
+                decisao_robo[0] = 10; // o que vai na bola (killer)
+                decisao_robo[2] = 11; // o que guarda a posição (guardian)
+            }
+            else{
+                decisao_robo[0] = 11;
+                decisao_robo[2] = 10;
+            }
+        }
+        else if(euclidean_dist(selec_robot.r3.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r1.get_pos(),centroid_def) && euclidean_dist(selec_robot.r3.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r2.get_pos(),centroid_def)){
+            decisao_robo[2] = 4; // goleiro
+            if (euclidean_dist(selec_robot.r1.get_pos(),ball_pos) <= euclidean_dist(selec_robot.r2.get_pos(),ball_pos)){
+                decisao_robo[0] = 10; // o que vai na bola (killer)
+                decisao_robo[1] = 11; // o que guarda a posição (guardian)
+            }
+            else{
+                decisao_robo[0] = 11;
+                decisao_robo[1] = 10;
+            }
+        }
+        selec_robot.r1.set_flag_fuzzy(decisao_robo[0], centroid_atk, centroid_def, ball_pos);
+        selec_robot.r2.set_flag_fuzzy(decisao_robo[1], centroid_atk, centroid_def, ball_pos);
+        selec_robot.r3.set_flag_fuzzy(decisao_robo[2], centroid_atk, centroid_def, ball_pos);
+
+        selec_robot.r1.set_output_fuzzy(output_meta);
+        selec_robot.r2.set_output_fuzzy(output_meta);
+        selec_robot.r3.set_output_fuzzy(output_meta);
+    }
+    else{
+        // tratar aqui
+    }
 }
 
 bool Fuzzy::get_flag_finish(){

@@ -57,7 +57,6 @@ void Game_functions::msleep(int ms){
 }
 
 void Game_functions::run(){
-     //cout << ball_pos.y << endl;
 
     if(!game_functions_initialized){
         //init_game_functions();
@@ -82,7 +81,7 @@ void Game_functions::run(){
                 break;
             case 4:
                 goalkeeper(&selec_robot.r3, 2, &vels[2]);
-                break; cout << ball_pos.y << endl;
+                break;
         }
         /*selec_robot.r3.set_lin_vel(vels[2]);
         selec_robot.flags[2] = true;*/
@@ -142,10 +141,14 @@ void Game_functions::run(){
         /*selec_robot.r2.set_lin_vel(vels[1]);
         selec_robot.flags[1] = true;*/
     }
+    // AQUI TEM A SAÍDA DO FUZZY JA COMPATÍVEL PARA O JOGO INDEPENDENTE DO LADO DE ATAQUE
+    // TODOS OS ROBOS TEM A MESMA META FUZZY MAS TÊM FLAGS DIFERENTES
+    //cout << "x " << selec_robot.r3.get_output_fuzzy().x << endl;
+    //cout << "y " << selec_robot.r3.get_output_fuzzy().y << endl;
 
     flag_finish_functions = true;
 
-    //emit emitRobots(selec_robot);
+    //emit emitRobots(selec_robot);c
 }
 
 void Game_functions::set_to_select(Robot r1, Robot r2, Robot r3){
