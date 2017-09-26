@@ -146,6 +146,8 @@ void Game_functions::run(){
     //cout << "x " << selec_robot.r3.get_output_fuzzy().x << endl;
     //cout << "y " << selec_robot.r3.get_output_fuzzy().y << endl;
 
+    //robo_grid_position(&selec_robot.r3, &selec_robot.r1, &selec_robot.r2);
+
     flag_finish_functions = true;
 
     //emit emitRobots(selec_robot);c
@@ -505,7 +507,27 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
                 }
             }
             else{
-                meta.x = centroid_def.x - 75;
+                meta.x = centroid_def.x - 75;elector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
+
+protected:
+    void msleep(int ms);
+    void run(); //rotina que a thread executa
+signals:
+    void emitRobots(Selector);
+public:
+    Game_functions();
+    void init_game_functions();
+    void goalkeeper(Robot *, int, pair<float, float>*);
+    void defender(Robot *, int, pair<float, float>*);
+    void defensive_midfielder(Robot *, int, pair<float, float>*);
+    void ofensive_midfielder(Robot *, int, pair<float, float>*);
+    void striker(Robot *, int, pair<float, float>*);
+    void return2goal();
+    double ajusta_angulo(double);
+    bool get_flag_finish();
+    void zera_flag_finish();
+    void set_def_area(pVector def_area);
+    void set_ball_vel(pair<double, do
                 meta.y  = centroid_def.y;
                 meta_grid = convert_C_to_G(meta);
                 if(meta_grid.x > 0 && meta_grid.y > 0){
@@ -722,45 +744,20 @@ void Game_functions::zera_flag_finish(){
 }
 
 Point Game_functions::convert_C_to_G(Point2d coord){
-    /*Point i;
-
-    coord.x = int(coord.x) + 5;
-    coord.y = int(coord.y) + 5;
-
-    if(coord.x / 5 != 35){
-        i.x = coord.x / 5;
-    }
-    else if(coord.x / 5 < 3){
-        i.x = 3;
-    }
-    else{
-        i.x = 35;
-    }
-
-    if(coord.y / 5 != 27){
-        i.y = coord.y / 5;
-    }
-    else if(coord.y / 5 < 1){
-        i.y = 1;
-    }
-    else{
-        i.y = 27;
-    }
-    return i;*/
 
     Point i;
 
     coord.x = int(coord.x) + 5;
     coord.y = int(coord.y) + 5;
 
-    if((coord.x / dx < 35) && (coord.x / dx > 0)){
+    if((coord.x / dx < 33) && (coord.x / dx > 2)){
         i.x = coord.x / dx;
     }
-    else if(coord.x / dx >=35){
-        i.x = 34;
+    else if(coord.x / dx >=33){
+        i.x = 32;
     }
-    else if(coord.x / dx <=0){
-        i.x = 1;
+    else if(coord.x / dx <=2){
+        i.x = 3;
     }
 
     if((coord.y / dy < 27) && (coord.y / dy > 0)){
@@ -772,7 +769,8 @@ Point Game_functions::convert_C_to_G(Point2d coord){
     else if(coord.y / dy <= 0){
         i.y = 1;
     }
-    //cout << "i.x = " << i.x << " i.y = " << i.y << endl;
+
+
     return i;
 }
 
@@ -825,3 +823,45 @@ Point2d Game_functions::get_meta(){
 }
 
 
+
+void Game_functions::robo_grid_position(Robot *robo_leona, Robot *robo_gandalf, Robot *robo_presto){
+
+//if(!grid_initialized){
+        init_grid();
+    //}
+    Point meta_grid;
+    Point2d eixo_x(1.0,0.0);
+    for(i = 0; i < 3; ++i){
+        if(team_pos[i].x > 0 && team_pos[i].y > 0)
+        {
+            if(team_pos[i] == robo_leona->get_pos())//Verifica o robo usado
+            {
+                team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+                cout << "robo_leona_grid.x = " << team_pos_grid[i].x << " robo_leona_grid.y = " << team_pos_grid[i].y << endl;
+            }
+
+            if(team_pos[i] == robo_gandalf->get_pos())//Verifica o robo usado
+            {
+                team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+                cout << "robo_gandalf_grid.x = " << team_pos_grid[i].x << " robo_gandalf_grid.y = " << team_pos_grid[i].y << endl;
+            }
+
+            if(team_pos[i] == robo_presto->get_pos())//Verifica o robo usado
+            {
+                team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+                cout << "robo_presto_grid.x = " << team_pos_grid[i].x << " robo_presto_grid.y = " << team_pos_grid[i].y << endl;
+            }
+
+        }
+        else{
+            //tratar posição dos miguxos aqui
+        }
+    }
+    if (ball_pos.x > 0 && ball_pos.y > 0 ){
+        ball_pos_grid = convert_C_to_G(ball_pos);
+        cout << "ball_pos_grid.x = " << ball_pos_grid.x << " ball_pos_grid = " << ball_pos_grid.y << endl;
+    }
+
+    cout << "..." << endl;
+
+}

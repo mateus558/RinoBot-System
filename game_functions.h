@@ -69,6 +69,9 @@ public:
     Point2d get_meta_goalkeeper();
     Point2d get_meta();
     Point convert_C_to_G(Point2d);
+
+    void robo_grid_position(Robot *, Robot *, Robot *);
+
     ~Game_functions();
 };
 
