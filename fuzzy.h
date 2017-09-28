@@ -45,7 +45,7 @@ private:
     vector<double> mi_output; //vetor de saida para calculo da decisao do fuzzy
     vector<int> decisao_robo;
 
-    int num_strategy = 2;
+    int num_strategy = 1;
     double output; //saida do fuzzy antigo
     double output1; //saida do fuzzy novo
     double output2; //saida do fuzzy novo

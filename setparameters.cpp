@@ -291,7 +291,7 @@ void SetParameters::set_points(string fname, string area, int n_points)
 
         n = defensePoints.size();
         for(Point p : defensePoints){
-            circle(frame, p, 2, Scalar(0, 0, 255), 5);
+            circle(frame, p, 1, Scalar(0, 0, 255), 2);
         }
 
         imshow(wname, frame);

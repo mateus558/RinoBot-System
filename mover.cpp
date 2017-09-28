@@ -12,6 +12,7 @@ double w_max = 7;
 double v_max_gol = 0.4;
 double w_max_gol = 5;
 double k = (w_max/v_max);
+double kgol = (w_max_gol/v_max_gol);
 double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275)
 
 Serial Mover::serial;
@@ -159,11 +160,11 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
     alpha = 90 - robo->get_angle();
     alpha = ajusta_angulo(alpha);
     if (fabs(alpha) <= limiar_theta){
-        w = k*v_max*alpha/180;
+        w = kgol*v_max*alpha/180;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = k*v_max*alpha/180;
+        w = kgol*v_max*alpha/180;
     }
     if (ball_pos.x <= centroid_atk.x){
         double tempo;
@@ -211,12 +212,12 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
                 alpha = theta - robo->get_angle();
                 alpha = ajusta_angulo(alpha);
                 if (fabs(alpha) <= limiar_theta){
-                    w = k*v_max_gol*alpha/180;
+                    w = kgol*v_max_gol*alpha/180;
                     v = -v_max_gol*fabs(alpha)/limiar_theta + v_max_gol;
                 }
                 else{
                     alpha = ajusta_angulo(alpha+180);
-                    w = k*v_max_gol*alpha/180;
+                    w = kgol*v_max_gol*alpha/180;
                     v = v_max_gol*fabs(alpha)/limiar_theta - v_max_gol;
                 }
                 if (fabs(alpha) > 65 && fabs(alpha) < 115){
@@ -281,12 +282,12 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
                 alpha = theta - robo->get_angle();
                 alpha = ajusta_angulo(alpha);
                 if (fabs(alpha) <= limiar_theta){
-                    w = k*v_max_gol*alpha/180;
+                    w = kgol*v_max_gol*alpha/180;
                     v = -v_max_gol*fabs(alpha)/limiar_theta + v_max_gol;
                 }
                 else{
                     alpha = ajusta_angulo(alpha+180);
-                    w = k*v_max_gol*alpha/180;
+                    w = kgol*v_max_gol*alpha/180;
                     v = v_max_gol*fabs(alpha)/limiar_theta - v_max_gol;
                 }
                 if (fabs(alpha) > 65 && fabs(alpha) < 115){
@@ -474,9 +475,78 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
 void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
     // Calcula velocidades
     Point robot_grid = convert_C_to_G(robo->get_pos());
+    Point2d eixo_x(1.0,0.0);
+    Point2d robo_pos = robo->get_pos();
 
     double v,w,theta,alpha;
     pair<float, float> vel;
+
+
+    //Cálculo das variáveis utilizadas para aumentar a velocidade do robô
+
+    //Corrige Posicionamento
+    ball_pos.y = -ball_pos.y;
+    robo_pos.y = -robo_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+
+
+    //Calcula angulo entre robo e bola
+    Point2d vec_ball_robot = ball_pos-robo_pos;
+    double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
+    //cout << ball_pos.x << endl;
+    //Corrige o angulo
+    if (vec_ball_robot.y < 0)
+        ang_vec_ball_eixox = -ang_vec_ball_eixox;
+
+    double ang_ball_robot = ang_vec_ball_eixox - robo->get_angle();
+
+
+    //Calcula angulo entre robo e gol adversario
+    Point2d vec_atk_robot = centroid_atk-robo_pos;
+    double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
+
+    //Corrige o angulo
+    if (vec_atk_robot.y < 0)
+        ang_vec_atk_eixox = -ang_vec_atk_eixox;
+
+    double ang_atk_robot = ang_vec_atk_eixox - robo->get_angle();
+
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot - 360;
+    else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
+    if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
+    else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
+
+
+    //ajusta angulos para valores entre -90 e 90
+    if (ang_ball_robot >= 90)
+        ang_ball_robot = ang_ball_robot-180;
+    else if (ang_ball_robot <= -90)
+        ang_ball_robot = 180+ang_ball_robot;
+
+    if (ang_atk_robot >= 90)
+        ang_atk_robot = ang_atk_robot-180;
+    else if (ang_atk_robot <= -90)
+        ang_atk_robot = 180+ang_atk_robot;
+
+
+    //Recorrige o Posicionamento
+    ball_pos.y = -ball_pos.y;
+    robo_pos.y = -robo_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+
+
+
+    //Aumenta a velocidade do robô em situações claras de gol
+    if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 20 && fabs(ang_atk_robot) < 20){
+        v_max = 1;
+        k = (w_max/v_max);
+    }
+    else{
+        v_max = 0.6;
+        k = (w_max/v_max);
+    }
+
 
     theta = pot_fields->get_direction(robot_grid);
     alpha = theta - robo->get_angle();
