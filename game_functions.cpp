@@ -118,7 +118,7 @@ void Game_functions::run(){
     if(calc_Presto)
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
-        cout << "Presto: " << r2_flag << endl;
+        //cout << "Presto: " << r2_flag << endl;
         switch (r2_flag){
             case 0:
                 defender(&selec_robot.r2, 1, &vels[1]);
@@ -146,7 +146,7 @@ void Game_functions::run(){
     //cout << "x " << selec_robot.r3.get_output_fuzzy().x << endl;
     //cout << "y " << selec_robot.r3.get_output_fuzzy().y << endl;
 
-    robo_grid_position(&selec_robot.r3, &selec_robot.r1, &selec_robot.r2); //printar posições e grid
+    //robo_grid_position(&selec_robot.r3, &selec_robot.r1, &selec_robot.r2); //printar posições e grid
 
     flag_finish_functions = true;
 
@@ -457,6 +457,7 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
 void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, float> *vels){
     Point2d eixo_x(1.0,0.0);
     Point meta_grid;
+    Point2d robo_pos = robo->get_pos();
     //if(!grid_initialized){
         init_grid();
     //}
@@ -554,7 +555,26 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
             }
 
             // Calculo do angulo de orientacao usar no ataque leve para dribles
-            //Corrige Posicionamento
+            /*aqui//Corrige Posicionamento
+            ball_pos.y = -ball_pos.y;
+            centroid_atk.y = -centroid_atk.y;
+
+            //Calcula angulo entre a bola e o gol de ataque
+            Point2d vec_ball_atk = centroid_atk-ball_pos;
+            double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
+            if (vec_ball_atk.y < 0)
+                    ang_ball_atk = -ang_ball_atk;
+            //ajusta angulos para menores que 180 e maiores que -180
+            if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
+            else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
+            //cout << "Angulo bola atk: " << ang_ball_atk << endl;
+            set_orientation(ang_ball_atk);
+            //orientation = 45;
+            //Corrige Posicionamento novamente
+            ball_pos.y = -ball_pos.y;
+            centroid_atk.y=-centroid_atk.y; */
+
+                //Corrige Posicionamento
             ball_pos.y = -ball_pos.y;
             centroid_atk.y = -centroid_atk.y;
 
@@ -572,11 +592,94 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
             //Corrige Posicionamento novamente
             ball_pos.y = -ball_pos.y;
             centroid_atk.y=-centroid_atk.y;
-        }
 
+
+            //Cálculo das variáveis utilizadas para setar a meta dentro do gol
+
+            //Corrige Posicionamento
+            ball_pos.y = -ball_pos.y;
+            robo_pos.y = -robo_pos.y;
+            centroid_atk.y=-centroid_atk.y;
+
+
+            //Calcula angulo entre robo e bola
+            Point2d vec_ball_robot = ball_pos-robo_pos;
+            double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
+            //cout << ball_pos.x << endl;
+            //Corrige o angulo
+            if (vec_ball_robot.y < 0)
+                    ang_vec_ball_eixox = -ang_vec_ball_eixox;
+
+            double ang_ball_robot = ang_vec_ball_eixox - robo->get_angle();
+
+
+            //Calcula angulo entre robo e gol adversario
+            Point2d vec_atk_robot = centroid_atk-robo_pos;
+            double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
+
+            //Corrige o angulo
+            if (vec_atk_robot.y < 0)
+                    ang_vec_atk_eixox = -ang_vec_atk_eixox;
+
+            double ang_atk_robot = ang_vec_atk_eixox - robo->get_angle();
+
+            //ajusta angulos para menores que 180 e maiores que -180
+            if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot - 360;
+            else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
+            if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
+            else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
+
+
+            //ajusta angulos para valores entre -90 e 90
+            if (ang_ball_robot >= 90)
+                ang_ball_robot = ang_ball_robot-180;
+            else if (ang_ball_robot <= -90)
+                ang_ball_robot = 180+ang_ball_robot;
+
+            if (ang_atk_robot >= 90)
+                ang_atk_robot = ang_atk_robot-180;
+            else if (ang_atk_robot <= -90)
+                ang_atk_robot = 180+ang_atk_robot;
+
+
+            //Recorrige o Posicionamento
+            ball_pos.y = -ball_pos.y;
+            robo_pos.y = -robo_pos.y;
+            centroid_atk.y=-centroid_atk.y;
+
+
+            // temos que mudar urgente
+            if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 40 && fabs(ang_atk_robot) < 40){
+                if (centroid_atk.x > 0 && centroid_atk.y > 0){
+                    meta_grid = convert_C_to_G(centroid_atk);
+                    set_epsilon(0);
+                    //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                    if (meta_grid.x > 0 && meta_grid.y > 0)
+                        set_potential(meta_grid.y, meta_grid.x, 0);
+                        set_potential(meta_grid.y+1, meta_grid.x, 0);
+                        set_potential(meta_grid.y+2, meta_grid.x, 0);
+                        set_potential(meta_grid.y-1, meta_grid.x, 0);
+                        set_potential(meta_grid.y-2, meta_grid.x, 0);
+
+                }else{
+                    //tratar o gol aqui
+                }
+
+            }else{
+                ball_pos_grid = convert_C_to_G(ball_pos);
+                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+                if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
+                    set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+            }
+        }
     }else{
         //tratar a bola aqui
     }
+
+
+
+
+
 
     /*if (drible)
     {
@@ -608,6 +711,9 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
     }*/
 
    // cout<<"Orientação: "<<orientation<<endl;
+
+
+
 
     while(iterator_cpo()>1E-6);
     set_direction();
@@ -741,13 +847,17 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
 
 
         // temos que mudar urgente
-        if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 20 && fabs(ang_atk_robot) < 20){
+        if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 40 && fabs(ang_atk_robot) < 40){
             if (centroid_atk.x > 0 && centroid_atk.y > 0){
                 meta_grid = convert_C_to_G(centroid_atk);
                 set_epsilon(0);
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
                 if (meta_grid.x > 0 && meta_grid.y > 0)
                     set_potential(meta_grid.y, meta_grid.x, 0);
+                    set_potential(meta_grid.y+1, meta_grid.x, 0);
+                    set_potential(meta_grid.y+2, meta_grid.x, 0);
+                    set_potential(meta_grid.y-1, meta_grid.x, 0);
+                    set_potential(meta_grid.y-2, meta_grid.x, 0);
 
             }else{
                 //tratar o gol aqui
@@ -880,20 +990,20 @@ void Game_functions::robo_grid_position(Robot *robo_leona, Robot *robo_gandalf, 
             if(team_pos[i] == robo_leona->get_pos())//Verifica o robo usado
             {
                 team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-                cout << "robo_leona_grid.x = " << team_pos_grid[i].x << " robo_leona_grid.y = " << team_pos_grid[i].y << endl;
+                //cout << "robo_leona_grid.x = " << team_pos_grid[i].x << " robo_leona_grid.y = " << team_pos_grid[i].y << endl;
             }
 
             if(team_pos[i] == robo_gandalf->get_pos())//Verifica o robo usado
             {
                 team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-                cout << "robo_gandalf_grid.x = " << team_pos_grid[i].x << " robo_gandalf_grid.y = " << team_pos_grid[i].y << endl;
+                //cout << "robo_gandalf_grid.x = " << team_pos_grid[i].x << " robo_gandalf_grid.y = " << team_pos_grid[i].y << endl;
             }
 
             if(team_pos[i] == robo_presto->get_pos())//Verifica o robo usado
             {
                 team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-                cout << "robo_presto_grid.x = " << team_pos_grid[i].x << " robo_presto_grid.y = " << team_pos_grid[i].y << endl;
-                cout << "Angulo_presto " << robo_presto->get_angle() << endl;
+                //cout << "robo_presto_grid.x = " << team_pos_grid[i].x << " robo_presto_grid.y = " << team_pos_grid[i].y << endl;
+                //cout << "Angulo_presto " << robo_presto->get_angle() << endl;
             }
 
         }
@@ -903,7 +1013,7 @@ void Game_functions::robo_grid_position(Robot *robo_leona, Robot *robo_gandalf, 
     }
     if (ball_pos.x > 0 && ball_pos.y > 0 ){
         ball_pos_grid = convert_C_to_G(ball_pos);
-        cout << "ball_pos_grid.x = " << ball_pos_grid.x << " ball_pos_grid = " << ball_pos_grid.y << endl;
+        //cout << "ball_pos_grid.x = " << ball_pos_grid.x << " ball_pos_grid = " << ball_pos_grid.y << endl;
     }
 
 
@@ -958,11 +1068,11 @@ void Game_functions::robo_grid_position(Robot *robo_leona, Robot *robo_gandalf, 
         robo_presto_pos.y = -robo_presto_pos.y;
         centroid_atk.y=-centroid_atk.y;
 
-        cout << "Angulo_presto_bola: " << ang_ball_robot << endl;
-        cout << "Angulo_presto_gol: " << ang_atk_robot << endl;
+        //cout << "Angulo_presto_bola: " << ang_ball_robot << endl;
+        //cout << "Angulo_presto_gol: " << ang_atk_robot << endl;
 
 
 
-    cout << "..." << endl;
+    //cout << "..." << endl;
 
 }
