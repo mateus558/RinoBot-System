@@ -150,7 +150,9 @@ void Game_functions::run(){
 
     flag_finish_functions = true;
 
-    //emit emitRobots(selec_robot);c
+    Point2d a = prevision_atk(&selec_robot.r2);
+
+    //emit emitRobots(selec_robot);
 }
 
 void Game_functions::set_to_select(Robot r1, Robot r2, Robot r3){
@@ -222,6 +224,22 @@ void Game_functions::return2goal(){
                 set_direction();
                 set_grid_orientation(meta_grid);
     }
+}
+
+Point2d Game_functions::prevision_atk(Robot *robo){
+    Point2d next_ball_pos;
+    Point2d ball_v;
+
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = ball_vel.second / 100;
+
+    double dist = euclidean_dist(robo->get_pos(),ball_pos);
+    double time = dist/30;
+    next_ball_pos = ball_pos + ball_v*time;
+    //cout << "atual " << "x " << ball_pos.x << "   y " << ball_pos.y << endl;
+    //cout << "proxima " << "x " << next_ball_pos.x << "   y " << next_ball_pos.y << endl;
+    return next_ball_pos;
+
 }
 
 void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *vels){
@@ -523,15 +541,17 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
             set_epsilon(0.3 + euclidean_dist(robo->get_pos(),ball_pos)/200);
            // cout << " epsilon: " << e << endl;
 
+
+            meta = prevision_atk(robo);
+            meta_grid = convert_C_to_G(meta);
             ball_pos_grid = convert_C_to_G(ball_pos);
              //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;robo->get_angle();
-            if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0){
-                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+            if (meta_grid.x > 0 && meta_grid.y > 0){
+                set_potential(meta_grid.y, meta_grid.x, 0);
                 if(ball_pos.x < centroid_atk.x){
-                    if(ball_pos.x > 0 && ball_pos.y > 0){
-                        ball_pos_grid = convert_C_to_G(ball_pos);
+                    if(meta_grid.x > 0 && meta_grid.y > 0){
                         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                        if(robo->get_pos().x > ball_pos.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28){
+                        if(robo->get_pos().x > ball_pos_grid.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28){
                             set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
                             set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
                             set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
@@ -540,13 +560,13 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
                         //tratar a barreira aqui
                     }
                 }else{
-                    if(ball_pos.x > 0 && ball_pos.y > 0){
-                        ball_pos_grid = convert_C_to_G(ball_pos);
+                    if(meta_grid.x > 0 && meta_grid.y > 0){
                         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                        if(robo->get_pos().x < ball_pos.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28){
+                        if(robo->get_pos().x < ball_pos_grid.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28){
                             set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
                             set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
                             set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
+
                         }
                     }else{
                         //tratar a barreira aqui
@@ -656,21 +676,21 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
                     //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
                     if (meta_grid.x > 0 && meta_grid.y > 0)
                         set_potential(meta_grid.y, meta_grid.x, 0);
-                        set_potential(meta_grid.y+1, meta_grid.x, 0);
+                        /*set_potential(meta_grid.y+1, meta_grid.x, 0);
                         set_potential(meta_grid.y+2, meta_grid.x, 0);
                         set_potential(meta_grid.y-1, meta_grid.x, 0);
-                        set_potential(meta_grid.y-2, meta_grid.x, 0);
+                        set_potential(meta_grid.y-2, meta_grid.x, 0);*/
 
                 }else{
                     //tratar o gol aqui
                 }
 
-            }else{
+            }/*else{
                 ball_pos_grid = convert_C_to_G(ball_pos);
                  //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
                 if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
                     set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
-            }
+            }*/
         }
     }else{
         //tratar a bola aqui
@@ -729,14 +749,14 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
     //}
 
         for(i = 0; i < 3; ++i){
-            if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+            /*if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
                 enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
                 //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
                 if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
                     set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
             }else{
                 //tratar posição dos inimigos aqui
-            }
+            }*/
 
             if(team_pos[i].x > 0 && team_pos[i].y > 0)//Enxerga os amigos como obstáculos
             {
@@ -854,10 +874,10 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
                 //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
                 if (meta_grid.x > 0 && meta_grid.y > 0)
                     set_potential(meta_grid.y, meta_grid.x, 0);
-                    set_potential(meta_grid.y+1, meta_grid.x, 0);
+                    /*set_potential(meta_grid.y+1, meta_grid.x, 0);
                     set_potential(meta_grid.y+2, meta_grid.x, 0);
                     set_potential(meta_grid.y-1, meta_grid.x, 0);
-                    set_potential(meta_grid.y-2, meta_grid.x, 0);
+                    set_potential(meta_grid.y-2, meta_grid.x, 0);*/
 
             }else{
                 //tratar o gol aqui
