@@ -87,8 +87,36 @@ void FieldDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 {
     int x = fieldPoints[0].x, y = (fieldPoints[0].y + fieldPoints[9].y)/2;
     int i;
-    QPen pen(Qt::white, 4);
+    Point defcenter, atkcenter;
+    QPen pen, pen1;
+    QFont font;
     QPainterPath fieldPath = shape(), atkPath, defPath;
+
+    if(!showFields){
+       pen = pen1 = QPen(Qt::white, 4);
+    }else{
+       font.setPixelSize(20);
+       font.setBold(false);
+       font.setFamily("Calibri");
+       pen = QPen(Qt::green, 4);
+       pen1 = QPen(Qt::red, 4);
+
+       for(i = 0; i < defPoints.size(); i++){
+            defcenter += defPoints[i];
+       }
+
+       for(i = 0; i < atkPoints.size(); i++){
+            atkcenter += atkPoints[i];
+       }
+       defcenter.x /= defPoints.size();
+       defcenter.y /= defPoints.size();
+       atkcenter.x /= atkPoints.size();
+       atkcenter.y /= atkPoints.size();
+
+       defPath.addText(defcenter.x, defcenter.y, font, "Defense");
+       atkPath.addText(atkcenter.x, atkcenter.y, font, "Attack");
+
+    }
 
     defPath.moveTo(defPoints[0].x, defPoints[0].y);
     atkPath.moveTo(atkPoints[0].x, atkPoints[0].y);
@@ -101,14 +129,16 @@ void FieldDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     defPath.closeSubpath();
     atkPath.closeSubpath();
 
-    painter->setPen(pen);
+    painter->setPen(QPen(Qt::white, 4));
     painter->drawPath(fieldPath);
-    painter->drawPath(defPath);
-    painter->drawPath(atkPath);
     painter->drawLine(fieldPoints[0].x, fieldPoints[0].y, fieldPoints[9].x, fieldPoints[9].y);
-    painter->drawLine(defPoints[2].x, defPoints[2].y, defPoints[5].x, defPoints[5].y);
-    painter->drawLine(atkPoints[2].x, atkPoints[2].y, atkPoints[5].x, atkPoints[5].y);
     painter->drawEllipse(x-50, y-50, 100, 100);
+    painter->setPen(pen);
+    painter->drawPath(defPath);
+    painter->drawLine(defPoints[2].x, defPoints[2].y, defPoints[5].x, defPoints[5].y);
+    painter->setPen(pen1);
+    painter->drawPath(atkPath);
+    painter->drawLine(atkPoints[2].x, atkPoints[2].y, atkPoints[5].x, atkPoints[5].y);
 }
 
 QPainterPath FieldDraw::shape()
