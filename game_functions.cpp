@@ -118,7 +118,7 @@ void Game_functions::run(){
     if(calc_Presto)
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
-        //cout << "Presto: " << r2_flag << endl;
+        cout << "Presto: " << r2_flag << endl;
         switch (r2_flag){
             case 0:
                 defender(&selec_robot.r2, 1, &vels[1]);
@@ -476,6 +476,7 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
     Point2d eixo_x(1.0,0.0);
     Point meta_grid;
     Point2d robo_pos = robo->get_pos();
+    Point robo_pos_grid;
     //if(!grid_initialized){
         init_grid();
     //}
@@ -541,20 +542,28 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
             set_epsilon(0.3 + euclidean_dist(robo->get_pos(),ball_pos)/200);
            // cout << " epsilon: " << e << endl;
 
-
             meta = prevision_atk(robo);
             meta_grid = convert_C_to_G(meta);
             ball_pos_grid = convert_C_to_G(ball_pos);
+            robo_pos_grid = convert_C_to_G(robo_pos_grid);
+
              //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;robo->get_angle();
             if (meta_grid.x > 0 && meta_grid.y > 0){
                 set_potential(meta_grid.y, meta_grid.x, 0);
                 if(ball_pos.x < centroid_atk.x){
                     if(meta_grid.x > 0 && meta_grid.y > 0){
                         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                        if(robo->get_pos().x > ball_pos_grid.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28){
+                        if(robo_pos_grid.x > meta_grid.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28){
+                            /*set_potential(ball_pos_grid.y, ball_pos_grid.x+2, 1);
+                            set_potential(ball_pos_grid.y+1, ball_pos_grid.x+2, 1);
+                            set_potential(ball_pos_grid.y-1, ball_pos_grid.x+2, 1);*/
+                            set_potential(ball_pos_grid.y, ball_pos_grid.x+2, 1);
+                            set_potential(ball_pos_grid.y+1, ball_pos_grid.x+2, 1);
+                            set_potential(ball_pos_grid.y-1, ball_pos_grid.x+2, 1);
                             set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
                             set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
                             set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
+
                         }
                     }else{
                         //tratar a barreira aqui
@@ -562,10 +571,17 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
                 }else{
                     if(meta_grid.x > 0 && meta_grid.y > 0){
                         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                        if(robo->get_pos().x < ball_pos_grid.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28){
+                        if(robo_pos_grid.x < meta_grid.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28){
+                            /*set_potential(ball_pos_grid.y, ball_pos_grid.x-2, 1);
+                            set_potential(ball_pos_grid.y+1, ball_pos_grid.x-2, 1);
+                            set_potential(ball_pos_grid.y-1, ball_pos_grid.x-2, 1);*/
+                            set_potential(ball_pos_grid.y, ball_pos_grid.x-2, 1);
+                            set_potential(ball_pos_grid.y+1, ball_pos_grid.x-2, 1);
+                            set_potential(ball_pos_grid.y-1, ball_pos_grid.x-2, 1);
                             set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
                             set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
                             set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
+
 
                         }
                     }else{
@@ -790,7 +806,6 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
 
         set_epsilon(0.3 + euclidean_dist(robo->get_pos(),ball_pos)/250);
        // cout << " epsilon: " << e << endl;
-
         // Calculo do angulo de orientacao usar no ataque leve para dribles
         //Corrige Posicionamento
         ball_pos.y = -ball_pos.y;
@@ -884,10 +899,12 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
             }
 
         }else{
-            ball_pos_grid = convert_C_to_G(ball_pos);
+            meta = prevision_atk(robo);
+            meta_grid = convert_C_to_G(meta);
+            //ball_pos_grid = convert_C_to_G(ball_pos);
              //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-            if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0)
-                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+            if (meta_grid.x > 0 && meta_grid.y > 0)
+                set_potential(meta_grid.y, meta_grid.x, 0);
         }
     }else{
         //tratar a bola aqui

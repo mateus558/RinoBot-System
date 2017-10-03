@@ -222,7 +222,7 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
                 vels->first = v - w*l;
                 vels->second = v + w*l;
 
-                cout << "FollowBall" << endl;
+                //cout << "FollowBall" << endl;
             }
             else {
                 //Return2Goal
@@ -500,7 +500,6 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
     robo_pos.y = -robo_pos.y;
     centroid_atk.y=-centroid_atk.y;
 
-
     //Calcula angulo entre robo e bola
     Point2d vec_ball_robot = ball_pos-robo_pos;
     double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
@@ -527,7 +526,6 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
     else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
     if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
     else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
-
 
     //ajusta angulos para valores entre -90 e 90
     if (ang_ball_robot >= 90)
@@ -582,6 +580,31 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
     vels->second = v + w*l;
 
     //cout << "x " << centroid_atk.x << endl;
+
+
+    Point2d vec_ball_prediction = prevision_atk(robo) - robo_pos;
+    double ang_vec_prediction = angle_two_points(vec_ball_prediction,eixo_x);
+    if (vec_ball_prediction.y < 0)
+        ang_vec_prediction = -ang_vec_prediction;
+
+    double prediction_robot = ang_vec_prediction - robo->get_angle();
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (prediction_robot>180) prediction_robot = prediction_robot - 360;
+    else if (prediction_robot<-180) prediction_robot = prediction_robot + 360;
+
+    //ajusta angulos para valores entre -90 e 90
+    if (prediction_robot >= 90)
+        prediction_robot = prediction_robot-180;
+    else if (prediction_robot <= -90)
+        prediction_robot = 180+prediction_robot;
+
+    if(euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(prediction_robot) >= 50){
+        alpha = ang_vec_prediction - robo->get_angle();
+        alpha = ajusta_angulo(alpha);
+        w = k*v_max*alpha/180;
+        vels->first = -w*l;
+        vels->second = w*l;
+    }
 
     if (centroid_atk.x > ball_pos.x){
         if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 7.5)){
@@ -652,7 +675,6 @@ void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float
     if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
     else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
 
-
     //ajusta angulos para valores entre -90 e 90
     if (ang_ball_robot >= 90)
         ang_ball_robot = ang_ball_robot-180;
@@ -706,6 +728,32 @@ void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float
     vels->first = v-w*l;
     vels->second = v+w*l;
 
+
+    Point2d vec_ball_prediction = prevision_atk(robo) - robo_pos;
+    double ang_vec_prediction = angle_two_points(vec_ball_prediction,eixo_x);
+    if (vec_ball_prediction.y < 0)
+        ang_vec_prediction = -ang_vec_prediction;
+
+    double prediction_robot = ang_vec_prediction - robo->get_angle();
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (prediction_robot>180) prediction_robot = prediction_robot - 360;
+    else if (prediction_robot<-180) prediction_robot = prediction_robot + 360;
+
+    //ajusta angulos para valores entre -90 e 90
+    if (prediction_robot >= 90)
+        prediction_robot = prediction_robot-180;
+    else if (prediction_robot <= -90)
+        prediction_robot = 180+prediction_robot;
+
+    if(euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(prediction_robot) >= 50){
+        alpha = ang_vec_prediction - robo->get_angle();
+        alpha = ajusta_angulo(alpha);
+        w = k*v_max*alpha/180;
+        vels->first = -w*l;
+        vels->second = w*l;
+        cout << 123462 << endl;
+    }
+
     if (centroid_atk.x > ball_pos.x){
         if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 7.5)){
             //cout << "3" << endl;
@@ -743,6 +791,22 @@ void Mover::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
     }
     vels->first = -w*l;
     vels->second = w*l;
+}
+
+Point2d Mover::prevision_atk(Robot *robo){
+    Point2d next_ball_pos;
+    Point2d ball_v;
+
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = ball_vel.second / 100;
+
+    double dist = euclidean_dist(robo->get_pos(),ball_pos);
+    double time = dist/20;
+    next_ball_pos = ball_pos + ball_v*time;
+    //cout << "atual " << "x " << ball_pos.x << "   y " << ball_pos.y << endl;
+    //cout << "proxima " << "x " << next_ball_pos.x << "   y " << next_ball_pos.y << endl;
+    return next_ball_pos;
+
 }
 
 

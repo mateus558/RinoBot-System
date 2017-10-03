@@ -58,6 +58,7 @@ public:
     void velocity_ofensive_midfielder(Robot *, Game_functions  *, pair<float, float>*);
     void velocity_striker(Robot *, Game_functions  *, pair<float, float>*);
     void goalkeeper_orientation(Robot *, pair<float, float>*);
+    Point2d prevision_atk(Robot *);
     double ajusta_angulo(double);
     void Play();
     bool is_running();
