@@ -58,6 +58,7 @@ public:
     std::vector<cv::Point> fieldPoints;
     std::vector<cv::Point> atkPoints;
     std::vector<cv::Point> defPoints;
+    bool showFields = false;
 
     FieldDraw(QGraphicsItem* parent = NULL);
 

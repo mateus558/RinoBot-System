@@ -485,6 +485,11 @@ void Mover::velocity_defensive_midfielder(Robot *robo, Game_functions *pot_field
 }
 
 void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
+    Point2d ball_v;
+
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = -ball_vel.second / 100;
+
     // Calcula velocidades
     Point robot_grid = convert_C_to_G(robo->get_pos());
     Point2d eixo_x(1.0,0.0);
@@ -582,6 +587,7 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
     //cout << "x " << centroid_atk.x << endl;
 
 
+    // Ajusta ângulo nas situações em que o robô está a 90º para a bola e bem próximo dela
     Point2d vec_ball_prediction = prevision_atk(robo) - robo_pos;
     double ang_vec_prediction = angle_two_points(vec_ball_prediction,eixo_x);
     if (vec_ball_prediction.y < 0)
@@ -598,7 +604,11 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
     else if (prediction_robot <= -90)
         prediction_robot = 180+prediction_robot;
 
-    if(euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(prediction_robot) >= 50){
+    Point2d aux;
+    aux.x = 0;
+    aux.y = 0;
+
+    if(euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1){
         alpha = ang_vec_prediction - robo->get_angle();
         alpha = ajusta_angulo(alpha);
         w = k*v_max*alpha/180;
@@ -606,6 +616,7 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
         vels->second = w*l;
     }
 
+    // Função para fazer o robô girar nos cantos
     if (centroid_atk.x > ball_pos.x){
         if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 7.5)){
             //cout << "3" << endl;
@@ -631,6 +642,11 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
 }
 
 void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
+    Point2d ball_v;
+
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = -ball_vel.second / 100;
+
     // Calcula velocidades
     Point robot_grid = convert_C_to_G(robo->get_pos());
     Point2d eixo_x(1.0,0.0);
@@ -729,6 +745,7 @@ void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float
     vels->second = v+w*l;
 
 
+    // Ajusta ângulo nas situações em que o robô está mal orientado para a bola e bem próximo dela
     Point2d vec_ball_prediction = prevision_atk(robo) - robo_pos;
     double ang_vec_prediction = angle_two_points(vec_ball_prediction,eixo_x);
     if (vec_ball_prediction.y < 0)
@@ -745,15 +762,19 @@ void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float
     else if (prediction_robot <= -90)
         prediction_robot = 180+prediction_robot;
 
-    if(euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(prediction_robot) >= 50){
+    Point2d aux;
+    aux.x = 0;
+    aux.y = 0;
+
+    if(euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1){
         alpha = ang_vec_prediction - robo->get_angle();
         alpha = ajusta_angulo(alpha);
         w = k*v_max*alpha/180;
         vels->first = -w*l;
         vels->second = w*l;
-        cout << 123462 << endl;
     }
 
+    // Função para fazer o robô girar nos cantos
     if (centroid_atk.x > ball_pos.x){
         if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < 7.5)){
             //cout << "3" << endl;

@@ -501,41 +501,65 @@ void Fuzzy::set_objectives(){
 
     if (num_strategy == 1){
         if (decisao_robo[0] >= 2 && decisao_robo[1] >= 2){
-                if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
-                    decisao_robo[1] = 1;
-                }
-                else {
-                    decisao_robo[0] = 1;
-                }
+            if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+                decisao_robo[1] = 1;
             }
-            else{
-                //tratar aqui
+            else {
+                decisao_robo[0] = 1;
             }
-            if (decisao_robo[0] <= 1 && decisao_robo[1] <= 1){
-                if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
-                    decisao_robo[0] = 2;
-                }
-                else {
-                    decisao_robo[1] = 2;
-                }
+        }
+        else{
+            //tratar aqui
+        }
+        if (decisao_robo[0] <= 1 && decisao_robo[1] <= 1){
+            if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+                decisao_robo[0] = 2;
             }
-            else{
-                //tratar aqui
+            else {
+                decisao_robo[1] = 2;
             }
-            decisao_robo[2] = 4;
+        }
+        else{
+            //tratar aqui
+        }
+        decisao_robo[2] = 4;
+
+        /*if (decisao_robo[0] >= 2 && decisao_robo[1] >= 2){
+            if(euclidean_dist(selec_robot.r1.get_pos(), ball_pos) > euclidean_dist(selec_robot.r2.get_pos(), ball_pos)){
+                decisao_robo[0] = 1;
+            }
+            else {
+                decisao_robo[1] = 1;
+            }
+        }
+        else{
+            //tratar aqui
+        }
+        if (decisao_robo[0] <= 1 && decisao_robo[1] <= 1){
+            if(euclidean_dist(selec_robot.r1.get_pos(), ball_pos) > euclidean_dist(selec_robot.r2.get_pos(), ball_pos)){
+                decisao_robo[0] = 2;
+            }
+            else {
+                decisao_robo[1] = 2;
+            }
+        }
+        else{
+            //tratar aqui
+        }
+        decisao_robo[2] = 4;*/
 
 
-            if (cont_fuzzy == 0){
-                selec_robot.r1.set_flag_fuzzy(decisao_robo[0], centroid_atk, centroid_def, ball_pos);
-                selec_robot.r2.set_flag_fuzzy(decisao_robo[1], centroid_atk, centroid_def, ball_pos);
-                selec_robot.r3.set_flag_fuzzy(decisao_robo[2], centroid_atk, centroid_def, ball_pos);
-            }
+        if (cont_fuzzy == 0){
+            selec_robot.r1.set_flag_fuzzy(decisao_robo[0], centroid_atk, centroid_def, ball_pos);
+            selec_robot.r2.set_flag_fuzzy(decisao_robo[1], centroid_atk, centroid_def, ball_pos);
+            selec_robot.r3.set_flag_fuzzy(decisao_robo[2], centroid_atk, centroid_def, ball_pos);
+        }
 
-            cont_fuzzy++;
+        cont_fuzzy++;
 
-            if (cont_fuzzy == 20){
-                cont_fuzzy = 0;
-            }
+        if (cont_fuzzy == 20){
+            cont_fuzzy = 0;
+        }
     }
     else if(num_strategy == 2){
         int i = 0;
