@@ -520,6 +520,9 @@ void soccer_window::on_switch_fields_clicked()
     mover->set_centroid_def(centroid_def); //salva a area de def para o gandalf
     mover->set_def_area(def_area);
     mover->team_changed();
+
+    field->atkPoints = atk_area;
+    field->defPoints = def_area;
 }
 
 void soccer_window::on_read_parameters_clicked()
