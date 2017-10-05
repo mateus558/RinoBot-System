@@ -118,7 +118,7 @@ void Game_functions::run(){
     if(calc_Presto)
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
-        cout << "Presto: " << r2_flag << endl;
+        //cout << "Presto: " << r2_flag << endl;
         switch (r2_flag){
             case 0:
                 defender(&selec_robot.r2, 1, &vels[1]);
@@ -553,7 +553,7 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
                 if(ball_pos.x < centroid_atk.x){
                     if(meta_grid.x > 0 && meta_grid.y > 0){
                         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                        if(robo_pos_grid.x > meta_grid.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28){
+                        if(robo_pos_grid.x > meta_grid.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28 && fabs(ball_pos.x - centroid_atk.x) > 45){
                             /*set_potential(ball_pos_grid.y, ball_pos_grid.x+2, 1);
                             set_potential(ball_pos_grid.y+1, ball_pos_grid.x+2, 1);
                             set_potential(ball_pos_grid.y-1, ball_pos_grid.x+2, 1);*/
@@ -563,6 +563,7 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
                             set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
                             set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
                             set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
+                            cout << "Joao Gayzao" << endl;
 
                         }
                     }else{
@@ -571,7 +572,7 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
                 }else{
                     if(meta_grid.x > 0 && meta_grid.y > 0){
                         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-                        if(robo_pos_grid.x < meta_grid.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28){
+                        if(robo_pos_grid.x < meta_grid.x && ball_pos_grid.x > 6 && ball_pos_grid.y > 0 && ball_pos_grid.x+1 < 31 && ball_pos_grid.y+1 < 28 && fabs(ball_pos.x - centroid_atk.x) > 45){
                             /*set_potential(ball_pos_grid.y, ball_pos_grid.x-2, 1);
                             set_potential(ball_pos_grid.y+1, ball_pos_grid.x-2, 1);
                             set_potential(ball_pos_grid.y-1, ball_pos_grid.x-2, 1);*/
@@ -581,7 +582,7 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
                             set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
                             set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
                             set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
-
+                            //cout << "Joao Gayzao" << endl;
 
                         }
                     }else{

@@ -32,6 +32,7 @@ private:
     pVector def_area;
     pair<double, double> ball_vel;
     vector<pair<float, float> > vels;
+    vector<Point2d> media_ball_v;
     static Serial serial;
 
     bool stop, mover_initialized; //variavel de controle de thread

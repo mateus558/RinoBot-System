@@ -537,10 +537,10 @@ void Fuzzy::set_objectives(){
         }
         if (decisao_robo[0] <= 1 && decisao_robo[1] <= 1){
             if(euclidean_dist(selec_robot.r1.get_pos(), ball_pos) > euclidean_dist(selec_robot.r2.get_pos(), ball_pos)){
-                decisao_robo[0] = 2;
+                decisao_robo[1] = 2;
             }
             else {
-                decisao_robo[1] = 2;
+                decisao_robo[0] = 2;
             }
         }
         else{
