@@ -82,6 +82,12 @@ void Game_functions::run(){
             case 4:
                 goalkeeper(&selec_robot.r3, 2, &vels[2]);
                 break;
+            case 10:
+                killer(&selec_robot.r3, 2, &vels[2]);
+                break;
+            case 11:
+                guardian(&selec_robot.r3, 2, &vels[2]);
+                break;
         }
         /*selec_robot.r3.set_lin_vel(vels[2]);
         selec_robot.flags[2] = true;*/
@@ -107,6 +113,12 @@ void Game_functions::run(){
                 break;
             case 4:
                 goalkeeper(&selec_robot.r1, 0, &vels[0]);
+                break;
+            case 10:
+                killer(&selec_robot.r1, 0, &vels[0]);
+                break;
+            case 11:
+                guardian(&selec_robot.r1, 0, &vels[0]);
                 break;
         }
         //cout << "Gandalf metax: " << meta.x << " y: " << meta.y << endl;
@@ -135,6 +147,12 @@ void Game_functions::run(){
             case 4:
                 goalkeeper(&selec_robot.r2, 1, &vels[1]);
             break;
+            case 10:
+                killer(&selec_robot.r2, 1, &vels[1]);
+                break;
+            case 11:
+                guardian(&selec_robot.r2, 1, &vels[1]);
+                break;
         }
         //print_grid();
         //cout << "Presto metax: " << meta.x << " y: " << meta.y << endl;
@@ -769,7 +787,7 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
             /*if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
                 enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
                 //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-                if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                if(ene    my_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
                     set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
             }else{
                 //tratar posição dos inimigos aqui
@@ -911,6 +929,43 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
         //tratar a bola aqui
     }
     while(iterator_cpo()>1E-6);
+    set_direction();
+}
+
+void Game_functions::guardian(Robot *robo, int num_Robo, pair<float,float> *vels){
+
+    Point meta_grid;
+    Point2d eixo_x(1.0,0.0);
+    Point2d robo_pos = robo->get_pos();
+
+    init_grid();
+    meta = robo->get_output_fuzzy();//Saida do fuzzy
+    meta_grid = convert_C_to_G(meta);
+    if (meta_grid.x > 0 && meta_grid.y > 0){
+    set_potential(meta_grid.y, meta_grid.x, 0);
+    }
+     else{
+        //tratar a bola aqui
+    }
+    while(iterator_cph()>1E-6);
+    set_direction();
+
+}
+void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
+    Point meta_grid;
+    Point2d eixo_x(1.0,0.0);
+    Point2d robo_pos = robo->get_pos();
+
+    init_grid();
+    meta = ball_pos;//POsição da bola como meta
+    meta_grid = convert_C_to_G(meta);
+    if (meta_grid.x > 0 && meta_grid.y > 0){
+    set_potential(meta_grid.y, meta_grid.x, 0);
+    }
+     else{
+        //tratar a bola aqui
+    }
+    while(iterator_cph()>1E-6);
     set_direction();
 }
 
