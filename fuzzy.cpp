@@ -7,7 +7,7 @@
 
 using namespace std;
 
-double parameters[][3] = {{0.0, 0.0 , 0.3269},{0.1731, 0.3769, 0.5769},{0.4231, 0.625, 0.8269},{0.6431, 0.8465, 0.9}};
+double parameters[][3] = {{-0.0755, 0.1286 , 0.3286},{0.1731, 0.3769, 0.5769},{0.4231, 0.625, 0.8269},{0.6716, 0.8736, 1.073}};
 Point2d eixo_x(1.0,0.0);
 int cont_fuzzy = 0;
 
@@ -607,6 +607,12 @@ void Fuzzy::set_objectives(){
     else{
         // tratar aqui
     }
+
+
+    // teste
+    //selec_robot.r1.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //gandalf
+    //selec_robot.r2.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //presto
+    //selec_robot.r3.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //leona
 }
 
 bool Fuzzy::get_flag_finish(){
