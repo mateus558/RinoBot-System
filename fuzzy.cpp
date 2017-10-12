@@ -608,7 +608,6 @@ void Fuzzy::set_objectives(){
         // tratar aqui
     }
 
-
     // teste
     //selec_robot.r1.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //gandalf
     //selec_robot.r2.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //presto

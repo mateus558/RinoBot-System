@@ -62,6 +62,9 @@ public:
     void velocity_killer(Robot *, Game_functions  *, pair<float, float>*);
     void velocity_test(Robot *, Game_functions  *, pair<float, float>*);
     void goalkeeper_orientation(Robot *, pair<float, float>*);
+    void robot_orientation(Robot *, Game_functions  *, pair<float, float>*);
+    void atk_orientation(Robot *, pair<float, float>*);
+    void atk_situation(Robot *,Game_functions *,pair<float,float>*);
     void rotate(Robot *, pair<float, float>*);
     Point2d prevision_atk(Robot *);
     double ajusta_angulo(double);

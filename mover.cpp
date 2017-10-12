@@ -17,7 +17,7 @@ double kgol = (w_max_gol/v_max_gol);
 double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 double dist_giro = 7;
 double vel_giro_lado = 1.0;
-double vel_giro_atk = 0.6;
+double vel_giro_atk = 0.8;
 int cont = 0;
 
 Serial Mover::serial;
@@ -428,58 +428,7 @@ void Mover::velocity_defender(Robot *robo, Game_functions *pot_fields, pair<floa
     vels->first = v-w*l;
     vels->second = v+w*l;
 
-
-    // Função para fazer o robô girar nos cantos
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            //cout << "3" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-        }
-        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            //cout << "4" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-        }
-        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-        }
-    }
-
-    // Função para fazer o robô girar na linha de fundo
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_def.x) < 15){
-            //cout << "3" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            //cout << "4" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            cout << "foi" << endl;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            cout << "foi" << endl;
-        }
-    }
+    rotate(robo,vels);
 }
 
 void Mover::velocity_defensive_midfielder(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
@@ -510,93 +459,7 @@ void Mover::velocity_defensive_midfielder(Robot *robo, Game_functions *pot_field
     vels->second = v+w*l;
     //cout << "Robo " << robo->get_pos() << endl;
 
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            //cout << "1" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-        }
-        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            //cout << "2" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-        }
-        else if (euclidean_dist(robo->get_pos(),pot_fields->get_meta()) < 6){
-            vels->first = 0;
-            vels->second = 0;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-        }
-        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-        }
-        else if (euclidean_dist(robo->get_pos(),pot_fields->get_meta()) < 6){
-
-            vels->first = 0;
-            vels->second = 0;
-        }
-    }
-
-    // Função para fazer o robô girar na linha de fundo
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_def.x) < 15){
-            //cout << "3" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            //cout << "4" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            cout << "foi" << endl;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            cout << "foi" << endl;
-        }
-    }
-
-    // Função para fazer o robô girar na linha de fundo
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_def.x) < 15){
-            //cout << "3" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            //cout << "4" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            cout << "foi" << endl;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            cout << "foi" << endl;
-        }
-    }
+    rotate(robo,vels);
 }
 
 void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
@@ -613,71 +476,7 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
     double v,w,theta,alpha;
     pair<float, float> vel;
 
-        //Cálculo das variáveis utilizadas para aumentar a velocidade do robô
-
-    //Corrige Posicionamento
-    ball_pos.y = -ball_pos.y;
-    robo_pos.y = -robo_pos.y;
-    centroid_atk.y=-centroid_atk.y;
-
-    //Calcula angulo entre robo e bola
-    Point2d vec_ball_robot = ball_pos-robo_pos;
-    double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
-    //cout << ball_pos.x << endl;
-    //Corrige o angulo
-    if (vec_ball_robot.y < 0)
-        ang_vec_ball_eixox = -ang_vec_ball_eixox;
-
-    double ang_ball_robot = ang_vec_ball_eixox - robo->get_angle();
-
-
-    //Calcula angulo entre robo e gol adversario
-    Point2d vec_atk_robot = centroid_atk-robo_pos;
-    double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
-
-    //Corrige o angulo
-    if (vec_atk_robot.y < 0)
-        ang_vec_atk_eixox = -ang_vec_atk_eixox;
-
-    double ang_atk_robot = ang_vec_atk_eixox - robo->get_angle();
-
-    //ajusta angulos para menores que 180 e maiores que -180
-    if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot - 360;
-    else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
-    if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
-    else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
-
-    //ajusta angulos para valores entre -90 e 90
-    if (ang_ball_robot >= 90)
-        ang_ball_robot = ang_ball_robot-180;
-    else if (ang_ball_robot <= -90)
-        ang_ball_robot = 180+ang_ball_robot;
-
-    if (ang_atk_robot >= 90)
-        ang_atk_robot = ang_atk_robot-180;
-    else if (ang_atk_robot <= -90)
-        ang_atk_robot = 180+ang_atk_robot;
-
-
-    //Recorrige o Posicionamento
-    ball_pos.y = -ball_pos.y;
-    robo_pos.y = -robo_pos.y;
-    centroid_atk.y=-centroid_atk.y;
-
-
-
-    //Aumenta a velocidade do robô em situações claras de gol
-    if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 30 && fabs(ang_atk_robot) < 30){
-        v_max = 1.2;
-        k = (w_max/v_max);
-        //cout << "entrou mover-meio de campo " << endl;
-    }
-    else{
-        v_max = 0.6;
-        k = (w_max/v_max);
-        //cout << "saiu mover-meio de campo " << endl;
-        //cout << "Angulo bola robo: " << ang_ball_robot << " - Angulo ataque robo: " << ang_atk_robot << endl;
-    }
+    atk_situation(robo,pot_fields,vels);
 
     theta = pot_fields->get_direction(robot_grid);
     alpha = theta - robo->get_angle();
@@ -701,7 +500,7 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
 
     //cout << "x " << centroid_atk.x << endl;
 
-
+/*
     // Ajusta ângulo nas situações em que o robô está a 90º para a bola e bem próximo dela
     Point2d vec_ball_prediction = prevision_atk(robo) - robo_pos;
     double ang_vec_prediction = angle_two_points(vec_ball_prediction,eixo_x);
@@ -724,88 +523,16 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
     aux.y = 0;
 
     if(euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1){
-        alpha = ang_vec_prediction - robo->get_angle();
+        alpha = ang_vec_prediction;
         alpha = ajusta_angulo(alpha);
         w = k*v_max*alpha/180;
         //vels->first = -w*l;
         //vels->second = w*l;
-    }
+    }*/
 
-    // Função para fazer o robô girar nos cantos
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            //cout << "3" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-        }
-        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            //cout << "4" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-        }
-        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-        }
-    }
-
-    // Função para fazer o robô girar na linha de fundo
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_atk.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_atk.x) < 15){
-            //cout << "3" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_atk.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
-            //cout << "4" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_atk.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_atk.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-    }
-
-
-    // Função para fazer o robô girar no ataque
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            vels->first = -vel_giro_atk;
-            vels->second = vel_giro_atk;
-        }
-        else if ((ball_pos.y < centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            vels->first = vel_giro_atk;
-            vels->second = -vel_giro_atk;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            vels->first = vel_giro_atk;
-            vels->second = -vel_giro_atk;
-        }
-        else if ((ball_pos.y < centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            vels->first = -vel_giro_atk;
-            vels->second = vel_giro_atk;
-        }
-    }
-    if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 15 && fabs(ang_atk_robot) < 15){
+    atk_orientation(robo,vels);
+    rotate(robo,vels);
+  /*  if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 15 && fabs(ang_atk_robot) < 15){
         cout << 123 << endl;
         if (centroid_atk.x > centroid_def.x){
             if(fabs(robo->get_angle())<90){
@@ -827,7 +554,7 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
             }
         }
     }
-
+*/
 
 }
 
@@ -845,73 +572,7 @@ void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float
     double v,w,theta,alpha;
     pair<float, float> vel;
 
-
-    //Cálculo das variáveis utilizadas para aumentar a velocidade do robô
-
-    //Corrige Posicionamento
-    ball_pos.y = -ball_pos.y;
-    robo_pos.y = -robo_pos.y;
-    centroid_atk.y=-centroid_atk.y;
-
-
-    //Calcula angulo entre robo e bola
-    Point2d vec_ball_robot = ball_pos-robo_pos;
-    double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
-    //cout << ball_pos.x << endl;
-    //Corrige o angulo
-    if (vec_ball_robot.y < 0)
-        ang_vec_ball_eixox = -ang_vec_ball_eixox;
-
-    double ang_ball_robot = ang_vec_ball_eixox - robo->get_angle();
-
-
-    //Calcula angulo entre robo e gol adversario
-    Point2d vec_atk_robot = centroid_atk-robo_pos;
-    double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
-
-    //Corrige o angulo
-    if (vec_atk_robot.y < 0)
-        ang_vec_atk_eixox = -ang_vec_atk_eixox;
-
-    double ang_atk_robot = ang_vec_atk_eixox - robo->get_angle();
-
-    //ajusta angulos para menores que 180 e maiores que -180
-    if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot - 360;
-    else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
-    if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
-    else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
-
-    //ajusta angulos para valores entre -90 e 90
-    if (ang_ball_robot >= 90)
-        ang_ball_robot = ang_ball_robot-180;
-    else if (ang_ball_robot <= -90)
-        ang_ball_robot = 180+ang_ball_robot;
-
-    if (ang_atk_robot >= 90)
-        ang_atk_robot = ang_atk_robot-180;
-    else if (ang_atk_robot <= -90)
-        ang_atk_robot = 180+ang_atk_robot;
-
-
-    //Recorrige o Posicionamento
-    ball_pos.y = -ball_pos.y;
-    robo_pos.y = -robo_pos.y;
-    centroid_atk.y=-centroid_atk.y;
-
-
-
-    //Aumenta a velocidade do robô em situações claras de gol
-    if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 30 && fabs(ang_atk_robot) < 30){
-        v_max = 1.2;
-        k = (w_max/v_max);
-        //cout << "entrou mover-striker " << endl;
-    }
-    else{
-        v_max = 0.6;
-        k = (w_max/v_max);
-        //cout << "saiu mover-striker " << endl;
-        //cout << "Angulo bola robo: " << ang_ball_robot << " - Angulo ataque robo: " << ang_atk_robot << endl;
-    }
+    atk_situation(robo,pot_fields,vels);
 
 
     theta = pot_fields->get_direction(robot_grid);
@@ -933,8 +594,9 @@ void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float
     }
     vels->first = v-w*l;
     vels->second = v+w*l;
+    atk_orientation(robo,vels);
 
-
+/*
     // Ajusta ângulo nas situações em que o robô está mal orientado para a bola e bem próximo dela
     Point2d vec_ball_prediction = prevision_atk(robo) - robo_pos;
     double ang_vec_prediction = angle_two_points(vec_ball_prediction,eixo_x);
@@ -963,87 +625,9 @@ void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float
         //vels->first = -w*l;
         //vels->second = w*l;
     }
-
-    // Função para fazer o robô girar nos cantos
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) ){
-            //cout << "3" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-        }
-        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            //cout << "4" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-        }
-        else if ((ball_pos.y < centroid_atk.y-55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-        }
-    }
-
-
-    // Função para fazer o robô girar no ataque
-    /*if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            //cout << "foi" << endl;
-            vels->first = -vel_giro_atk;
-            vels->second = vel_giro_atk;
-        }
-        else if ((ball_pos.y < centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            //cout << "foi" << endl;
-            vels->first = vel_giro_atk;
-            vels->second = -vel_giro_atk;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            //cout << "foi" << endl;
-            vels->first = vel_giro_atk;
-            vels->second = -vel_giro_atk;
-        }
-        else if ((ball_pos.y < centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            //cout << "foi" << endl;
-            vels->first = -vel_giro_atk;
-            vels->second = vel_giro_atk;
-        }
-    }*/
-
-    // Função para fazer o robô girar na linha de fundo
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_atk.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_atk.x) < 15){
-            //cout << "3" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_atk.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
-            //cout << "4" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_atk.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_atk.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-    }
-
-    if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 15 && fabs(ang_atk_robot) < 15){
+*/
+    rotate(robo,vels);
+ /*   if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 15 && fabs(ang_atk_robot) < 15){
         //cout << 123 << endl;
         if (centroid_atk.x > centroid_def.x){
             if(fabs(robo->get_angle())<90){
@@ -1065,7 +649,7 @@ void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float
             }
         }
     }
-
+*/
 }
 
 void Mover::velocity_guardian(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
@@ -1101,16 +685,17 @@ void Mover::velocity_guardian(Robot *robo, Game_functions *pot_fields, pair<floa
         //w = 2*w;
     }
 
-    vels->first = v-w*l;
-    vels->second = v+w*l;
+    vels->first = v-w*l;   //Esquerda
+    vels->second = v+w*l;  //Direita
 
 
-    if(euclidean_dist(robo->get_pos(),pot_fields->get_meta())<10){
+   /* if(euclidean_dist(robo->get_pos(),pot_fields->get_meta())<10){
         vels->first = 0;
         vels->second = 0;
-    }
+    }*/
+    robot_orientation(robo, pot_fields, vels); // Se o robo estiver na meta, ele aponta para a bola
+    rotate(robo, vels);  //Gira nos cantos
 
-    rotate(robo, vels);
 }
 
 void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
@@ -1126,20 +711,11 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     double v,w,theta,alpha;
     pair<float, float> vel;
 
+    atk_situation(robo,pot_fields,vels);
 
     theta = pot_fields->get_direction(robot_grid);
     alpha = theta - robo->get_angle();
     alpha = ajusta_angulo(alpha);
-
-
-    /*
-    //velocidade rápida para longe da meta
-    if(euclidean_dist(robo->get_pos(),pot_fields->get_meta())>30){
-        v_max = 1;
-    }
-    else{
-        v_max = 0.6;
-    }*/
 
 
     if (fabs(alpha) <= limiar_theta){
@@ -1157,48 +733,44 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     //Desvio obstáculos
     if (fabs(alpha) > 70 && fabs(alpha) < 110){
         v = 0;
-        w = 2*w;
+        //w = 2*w;
     }
     vels->first = v-w*l;
     vels->second = v+w*l;
 
 
-
-
-    //Cálculo das variáveis utilizadas para aumentar a velocidade do robô
-
+     // Calculo do angulo de orientacao usar no ataque leve para dribles
     //Corrige Posicionamento
+    Point2d aux = prevision_atk(robo);
+    aux.y = -aux.y;
     ball_pos.y = -ball_pos.y;
+    centroid_atk.y = -centroid_atk.y;
     robo_pos.y = -robo_pos.y;
-    centroid_atk.y=-centroid_atk.y;
 
-
-    //Calcula angulo entre robo e bola
-    Point2d vec_ball_robot = ball_pos-robo_pos;
-    double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
-    //cout << ball_pos.x << endl;
-    //Corrige o angulo
+    //Calcula angulo entre a bola e o gol de ataque
+    Point2d vec_ball_robot = aux-robo_pos;
+    double ang_ball_robot = angle_two_points(vec_ball_robot,eixo_x);
     if (vec_ball_robot.y < 0)
-        ang_vec_ball_eixox = -ang_vec_ball_eixox;
+        ang_ball_robot = -ang_ball_robot;
 
-    double ang_ball_robot = ang_vec_ball_eixox - robo->get_angle();
+    cout << "ang " << ang_ball_robot << endl;
 
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (ang_ball_robot > 180) ang_ball_robot = ang_ball_robot - 360;
+    else if (ang_ball_robot < -180) ang_ball_robot = ang_ball_robot + 360;
+    //cout << "Angulo bola atk: " << ang_ball_atk << endl;
 
-    //Calcula angulo entre robo e gol adversario
-    Point2d vec_atk_robot = centroid_atk-robo_pos;
-    double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
+    //Corrige Posicionamento novamente
+    aux.y = -aux.y;
+    ball_pos.y = -ball_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+    robo_pos.y = -robo_pos.y;
 
-    //Corrige o angulo
-    if (vec_atk_robot.y < 0)
-        ang_vec_atk_eixox = -ang_vec_atk_eixox;
-
-    double ang_atk_robot = ang_vec_atk_eixox - robo->get_angle();
+    ang_ball_robot = ang_ball_robot - robo->get_angle();
 
     //ajusta angulos para menores que 180 e maiores que -180
     if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot - 360;
     else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
-    if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
-    else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
 
     //ajusta angulos para valores entre -90 e 90
     if (ang_ball_robot >= 90)
@@ -1206,31 +778,45 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     else if (ang_ball_robot <= -90)
         ang_ball_robot = 180+ang_ball_robot;
 
-    if (ang_atk_robot >= 90)
-        ang_atk_robot = ang_atk_robot-180;
-    else if (ang_atk_robot <= -90)
-        ang_atk_robot = 180+ang_atk_robot;
 
-
-    //Recorrige o Posicionamento
-    ball_pos.y = -ball_pos.y;
-    robo_pos.y = -robo_pos.y;
-    centroid_atk.y=-centroid_atk.y;
-
-
-
-    //Aumenta a velocidade do robô em situações claras de gol
-    if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 30 && fabs(ang_atk_robot) < 30){
-        v_max = 1.6;
-        k = (w_max/v_max);
-        //cout << "entrou mover-striker " << endl;
+    if (euclidean_dist(robo->get_pos(),pot_fields->get_meta()) < 7 && fabs(ang_ball_robot) > 35){
+        alpha = ang_ball_robot;
+        alpha = ajusta_angulo(alpha);
+        if (fabs(alpha) <= limiar_theta){
+            w = 5*alpha/180;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            w = 5*alpha/180;
+        }
+        vels->first = -w*l;
+        vels->second = w*l;
+        //cout << "bola x " << ball_pos.x << "   y " << ball_pos.y << endl;
+        //cout << "meta x " << pot_fields->get_meta().x << "   y " << pot_fields->get_meta().y << endl;
     }
-    else{
-        v_max = 0.6;
-        k = (w_max/v_max);
-        //cout << "saiu mover-striker " << endl;
-        //cout << "Angulo bola robo: " << ang_ball_robot << " - Angulo ataque robo: " << ang_atk_robot << endl;
+    else if(euclidean_dist(robo->get_pos(),pot_fields->get_meta()) < 7){
+        theta = pot_fields->get_direction(robot_grid);
+        alpha = theta - robo->get_angle();
+        alpha = ajusta_angulo(alpha);
+
+
+        if (fabs(alpha) <= limiar_theta){
+            w = (k*v_max*alpha/180);
+            //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
+            v = -v_max*fabs(alpha)/limiar_theta + v_max;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            w = k*v_max*alpha/180;
+            //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
+            v = v_max*fabs(alpha)/limiar_theta - v_max;
+        }
+
+        vels->first = v-w*l;
+        vels->second = v+w*l;
     }
+
+
 
 
     /*double ang_vel;
@@ -1245,7 +831,9 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     cout << "Linear:" << mod_vel/100 << endl << endl << endl;
     cout << "Angular:" << ang_vel << endl;*/
 
+    //atk_orientation(robo, vels); // Se o robo estiver perto da bola no ataque, ele aponta para a bola
     rotate(robo, vels);
+
 }
 
 void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
@@ -1327,8 +915,236 @@ void Mover::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
     vels->second = w*l;
 }
 
-void Mover::rotate(Robot *robo, pair<float, float> *vels){
+void Mover::robot_orientation(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
+    double alpha,w;
 
+    Point2d ball_v;
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = -ball_vel.second / 100;
+
+
+    // Calcula velocidades
+    //Point robot_grid = convert_C_to_G(robo->get_pos());
+    Point2d eixo_x(1.0,0.0);
+    Point2d robo_pos = robo->get_pos();
+
+    //Corrige Posicionamento
+    ball_pos.y = -ball_pos.y;
+    robo_pos.y = -robo_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+
+
+    //Calcula angulo entre robo e bola
+    Point2d vec_ball_robot = ball_pos-robo_pos;
+    double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
+    //cout << ball_pos.x << endl;
+    //Corrige o angulo
+    if (vec_ball_robot.y < 0)
+        ang_vec_ball_eixox = -ang_vec_ball_eixox;
+
+    double ang_ball_robot = ang_vec_ball_eixox - robo->get_angle();
+
+
+    //Recorrige o Posicionamento
+    ball_pos.y = -ball_pos.y;
+    robo_pos.y = -robo_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+
+
+    //orienta o robo se tiver na meta
+    if(euclidean_dist(robo->get_pos(),pot_fields->get_meta())<10){
+        alpha = ang_ball_robot;
+        alpha = ajusta_angulo(alpha);
+        if (fabs(alpha) <= limiar_theta){
+            w = k*v_max*alpha/180;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            w = k*v_max*alpha/180;
+        }
+        vels->first = -w*l;
+        vels->second = w*l;
+    }
+
+
+}
+
+void Mover::atk_orientation(Robot *robo, pair<float, float> *vels){
+    Point2d robo_pos = robo->get_pos();
+    Point2d ball_v;
+    Point2d eixo_x(1.0,0.0);
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = -ball_vel.second / 100;
+
+    // Ajusta ângulo nas situações em que o robô está mal orientado para a bola e bem próximo dela
+    Point2d vec_ball_prediction = prevision_atk(robo) - robo->get_pos();
+    double ang_vec_prediction = angle_two_points(vec_ball_prediction,eixo_x);
+    if (vec_ball_prediction.y < 0)
+        ang_vec_prediction = -ang_vec_prediction;
+
+    double prediction_robot = ang_vec_prediction - robo->get_angle();
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (prediction_robot>180) prediction_robot = prediction_robot - 360;
+    else if (prediction_robot<-180) prediction_robot = prediction_robot + 360;
+
+    //ajusta angulos para valores entre -90 e 90
+    if (prediction_robot >= 90)
+        prediction_robot = prediction_robot-180;
+    else if (prediction_robot <= -90)
+        prediction_robot = 180+prediction_robot;
+
+    Point2d aux;
+    aux.x = 0;
+    aux.y = 0;
+
+
+    //Corrige Posicionamento
+    ball_pos.y = -ball_pos.y;
+    robo_pos.y = -robo_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+
+    //Calcula angulo entre robo e bola
+    Point2d vec_ball_robot = ball_pos-robo_pos;
+    double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
+    //cout << ball_pos.x << endl;
+    //Corrige o angulo
+    if (vec_ball_robot.y < 0)
+        ang_vec_ball_eixox = -ang_vec_ball_eixox;
+
+    double ang_ball_robot = ang_vec_ball_eixox - robo->get_angle();
+
+
+    //Calcula angulo entre robo e gol adversario
+    Point2d vec_atk_robot = centroid_atk-robo_pos;
+    double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
+
+    //Corrige o angulo
+    if (vec_atk_robot.y < 0)
+        ang_vec_atk_eixox = -ang_vec_atk_eixox;
+
+    double ang_atk_robot = ang_vec_atk_eixox - robo->get_angle();
+
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot - 360;
+    else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
+    if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
+    else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
+
+    //ajusta angulos para valores entre -90 e 90
+    if (ang_ball_robot >= 90)
+        ang_ball_robot = ang_ball_robot-180;
+    else if (ang_ball_robot <= -90)
+        ang_ball_robot = 180+ang_ball_robot;
+
+    if (ang_atk_robot >= 90)
+        ang_atk_robot = ang_atk_robot-180;
+    else if (ang_atk_robot <= -90)
+        ang_atk_robot = 180+ang_atk_robot;
+
+
+    //Recorrige o Posicionamento
+    ball_pos.y = -ball_pos.y;
+    robo_pos.y = -robo_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+
+
+    // Função para fazer o robô girar no ataque
+    if (centroid_atk.x > ball_pos.x){
+        if ((ball_pos.y > centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
+            vels->first = -vel_giro_atk;
+            vels->second = vel_giro_atk;
+        }
+        else if ((ball_pos.y < centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
+            vels->first = vel_giro_atk;
+            vels->second = -vel_giro_atk;
+        }
+    }
+    else{
+        if ((ball_pos.y > centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
+            vels->first = vel_giro_atk;
+            vels->second = -vel_giro_atk;
+        }
+        else if ((ball_pos.y < centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
+            vels->first = -vel_giro_atk;
+            vels->second = vel_giro_atk;
+        }
+    }
+}
+
+void Mover::atk_situation(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
+    Point2d robo_pos = robo->get_pos();
+    Point2d eixo_x(1.0,0.0);
+
+    //Cálculo das variáveis utilizadas para aumentar a velocidade do robô
+
+    //Corrige Posicionamento
+    ball_pos.y = -ball_pos.y;
+    robo_pos.y = -robo_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+
+    //Calcula angulo entre robo e bola
+    Point2d vec_ball_robot = ball_pos-robo_pos;
+    double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
+    //cout << ball_pos.x << endl;
+    //Corrige o angulo
+    if (vec_ball_robot.y < 0)
+        ang_vec_ball_eixox = -ang_vec_ball_eixox;
+
+    double ang_ball_robot = ang_vec_ball_eixox - robo->get_angle();
+
+
+    //Calcula angulo entre robo e gol adversario
+    Point2d vec_atk_robot = centroid_atk-robo_pos;
+    double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
+
+    //Corrige o angulo
+    if (vec_atk_robot.y < 0)
+        ang_vec_atk_eixox = -ang_vec_atk_eixox;
+
+    double ang_atk_robot = ang_vec_atk_eixox - robo->get_angle();
+
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot - 360;
+    else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
+    if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
+    else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
+
+    //ajusta angulos para valores entre -90 e 90
+    if (ang_ball_robot >= 90)
+        ang_ball_robot = ang_ball_robot-180;
+    else if (ang_ball_robot <= -90)
+        ang_ball_robot = 180+ang_ball_robot;
+
+    if (ang_atk_robot >= 90)
+        ang_atk_robot = ang_atk_robot-180;
+    else if (ang_atk_robot <= -90)
+        ang_atk_robot = 180+ang_atk_robot;
+
+
+    //Recorrige o Posicionamento
+    ball_pos.y = -ball_pos.y;
+    robo_pos.y = -robo_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+
+
+
+    //Aumenta a velocidade do robô em situações claras de gol
+    if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && fabs(ang_ball_robot) < 30 && fabs(ang_atk_robot) < 30){
+        v_max = 1.6;
+        k = (w_max/v_max);
+        //cout << "entrou mover-striker " << endl;
+    }
+    else{
+        v_max = 0.6;
+        k = (w_max/v_max);
+        //cout << "saiu mover-striker " << endl;
+        //cout << "Angulo bola robo: " << ang_ball_robot << " - Angulo ataque robo: " << ang_atk_robot << endl;
+    }
+
+
+}
+
+void Mover::rotate(Robot *robo, pair<float, float> *vels){
     // Função para fazer o robô girar nos cantos
     if (centroid_atk.x > ball_pos.x){
         if ((ball_pos.y > centroid_atk.y+55) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) ){
@@ -1352,33 +1168,6 @@ void Mover::rotate(Robot *robo, pair<float, float> *vels){
             vels->second = vel_giro_lado;
         }
     }
-
-
-    // Função para fazer o robô girar no ataque
-    /*if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            //cout << "foi" << endl;
-            vels->first = -vel_giro_atk;
-            vels->second = vel_giro_atk;
-        }
-        else if ((ball_pos.y < centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            //cout << "foi" << endl;
-            vels->first = vel_giro_atk;
-            vels->second = -vel_giro_atk;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            //cout << "foi" << endl;
-            vels->first = vel_giro_atk;
-            vels->second = -vel_giro_atk;
-        }
-        else if ((ball_pos.y < centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
-            //cout << "foi" << endl;
-            vels->first = -vel_giro_atk;
-            vels->second = vel_giro_atk;
-        }
-    }*/
 
     // Função para fazer o robô girar na linha de fundo
     if (centroid_atk.x > ball_pos.x){
@@ -1407,6 +1196,63 @@ void Mover::rotate(Robot *robo, pair<float, float> *vels){
             //cout << "foi" << endl;
         }
     }
+
+    // Função para fazer o robô girar na linha de fundo
+    if (centroid_atk.x > ball_pos.x){
+        if ((ball_pos.y > centroid_atk.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_atk.x) < 15){
+            //cout << "3" << endl;
+            vels->first = -vel_giro_lado;
+            vels->second = vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+        else if ((ball_pos.y < centroid_atk.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
+            //cout << "4" << endl;
+            vels->first = vel_giro_lado;
+            vels->second = -vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+    }
+    else{
+        if ((ball_pos.y > centroid_atk.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
+            vels->first = vel_giro_lado;
+            vels->second = -vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+        else if ((ball_pos.y < centroid_atk.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
+            vels->first = -vel_giro_lado;
+            vels->second = vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+    }
+
+    // Função para fazer o robô girar na linha de fundo
+    if (centroid_atk.x > ball_pos.x){
+        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_def.x) < 15){
+            //cout << "3" << endl;
+            vels->first = -vel_giro_lado;
+            vels->second = vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
+            //cout << "4" << endl;
+            vels->first = vel_giro_lado;
+            vels->second = -vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+    }
+    else{
+        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
+            vels->first = vel_giro_lado;
+            vels->second = -vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
+            vels->first = -vel_giro_lado;
+            vels->second = vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+    }
+
 }
 
 Point2d Mover::prevision_atk(Robot *robo){
@@ -1417,7 +1263,7 @@ Point2d Mover::prevision_atk(Robot *robo){
     ball_v.y = ball_vel.second / 100;
 
     double dist = euclidean_dist(robo->get_pos(),ball_pos);
-    double time = dist/20;
+    double time = dist/30;
     next_ball_pos = ball_pos + ball_v*time;
     //cout << "atual " << "x " << ball_pos.x << "   y " << ball_pos.y << endl;
     //cout << "proxima " << "x " << next_ball_pos.x << "   y " << next_ball_pos.y << endl;

@@ -953,65 +953,29 @@ void Game_functions::guardian(Robot *robo, int num_Robo, pair<float,float> *vels
     init_grid();
 
     meta = robo->get_output_fuzzy();//Saida do fuzzy
-    /*if (state_return_to_def == 0){
-        meta = robo->get_output_fuzzy();//Saida do fuzzy
-        cout << "0" << endl;
-    }
-    else if (state_return_to_def == 1){
-        meta.x = 90;
-        meta.y = 70;
-        cout << "1" << endl;
-    }
-    else if (state_return_to_def == 2){
-        if(ball_pos.x < centroid_atk.x){
-            meta.y = centroid_def.y;
-            meta.x = centroid_def.x + 40;
-        }
-        else{
-            meta.y = centroid_def.y;
-            meta.x = centroid_def.x - 40;
-        }
-        cout << "2" << endl;
-    }
-    else{
-        //tratar aqui
-    }*/
-
-    /*if(ball_pos.x < centroid_atk.x){
-        if (robo_pos.x > ball_pos.x && ball_pos.x > 90 )
-            state_return_to_def = 1;
-        else if (robo_pos.x > ball_pos.x && ball_pos.x < 90)
-            state_return_to_def = 2;
-        else if ((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10){
-            state_return_to_def = 0;
-        }
-        else{
-            //tratar aqui
-        }
-    }
-    else{
-        if (robo_pos.x < ball_pos.x && ball_pos.x < 90 )
-            state_return_to_def = 1;
-        else if (robo_pos.x < ball_pos.x && ball_pos.x > 90)
-            state_return_to_def = 2;
-        else if ((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10)
-            state_return_to_def = 0;
-        else{
-            //tratar aqui
-        }
-    }*/
-
 
     meta_grid = convert_C_to_G(meta);
-        if (meta_grid.x > 0 && meta_grid.y > 0){
+    if (meta_grid.x > 0 && meta_grid.y > 0){
         set_potential(meta_grid.y, meta_grid.x, 0);
-        }
-         else{
-            //tratar a bola aqui
-        }
+    }
+    else{
+        //tratar a bola aqui
+    }
 
-    // Seta os amigos como obstáculo
+
     for(i = 0; i < 3; ++i){
+
+        //Seta os inimigos como obstaculo - Comentado caso seja útil
+        /*if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+                enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+                //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+                if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                    set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+            }else{
+                //tratar posição dos inimigos aqui
+            }*/
+
+        // Seta os amigos como obstáculo
         if(team_pos[i].x > 0 && team_pos[i].y > 0)//Enxerga os amigos como obstáculos
         {
             if(team_pos[i] == robo->get_pos())//Verifica o robo usado
@@ -1044,11 +1008,45 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
     Point2d robo_pos = robo->get_pos();
 
     init_grid();
-    meta = ball_pos;//POsição da bola como meta
+
+    for(i = 0; i < 3; ++i){
+
+        //Seta os inimigos como obstaculo - Comentado caso seja útil
+        /*if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+                enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+                //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+                if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+                    set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+            }else{
+                //tratar posição dos inimigos aqui
+            }*/
 
 
-    /*
-    //estado para retornar para defesa
+        if(team_pos[i].x > 0 && team_pos[i].y > 0)//Enxerga os amigos como obstáculos
+        {
+            if(team_pos[i] == robo->get_pos())//Verifica o robo usado
+            {
+            }
+            else//Seta como 1 o potencial dos robos restantes
+            {
+                team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+                if(team_pos_grid[i].x > 0 && team_pos_grid[i].y > 0){
+                    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
+                }
+                else{
+                    //Tratar Aqui
+                }
+            }
+        }
+        else{
+            //tratar posição dos miguxos aqui
+        }
+    }
+   // meta = ball_pos;//POsição da bola como meta
+
+
+
+    /*//estado para retornar para defesa
     if (state_return_to_def == 0){
         meta = ball_pos;//Saida do fuzzy
         cout << "0" << endl;
@@ -1056,11 +1054,11 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
     else{
         if(ball_pos.x < centroid_atk.x){
             meta.y = ball_pos.y;
-            meta.x = ball_pos.x - 30;
+            meta.x = ball_pos.x - 10;
         }
         else{
             meta.y = ball_pos.y;
-            meta.x = ball_pos.x + 30;
+            meta.x = ball_pos.x + 10;
         }
          cout << "2" << endl;
 
@@ -1094,42 +1092,21 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
         }
     }
 
-    cout << "Estado: " << state_return_to_def << endl;
-    */
+    cout << "Estado: " << state_return_to_def << endl;*/
 
 
 
 
+/*
     meta_grid = convert_C_to_G(meta);
     if (meta_grid.x > 0 && meta_grid.y > 0){
-    set_potential(meta_grid.y, meta_grid.x, 0);
+        set_potential(meta_grid.y, meta_grid.x, 0);
     }
-     else{
+    else{
         //tratar a bola aqui
-    }   
+    }*/
 
-    // Seta os amigos como obstáculo
-    for(i = 0; i < 3; ++i){
-        if(team_pos[i].x > 0 && team_pos[i].y > 0)//Enxerga os amigos como obstáculos
-        {
-            if(team_pos[i] == robo->get_pos())//Verifica o robo usado
-            {
-            }
-            else//Seta como 1 o potencial dos robos restantes
-            {
-                team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-                if(team_pos_grid[i].x > 0 && team_pos_grid[i].y > 0){
-                    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
-                }
-                else{
-                    //Tratar Aqui
-                }
-            }
-        }
-        else{
-            //tratar posição dos miguxos aqui
-        }
-    }
+/*
 
     // Seleciona entre CPH e CPO
     if(fabs(euclidean_dist(ball_pos,centroid_def)) < 100){
@@ -1149,7 +1126,7 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
         Point2d vec_ball_atk = centroid_atk-ball_pos;
         double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
         if (vec_ball_atk.y < 0)
-                ang_ball_atk = -ang_ball_atk;
+            ang_ball_atk = -ang_ball_atk;
         //ajusta angulos para menores que 180 e maiores que -180
         if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
         else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
@@ -1161,9 +1138,65 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
         centroid_atk.y=-centroid_atk.y;
 
 
-        while(iterator_cph()>1E-6);
+        while(iterator_cpo()>1E-6);
         set_direction();
+    }*/
+
+    // Calculo do angulo de orientacao usar no ataque leve para dribles
+    //Corrige Posicionamento
+    Point2d aux = prevision_atk(robo);
+    aux.y = -aux.y;
+    ball_pos.y = -ball_pos.y;
+    centroid_atk.y = -centroid_atk.y;
+
+    //Calcula angulo entre a bola e o gol de ataque
+    Point2d vec_atk_ball = aux-centroid_atk;
+    double ang_atk_ball = angle_two_points(vec_atk_ball,eixo_x);
+    if (vec_atk_ball.y < 0)
+        ang_atk_ball = -ang_atk_ball;
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (ang_atk_ball > 180) ang_atk_ball = ang_atk_ball - 360;
+    else if (ang_atk_ball < -180) ang_atk_ball = ang_atk_ball + 360;
+    //cout << "Angulo bola atk: " << ang_ball_atk << endl;
+
+    //Corrige Posicionamento novamente
+    ball_pos.y = -ball_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+    aux.y = -aux.y;
+
+
+    meta.x = aux.x + 15*cos(ang_atk_ball*3.1415/180);
+    meta.y = aux.y - 15*sin(ang_atk_ball*3.1415/180);
+
+
+    if (euclidean_dist(robo->get_pos(),meta) < 10){
+        ball_pos_grid = convert_C_to_G(ball_pos);
+        if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0){
+            set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+        }
+        else{
+            //tratar a bola aqui
+        }
     }
+    else{
+        ball_pos_grid = convert_C_to_G(ball_pos);
+        if (ball_pos_grid.x > 0 && ball_pos_grid.y > 0){
+            set_potential(ball_pos_grid.y, ball_pos_grid.x, 1);
+        }
+        else{
+            //tratar a bola aqui
+        }
+        meta_grid = convert_C_to_G(meta);
+        if (meta_grid.x > 0 && meta_grid.y > 0){
+            set_potential(meta_grid.y, meta_grid.x, 0);
+        }
+        else{
+            //tratar a bola aqui
+        }
+    }
+
+    while(iterator_cpo()>1E-6);
+    set_direction();
 
 }
 
