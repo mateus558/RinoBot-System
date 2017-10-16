@@ -1042,14 +1042,14 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
             //tratar posição dos miguxos aqui
         }
     }
-   // meta = ball_pos;//POsição da bola como meta
+    meta = ball_pos;//POsição da bola como meta
 
 
 
-    /*//estado para retornar para defesa
+    // Estado para retornar para defesa
     if (state_return_to_def == 0){
-        meta = ball_pos;//Saida do fuzzy
-        cout << "0" << endl;
+        meta = ball_pos; //Saida do fuzzy
+        //cout << "0" << endl;
     }
     else{
         if(ball_pos.x < centroid_atk.x){
@@ -1060,7 +1060,7 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
             meta.y = ball_pos.y;
             meta.x = ball_pos.x + 10;
         }
-         cout << "2" << endl;
+        //cout << "2" << endl;
 
         set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
         set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
@@ -1092,21 +1092,21 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
         }
     }
 
-    cout << "Estado: " << state_return_to_def << endl;*/
+    //cout << "Estado: " << state_return_to_def << endl;
 
 
 
 
-/*
+
     meta_grid = convert_C_to_G(meta);
     if (meta_grid.x > 0 && meta_grid.y > 0){
         set_potential(meta_grid.y, meta_grid.x, 0);
     }
     else{
         //tratar a bola aqui
-    }*/
+    }
 
-/*
+
 
     // Seleciona entre CPH e CPO
     if(fabs(euclidean_dist(ball_pos,centroid_def)) < 100){
@@ -1140,11 +1140,11 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
 
         while(iterator_cpo()>1E-6);
         set_direction();
-    }*/
+    }
 
-    // Calculo do angulo de orientacao usar no ataque leve para dribles
+    // Calculo do angulo de orientacao
     //Corrige Posicionamento
-    Point2d aux = prevision_atk(robo);
+    /*Point2d aux = prevision_atk(robo);
     aux.y = -aux.y;
     ball_pos.y = -ball_pos.y;
     centroid_atk.y = -centroid_atk.y;
@@ -1195,8 +1195,8 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
         }
     }
 
-    while(iterator_cpo()>1E-6);
-    set_direction();
+    while(iterator_cph()>1E-6);
+    set_direction();*/
 
 }
 
