@@ -841,7 +841,7 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
 
 
 
-    double ang_vel;
+    /*double ang_vel;
     ang_vel = robo->get_ang_vel();
     ang_vel = ang_vel*3.141592/180;
     vel = robo->get_velocities();
@@ -851,7 +851,7 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     cout << "Angular Calculada:" << w << endl;
     cout << "Linear Calculada:" << v << endl;
     cout << "Linear:" << mod_vel/100 << endl << endl << endl;
-    cout << "Angular:" << ang_vel << endl;
+    cout << "Angular:" << ang_vel << endl;*/
 
     //atk_orientation(robo, vels); // Se o robo estiver perto da bola no ataque, ele aponta para a bola
     rotate(robo, vels);

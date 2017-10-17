@@ -49,6 +49,8 @@ public:
     void guardian(Robot *, int, pair<float,float>*);
     void killer(Robot *, int, pair<float,float>*);
     void test(Robot *, int, pair<float,float>*);
+    void avoid_penalties();
+    void return2defense(Robot *);
     Point2d prevision_atk(Robot *);
     void return2goal();
     double ajusta_angulo(double);
