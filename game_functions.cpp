@@ -5,7 +5,7 @@
 #include "robot.h"
 #include "utils.h"
 
-int state_return_to_def = 0;
+
 
 using namespace std;
 
@@ -1228,6 +1228,9 @@ void Game_functions::avoid_penalties(){
 void Game_functions::return2defense(Robot *robo){
     Point meta_grid;
     Point2d robo_pos = robo->get_pos();
+    int state_return_to_def = 0;
+
+    ball_pos_grid = convert_C_to_G(ball_pos);
 
     // Estado para retornar para defesa
     if (state_return_to_def == 0){
@@ -1243,7 +1246,6 @@ void Game_functions::return2defense(Robot *robo){
             meta.y = ball_pos.y;
             meta.x = ball_pos.x + 10;
         }
-        //cout << "2" << endl;
 
         set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
         set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
@@ -1255,10 +1257,10 @@ void Game_functions::return2defense(Robot *robo){
 
     }
 
-    if(ball_pos.x < centroid_atk.x){
-        if (robo_pos.x > ball_pos.x )
+    if(ball_pos.x < centroid_atk.x ){
+        if (robo_pos.x > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 32)
             state_return_to_def = 1;
-        else if ((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10){
+        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 33){
             state_return_to_def = 0;
         }
         else{
@@ -1266,16 +1268,16 @@ void Game_functions::return2defense(Robot *robo){
         }
     }
     else{
-        if (robo_pos.x < ball_pos.x )
+        if (robo_pos.x < ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x+1 < 32)
             state_return_to_def = 1;
-        else if ((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10)
+        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 33)
             state_return_to_def = 0;
         else{
             //tratar aqui
         }
     }
-
-    //cout << "Estado: " << state_return_to_def << endl;
+    cout << "x " << ball_pos_grid.x << endl;
+    cout << "Estado: " << state_return_to_def << endl;
 
 
     meta_grid = convert_C_to_G(meta);

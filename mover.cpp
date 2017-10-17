@@ -720,13 +720,13 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
 
      if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
         v_max = 1;
-        cout << "Aumentou " << endl;
+        //cout << "Aumentou " << endl;
      }
      else{
         v_max = 0.6;
     }
 
-    atk_situation(robo,pot_fields,vels);
+    //atk_situation(robo,pot_fields,vels);
 
     theta = pot_fields->get_direction(robot_grid);
     alpha = theta - robo->get_angle();
@@ -746,10 +746,10 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     }
 
     //Desvio obstáculos
-    if (fabs(alpha) > 80 && fabs(alpha) < 100){
+    if (fabs(alpha) > 80 && fabs(alpha) < 110){
         v = 0;
-        cont_desvia = cont_desvia+1;
-        cout << "Desviou: " << cont_desvia << endl;
+        //cont_desvia = cont_desvia+1;
+        //cout << "Desviou: " << cont_desvia << endl;
         //w = 1.5*w;
     }
 
@@ -853,7 +853,7 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     cout << "Linear:" << mod_vel/100 << endl << endl << endl;
     cout << "Angular:" << ang_vel << endl;*/
 
-    //atk_orientation(robo, vels); // Se o robo estiver perto da bola no ataque, ele aponta para a bola
+    atk_orientation(robo, vels); // Se o robo estiver perto da bola no ataque, ele aponta para a bola
     rotate(robo, vels);
 
 }
@@ -991,11 +991,11 @@ void Mover::robot_orientation(Robot *robo, Game_functions *pot_fields, pair<floa
     if(euclidean_dist(robo->get_pos(),pot_fields->get_meta())<10){
         if(fabs(euclidean_dist(ball_pos,centroid_def)) < 130){
             alpha = ang_ball_robot;
-            cout << "aaaaaa" << endl;
+            //cout << "aaaaaa" << endl;
         }
         else{
             alpha = ang_atk_robot;
-            cout << "bbbbbb" << endl;
+            //cout << "bbbbbb" << endl;
         }
         alpha = ajusta_angulo(alpha);
         if (fabs(alpha) <= limiar_theta){
