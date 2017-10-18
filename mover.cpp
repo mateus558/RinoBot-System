@@ -668,7 +668,7 @@ void Mover::velocity_guardian(Robot *robo, Game_functions *pot_fields, pair<floa
     pair<float, float> vel;
 
      if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30)
-        v_max = 1;
+        v_max = 0.8;
      else
         v_max = 0.6;
 
@@ -719,7 +719,7 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     pair<float, float> vel;
 
      if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
-        v_max = 1;
+        v_max = 0.8;
         //cout << "Aumentou " << endl;
      }
      else{
@@ -746,15 +746,12 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     }
 
     //Desvio obstáculos
-    if (fabs(alpha) > 80 && fabs(alpha) < 110){
+    if (fabs(alpha) > 70 && fabs(alpha) < 110){
         v = 0;
         //cont_desvia = cont_desvia+1;
         //cout << "Desviou: " << cont_desvia << endl;
-        //w = 1.5*w;
+        w = 1.3*w;
     }
-
-
-
 
     vels->first = v-w*l;
     vels->second = v+w*l;
@@ -893,7 +890,7 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
         v = 0;
     }
 
-    cout << "Angular Calculada:" << w << endl;
+    //cout << "Angular Calculada:" << w << endl;
 
     vels->first = v-w*l;
     vels->second = v+w*l;
@@ -909,14 +906,14 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     vel.first = vel.first*X_CONV_CONST;
     vel.second = vel.second*Y_CONV_CONST;
 
-    cout << "Angular:" << ang_vel << endl;
+    //cout << "Angular:" << ang_vel << endl;
 
     double mod_vel = sqrt(pow(vel.first,2) + pow(vel.second,2));
 
-    cout << "Linear Calculada:" << v << endl;
-    cout << "Linear:" << mod_vel/100 << endl << endl << endl;
-    cont = cont + 1;
-    cout << "Contador: " << cont << endl;
+    //cout << "Linear Calculada:" << v << endl;
+    //cout << "Linear:" << mod_vel/100 << endl << endl << endl;
+    //cont = cont + 1;
+    //cout << "Contador: " << cont << endl;
 
     rotate(robo, vels);
 
@@ -1239,63 +1236,6 @@ void Mover::rotate(Robot *robo, pair<float, float> *vels){
             //cout << "foi" << endl;
         }
     }
-
-    // Função para fazer o robô girar na linha de fundo
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_atk.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_atk.x) < 15){
-            //cout << "3" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_atk.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
-            //cout << "4" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_atk.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_atk.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-    }
-
-    // Função para fazer o robô girar na linha de fundo
-    if (centroid_atk.x > ball_pos.x){
-        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_def.x) < 15){
-            //cout << "3" << endl;
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            //cout << "4" << endl;
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-    }
-    else{
-        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            vels->first = vel_giro_lado;
-            vels->second = -vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
-            vels->first = -vel_giro_lado;
-            vels->second = vel_giro_lado;
-            //cout << "foi" << endl;
-        }
-    }
-
 }
 
 Point2d Mover::prevision_atk(Robot *robo){

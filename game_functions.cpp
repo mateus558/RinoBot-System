@@ -5,7 +5,7 @@
 #include "robot.h"
 #include "utils.h"
 
-
+int state_return_to_def = 0;
 
 using namespace std;
 
@@ -179,6 +179,8 @@ void Game_functions::run(){
 
     //robo_grid_position(&selec_robot.r3, &selec_robot.r1, &selec_robot.r2); //printar posições e grid
 
+    Point2d a = prevision_atk(&selec_robot.r1);
+
     flag_finish_functions = true;
 
     //Point2d a = prevision_atk(&selec_robot.r2);
@@ -259,16 +261,40 @@ void Game_functions::return2goal(){
 
 Point2d Game_functions::prevision_atk(Robot *robo){
     Point2d next_ball_pos;
+    pair<float,float> Robot_vel = robo->get_velocities();
     Point2d ball_v;
+    int i;
+    double dist, time;
+    //Velocidade da bola  (m/s)
+    ball_v.x = ball_vel.first/100;
+    ball_v.y = ball_vel.second/100;
+    //Velocidade do robo calculada pela camera
+    Robot_vel.first = Robot_vel.first*X_CONV_CONST;
+    Robot_vel.second = Robot_vel.second*Y_CONV_CONST;
+    next_ball_pos = ball_pos + ball_v*15;
 
-    ball_v.x = ball_vel.first / 100;
-    ball_v.y = ball_vel.second / 100;
 
-    double dist = euclidean_dist(robo->get_pos(),ball_pos);
-    double time = dist/30;
-    next_ball_pos = ball_pos + ball_v*time;
-    //cout << "atual " << "x " << ball_pos.x << "   y " << ball_pos.y << endl;
-    //cout << "proxima " << "x " << next_ball_pos.x << "   y " << next_ball_pos.y << endl;
+    //For que atualiza os valores da posição prevista
+    /*for(i=0;i<3;i++){
+        if(i == 0){
+            dist = euclidean_dist(robo->get_pos(),ball_pos);
+        }
+        else{
+            dist = euclidean_dist(robo->get_pos(),next_ball_pos);
+        }
+        //Caso a velocidade robo seja zero (parado)
+        if(sqrt(pow(Robot_vel.first,2) + pow(Robot_vel.second,2)) < 1){
+            time = dist/1;
+        }
+        //Velocidade do robo maior que 1cm
+        else{
+            time = dist/sqrt(pow(Robot_vel.first,2) + pow(Robot_vel.second,2));
+        }
+        //cout << i << "JoaoGay  " << time << endl;
+        next_ball_pos = ball_pos + ball_v*time;
+        //cout << i+1 << " prox " << "x " << next_ball_pos.x << "   y " << next_ball_pos.y << endl;
+    }*/
+
     return next_ball_pos;
 
 }
@@ -1002,6 +1028,7 @@ void Game_functions::guardian(Robot *robo, int num_Robo, pair<float,float> *vels
     set_direction(centroid_atk,centroid_def);
 
 }
+
 void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
     Point2d eixo_x(1.0,0.0);
 
@@ -1066,7 +1093,7 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
         set_direction(centroid_atk,centroid_def);
     }
     else{
-        set_epsilon(0.3 + euclidean_dist(robo->get_pos(),ball_pos)/250);
+        /*set_epsilon(0.3 + euclidean_dist(robo->get_pos(),ball_pos)/250);
 
 
         // Calculo do angulo de orientacao usar no ataque leve para dribles
@@ -1087,10 +1114,10 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
 
         //Corrige Posicionamento novamente
         ball_pos.y = -ball_pos.y;
-        centroid_atk.y=-centroid_atk.y;
+        centroid_atk.y=-centroid_atk.y;*/
 
 
-        while(iterator_cpo()>1E-6);
+        while(iterator_cph()>1E-6);
         set_direction(centroid_atk,centroid_def);
     }
 
@@ -1158,7 +1185,7 @@ void Game_functions::test(Robot *robo, int num_Robo, pair<float,float> *vels){
     Point2d robo_pos = robo->get_pos();
 
     init_grid();
-    meta = ball_pos;//POsição da bola como meta
+    meta = prevision_atk(robo);//POsição da bola como meta
     meta_grid = convert_C_to_G(meta);
     if (meta_grid.x > 0 && meta_grid.y > 0){
     set_potential(meta_grid.y, meta_grid.x, 0);
@@ -1191,7 +1218,7 @@ void Game_functions::test(Robot *robo, int num_Robo, pair<float,float> *vels){
     set_epsilon(0.5);
 
 
-    while(iterator_cpo()>1E-6);
+    while(iterator_cph()>1E-6);
     set_direction(centroid_atk,centroid_def);
 }
 
@@ -1228,13 +1255,15 @@ void Game_functions::avoid_penalties(){
 void Game_functions::return2defense(Robot *robo){
     Point meta_grid;
     Point2d robo_pos = robo->get_pos();
-    int state_return_to_def = 0;
+    Point2d ball_pos_prevision = prevision_atk(robo);
 
     ball_pos_grid = convert_C_to_G(ball_pos);
 
+    //cout << "Estado1: " << state_return_to_def << endl;
+
     // Estado para retornar para defesa
     if (state_return_to_def == 0){
-        meta = ball_pos; //Saida do fuzzy
+        meta = ball_pos_prevision;
         //cout << "0" << endl;
     }
     else{
@@ -1258,8 +1287,9 @@ void Game_functions::return2defense(Robot *robo){
     }
 
     if(ball_pos.x < centroid_atk.x ){
-        if (robo_pos.x > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 32)
+        if (robo_pos.x > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 32){
             state_return_to_def = 1;
+        }
         else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 33){
             state_return_to_def = 0;
         }
@@ -1276,8 +1306,8 @@ void Game_functions::return2defense(Robot *robo){
             //tratar aqui
         }
     }
-    cout << "x " << ball_pos_grid.x << endl;
-    cout << "Estado: " << state_return_to_def << endl;
+    //cout << "x " << ball_pos_grid.x << endl;
+    //cout << "Estado2: " << state_return_to_def << endl;
 
 
     meta_grid = convert_C_to_G(meta);
@@ -1287,6 +1317,7 @@ void Game_functions::return2defense(Robot *robo){
     else{
         //tratar a bola aqui
     }
+
 }
 
 double Game_functions::ajusta_angulo(double angle){
