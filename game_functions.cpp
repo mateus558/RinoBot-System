@@ -1263,7 +1263,10 @@ void Game_functions::return2defense(Robot *robo){
 
     // Estado para retornar para defesa
     if (state_return_to_def == 0){
-        meta = ball_pos_prevision;
+        if (ball_pos_grid.y > 2 && ball_pos_grid.y < 25)
+            meta = ball_pos_prevision;
+        else
+            meta = ball_pos;
         //cout << "0" << endl;
     }
     else{
@@ -1277,17 +1280,19 @@ void Game_functions::return2defense(Robot *robo){
         }
 
         set_potential(ball_pos_grid.y, ball_pos_grid.x-1, 1);
-        set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
-        set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
+        //set_potential(ball_pos_grid.y+1, ball_pos_grid.x-1, 1);
+        //set_potential(ball_pos_grid.y-1, ball_pos_grid.x-1, 1);
         set_potential(ball_pos_grid.y, ball_pos_grid.x+1, 1);
-        set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
-        set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
+        //set_potential(ball_pos_grid.y+1, ball_pos_grid.x+1, 1);
+        //set_potential(ball_pos_grid.y-1, ball_pos_grid.x+1, 1);
         set_potential(ball_pos_grid.y, ball_pos_grid.x, 1);
+        set_potential(ball_pos_grid.y-1, ball_pos_grid.x, 1);
+        set_potential(ball_pos_grid.y+1, ball_pos_grid.x, 1);
 
     }
 
     if(ball_pos.x < centroid_atk.x ){
-        if (robo_pos.x > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 32){
+        if (robo_pos.x + 7 > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 32){
             state_return_to_def = 1;
         }
         else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 33){
@@ -1298,7 +1303,7 @@ void Game_functions::return2defense(Robot *robo){
         }
     }
     else{
-        if (robo_pos.x < ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x+1 < 32)
+        if (robo_pos.x -7 < ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x+1 < 32)
             state_return_to_def = 1;
         else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 33)
             state_return_to_def = 0;
