@@ -1086,14 +1086,16 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
             return2defense(robo);
     }
 
+    while(iterator_cph()>1E-6);
+    set_direction(centroid_atk,centroid_def);
 
     // Seleciona entre CPH e CPO
-    if(fabs(euclidean_dist(ball_pos,centroid_def)) < 100){
+    /*if(fabs(euclidean_dist(ball_pos,centroid_def)) < 100){
         while(iterator_cph()>1E-6);
         set_direction(centroid_atk,centroid_def);
     }
     else{
-        /*set_epsilon(0.3 + euclidean_dist(robo->get_pos(),ball_pos)/250);
+        set_epsilon(0.3 + euclidean_dist(robo->get_pos(),ball_pos)/250);
 
 
         // Calculo do angulo de orientacao usar no ataque leve para dribles
@@ -1114,12 +1116,12 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
 
         //Corrige Posicionamento novamente
         ball_pos.y = -ball_pos.y;
-        centroid_atk.y=-centroid_atk.y;*/
+        centroid_atk.y=-centroid_atk.y;
 
 
         while(iterator_cph()>1E-6);
         set_direction(centroid_atk,centroid_def);
-    }
+    }*/
 
     // Calculo do angulo de orientacao
     //Corrige Posicionamento

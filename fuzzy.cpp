@@ -604,14 +604,16 @@ void Fuzzy::set_objectives(){
         selec_robot.r2.set_output_fuzzy(output_meta);
         selec_robot.r3.set_output_fuzzy(output_meta);
     }
+    else if(num_strategy == 0){
+        // Teste
+        selec_robot.r1.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //gandalf
+        selec_robot.r2.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //presto
+        selec_robot.r3.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //leona
+    }
     else{
         // tratar aqui
     }
 
-    // teste
-    /*selec_robot.r1.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //gandalf
-    selec_robot.r2.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //presto
-    selec_robot.r3.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //leona*/
 }
 
 bool Fuzzy::get_flag_finish(){
