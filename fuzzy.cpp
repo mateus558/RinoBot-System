@@ -494,11 +494,9 @@ int Fuzzy::defuzzification(){
     else
         return 3;
 
-
 }
 
 void Fuzzy::set_objectives(){
-
     if (num_strategy == 1){
         if (decisao_robo[0] >= 2 && decisao_robo[1] >= 2){
             if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
@@ -553,6 +551,7 @@ void Fuzzy::set_objectives(){
             selec_robot.r1.set_flag_fuzzy(decisao_robo[0], centroid_atk, centroid_def, ball_pos);
             selec_robot.r2.set_flag_fuzzy(decisao_robo[1], centroid_atk, centroid_def, ball_pos);
             selec_robot.r3.set_flag_fuzzy(decisao_robo[2], centroid_atk, centroid_def, ball_pos);
+
         }
 
         cont_fuzzy++;
@@ -751,4 +750,8 @@ void Fuzzy::set_centroid_atk(Point2d centroid_atk){
 
 void Fuzzy::set_centroid_def(Point2d centroid_def){
     this->centroid_def = centroid_def;
+}
+
+void Fuzzy::set_strategy(char num){
+    num_strategy = num;
 }

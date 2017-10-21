@@ -7,7 +7,7 @@
 
 using namespace std;
 double limiar_theta = 90;
-double v_max = 0.6;
+double v_max = 1.0;
 double w_max = 7;
 double v_max_gol = 0.4;
 double v_max_gol_ef = 1.2;
@@ -253,6 +253,7 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
 
                 //cout << "FollowBall" << endl;
             }
+
             else {
                 //Return2Goal
                 theta = pot_fields->get_direction(robot_grid);
@@ -906,7 +907,7 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     vels->first = v-w*l;
     vels->second = v+w*l;
 
-    //cout << "Vel Esquerda:" << vels->first << endl;
+   // cout << "Vel Esquerda:" << vels->first << endl;
     //cout << "Vel Direita:" << vels->second << endl;
 
     ang_vel = robo->get_ang_vel();
@@ -927,6 +928,10 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     //cout << "Contador: " << cont << endl;
 
     rotate(robo, vels);
+
+    cont++;
+
+    cout << "Contador: " << cont << endl;
 
 }
 

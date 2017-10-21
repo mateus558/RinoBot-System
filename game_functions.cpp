@@ -1370,7 +1370,6 @@ Point Game_functions::convert_C_to_G(Point2d coord){
         i.y = 1;
     }
 
-
     return i;
 }
 

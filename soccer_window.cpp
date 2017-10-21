@@ -28,6 +28,11 @@ soccer_window::soccer_window(QWidget *parent) :
 
 
     ui->setupUi(this);
+
+    ui->strategy_options->addItem("Strategy 1");
+    ui->strategy_options->addItem("Strategy 2");
+    ui->strategy_options->addItem("Test");
+
     area_read = false;
     eye = new Vision;
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
@@ -617,6 +622,27 @@ void soccer_window::on_read_parameters_clicked()
     ball.clear();
 
     eye->set_ball(ball_range);
+
+
+    //caso não seja selecionado nada na change strategy é forçada a nova estrategia
+    fuzzy->set_strategy(2);
+}
+
+void soccer_window::on_change_strategy_clicked(){
+    string strategy = ui->strategy_options->currentText().toUtf8().constData();
+
+    cout << strategy << endl;
+
+    char num_strategy;
+
+    if(strategy == "Test")
+        num_strategy = 0;
+    else if (strategy == "Strategy 1")
+        num_strategy = 1;
+    else if (strategy == "Strategy 2")
+        num_strategy = 2;
+
+    fuzzy->set_strategy(num_strategy);
 }
 
 void soccer_window::on_show_field_areas_checkbox_toggled(bool checked)

@@ -45,7 +45,7 @@ private:
     vector<double> mi_output; //vetor de saida para calculo da decisao do fuzzy
     vector<int> decisao_robo;
 
-    int num_strategy = 2;  // 0 = teste CPH/CPO; 1 = fuzzy antigo (defensor+ataque); 2 = fuzzy novo (guardian and killer)
+    int num_strategy;  // 0 = teste CPH/CPO; 1 = fuzzy antigo (defensor+ataque); 2 = fuzzy novo (guardian and killer)
     double output; //saida do fuzzy antigo
     double output1; //saida do fuzzy novo
     double output2; //saida do fuzzy novo
@@ -87,6 +87,7 @@ public:
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);
     void set_centroid_def(Point2d);
+    void set_strategy(char);
     Point convert_C_to_G(Point2d);
     ~Fuzzy();
 };

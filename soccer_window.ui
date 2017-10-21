@@ -220,7 +220,7 @@
    <property name="geometry">
     <rect>
      <x>740</x>
-     <y>300</y>
+     <y>420</y>
      <width>161</width>
      <height>121</height>
     </rect>
@@ -436,8 +436,8 @@
   <widget class="QLabel" name="cam_id_label">
    <property name="geometry">
     <rect>
-     <x>740</x>
-     <y>260</y>
+     <x>760</x>
+     <y>390</y>
      <width>59</width>
      <height>14</height>
     </rect>
@@ -449,8 +449,8 @@
   <widget class="QSpinBox" name="cam_id_spinBox">
    <property name="geometry">
     <rect>
-     <x>800</x>
-     <y>260</y>
+     <x>820</x>
+     <y>390</y>
      <width>47</width>
      <height>23</height>
     </rect>
@@ -494,8 +494,8 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>740</x>
-     <y>440</y>
+     <x>550</x>
+     <y>480</y>
      <width>161</width>
      <height>91</height>
     </rect>
@@ -588,6 +588,35 @@
     <string>FPS:</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="change_strategy">
+   <property name="geometry">
+    <rect>
+     <x>730</x>
+     <y>260</y>
+     <width>171</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change Strategy</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="strategy_options">
+   <property name="geometry">
+    <rect>
+     <x>730</x>
+     <y>310</y>
+     <width>171</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>ArrowCursor</cursorShape>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStatesVirginIslands"/>
+   </property>
+  </widget>
   <zorder>optionsGroupBox</zorder>
   <zorder>start_game</zorder>
   <zorder>switch_fields</zorder>
@@ -605,6 +634,8 @@
   <zorder>groupBox</zorder>
   <zorder>fps_lcd</zorder>
   <zorder>fps_label</zorder>
+  <zorder>change_strategy</zorder>
+  <zorder>strategy_options</zorder>
  </widget>
  <resources/>
  <connections/>
