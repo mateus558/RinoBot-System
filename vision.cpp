@@ -77,7 +77,8 @@ bool invalid_contour(vector<Point> p){
 vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots)
 {
     size_t i, j, k, l;
-    int csize, tsize, r_label = 0, min, t1size, tmin;
+    unsigned int csize, tsize, t1size;
+    int r_label = 0, min, tmin;
     double dista = 0.0, angle, last_angle;
     bool not_t1, error;
     Moments ball_moment, temp_moment;
