@@ -9,8 +9,8 @@
 #include <errno.h>
 #include "soccer_window.h"
 #include "ui_soccer_window.h"
-#include "fuzzy.h"
 #include "utils.h"
+#include "fuzzy.h"
 #include "game_functions.h"
 #include "navigation.h"
 #include "mover.h"
@@ -28,6 +28,11 @@ soccer_window::soccer_window(QWidget *parent) :
 
 
     ui->setupUi(this);
+
+    ui->strategy_options->addItem("Strategy 1");
+    ui->strategy_options->addItem("Strategy 2");
+    ui->strategy_options->addItem("Test");
+
     area_read = false;
     eye = new Vision;
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
@@ -36,9 +41,9 @@ soccer_window::soccer_window(QWidget *parent) :
     gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
     mover = new Mover; //instancia o objeto mover na rotina do sistema
     run_fuzzy = false; //flag da thread do fuzzy
+    run_gandalf = false; //flag da thread da gandalf
     run_leona = false; //flag da thread da leona
     run_presto = false; //flag da thread da presto
-    run_gandalf = false; //flag da thread da gandalf
     run_mover = false; //flag da thread da mover
     game_started = false;
     game_scene = new QGraphicsScene;
@@ -63,8 +68,13 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
     connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);  
     connect(fuzzy, SIGNAL(emitRobots(Selector)), this, SLOT(updateFuzzyRobots(Selector)), Qt::QueuedConnection);
-    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateFuzzyRobots(std::vector<Robot>)));
     connect(mover, SIGNAL(emitRobots(Selector)), this, SLOT(updateMoverRobots(Selector)), Qt::QueuedConnection);
+    //connect(leona, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    //connect(presto, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    //connect(gandalf, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
+    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateFuzzyRobots(std::vector<Robot>)));
+    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateMoverRobots(std::vector<Robot>)));
+
 
 }
 
@@ -143,6 +153,10 @@ void soccer_window::updateFuzzyRobots(Selector selec_robot){
     team_robots[0].set_flag_fuzzy(selec_robot.r3.get_flag_fuzzy());
     team_robots[1].set_flag_fuzzy(selec_robot.r1.get_flag_fuzzy());
     team_robots[2].set_flag_fuzzy(selec_robot.r2.get_flag_fuzzy());
+
+    team_robots[0].set_output_fuzzy(selec_robot.r3.get_output_fuzzy());
+    team_robots[1].set_output_fuzzy(selec_robot.r1.get_output_fuzzy());
+    team_robots[2].set_output_fuzzy(selec_robot.r2.get_output_fuzzy());
 
     emit updateVisionInfo(team_robots);
 }
@@ -247,6 +261,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         ui->ball_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->ball_detec_label->setText("Ball found");
         ball_pos = percep.ball_pos_cm;
+        ball->pos = percep.ball_pos;
         ball->contour = percep.ball_contour;
         for(i = 0; i < ball->color.size(); i++){
             ball->color[i] = percep_info.ball_color.second[i] + percep.ball_color.first[i];
@@ -510,6 +525,9 @@ void soccer_window::on_switch_fields_clicked()
     mover->set_centroid_def(centroid_def); //salva a area de def para o gandalf
     mover->set_def_area(def_area);
     mover->team_changed();
+
+    field->atkPoints = atk_area;
+    field->defPoints = def_area;
 }
 
 void soccer_window::on_read_parameters_clicked()
@@ -604,6 +622,27 @@ void soccer_window::on_read_parameters_clicked()
     ball.clear();
 
     eye->set_ball(ball_range);
+
+
+    //caso não seja selecionado nada na change strategy é forçada a nova estrategia
+    fuzzy->set_strategy(2);
+}
+
+void soccer_window::on_change_strategy_clicked(){
+    string strategy = ui->strategy_options->currentText().toUtf8().constData();
+
+    cout << strategy << endl;
+
+    char num_strategy;
+
+    if(strategy == "Test")
+        num_strategy = 0;
+    else if (strategy == "Strategy 1")
+        num_strategy = 1;
+    else if (strategy == "Strategy 2")
+        num_strategy = 2;
+
+    fuzzy->set_strategy(num_strategy);
 }
 
 void soccer_window::on_show_field_areas_checkbox_toggled(bool checked)

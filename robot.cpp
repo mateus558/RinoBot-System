@@ -264,7 +264,7 @@ void Robot::set_centroid(Point p)
 }
 
 Point Robot::get_centroid()
-{
+{   if(centroid == Point(-1, -1)) return last_centroid;
     return this->centroid;
 }
 
@@ -543,10 +543,8 @@ void Robot::set_flag_fuzzy(int output, Point centroid_atk, Point centroid_def, P
         //cout << nick <<" deve Catar Ferozmente!" << endl;
     }
     else{
-        //tratar aqui
+    this->flag_fuzzy = output;
     }
-
-
 }
 
 void Robot::set_flag_fuzzy(int output){
@@ -557,11 +555,11 @@ int Robot::get_flag_fuzzy(){
     return flag_fuzzy;
 }
 
-void Robot::set_output_fuzzy(double output){
+void Robot::set_output_fuzzy(Point2d output){
     this->output_fuzzy = output;
 }
 
-double Robot::get_output_fuzzy(){
+Point2d Robot::get_output_fuzzy(){
     return this->output_fuzzy;
 }
 

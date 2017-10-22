@@ -35,7 +35,7 @@ private:
     int channel;    //Communication channel
     int n_loss, n_detected;
     int flag_fuzzy;
-    double output_fuzzy;
+    Point2d output_fuzzy;
     double angle, last_angle, ang_predict;   //Rotation angle
     double ang_tolerance;
     double w;   //Angular velocity
@@ -81,7 +81,7 @@ public:
     Point2d get_pos();
     Point get_predic_centroid();
     pair<vector<Point>, vector<Point> > get_contour();
-    double get_output_fuzzy();
+    Point2d get_output_fuzzy();
     int get_flag_fuzzy();
     int get_channel();
     double get_angle();
@@ -106,7 +106,7 @@ public:
 
     void set_flag_fuzzy(int, Point, Point, Point2d);
     void set_flag_fuzzy(int);
-    void set_output_fuzzy(double);
+    void set_output_fuzzy(Point2d);
     void set_channel(int channel = -1);
     void set_angle(double angle);
     void set_lin_vel(pair<float, float>);
