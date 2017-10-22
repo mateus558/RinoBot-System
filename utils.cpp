@@ -10,8 +10,13 @@ using namespace Eigen;
 IplImage* img_resize(IplImage* src_img, int new_width,int new_height)
 {
     IplImage* des_img;
-    des_img=cvCreateImage(cvSize(new_width,new_height),src_img->depth,src_img->nChannels);
-    cvResize(src_img,des_img,CV_INTER_LINEAR);
+
+    des_img = cvCreateImage(cvSize(new_width,new_height),src_img->depth,src_img->nChannels);
+    cvResize(src_img, des_img, CV_INTER_LINEAR);
+
+    delete src_img;
+    src_img = NULL;
+
     return des_img;
 }
 

@@ -492,7 +492,7 @@ void Vision::run()
     clock_t begin, end;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
-    IplImage ipl_img;
+    IplImage *ipl_img = NULL, *res = NULL;
 
     to_transf.resize(6);
     transf.resize(6);
@@ -507,15 +507,10 @@ void Vision::run()
             return;
         }
 
-
-        rows = raw_frame.rows;
-        cols = raw_frame.cols;
         raw_frame = crop_image(raw_frame);
         info.img_size.x = raw_frame.cols;
         info.img_size.y = raw_frame.rows;
-        ipl_img = raw_frame;
-        vision_frame = cvarrToMat(img_resize(&ipl_img, DEFAULT_NCOLS, DEFAULT_NROWS));  // default additional arguments: don't copy data.
-        raw_frame = vision_frame.clone();
+        resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution
         vision_frame = proccess_frame(vision_frame, vision_frame);
 
         switch(mode){
@@ -540,6 +535,7 @@ void Vision::run()
         }
 
        if(!play){
+            resize(raw_frame, raw_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution
             cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
             img = QImage((const uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
             img.bits();
@@ -574,9 +570,9 @@ void Vision::run()
 
         emit infoPercepted(info);
         emit processedImage(img);
+
         if(itr%10 == 0){
             emit framesPerSecond(FPS);
-            itr = 0;
         }
 
         msleep(delay);

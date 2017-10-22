@@ -39,7 +39,7 @@ public:
     };
 private:
     bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters, showErrors, trained, play = false;
-    int mode, rows, cols, camid, x_offset, y_offset, cont;
+    int mode, rows, cols, camid = 0, x_offset, y_offset, cont;
     double FPS, deltaT;
 
     Mat kmeans_centers, labels, centers;
