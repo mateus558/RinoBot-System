@@ -1,5 +1,8 @@
 #include "drawobjects.h"
 #include <QtDebug>
+#include <iostream>
+
+using namespace std;
 
 RobotDraw::RobotDraw(QGraphicsItem *parent) : QGraphicsItem(parent)
 {
@@ -16,6 +19,8 @@ void RobotDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 {
     int i, size = team_contour.size(), size1 = role_contour.size();
     QPainterPath team_shape, role_shape;
+    //team_color = hsv2rgb(team_color);
+    //role_color = hsv2rgb(role_color);
     QBrush team_brush(QColor(team_color[2], team_color[1], team_color[0]));
     QBrush role_brush(QColor(role_color[2], role_color[1], role_color[0]));
 
@@ -107,8 +112,7 @@ void FieldDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
        defcenter.y /= defPoints.size();
        atkcenter.x /= atkPoints.size();
        atkcenter.y /= atkPoints.size();
-
-
+      
        defPath.addText(defcenter.x, defcenter.y, font, "Defense");
        atkPath.addText(atkcenter.x, atkcenter.y, font, "Attack");
 
@@ -165,6 +169,8 @@ QRectF BallDraw::boundingRect() const
 void BallDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QPainterPath obj = shape();
+   // color = hsv2rgb(color);
+   // cout << color[0] << " " << color[1] << " " << color[2] << endl;
     QBrush brush(QColor(color[2],color[1],color[0]));
 
     painter->setPen(Qt::blue);

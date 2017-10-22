@@ -131,6 +131,7 @@ public:
     double min_function(double, double);
     double max_function(double, double);
     void compute_velocity(double deltaT);  //Compute the percepted velocity
+    void correct_angle();
     void predict_info(double deltaT);
     pair<float, float> get_velocity();
     bool is_detected();

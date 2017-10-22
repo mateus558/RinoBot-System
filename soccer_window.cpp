@@ -649,7 +649,6 @@ void soccer_window::on_show_field_areas_checkbox_toggled(bool checked)
 {
     eye->show_area(checked);
     field->showFields = checked;
-
 }
 
 void soccer_window::on_show_rnames_checkBox_toggled(bool checked)
@@ -668,3 +667,8 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 }
 
 
+
+void soccer_window::on_show_field_areas_checkbox_clicked()
+{
+
+}
