@@ -89,19 +89,22 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     vector<pVector > tirj_cent(2, pVector());
     pair<Point, pair<int, int> > col_select;
 
-    //Get the ball moment from the contour
+    //Candidate selection from the ball contours
+    auto it = remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
+    contours[0].erase(it, contours[0].end());
+    it = remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
+    contours[0].erase(it, contours[0].end());
+
     if(contours[0].size() > 0){
-        remove_if(contours[0].begin(), contours[0].end(), ball_area_limit);
-        remove_if(contours[0].begin(), contours[0].end(), invalid_contour);
-
         sort(contours[0].begin(), contours[0].end(), sort_by_larger_area);
-
+        //Get the ball moment from the contour
         ball_moment = moments(contours[0][contours[0].size()-1]);
         //Get ball centroid
         ball_cent = Point(ball_moment.m10/ball_moment.m00, ball_moment.m01/ball_moment.m00);
         ball_found = true;
         info.ball_contour = contours[0][contours[0].size()-1];
     }else{
+        //If there's no candidate for the ball, get the last recorded position
         ball_cent = ball_last_pos;
         ball_found = false;
         info.ball_contour = pVector();
@@ -112,22 +115,28 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     ball_pos = ball_cent;
     ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
     ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
+    ball_last_pos = ball_cent;
 
+    //Compute the variation of the position for posterior velocity computation
     info.ball_vel.first = double(ball_pos.x - ball_last_pos.x) * X_CONV_CONST;
     info.ball_vel.second = double(ball_pos.y - ball_last_pos.y) * Y_CONV_CONST;
 
-    ball_last_pos = ball_cent;
-    remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
+    //Candidate selection for the team 1 from contours detected
+    it = remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
+    contours[1].erase(it, contours[1].end());
     sort(contours[1].begin(), contours[1].end(), sort_by_larger_area);
-    remove_if(contours[1].begin(), contours[1].end(), area_limit);
+    it = remove_if(contours[1].begin(), contours[1].end(), area_limit);
+    contours[1].erase(it, contours[1].end());
 
-
-
-    remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
+    //Candidate selection for the team 2 from contours detected
+    it = remove_if(contours[2].begin(), contours[2].end(), invalid_contour);
+    contours[2].erase(it, contours[2].end());
     sort(contours[2].begin(), contours[2].end(), sort_by_larger_area);
-    remove_if(contours[2].begin(), contours[2].end(), area_limit);
+    it = remove_if(contours[2].begin(), contours[2].end(), area_limit);
+    contours[2].erase(it, contours[2].end());
 
-    //Get the robots moments (their team color half)
+
+    //Get the robots moments and centroids for each team (their team color half)
     for(i = 0; i < 2; ++i){
         if(contours[i+1].size() > 0){
             for(j = 0; j < contours[i+1].size(); ++j){
@@ -137,6 +146,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                 tirj_cent[i].push_back(Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00));
 
             }
+            //If there's less than 3 centroids, set the remaining as null
             if(contours[i+1].size() < 3){
                 l = 3 - contours[i+1].size();
                 for(j = 0; j < l; ++j){
@@ -146,10 +156,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         }
     }
 
-    //Get the robots moments (their color half)
+    //Get the robots moments only for team 1 (their color half)
     for(i = 0; i < 3; ++i){
-        remove_if(contours[i + 3].begin(), contours[i + 3].end(), invalid_contour);
-        remove_if(contours[i + 3].begin(), contours[i + 3].end(), area_limit);
         csize = contours[i + 3].size();
         if(csize > 0){
             for(j = 0; j < csize; ++j){
@@ -162,6 +170,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             }
 
         }else{
+            //If there's no contour, the robot wasn't detected, set the last valid position
             r_col_cent[i].push_back(null_point);
             robots[i].set_centroid(robots[i].get_from_pos_hist(0));
             robots[i].was_detected(false);
@@ -193,7 +202,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             }
         }
 
-        for(k = 3; k < t1size; ++k){    //Verify if the color assigned is not from the other team
+        //Verify if the color assigned is not from the other team
+        for(k = 3; k < t1size; ++k){
             dista = euclidean_dist(tirj_cent[1][k-3], col_select.first);
             if(dista < tmin){
                 not_t1 = true;
@@ -202,7 +212,9 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         }
 
         r_label = col_select.second.first;
-        if(r_label != -1){  //If the robot could be identified
+        //If the robot could be identified
+        if(r_label != -1){
+            //Get the last valid state from the robot historic
             last_cent = robots[r_label].get_from_pos_hist(0);
             last_angle = robots[r_label].get_last_angle();
         }
@@ -303,47 +315,6 @@ pair<vector<vector<Vec4i> >, vector<pMatrix> > Vision::detect_objects(Mat frame,
     return ret;
 }
 
-Mat Vision::train_kmeans(Mat img, int nClusters)
-{
-    int k, i, attempts = 1;
-    double elapsed_secs, dist;
-    clock_t begin, end;
-    Mat centers = this->centers;
-
-    if(!trained){
-        begin  = clock();
-        clog << "Training K-means model with " << nClusters << " clusters." << endl;
-        kmeans(img, nClusters, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 1), attempts, KMEANS_PP_CENTERS, centers );
-        end  = clock();
-        elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        clog << "End of training in " << elapsed_secs << " seconds." << endl;
-        this->labels = labels;
-        this->centers = centers;
-        trained = true;
-    }else{
-        const int dims = centers.cols;
-
-        for(i = 0; i < img.rows; i++){
-            const float *sample = img.ptr<float>(i);
-            int k_best = 0;
-            double min_dist = DBL_MAX;
-
-            for(k = 0; k < centers.rows; k++){
-                const float *center = centers.ptr<float>(k);
-                dist = normL2Sqr(sample, center, dims);
-
-                if(min_dist > dist){
-                    min_dist = dist;
-                    k_best = k;
-                }
-            }
-            labels.at<int>(i, 0) = k_best;
-        }
-    }
-
-    return centers;
-}
-
 Mat Vision::adjust_gamma(double gamma, Mat org)
 {
     if(gamma == 1.0)
@@ -360,27 +331,6 @@ Mat Vision::adjust_gamma(double gamma, Mat org)
      LUT( org, lut_matrix, result );
 
     return result;
-}
-
-Mat Vision::CLAHE_algorithm(Mat org)    //Normalize frame histogram
-{
-    Mat lab_image, dst;
-    vector<Mat> lab_planes(3);
-
-    cvtColor(org, lab_image, CV_BGR2Lab);
-    split(lab_image, lab_planes);
-
-    //Apply CLAHE to the luminosity plane of the LAB frame
-    Ptr<CLAHE> clahe = createCLAHE(2.0, Size(8,8));
-    clahe->apply(lab_planes[0], dst);
-
-    //Merge back the planes
-    dst.copyTo(lab_planes[0]);
-    merge(lab_planes, lab_image);
-
-    cvtColor(lab_image, dst, CV_Lab2BGR);
-
-    return dst;
 }
 
 Mat Vision::crop_image(Mat org){
@@ -438,38 +388,11 @@ Mat Vision::crop_image(Mat org){
 
 Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
 {
-   /* int x, y, z;
-    Mat samples(orig.rows * orig.cols, 3, CV_32F);*/
-
     dest = orig.clone();
     //Gamma correction
-    dest = adjust_gamma(1.3 , dest);
+    dest = adjust_gamma(1.0 , dest);
     //Apply gaussian blur
     GaussianBlur(dest, dest, Size(5,5), 1.8);
-
-    /****************************************
-     *  K-means training and classification.*
-     ****************************************/
-    //Training
-    /*for(y = 0; y < orig.rows; y++){
-        for(x = 0; x < orig.cols; x++){
-            for(z = 0; z < 3; z++){
-                samples.at<float>(y + x*orig.rows, z) = orig.at<Vec3b>(y,x)[z];
-            }
-        }
-    }
-
-    centers = train_kmeans(samples, 18);
-
-    //Classification
-    for(y = 0; y < dest.rows; y++){
-        for(x = 0; x < dest.cols; x++){
-          int cluster_idx = labels.at<int>(y + x*dest.rows,0);
-          dest.at<Vec3b>(y,x)[0] = centers.at<float>(cluster_idx, 0);
-          dest.at<Vec3b>(y,x)[1] = centers.at<float>(cluster_idx, 1);
-          dest.at<Vec3b>(y,x)[2] = centers.at<float>(cluster_idx, 2);
-        }
-    }*/
 
     return dest;
 }
@@ -480,7 +403,6 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
 
     cvtColor(vision_frame, vision_frame, CV_BGR2HSV);
     mask = detect_colors(vision_frame, low, upper);
-    //cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
     raw_frame.copyTo(res, mask);
 
     return res;
@@ -579,8 +501,6 @@ void Vision::run()
     clock_t begin, end;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
-    IplImage ipl_img;
-    ofstream ang_out("ang");
 
     to_transf.resize(6);
     transf.resize(6);
@@ -589,40 +509,70 @@ void Vision::run()
         begin = clock();
         itr++;
 
+        //Read a frame from the camera
         if(!cam.read(raw_frame)){
             stop = true;
             cerr << "A frame could not be read! (Vision)" << endl;
             return;
         }
 
+        /**************************************
+         *         Pre-Processing Step        *
+         **************************************/
 
-        rows = raw_frame.rows;
-        cols = raw_frame.cols;
+        //Get sub frame and fit in the frame size (cropping)
         raw_frame = crop_image(raw_frame);
         info.img_size.x = raw_frame.cols;
         info.img_size.y = raw_frame.rows;
-        ipl_img = raw_frame;
-        vision_frame = cvarrToMat(img_resize(&ipl_img, DEFAULT_NCOLS, DEFAULT_NROWS));  // default additional arguments: don't copy data.
-        raw_frame = vision_frame.clone();
+
+        //Resize the image for the default image size.
+        //For downsampling the area interpolation method is being used.
+        //For upsampling the cubic interpolation method is being used.
+        if(raw_frame.cols > DEFAULT_NCOLS && raw_frame.rows > DEFAULT_NROWS){
+            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_AREA); // resize to 1024x768 resolution
+        }else if(raw_frame.cols < DEFAULT_NCOLS && raw_frame.rows < DEFAULT_NROWS){
+            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC);
+        }else if(raw_frame.cols > DEFAULT_NCOLS || raw_frame.rows > DEFAULT_NROWS){
+            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_AREA);
+        }else{
+            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC);
+        }
+
+        //Apply blurring and gamma corretion methods
         vision_frame = proccess_frame(vision_frame, vision_frame);
 
         switch(mode){
             case 0: //Visualization mode
+                //Convert the frame from RGB color space to HSV
                 cvtColor(vision_frame, vision_frame, CV_BGR2HSV);
+
+                //Get the contours of the candidates to game objects
                 obj_contours = detect_objects(vision_frame, robots).second;
+                //Get the robots from the best candidates selected to game objects
                 robots = fill_robots(obj_contours, robots);
+
+                //Compute the variation of time for physics computations
+                end = clock();
                 elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
                 deltaT = elapsed_secs;
 
-                for(i = 0; i < 3; i++){
-                    ang_out << robots[i].get_angle() << " " << robots[i].get_predic_angle() << " ";
-                    robots[i].correct_angle();
-                    ang_out << robots[i].get_angle() << endl;
+                /***********************************
+                 *     Physics Computations Step   *
+                 ***********************************/
+
+                //Compute the linear and angular velocity of the ball
+                info.ball_vel.first /= deltaT;
+                info.ball_vel.second /= deltaT;
+
+                for(i = 0; i < 6; i++){
+                    //Compute the linear and angular velocity of each robot
                     robots[i].compute_velocity(deltaT);
-                    robots[i].predict_info(deltaT);
+                    //Predict the robot state in the next n frames
+                    robots[i].predict_info(deltaT*2);
                 }
-                ang_out << endl;
+
                 if(!play){
+                    //Draw information in the frame if the game is not being played
                     vision_frame = draw_robots(vision_frame, robots);
                     vision_frame = draw_field(vision_frame);
                 }
@@ -636,19 +586,20 @@ void Vision::run()
         }
 
        if(!play){
+            //If the game is not being played, resize the frame, convert to QImage and send to be shown in the GUI
+            resize(raw_frame, raw_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution
             cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
             img = QImage((const uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
             img.bits();
         }
 
-        end = clock();
-        elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        deltaT = elapsed_secs;
 
-        info.ball_vel.first /= deltaT;
-        info.ball_vel.second /= deltaT;
+       /***********************************
+        *   Setting info to be sent step  *
+        ***********************************/
+
+        //Setting ball information
         info.ball_found = ball_found;
-
         if(ball_pos != null_point){
             info.ball_pos_cm = ball_pos_cm;
             info.ball_pos = ball_pos;
@@ -659,22 +610,22 @@ void Vision::run()
             info.ball_last_pos = Point(0, 0);
         }
 
+        //Setting robots information
         info.enemy_robots[0] = robots[3];
         info.enemy_robots[1] = robots[4];
         info.enemy_robots[2] = robots[5];
         info.team_robots[0] = robots[0];
         info.team_robots[1] = robots[1];
         info.team_robots[2] = robots[2];
-        cout << robots[0].get_pos().x << " " << robots[0].get_pos().y << " " << robots[0].get_angle()  << endl;
-        cout << robots[1].get_pos().x << " " << robots[1].get_pos().y << " " << robots[1].get_angle()<< endl;
-        cout << robots[2].get_pos().x << " " << robots[2].get_pos().y << " " << robots[2].get_angle()<< endl;
+
         FPS = 1.0/deltaT;
 
+        //Sending information
         emit infoPercepted(info);
         emit processedImage(img);
+
         if(itr%10 == 0){
             emit framesPerSecond(FPS);
-            itr = 0;
         }
 
         msleep(delay);

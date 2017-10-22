@@ -338,8 +338,3 @@ void SetParameters::on_calibrate_camera_clicked()
     //system("./Config/camera_calib.sh");
 }
 
-void SetParameters::on_save_image_clicked()
-{
-    eye->save_image();
-}
-

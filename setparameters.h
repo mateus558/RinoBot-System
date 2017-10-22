@@ -51,8 +51,6 @@ private slots:
 
     void on_calibrate_camera_clicked();
 
-    void on_save_image_clicked();
-
 private:
     int cam_id;
     Ui::SetParameters *ui;

@@ -1,0 +1,1 @@
+Esse é o código mais estável da visão, caso haja algum problema, use-o. 

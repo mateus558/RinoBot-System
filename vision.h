@@ -39,7 +39,7 @@ public:
     };
 private:
     bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters, showErrors, trained, play = false;
-    int mode, rows, cols, camid, x_offset, y_offset, cont;
+    int mode, rows, cols, camid = 0, x_offset, y_offset, cont;
     double FPS, deltaT;
 
     Mat kmeans_centers, labels, centers;
@@ -95,14 +95,6 @@ public:
     Mat adjust_gamma(double gamma, Mat org);
 
     /************************************************************************************
-        @brief CLAHE_algorithm Usado para aumetar o contraste da imagem.
-
-        @param org Matriz com a imagem à ser ajustada.
-        @return Mat a Matriz ajustada.
-     ************************************************************************************/
-    Mat CLAHE_algorithm(Mat org);
-
-    /************************************************************************************
         @brief crop_image Corta uma determinada região da imagem. De acordo com o tamanho do campo
 
         @param org Image to use.
@@ -116,16 +108,6 @@ public:
         @return Mat
      *************************************************************************************/
     Mat proccess_frame(Mat, Mat);
-
-    /************************************************************************************
-        @brief train_kmeans "Treina" o k-means para classificas os pixels da imagem.
-
-        @param img  Imagem amostra utilizada.
-        @param nClusters Número de clusters.
-        @return  Mat Imagem segmentada.
-     *************************************************************************************/
-    Mat train_kmeans(Mat img, int nClusters);
-
 
     /************************************************************************************
      * DETECÇÃO E REPRESENTAÇÃO DOS ROBÔS                                               *

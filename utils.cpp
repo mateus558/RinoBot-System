@@ -7,14 +7,6 @@
 using namespace std;
 using namespace Eigen;
 
-IplImage* img_resize(IplImage* src_img, int new_width,int new_height)
-{
-    IplImage* des_img;
-    des_img=cvCreateImage(cvSize(new_width,new_height),src_img->depth,src_img->nChannels);
-    cvResize(src_img,des_img,CV_INTER_LINEAR);
-    return des_img;
-}
-
 double euclidean_dist(Point2d p, Point2d q)
 {
     return sqrt((q.x-p.x)*(q.x-p.x) + (q.y-p.y)*(q.y-p.y));

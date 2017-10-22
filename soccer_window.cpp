@@ -63,11 +63,7 @@ soccer_window::soccer_window(QWidget *parent) :
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
     connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);  
     connect(fuzzy, SIGNAL(emitRobots(Selector)), this, SLOT(updateFuzzyRobots(Selector)), Qt::QueuedConnection);
-    connect(leona, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
-    connect(presto, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
-    connect(gandalf, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
     connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateFuzzyRobots(std::vector<Robot>)));
-    connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateGameFunctionsRobots(std::vector<Robot>)));
     connect(mover, SIGNAL(emitRobots(Selector)), this, SLOT(updateMoverRobots(Selector)), Qt::QueuedConnection);
 
 }
@@ -613,6 +609,7 @@ void soccer_window::on_read_parameters_clicked()
 void soccer_window::on_show_field_areas_checkbox_toggled(bool checked)
 {
     eye->show_area(checked);
+    field->showFields = checked;
 }
 
 void soccer_window::on_show_rnames_checkBox_toggled(bool checked)
@@ -631,3 +628,8 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
 }
 
 
+
+void soccer_window::on_show_field_areas_checkbox_clicked()
+{
+
+}

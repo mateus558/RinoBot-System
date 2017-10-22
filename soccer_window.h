@@ -51,6 +51,8 @@ private slots:
 
     void on_start_game_2_clicked();
 
+    void on_show_field_areas_checkbox_clicked();
+
 private:
     Fuzzy *fuzzy;
     Game_functions *leona;
