@@ -80,7 +80,7 @@ soccer_window::soccer_window(QWidget *parent) :
 
 soccer_window::~soccer_window()
 {
-    int i = 0;
+    unsigned int i = 0;
 
     delete eye;
     delete ball;
@@ -188,7 +188,7 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
 void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
     p2dVector enemy_pos(3), team_pos(3);
     pair<vector<Point>, vector<Point> > cont;
-    int i,j;
+    unsigned int i,j;
 
     percep = percep_info;
 
@@ -666,9 +666,3 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
     eye->show_errors(checked);
 }
 
-
-
-void soccer_window::on_show_field_areas_checkbox_clicked()
-{
-
-}
