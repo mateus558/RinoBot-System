@@ -510,7 +510,17 @@ void Vision::run()
         raw_frame = crop_image(raw_frame);
         info.img_size.x = raw_frame.cols;
         info.img_size.y = raw_frame.rows;
-        resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution
+
+        if(raw_frame.cols > DEFAULT_NCOLS && raw_frame.rows > DEFAULT_NROWS){
+            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_AREA); // resize to 1024x768 resolution
+        }else if(raw_frame.cols < DEFAULT_NCOLS && raw_frame.rows < DEFAULT_NROWS){
+            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC);
+        }else if(raw_frame.cols > DEFAULT_NCOLS || raw_frame.rows > DEFAULT_NROWS){
+            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_AREA);
+        }else{
+            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC);
+        }
+
         vision_frame = proccess_frame(vision_frame, vision_frame);
 
         switch(mode){
