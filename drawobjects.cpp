@@ -86,7 +86,7 @@ QRectF FieldDraw::boundingRect() const
 void FieldDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     int x = fieldPoints[0].x, y = (fieldPoints[0].y + fieldPoints[9].y)/2;
-    int i;
+    unsigned int i;
     Point defcenter, atkcenter;
     QPen pen, pen1;
     QFont font;
