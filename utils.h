@@ -10,10 +10,10 @@
 
 #define FIELD_WIDTH 132
 #define FIELD_HEIGHT 175
-#define MIN_ROBOT_AREA 50
+#define MIN_ROBOT_AREA 10
 #define MAX_ROBOT_AREA 500
-#define MIN_BALL_AREA 50
-#define MAX_BALL_AREA 100
+#define MIN_BALL_AREA 10
+#define MAX_BALL_AREA 200
 #define MAX_CENT_DIST 20
 #define DEFAULT_NROWS 382   //Default number of the rows of the frame
 #define DEFAULT_NCOLS 505   //Default number of the columns of the frame

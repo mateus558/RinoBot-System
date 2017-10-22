@@ -34,6 +34,8 @@ private:
     vector<int> pertinencia;
     vector<double> D; //Coeficiente de Disparo
     vector<double> y_output;
+    vector<double> y_output1;
+    vector<double> y_output2;
     vector<double> y_baixo;
     vector<double> y_medio1;
     vector<double> y_medio2;
@@ -43,7 +45,11 @@ private:
     vector<double> mi_output; //vetor de saida para calculo da decisao do fuzzy
     vector<int> decisao_robo;
 
-    double output; //saida do fuzzy
+    int num_strategy;  // 0 = teste CPH/CPO; 1 = fuzzy antigo (defensor+ataque); 2 = fuzzy novo (guardian and killer)
+    double output; //saida do fuzzy antigo
+    double output1; //saida do fuzzy novo
+    double output2; //saida do fuzzy novo
+    Point2d output_meta;
     bool stop, duniverse_initialized; //variavel de controle de thread
     bool flag_finish_fuzzy;
 
@@ -61,9 +67,13 @@ public:
 
     void init_duniverse();
     void init_funcao_pertinencia();
+    void another_fuzzification();
     void fuzzification();
     void calcula_input(Robot);
+    void calcula_another_input();
     int defuzzification();
+    void another_defuzzification();
+    void set_objectives();
     bool get_flag_finish();
     void zera_flag_finish();
     double min_function(double, double);
@@ -77,6 +87,7 @@ public:
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);
     void set_centroid_def(Point2d);
+    void set_strategy(char);
     Point convert_C_to_G(Point2d);
     ~Fuzzy();
 };

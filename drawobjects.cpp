@@ -97,7 +97,7 @@ void FieldDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     }else{
        font.setPixelSize(20);
        font.setBold(false);
-       font.setFamily("Calibri");
+       font.setFamily("Arial");
        pen = QPen(Qt::green, 4);
        pen1 = QPen(Qt::red, 4);
 
@@ -112,7 +112,7 @@ void FieldDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
        defcenter.y /= defPoints.size();
        atkcenter.x /= atkPoints.size();
        atkcenter.y /= atkPoints.size();
-
+      
        defPath.addText(defcenter.x, defcenter.y, font, "Defense");
        atkPath.addText(atkcenter.x, atkcenter.y, font, "Attack");
 
@@ -120,7 +120,7 @@ void FieldDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     defPath.moveTo(defPoints[0].x, defPoints[0].y);
     atkPath.moveTo(atkPoints[0].x, atkPoints[0].y);
-    for(i = 1; i < defPoints.size(); i++){   
+    for(i = 1; i < defPoints.size(); i++){
         defPath.lineTo(defPoints[i].x, defPoints[i].y);
     }
     for(i = 1; i < atkPoints.size(); i++){
@@ -172,6 +172,8 @@ void BallDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
    // color = hsv2rgb(color);
    // cout << color[0] << " " << color[1] << " " << color[2] << endl;
     QBrush brush(QColor(color[2],color[1],color[0]));
+
+    painter->setPen(Qt::blue);
     painter->setBrush(brush);
     painter->drawPath(obj);
 }

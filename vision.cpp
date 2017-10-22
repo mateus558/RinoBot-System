@@ -135,7 +135,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     it = remove_if(contours[2].begin(), contours[2].end(), area_limit);
     contours[2].erase(it, contours[2].end());
 
-
     //Get the robots moments and centroids for each team (their team color half)
     for(i = 0; i < 2; ++i){
         if(contours[i+1].size() > 0){
@@ -172,7 +171,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         }else{
             //If there's no contour, the robot wasn't detected, set the last valid position
             r_col_cent[i].push_back(null_point);
-            robots[i].set_centroid(robots[i].get_from_pos_hist(0));
+            robots[i].set_centroid(robots[i].get_last_centroid());
             robots[i].was_detected(false);
         }
     }
@@ -248,7 +247,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             error = true;
             if(showErrors) cerr << robots[i].get_nick() << " was not found!" << endl;
             robots[i].set_angle(robots[i].get_last_angle());
-            robots[i].set_centroid(robots[i].get_from_pos_hist(0));
+            robots[i].set_centroid(robots[i].get_last_centroid());
             robots[i].was_detected(false);
         }
     }
@@ -661,9 +660,13 @@ void Vision::updateFuzzyRobots(std::vector<Robot> team_robots){
     robots[0].set_flag_fuzzy(team_robots[0].get_flag_fuzzy());
     robots[1].set_flag_fuzzy(team_robots[1].get_flag_fuzzy());
     robots[2].set_flag_fuzzy(team_robots[2].get_flag_fuzzy());
+
+    robots[0].set_output_fuzzy(team_robots[0].get_output_fuzzy());
+    robots[1].set_output_fuzzy(team_robots[1].get_output_fuzzy());
+    robots[2].set_output_fuzzy(team_robots[2].get_output_fuzzy());
 }
 
-void Vision::updateGameFunctionsRobots(std::vector<Robot> team_robots){
+void Vision::updateMoverRobots(std::vector<Robot> team_robots){
     robots[0].set_lin_vel(make_pair(team_robots[0].get_l_vel(), team_robots[0].get_r_vel()));
     robots[1].set_lin_vel(make_pair(team_robots[1].get_l_vel(), team_robots[1].get_r_vel()));
     robots[2].set_lin_vel(make_pair(team_robots[2].get_l_vel(), team_robots[2].get_r_vel()));
