@@ -577,6 +577,7 @@ void Vision::run()
                 }
                 break;
             case 1: //Set color mode
+                resize(raw_frame, raw_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution
                 raw_frame = setting_mode(raw_frame, vision_frame, low, upper);
 
                 break;
@@ -586,7 +587,6 @@ void Vision::run()
 
        if(!play){
             //If the game is not being played, resize the frame, convert to QImage and send to be shown in the GUI
-            resize(raw_frame, raw_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution
             cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
             img = QImage((const uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
             img.bits();
