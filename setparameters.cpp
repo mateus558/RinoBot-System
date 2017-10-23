@@ -17,6 +17,7 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
     conf = new ConfigRobots;
     set_team_color = new SetColorRange;
     serial_settings_dialog = new SettingsDialog;
+    calib_camera = new video4linuxConfig;
 
     eye->set_mode(0);
     ui->setupUi(this);
@@ -291,7 +292,7 @@ void SetParameters::set_points(string fname, string area, int n_points)
 
         n = defensePoints.size();
         for(Point p : defensePoints){
-            circle(frame, p, 2, Scalar(0, 0, 255), 5);
+            circle(frame, p, 1, Scalar(0, 0, 255), 2);
         }
 
         imshow(wname, frame);
@@ -333,13 +334,7 @@ SetParameters::~SetParameters()
 
 void SetParameters::on_calibrate_camera_clicked()
 {
-    /*vector<vector<Point3f> > object_points;
-    vector<vector<Point2f> > image_points;
-    vector<Point2f> corners;
-*/
+    calib_camera->show();
+    //system("./Config/camera_calib.sh");
 }
 
-void SetParameters::on_save_image_clicked()
-{
-    eye->save_image();
-}

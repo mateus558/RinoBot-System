@@ -167,7 +167,7 @@ void Navigation::set_grid_orientation(Point meta){
     }
 }
 
-void Navigation::set_direction(){
+void Navigation::set_direction(Point2d centroid_atk, Point2d centroid_def){
     int i,j;
     for(i=0;i<28;i++)
     {
@@ -175,8 +175,12 @@ void Navigation::set_direction(){
         {
             if(get_occupancy(i,j)==1)
                 tGrid[i][j] = -atan2(get_neighborhood(i,j,0)-get_neighborhood(i,j,1),get_neighborhood(i,j,2)-get_neighborhood(i,j,3))*180/PI;
-            else
-                tGrid[i][j] = get_potential(i,j)*1000;
+            else{
+                if(centroid_atk.x > centroid_def.x)
+                    tGrid[i][j] = 0;
+                if(centroid_atk.x < centroid_def.x)
+                    tGrid[i][j] = 180;
+            }
         }
     }
 }
@@ -274,8 +278,8 @@ bool Navigation::isStopped() const
 }
 
 void Navigation::msleep(int ms){
-    /*struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
-    nanosleep(&ts, NULL);*/
+    struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
+    nanosleep(&ts, NULL);
 }
 
 Navigation::~Navigation(){

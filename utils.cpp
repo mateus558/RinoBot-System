@@ -7,14 +7,6 @@
 using namespace std;
 using namespace Eigen;
 
-IplImage* img_resize(IplImage* src_img, int new_width,int new_height)
-{
-    IplImage* des_img;
-    des_img=cvCreateImage(cvSize(new_width,new_height),src_img->depth,src_img->nChannels);
-    cvResize(src_img,des_img,CV_INTER_LINEAR);
-    return des_img;
-}
-
 double euclidean_dist(Point2d p, Point2d q)
 {
     return sqrt((q.x-p.x)*(q.x-p.x) + (q.y-p.y)*(q.y-p.y));
@@ -125,6 +117,65 @@ pair<Matrix3d, Vector3d> kalman_filter(Vector3d pos_cam, Vector2d v_w, Vector3d 
     return res;
 }
 
+vector<int> hsv2rgb(vector<int> in)
+{
+    double      hh, p, q, t, ff;
+    long        i;
+    vector<int>         out(3);
+    if(in[1] <= 0.0) {       // < is bogus, just shuts up warnings
+        out[0] = in[2];
+        out[1] = in[2];
+        out[2] = in[2];
+        return out;
+    }
+    hh = in[0];
+    if(hh >= 360.0) hh = 0.0;
+    hh /= 60.0;
+    i = (long)hh;
+    ff = hh - i;
+    p = in[2] * (1.0 - in[1]);
+    q = in[2] * (1.0 - (in[1] * ff));
+    t = in[2] * (1.0 - (in[1] * (1.0 - ff)));
+
+    switch(i) {
+    case 0:
+        out[0] = in[2];
+        out[1] = t;
+        out[2] = p;
+        break;
+    case 1:
+        out[0] = q;
+        out[1] = in[2];
+        out[2] = p;
+        break;
+    case 2:
+        out[0] = p;
+        out[1] = in[2];
+        out[2] = t;
+        break;
+
+    case 3:
+        out[0] = p;
+        out[1] = q;
+        out[2] = in[2];
+        break;
+    case 4:
+        out[0] = t;
+        out[1] = p;
+        out[2] = in[2];
+        break;
+    case 5:
+    default:
+        out[0] = in[2];
+        out[1] = p;
+        out[2] = q;
+        break;
+    }
+        //cout << out[0] << " " << out[1] << " " << out[2] << endl;
+
+    return out;
+}
+
 bool sort_by_smallest_x(Point a, Point b){
     return a.x < b.x;
 }
@@ -155,7 +206,7 @@ bool area_limit(vector<Point> p){
 }
 
 bool ball_area_limit(vector<Point> p){
-    if(contourArea(p) < MIN_BALL_AREA || contourArea(p) > MAX_BALL_AREA){
+    if(contourArea(p) > MAX_BALL_AREA){
         return 1;
     }
     return 0;
