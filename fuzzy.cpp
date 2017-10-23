@@ -288,7 +288,7 @@ void Fuzzy::another_fuzzification(){
 
     for(i=0;i<cont;i++)//Percorre o vetor D
     {
-       if(i%2 == 0){
+       if((i%2 == 0 && i <=11) || i == 14 || i == 15){
             for(j=0;j<=100;j++)
             {
                 limite[i][j] = min_function(D[i],y_medio1[j]);

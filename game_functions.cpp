@@ -141,6 +141,7 @@ void Game_functions::run(){
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
         //cout << "Presto: " << r2_flag << endl;
+
         switch (r2_flag){
             case 0:
                 defender(&selec_robot.r2, 1, &vels[1]);
@@ -1265,11 +1266,12 @@ void Game_functions::return2defense(Robot *robo){
 
     // Estado para retornar para defesa
     if (state_return_to_def == 0){
-        if (ball_pos_grid.y > 2 && ball_pos_grid.y < 25)
+        if (ball_pos_grid.y > 2 && ball_pos_grid.y < 25){
             meta = ball_pos_prevision;
-        else
+        }
+        else{
             meta = ball_pos;
-        //cout << "0" << endl;
+        }
     }
     else{
         if(ball_pos.x < centroid_atk.x){
@@ -1294,10 +1296,10 @@ void Game_functions::return2defense(Robot *robo){
     }
 
     if(ball_pos.x < centroid_atk.x ){
-        if (robo_pos.x + 7 > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 32){
+        if (robo_pos.x + 7 > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 31){
             state_return_to_def = 1;
         }
-        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 33){
+        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 30){
             state_return_to_def = 0;
         }
         else{
@@ -1305,16 +1307,16 @@ void Game_functions::return2defense(Robot *robo){
         }
     }
     else{
-        if (robo_pos.x -7 < ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x+1 < 32)
+        if (robo_pos.x -7 < ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x+1 < 31)
             state_return_to_def = 1;
-        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 33)
+        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 30)
             state_return_to_def = 0;
         else{
             //tratar aqui
         }
     }
     //cout << "x " << ball_pos_grid.x << endl;
-    //cout << "Estado2: " << state_return_to_def << endl;
+    //cout << "Estado: " << state_return_to_def << endl;
 
 
     meta_grid = convert_C_to_G(meta);

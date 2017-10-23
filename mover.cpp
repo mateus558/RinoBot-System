@@ -766,8 +766,8 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
 
     //atk_orientation(robo, vels); // Se o robo estiver perto da bola no ataque, ele aponta para a bola
     atk_orientation(robo, pot_fields, vels);
-    atk_situation(robo,pot_fields,vels);
     rotate(robo, vels);
+    atk_situation(robo,pot_fields,vels);
 
 
      // Calculo do angulo de orientacao usar no ataque leve para dribles
@@ -1297,7 +1297,7 @@ void Mover::rotate(Robot *robo, pair<float, float> *vels){
         }
     }
 
-    // Função para fazer o robô girar na linha de fundo
+    // Função para fazer o robô girar na linha de fundo de ataque
     if (centroid_atk.x > ball_pos.x){
         if ((ball_pos.y > centroid_atk.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_atk.x) < 15){
             //cout << "3" << endl;
@@ -1319,6 +1319,34 @@ void Mover::rotate(Robot *robo, pair<float, float> *vels){
             //cout << "foi" << endl;
         }
         else if ((ball_pos.y < centroid_atk.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_atk.x) < 15)){
+            vels->first = -vel_giro_lado;
+            vels->second = vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+    }
+
+    // Função para fazer o robô girar na linha de fundo de defesa
+    if (centroid_atk.x > ball_pos.x){
+        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ball_pos.x - centroid_def.x) < 15){
+            //cout << "3" << endl;
+            vels->first = -vel_giro_lado;
+            vels->second = vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
+            //cout << "4" << endl;
+            vels->first = vel_giro_lado;
+            vels->second = -vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+    }
+    else{
+        if ((ball_pos.y > centroid_def.y+35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
+            vels->first = vel_giro_lado;
+            vels->second = -vel_giro_lado;
+            //cout << "foi" << endl;
+        }
+        else if ((ball_pos.y < centroid_def.y-35) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro && fabs(ball_pos.x - centroid_def.x) < 15)){
             vels->first = -vel_giro_lado;
             vels->second = vel_giro_lado;
             //cout << "foi" << endl;
