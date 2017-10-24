@@ -1294,10 +1294,10 @@ void Game_functions::return2defense(Robot *robo){
     }
 
     if(ball_pos.x < centroid_atk.x ){
-        if (robo_pos.x + 7 > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 32){
+        if (robo_pos.x + 7 > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 31){
             state_return_to_def = 1;
         }
-        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 33){
+        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 30){
             state_return_to_def = 0;
         }
         else{
@@ -1305,9 +1305,9 @@ void Game_functions::return2defense(Robot *robo){
         }
     }
     else{
-        if (robo_pos.x -7 < ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x+1 < 32)
+        if (robo_pos.x - 7 < ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x+1 < 31)
             state_return_to_def = 1;
-        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 33)
+        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 30)
             state_return_to_def = 0;
         else{
             //tratar aqui
