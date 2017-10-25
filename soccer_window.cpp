@@ -29,8 +29,8 @@ soccer_window::soccer_window(QWidget *parent) :
 
     ui->setupUi(this);
 
-    ui->strategy_options->addItem("Strategy 1");
     ui->strategy_options->addItem("Strategy 2");
+    ui->strategy_options->addItem("Strategy 1");
     ui->strategy_options->addItem("Test");
 
     area_read = false;

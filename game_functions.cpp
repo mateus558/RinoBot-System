@@ -6,7 +6,8 @@
 #include "utils.h"
 
 int state_return_to_def = 0;
-
+int state_escanteio = 0;
+int cont_corner = 0;
 using namespace std;
 
 
@@ -980,6 +981,31 @@ void Game_functions::guardian(Robot *robo, int num_Robo, pair<float,float> *vels
 
     meta = robo->get_output_fuzzy();//Saida do fuzzy
 
+    //Rodrigo abaix0
+
+    if(centroid_atk.x > ball_pos.x && ball_pos.x > centroid_atk.x - 20 && (ball_pos.y < centroid_atk.y - 35 || ball_pos.y > centroid_atk.y + 35)){
+        state_escanteio = 1;
+    }
+    else if(centroid_atk.x < ball_pos.x && ball_pos.x < centroid_atk.x + 20 && (ball_pos.y < centroid_atk.y - 35 || ball_pos.y > centroid_atk.y + 35)){
+        state_escanteio = 1;
+    }
+
+    if(state_escanteio == 1 && euclidean_dist(ball_pos,robo->get_pos()) <= 30 ){
+        meta = prevision_atk(robo);
+        cout << "Rodrigay" << endl;
+        cont_corner++;
+    }
+    else{
+        meta = robo->get_output_fuzzy();//Saida do fuzzy
+    }
+
+    if(cont_corner > 50){
+        state_escanteio = 0;
+        cont_corner = 0;
+    }
+
+    //Rodrigo acima
+
     meta_grid = convert_C_to_G(meta);
     if (meta_grid.x > 0 && meta_grid.y > 0){
         set_potential(meta_grid.y, meta_grid.x, 0);
@@ -1261,7 +1287,7 @@ void Game_functions::return2defense(Robot *robo){
 
     ball_pos_grid = convert_C_to_G(ball_pos);
 
-    //cout << "Estado1: " << state_return_to_def << endl;
+    cout << "Estado1: " << state_return_to_def << endl;
 
     // Estado para retornar para defesa
     if (state_return_to_def == 0){
@@ -1292,29 +1318,25 @@ void Game_functions::return2defense(Robot *robo){
         set_potential(ball_pos_grid.y+1, ball_pos_grid.x, 1);
 
     }
-
+    cout << "Robox " << robo_pos.x << "Roboy " << robo_pos.y << endl;
+    cout << "Bolax " << ball_pos.x << "Bolay " << ball_pos.y << endl;
+    cout << "Atkx " << centroid_atk.x << "Atky " << centroid_atk.y << endl;
     if(ball_pos.x < centroid_atk.x ){
-        if (robo_pos.x + 7 > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 31){
+        if (robo_pos.x - 7 > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 31){
             state_return_to_def = 1;
         }
-        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 30){
+        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 15) || ball_pos_grid.x < 5 || ball_pos_grid.x > 30){
             state_return_to_def = 0;
-        }
-        else{
-            //tratar aqui
         }
     }
     else{
-        if (robo_pos.x - 7 < ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x+1 < 31)
+        if (robo_pos.x + 7  < ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x+1 < 31)
             state_return_to_def = 1;
-        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 10) || ball_pos_grid.x < 5 || ball_pos_grid.x > 30)
+        else if (((state_return_to_def != 0) && euclidean_dist(meta, robo_pos) < 15) || ball_pos_grid.x < 5 || ball_pos_grid.x > 30)
             state_return_to_def = 0;
-        else{
-            //tratar aqui
-        }
     }
     //cout << "x " << ball_pos_grid.x << endl;
-    //cout << "Estado2: " << state_return_to_def << endl;
+    cout << "Estado2: " << state_return_to_def << endl;
 
 
     meta_grid = convert_C_to_G(meta);

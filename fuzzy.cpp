@@ -201,7 +201,8 @@ void Fuzzy::calcula_input(Robot r){
 
 //COnversão das posições para intervalo 0 1
 void Fuzzy::calcula_another_input(){
-    if (centroid_atk.x > ball_pos.x )/*atcando para direita*/{
+    if (centroid_atk.x > ball_pos.x )/*ata
+    cando para direita*/{
        input[0] = round((ball_pos.x-10)/1.5); //Arrumado para x max 150 e valor inteiro *100
        input[1] = round(ball_pos.y /1.3);
     }

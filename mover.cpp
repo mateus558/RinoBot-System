@@ -757,14 +757,13 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     if (fabs(alpha) > 70 && fabs(alpha) < 110){
         v = 0;
         //cont_desvia = cont_desvia+1;
-        //cout << "Desviou: " << cont_desvia << endl;
+        //cout << "Desviou: "<< endl;
         //w = 1.3*w;
     }
 
     vels->first = v-w*l;
     vels->second = v+w*l;
 
-    //atk_orientation(robo, vels); // Se o robo estiver perto da bola no ataque, ele aponta para a bola
     atk_orientation(robo, pot_fields, vels);
     rotate(robo, vels);
     atk_situation(robo,pot_fields,vels);
