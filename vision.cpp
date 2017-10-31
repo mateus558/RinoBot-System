@@ -115,11 +115,12 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     ball_pos = ball_cent;
     ball_pos_cm.x = ball_pos.x * X_CONV_CONST;
     ball_pos_cm.y = ball_pos.y * Y_CONV_CONST;
-    ball_last_pos = ball_cent;
 
     //Compute the variation of the position for posterior velocity computation
     info.ball_vel.first = double(ball_pos.x - ball_last_pos.x) * X_CONV_CONST;
     info.ball_vel.second = double(ball_pos.y - ball_last_pos.y) * Y_CONV_CONST;
+
+    ball_last_pos = ball_cent;
 
     //Candidate selection for the team 1 from contours detected
     it = remove_if(contours[1].begin(), contours[1].end(), invalid_contour);
@@ -590,7 +591,7 @@ void Vision::run()
             cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
             img = QImage((const uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
             img.bits();
-        }
+        } 
 
 
        /***********************************

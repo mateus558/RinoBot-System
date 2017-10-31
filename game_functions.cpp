@@ -256,7 +256,7 @@ void Game_functions::return2goal(){
 
                 while(iterator_cph()>1E-6);
                 set_direction(centroid_atk,centroid_def);
-                set_grid_orientation(meta_grid);
+                //set_grid_orientation(meta_grid);
     }
 }
 
@@ -502,9 +502,10 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
             }
         }else{
             Point2d vec_ball_def = centroid_def - ball_pos;
-            double aux = (0.45/150)*euclidean_dist(centroid_def,ball_pos);
+            double aux = (0.45/300)*euclidean_dist(centroid_def,ball_pos);
 
             meta = ball_pos + vec_ball_def*aux;
+            meta.y = ball_pos.y;
             //cout << "Meta x: " << meta.x << " y: " << meta.y << endl;
             if(meta.x > 0 && meta.y > 0){
                  meta_grid = convert_C_to_G(meta);
@@ -514,6 +515,11 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
             }else{
                 //tratar a meta aqui
             }
+
+            if(euclidean_dist(robo->get_pos(),ball_pos) < 10){
+                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
+            }
+
         }
     }else{
         //tratar a bola aqui
@@ -983,7 +989,7 @@ void Game_functions::guardian(Robot *robo, int num_Robo, pair<float,float> *vels
 
     //Rodrigo abaix0
 
-    if(centroid_atk.x > ball_pos.x && ball_pos.x > centroid_atk.x - 20 && (ball_pos.y < centroid_atk.y - 35 || ball_pos.y > centroid_atk.y + 35)){
+    /*if(centroid_atk.x > ball_pos.x && ball_pos.x > centroid_atk.x - 20 && (ball_pos.y < centroid_atk.y - 35 || ball_pos.y > centroid_atk.y + 35)){
         state_escanteio = 1;
     }
     else if(centroid_atk.x < ball_pos.x && ball_pos.x < centroid_atk.x + 20 && (ball_pos.y < centroid_atk.y - 35 || ball_pos.y > centroid_atk.y + 35)){
@@ -1002,7 +1008,7 @@ void Game_functions::guardian(Robot *robo, int num_Robo, pair<float,float> *vels
     if(cont_corner > 50){
         state_escanteio = 0;
         cont_corner = 0;
-    }
+    }*/
 
     //Rodrigo acima
 
@@ -1287,7 +1293,7 @@ void Game_functions::return2defense(Robot *robo){
 
     ball_pos_grid = convert_C_to_G(ball_pos);
 
-    cout << "Estado1: " << state_return_to_def << endl;
+    //cout << "Estado1: " << state_return_to_def << endl;
 
     // Estado para retornar para defesa
     if (state_return_to_def == 0){
@@ -1318,9 +1324,9 @@ void Game_functions::return2defense(Robot *robo){
         set_potential(ball_pos_grid.y+1, ball_pos_grid.x, 1);
 
     }
-    cout << "Robox " << robo_pos.x << "Roboy " << robo_pos.y << endl;
+    /*cout << "Robox " << robo_pos.x << "Roboy " << robo_pos.y << endl;
     cout << "Bolax " << ball_pos.x << "Bolay " << ball_pos.y << endl;
-    cout << "Atkx " << centroid_atk.x << "Atky " << centroid_atk.y << endl;
+    cout << "Atkx " << centroid_atk.x << "Atky " << centroid_atk.y << endl;*/
     if(ball_pos.x < centroid_atk.x ){
         if (robo_pos.x - 7 > ball_pos.x && ball_pos_grid.x > 4 && ball_pos_grid.x < 31){
             state_return_to_def = 1;
@@ -1336,7 +1342,7 @@ void Game_functions::return2defense(Robot *robo){
             state_return_to_def = 0;
     }
     //cout << "x " << ball_pos_grid.x << endl;
-    cout << "Estado2: " << state_return_to_def << endl;
+    //cout << "Estado2: " << state_return_to_def << endl;
 
 
     meta_grid = convert_C_to_G(meta);
