@@ -103,7 +103,7 @@ void Game_functions::run(){
     if(calc_Gandalf)
     {
         int r1_flag = selec_robot.r1.get_flag_fuzzy();
-        cout << "Gandalf: " << r1_flag << endl;
+        //cout << "Gandalf: " << r1_flag << endl;
         switch (r1_flag){
             case 0:
                 defender(&selec_robot.r1, 0, &vels[0]);
@@ -141,7 +141,7 @@ void Game_functions::run(){
     if(calc_Presto)
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
-        cout << "Presto: " << r2_flag << endl;
+        //cout << "Presto: " << r2_flag << endl;
         switch (r2_flag){
             case 0:
                 defender(&selec_robot.r2, 1, &vels[1]);
@@ -512,7 +512,7 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
 
         }else{
             Point2d vec_ball_def = centroid_def - ball_pos;
-            double aux = (0.45/300)*euclidean_dist(centroid_def,ball_pos);
+            double aux = (0.45/270)*euclidean_dist(centroid_def,ball_pos);
 
             meta = ball_pos + vec_ball_def*aux;
             meta.y = ball_pos.y;
@@ -525,11 +525,6 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
             }else{
                 //tratar a meta aqui
             }
-
-            if(euclidean_dist(robo->get_pos(),ball_pos) < 10){
-                set_potential(ball_pos_grid.y, ball_pos_grid.x, 0);
-            }
-
         }
     }else{
         //tratar a bola aqui
