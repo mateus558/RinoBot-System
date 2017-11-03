@@ -1338,8 +1338,8 @@ void Mover::atk_situation(Robot *robo, Game_functions *pot_fields, pair<float, f
         //cout << "saiu mover-striker " << endl;
         //cout << "Angulo bola robo: " << ang_ball_robot << " - Angulo ataque robo: " << ang_atk_robot << endl;
     }*/
-    if (centroid_def.x < centroid_atk.x){
-        if (robo_pos.x <= ball_pos.x && fabs(ang_ball_robot) < 30 && fabs(ang_atk_robot) < 30 && euclidean_dist(ball_pos,robo->get_pos()) < 10){
+    if (centroid_def.x < centroid_atk.x) {
+        if (robo_pos.x <= ball_pos.x && fabs(ang_ball_robot) < 30 && fabs(ang_atk_robot) < 30 && euclidean_dist(ball_pos,robo->get_pos()) < 10 && (ball_pos.y > (centroid_def.y - 40)) && (ball_pos.y < (centroid_def.y + 40))){
             if (fabs(robo->get_angle()) < 90){
                 vels->first = v_atk;
                 vels->second = v_atk;
@@ -1354,7 +1354,7 @@ void Mover::atk_situation(Robot *robo, Game_functions *pot_fields, pair<float, f
         }
     }
     else if(centroid_atk.x < centroid_def.x){
-        if (robo_pos.x >= ball_pos.x && fabs(ang_ball_robot) < 30 && fabs(ang_atk_robot) < 30 && euclidean_dist(ball_pos,robo->get_pos()) < 10){
+        if (robo_pos.x >= ball_pos.x && fabs(ang_ball_robot) < 30 && fabs(ang_atk_robot) < 30 && euclidean_dist(ball_pos,robo->get_pos()) < 10 && (ball_pos.y > (centroid_def.y - 40)) && (ball_pos.y < (centroid_def.y + 40))){
             if (fabs(robo->get_angle()) < 90){
                 vels->first = -v_atk;
                 vels->second = -v_atk;

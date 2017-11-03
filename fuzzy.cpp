@@ -501,18 +501,18 @@ int Fuzzy::defuzzification(){
 void Fuzzy::set_objectives(){
     if (num_strategy == 1){
         if (decisao_robo[0] >= 2 && decisao_robo[1] >= 2){
-//            if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
-//                decisao_robo[1] = 1;
-//            }
-//            else {
-//                decisao_robo[0] = 1;
-//            }
-            if(euclidean_dist(selec_robot.r1.get_pos(),ball_pos) > euclidean_dist(selec_robot.r2.get_pos(),ball_pos)){
+            if(fabs(selec_robot.r1.get_pos().x - centroid_def.x) > fabs(selec_robot.r2.get_pos().x - centroid_def.x)){
+                decisao_robo[1] = 1;
+            }
+            else {
+                decisao_robo[0] = 1;
+            }
+            /*if(euclidean_dist(selec_robot.r1.get_pos(),ball_pos) > euclidean_dist(selec_robot.r2.get_pos(),ball_pos)){
                 decisao_robo[0] = 1;
             }
             else {
                 decisao_robo[1] = 1;
-            }
+            }*/
         }
         else{
             //tratar aqui
