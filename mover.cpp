@@ -139,12 +139,6 @@ void Mover::team_changed(){
 
 
 void Mover::calcula_velocidades(Robot *r, Game_functions *potencial_fields, pair<float, float> *vels){
-    if(r->get_channel() == 8){
-        l = 0.035;
-    }
-    else if (r->get_channel() >= 1 && r->get_channel() <= 7){
-        l = 0.028;
-    }
     switch (r->get_flag_fuzzy()){
         case 0:
             velocity_defender(r, potencial_fields , vels);
