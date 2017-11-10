@@ -8,17 +8,17 @@
 #include <opencv2/core/core.hpp>
 #include "robot.h"
 
-#define FIELD_WIDTH 132
-#define FIELD_HEIGHT 175
+#define FIELD_WIDTH 130
+#define FIELD_HEIGHT 174
 #define MIN_ROBOT_AREA 10
 #define MAX_ROBOT_AREA 500
 #define MIN_BALL_AREA 10
 #define MAX_BALL_AREA 200
 #define MAX_CENT_DIST 20
-#define DEFAULT_NROWS 382   //Default number of the rows of the frame
-#define DEFAULT_NCOLS 505   //Default number of the columns of the frame
-#define X_CONV_CONST 0.346534653   //Conversion constant for the X axis (cm/px) height/cols
-#define Y_CONV_CONST 0.345549738 //Conversion constant for the Y axis (cm/px) width/rows
+#define DEFAULT_NROWS 422   //Default number of the rows of the frame
+#define DEFAULT_NCOLS 550   //Default number of the columns of the frame
+#define X_CONV_CONST 0.316363636   //Conversion constant for the X axis (cm/px) height/cols
+#define Y_CONV_CONST 0.308056872 //Conversion constant for the Y axis (cm/px) width/rows
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000

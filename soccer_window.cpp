@@ -51,6 +51,8 @@ soccer_window::soccer_window(QWidget *parent) :
     ball = new BallDraw;
 
     field->setZValue(-1000);
+    eye->show_area(true);
+    field->showFields = true;
     team_robots.resize(3);
     team_shapes.resize(3);
     enemy.resize(3);
@@ -666,3 +668,8 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
     eye->show_errors(checked);
 }
 
+
+void soccer_window::on_show_field_areas_checkbox_clicked()
+{
+
+}

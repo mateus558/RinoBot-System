@@ -570,7 +570,7 @@ void Fuzzy::set_objectives(){
     }
     else if(num_strategy == 2){
         int i = 0;
-        if (euclidean_dist(selec_robot.r1.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r2.get_pos(),centroid_def) && euclidean_dist(selec_robot.r1.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r3.get_pos(),centroid_def)){
+        if (selec_robot.r1.get_channel() != 8 && euclidean_dist(selec_robot.r1.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r2.get_pos(),centroid_def) && euclidean_dist(selec_robot.r1.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r3.get_pos(),centroid_def)){
             decisao_robo[0] = 4; // goleiro
             if (euclidean_dist(selec_robot.r2.get_pos(),ball_pos) <= euclidean_dist(selec_robot.r3.get_pos(),ball_pos)){
                 decisao_robo[1] = 10; // o que vai na bola (killer)
@@ -581,7 +581,7 @@ void Fuzzy::set_objectives(){
                 decisao_robo[2] = 10;
             }
         }
-        else if (euclidean_dist(selec_robot.r2.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r3.get_pos(),centroid_def) && euclidean_dist(selec_robot.r2.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r1.get_pos(),centroid_def)){
+        else if (selec_robot.r2.get_channel() != 8 && euclidean_dist(selec_robot.r2.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r3.get_pos(),centroid_def) && euclidean_dist(selec_robot.r2.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r1.get_pos(),centroid_def)){
             decisao_robo[1] = 4; //goleiro
             if (euclidean_dist(selec_robot.r1.get_pos(),ball_pos) <= euclidean_dist(selec_robot.r3.get_pos(),ball_pos)){
                 decisao_robo[0] = 10; // o que vai na bola (killer)
@@ -592,7 +592,7 @@ void Fuzzy::set_objectives(){
                 decisao_robo[2] = 10;
             }
         }
-        else if(euclidean_dist(selec_robot.r3.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r1.get_pos(),centroid_def) && euclidean_dist(selec_robot.r3.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r2.get_pos(),centroid_def)){
+        else if( selec_robot.r3.get_channel() != 8 && euclidean_dist(selec_robot.r3.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r1.get_pos(),centroid_def) && euclidean_dist(selec_robot.r3.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r2.get_pos(),centroid_def)){
             decisao_robo[2] = 4; // goleiro
             if (euclidean_dist(selec_robot.r1.get_pos(),ball_pos) <= euclidean_dist(selec_robot.r2.get_pos(),ball_pos)){
                 decisao_robo[0] = 10; // o que vai na bola (killer)
@@ -603,6 +603,17 @@ void Fuzzy::set_objectives(){
                 decisao_robo[1] = 10;
             }
         }
+
+        decisao_robo[2] = 4; // goleiro
+        if (euclidean_dist(selec_robot.r1.get_pos(),ball_pos) <= euclidean_dist(selec_robot.r2.get_pos(),ball_pos)){
+            decisao_robo[0] = 10; // o que vai na bola (killer)
+            decisao_robo[1] = 11; // o que guarda a posição (guardian)
+        }
+        else{
+            decisao_robo[0] = 11;
+            decisao_robo[1] = 10;
+        }
+
         selec_robot.r1.set_flag_fuzzy(decisao_robo[0], centroid_atk, centroid_def, ball_pos);
         selec_robot.r2.set_flag_fuzzy(decisao_robo[1], centroid_atk, centroid_def, ball_pos);
         selec_robot.r3.set_flag_fuzzy(decisao_robo[2], centroid_atk, centroid_def, ball_pos);

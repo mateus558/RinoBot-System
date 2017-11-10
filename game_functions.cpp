@@ -1153,7 +1153,32 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
             return2defense(robo);
     }
 
-    while(iterator_cph()>1E-6);
+    set_epsilon(0.3 + euclidean_dist(robo->get_pos(),ball_pos)/250);
+   // cout << " epsilon: " << e << endl;
+
+    // Calculo do angulo de orientacao usar no ataque leve para dribles
+    //Corrige Posicionamento
+    ball_pos.y = -ball_pos.y;
+    centroid_atk.y = -centroid_atk.y;
+
+    //Calcula angulo entre a bola e o gol de ataque
+    Point2d vec_ball_atk = centroid_atk-ball_pos;
+    double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
+    if (vec_ball_atk.y < 0)
+            ang_ball_atk = -ang_ball_atk;
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
+    else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
+    //cout << "Angulo bola atk: " << ang_ball_atk << endl;
+    set_orientation(ang_ball_atk);
+    //orientation = 45;
+    //Corrige Posicionamento novamente
+    ball_pos.y = -ball_pos.y;
+    centroid_atk.y=-centroid_atk.y;
+
+
+
+    while(iterator_cpo()>1E-6);
     set_direction(centroid_atk,centroid_def);
 
     // Seleciona entre CPH e CPO

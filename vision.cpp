@@ -497,8 +497,9 @@ void Vision::run()
 {
     int delay = (1000/this->FPS);
     int i = 0, itr = 0;
-    double elapsed_secs;
+    double elapsed_secs, xScaleFactor = 1.0, yScaleFactor = 1.0;
     clock_t begin, end;
+    bool scaleFactorComputed = false;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
 
@@ -538,6 +539,30 @@ void Vision::run()
             resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC);
         }
 
+        /*
+         *  Tentativa de ajustar escala nos pontos delimitantes do campo
+         *
+         * if(!scaleFactorComputed){
+            xScaleFactor = DEFAULT_NCOLS / raw_frame.cols;
+            yScaleFactor = DEFAULT_NROWS / raw_frame.rows;
+
+            scaleFactorComputed = !scaleFactorComputed;
+            for(i = 0; i < tatk_points.size(); i++){
+                tatk_points[i].x *= xScaleFactor;
+                tatk_points[i].y *= yScaleFactor;
+            }
+            for(i = 0; i < tdef_points.size(); i++){
+                tdef_points[i].x *= xScaleFactor;
+                tdef_points[i].y *= yScaleFactor;
+            }
+            for(i = 0; i < tmap_points.size(); i++){
+                tmap_points[i].x *= xScaleFactor;
+                tmap_points[i].y *= yScaleFactor;
+            }
+            info.map_area = tmap_points;
+            info.atk_area = tatk_points;
+            info.def_area = tdef_points;
+        }*/
         //Apply blurring and gamma corretion methods
         vision_frame = proccess_frame(vision_frame, vision_frame);
 

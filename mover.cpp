@@ -7,7 +7,7 @@
 
 using namespace std;
 double limiar_theta = 90;
-double v_max = 0.5;
+double v_max = 0.6;
 double w_max = 7;
 double v_max_gol = 0.5;
 double v_max_gol_ef = 0.8;
@@ -18,7 +18,7 @@ double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - 
 double dist_giro = 7;
 double dist_giro_gol = 7.5;
 double vel_giro_lado = 1.0;
-double vel_giro_atk = 0.8;
+double vel_giro_atk = 0.5;
 double vel_giro_gol = 1.0;
 double v_atk = 1.6;
 int cont = 0;
@@ -294,11 +294,11 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
                 vels->first = v - w*l;
                 vels->second = v + w*l;
                 //AdjustRobo
-                if((euclidean_dist(robot_pos, pot_fields->get_meta_goalkeeper()) < 9) && (fabs(robo->get_angle()) > 85) && (fabs(robo->get_angle()) < 95)){
+                if((euclidean_dist(robot_pos, pot_fields->get_meta_goalkeeper()) < 7.5) && (fabs(robo->get_angle()) > 85) && (fabs(robo->get_angle()) < 95)){
                     vels->first = 0;
                     vels->second = 0;
                 }
-                else if (euclidean_dist(robot_pos, pot_fields->get_meta_goalkeeper()) < 9){
+                else if (euclidean_dist(robot_pos, pot_fields->get_meta_goalkeeper()) < 7.5){
                     goalkeeper_orientation(robo,vels);
                     //cout << "AdjustRobo" << endl;
                 }
@@ -409,11 +409,11 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
                 vels->first = v - w*l;
                 vels->second = v + w*l;
                 //AdjustRobo
-                if((euclidean_dist(robot_pos, pot_fields->get_meta_goalkeeper()) < 9) && (fabs(robo->get_angle()) > 85) && (fabs(robo->get_angle()) < 95)){
+                if((euclidean_dist(robot_pos, pot_fields->get_meta_goalkeeper()) < 7.5) && (fabs(robo->get_angle()) > 85) && (fabs(robo->get_angle()) < 95)){
                     vels->first = 0;
                     vels->second = 0;
                 }
-                else if (euclidean_dist(robot_pos, pot_fields->get_meta_goalkeeper()) < 9){
+                else if (euclidean_dist(robot_pos, pot_fields->get_meta_goalkeeper()) < 7.5){
                     goalkeeper_orientation(robo,vels);
 
                     //cout << "AdjustRobo" << endl;
@@ -1247,9 +1247,9 @@ void Mover::atk_orientation(Robot *robo, Game_functions *pot_fields, pair<float,
         }
     }
 
-
+/*
     // Função para fazer o robô girar no ataque
-    /*if (centroid_atk.x > ball_pos.x){
+    if (centroid_atk.x > ball_pos.x){
         //if ((ball_pos.y > centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(prediction_robot) >= 30 && euclidean_dist(ball_v,aux) < 0.1 && fabs(ang_ball_robot) > 50){
         if ((ball_pos.y > centroid_atk.y) && (euclidean_dist(ball_pos,robo->get_pos()) < dist_giro) && fabs(ang_ball_robot) > 50){
             vels->first = -vel_giro_atk;
@@ -1530,3 +1530,4 @@ double Mover::ajusta_angulo(double angle){
         angle = angle;
     return angle;
 }
+
