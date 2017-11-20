@@ -7,7 +7,7 @@
 
 using namespace std;
 double limiar_theta = 90;
-double v_max = 0.6;
+double v_max = 0.1;
 double w_max = 7;
 double v_max_gol = 0.5;
 double v_max_gol_ef = 0.8;
@@ -23,6 +23,10 @@ double vel_giro_gol = 1.0;
 double v_atk = 1.6;
 int cont = 0;
 int cont_desvia = 0;
+double last_phi = 0;
+double kp = 10;
+double kd = 1/180;
+
 
 Serial Mover::serial;
 
@@ -973,6 +977,7 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     double ang_vel;
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
+    v_max = 0.4;
 
     // Calcula velocidades
     Point robot_grid = convert_C_to_G(robo->get_pos());
@@ -985,17 +990,40 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     alpha = ajusta_angulo(alpha);
     //cout << "valor de alpha" << alpha << endl;
 
-    if (fabs(alpha) <= limiar_theta){
-        w = (k*v_max*alpha/180);
-        //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
-        v = -v_max*fabs(alpha)/limiar_theta + v_max;
-    }
-    else{
-        alpha = ajusta_angulo(alpha+180);
-        w = k*v_max*alpha/180;
-        //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
-        v = v_max*fabs(alpha)/limiar_theta - v_max;
-    }
+//    if (fabs(alpha) <= limiar_theta){
+//        w = (k*v_max*alpha/180);
+//        //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
+//        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+//    }
+//    else{
+//        alpha = ajusta_angulo(alpha+180);
+//        w = k*v_max*alpha/180;
+//        //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
+//        v = v_max*fabs(alpha)/limiar_theta - v_max;
+//    }
+
+    // Navegação PID
+
+//    if (fabs(alpha) <= limiar_theta){
+//        v = v_max;
+//        w = kp*alpha/180 + kd*(last_phi - robo->get_angle());
+//    }
+//    else{
+//        alpha = ajusta_angulo(alpha+180);
+//        v = -v_max;
+//        w = kp*alpha/180 + kd*(last_phi - robo->get_angle());
+//    }
+
+    v = v_max;
+    w = kp*alpha/180 + kd*(last_phi - robo->get_angle());
+
+    cout <<alpha<< endl;
+        cout <<selec_robot.r1.get_angle()<< endl;
+
+//    v = v_max;
+//    w = kp*alpha/180 + 0*(last_phi - robo->get_angle());
+//    last_phi = robo->get_angle();
+
     //Desvio obstáculosim
     /*if (fabs(alpha) > 80 && fabs(alpha) < 100){
         //w = w*3;

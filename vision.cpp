@@ -45,7 +45,7 @@ Vision::Vision(QObject *parent): QThread(parent)
         cerr << "The attack area could not be read from the file!" << endl;
     }
     if(!read_points("Config/defense_area", def_points)){
-        cerr << "The defense area could not be read from the file!" << endl;
+        cerr << "The defense area couldLeona not be read from the file!" << endl;
     }
     a = (map_points[4] + map_points[5])/2;
     b = (map_points[14] + map_points[13])/2;

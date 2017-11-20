@@ -15,10 +15,10 @@
 #define MIN_BALL_AREA 10
 #define MAX_BALL_AREA 200
 #define MAX_CENT_DIST 20
-#define DEFAULT_NROWS 422   //Default number of the rows of the frame
-#define DEFAULT_NCOLS 550   //Default number of the columns of the frame
-#define X_CONV_CONST 0.316363636   //Conversion constant for the X axis (cm/px) height/cols
-#define Y_CONV_CONST 0.308056872 //Conversion constant for the Y axis (cm/px) width/rows
+#define DEFAULT_NROWS 393   //Default number of the rows of the frame
+#define DEFAULT_NCOLS 520   //Default number of the columns of the frame
+#define X_CONV_CONST 0.334615385   //Conversion constant for the X axis (cm/px) height/cols
+#define Y_CONV_CONST 0.330788804 //Conversion constant for the Y axis (cm/px) width/rows
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000
