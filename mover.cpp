@@ -7,7 +7,8 @@
 
 using namespace std;
 double limiar_theta = 90;
-double v_max = 0.1;
+double delta_limiar = 30;
+double v_max = 0.25;
 double w_max = 7;
 double v_max_gol = 0.5;
 double v_max_gol_ef = 0.8;
@@ -24,8 +25,8 @@ double v_atk = 1.6;
 int cont = 0;
 int cont_desvia = 0;
 double last_phi = 0;
-double kp = 10;
-double kd = 1/180;
+double kp = 6.5;
+double kd = 0.0037;
 
 
 Serial Mover::serial;
@@ -929,7 +930,8 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
 
         vels->first = -w*l;
         vels->second = w*l;
-        //cout << "bola x " << ball_pos.x << "   y " << ball_pos.y << endl;
+        //cout << "bola x " << ball_pos.
+    aux.y = 0;x << "   y " << ball_pos.y << endl;
         //cout << "meta x " << pot_fields->get_meta().x << "   y " << pot_fields->get_meta().y << endl;
     }
     else if(euclidean_dist(robo->get_pos(),pot_fields->get_meta()) < 7){
@@ -977,7 +979,7 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     double ang_vel;
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
-    v_max = 0.4;
+   v_max = 0.25;
 
     // Calcula velocidades
     Point robot_grid = convert_C_to_G(robo->get_pos());
@@ -1002,27 +1004,54 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
 //        v = v_max*fabs(alpha)/limiar_theta - v_max;
 //    }
 
-    // Navegação PID
 
-//    if (fabs(alpha) <= limiar_theta){
+
+
+//     Navegação PID / Derivativo na entrada
+
+
+    if (fabs(alpha) <= limiar_theta ){
+        v = v_max;
+        w = kp*alpha/180 + kd*(last_phi - robo->get_angle());
+        limiar_theta = 90 + delta_limiar;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        v = -v_max;
+        w = kp*alpha/180 + kd*(last_phi - robo->get_angle());
+        limiar_theta = 90 - delta_limiar;
+    }
+
+
+    // Navegação PID / Derivativo realimentação
+
+//    if (fabs(alpha) <= limiar_theta ){
 //        v = v_max;
-//        w = kp*alpha/180 + kd*(last_phi - robo->get_angle());
+//        w = kp*theta/180 + kd*kp*(last_phi - robo->get_angle());
+//        limiar_theta = 90 + delta_limiar;
 //    }
 //    else{
 //        alpha = ajusta_angulo(alpha+180);
 //        v = -v_max;
-//        w = kp*alpha/180 + kd*(last_phi - robo->get_angle());
+//        w = kp*theta/180 + kd*kp*(last_phi - robo->get_angle());
+//        limiar_theta = 90 - delta_limiar;
 //    }
 
-    v = v_max;
-    w = kp*alpha/180 + kd*(last_phi - robo->get_angle());
+
+// Controlador
+//    v = v_max;
+//    w = kp*alpha/180 + kd*(last_phi - robo->get_angle());
 
     cout <<alpha<< endl;
         cout <<selec_robot.r1.get_angle()<< endl;
 
 //    v = v_max;
 //    w = kp*alpha/180 + 0*(last_phi - robo->get_angle());
-//    last_phi = robo->get_angle();
+    last_phi = robo->get_angle();
+
+
+
+
 
     //Desvio obstáculosim
     /*if (fabs(alpha) > 80 && fabs(alpha) < 100){
@@ -1034,6 +1063,7 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
 
     vels->first = v-w*l;
     vels->second = v+w*l;
+
 
    // cout << "Vel Esquerda:" << vels->first << endl;
     //cout << "Vel Direita:" << vels->second << endl;

@@ -104,6 +104,9 @@ void Game_functions::run(){
     {
         int r1_flag = selec_robot.r1.get_flag_fuzzy();
         //cout << "Gandalf: " << r1_flag << endl;
+        cout << selec_robot.r1.get_angle() << endl;
+        // << " POS Y: " << selec_robot.r1.get_pos().y << endl;
+        // cout << "Angle: " << selec_robot.r1.get_angle() << endl;
         switch (r1_flag){
             case 0:
                 defender(&selec_robot.r1, 0, &vels[0]);

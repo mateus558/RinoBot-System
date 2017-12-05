@@ -175,8 +175,8 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
 
-        /*cout << "Presto: " << team_robots[1].get_r_vel() << " " << team_robots[1].get_r_vel() << endl;
-        cout << "Gandalf: " << team_robots[2].get_r_vel() << " " << team_robots[2].get_r_vel() << endl;
+        cout << "Presto: " << team_robots[1].get_r_vel() << " " << team_robots[1].get_l_vel() << endl;
+        /*/cout << "Gandalf: " << team_robots[2].get_r_vel() << " " << team_robots[2].get_r_vel() << endl;
         cout << "Leona: " << team_robots[0].get_r_vel() << " " << team_robots[0].get_r_vel() << endl;*/
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
