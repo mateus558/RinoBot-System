@@ -78,6 +78,8 @@ public:
 
     void robo_grid_position(Robot *, Robot *, Robot *);
 
+    void CPU(Robot *, int, pair<float, float>*);   // Univector Func
+
     ~Game_functions();
 };
 

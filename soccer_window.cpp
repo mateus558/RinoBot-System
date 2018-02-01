@@ -175,9 +175,9 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
 
-        cout << "Presto: " << team_robots[1].get_r_vel() << " " << team_robots[1].get_l_vel() << endl;
-        /*/cout << "Gandalf: " << team_robots[2].get_r_vel() << " " << team_robots[2].get_r_vel() << endl;
-        cout << "Leona: " << team_robots[0].get_r_vel() << " " << team_robots[0].get_r_vel() << endl;*/
+//        cout << "Gandalf: " << team_robots[1].get_r_vel() << " " << team_robots[1].get_l_vel() << endl;
+//        cout << "Presto: " << team_robots[2].get_r_vel() << " " << team_robots[2].get_r_vel() << endl;
+//        cout << "Leona: " << team_robots[0].get_r_vel() << " " << team_robots[0].get_r_vel() << endl;
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
@@ -640,9 +640,9 @@ void soccer_window::on_change_strategy_clicked(){
     if(strategy == "Test")
         num_strategy = 0;
     else if (strategy == "Strategy 1")
-        num_strategy = 1;
+        num_strategy = 0;
     else if (strategy == "Strategy 2")
-        num_strategy = 2;
+        num_strategy = 0;
 
     fuzzy->set_strategy(num_strategy);
 }

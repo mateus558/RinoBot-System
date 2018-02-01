@@ -6,6 +6,7 @@
 #include <vector>
 #include "robot.h" //Robot class
 #include "utils.h" //Utils library
+#define pi 3.1415
 
 
 class Navigation : public QThread
@@ -52,8 +53,17 @@ public:
     void Play();
     bool is_running();
     void Stop();
+
     bool isStopped() const;
     ~Navigation();
+
+    void univector_field(Robot*, Point2d, Point2d);
+    float repulsive_angle(float, float, Point2d);
+    float hyperbolic_spiral(float, float, Point2d);
+    float Gaussian_Func(float);
+    void set_thetaDir(float);
+    float get_direction_CPU();
+    float theta_dir,the_fih,phi;
 
 };
 
