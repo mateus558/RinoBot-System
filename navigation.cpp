@@ -326,7 +326,7 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
 float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
 {
     float Kr = 2.0725,g_size,theta_up,theta_down,rho_up,rho_down;
-    float de = 10;
+    float de = 7;
     Vector3d p(xi,yi,1),ph(0,0,0);
     if (xi > meta.x)
         g_size = 0;
@@ -351,7 +351,7 @@ float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
     else
         phi = theta_dir;
 
-    cout << "phi: " << phi << endl; //TESTE DELETAR
+    //cout << "phi: " << phi << endl; //TESTE DELETAR
 
     return phi;
 

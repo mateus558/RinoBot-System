@@ -1621,6 +1621,9 @@ void Game_functions::CPU(Robot *robo, int num_Robo, pair<float, float> *vels)
 {
     //Utiliza o robo amigo mais próximo para definição do epsilon
     Point2d enemy_prox,robo_pos,meta;
+    Point meta_grid;
+    init_grid();
+
 
     robo_pos = robo->get_pos();
 
@@ -1636,6 +1639,7 @@ void Game_functions::CPU(Robot *robo, int num_Robo, pair<float, float> *vels)
     ball_pos.y = -ball_pos.y;
     centroid_atk.y=-centroid_atk.y;
 
+
     //Calcula angulo entre a bola e o gol de ataque
     Point2d vec_ball_atk = centroid_atk-ball_pos;
     Point2d eixo_x(1.0,0.0);
@@ -1646,15 +1650,39 @@ void Game_functions::CPU(Robot *robo, int num_Robo, pair<float, float> *vels)
     if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
     else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
     //cout << "Angulo bola atk: " << ang_ball_atk << endl;
-
     set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
-
     //Corrige Posicionamento novamente
     ball_pos.y = -ball_pos.y;
     centroid_atk.y=-centroid_atk.y;
 
+
+    //set_thetaDir(70*M_PI/180);
+    //cout << "ball x " << ball_pos.x << " - ball y " << ball_pos.y << endl;
+    //cout << "theta_dir " << theta_dir/M_PI*180 << endl;
+    //cout << "Angulo robo " << robo->get_angle() << endl;
     meta = ball_pos;
 
     univector_field(robo,enemy_prox,meta);
+
+
+    //Chama o CPH nos cantos
+    if(meta.x > 0 && meta.y > 0){
+        meta_grid = convert_C_to_G(meta);
+        //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+        if (meta_grid.x > 0 && meta_grid.y > 0)
+            set_potential(meta_grid.y, meta_grid.x, 0);
+    }else{
+        //tratar a meta aqui
+    }
+
+    if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
+        while(iterator_cph()>1E-6);
+        set_direction(centroid_atk,centroid_def);
+        cout << "CPH" << endl;
+    }
+    else{
+        cout << "CPU" << endl;
+    }
+
 
 }
