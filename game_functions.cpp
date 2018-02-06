@@ -130,7 +130,7 @@ void Game_functions::run(){
             guardian(&selec_robot.r1, 0, &vels[0]);
             break;
         case 100:
-            CPU(&selec_robot.r1, 0, &vels[0]);
+            test(&selec_robot.r1, 0, &vels[0]);
             break;
         }
 

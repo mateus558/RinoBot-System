@@ -167,7 +167,7 @@ void Mover::calcula_velocidades(Robot *r, Game_functions *potencial_fields, pair
         velocity_guardian(r, potencial_fields , vels);
         break;
     case 100:
-        velocity_CPU(r, potencial_fields , vels);
+        velocity_test(r, potencial_fields , vels);
         break;
     }
 }
@@ -990,32 +990,32 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     alpha = theta - robo->get_angle();
     alpha = ajusta_angulo(alpha);
 
-    if(fabs(alpha) > 30){
-        v_max = 0.5;
-        kp = 15;
-        kd = 0.002;
-    }
-    else{
-        v_max = 0.6;
-        kp = 15;
-        kd = 0.001;
-    }
-    v_max = 0.6;
-    kp = 7;
-    kd = 0;
+//    if(fabs(alpha) > 30){
+//        v_max = 0.5;
+//        kp = 15;
+//        kd = 0.002;
+//    }
+//    else{
+//        v_max = 0.6;
+//        kp = 15;
+//        kd = 0.001;
+//    }
+//    v_max = 0.6;
+//    kp = 7;
+//    kd = 0;
     //cout << "valor de alpha" << alpha << endl;
 
-    //    if (fabs(alpha) <= limiar_theta){
-    //        w = (k*v_max*alpha/180);
-    //        //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
-    //        v = -v_max*fabs(alpha)/limiar_theta + v_max;
-    //    }
-    //    else{
-    //        alpha = ajusta_angulo(alpha+180);
-    //        w = k*v_max*alpha/180;
-    //        //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
-    //        v = v_max*fabs(alpha)/limiar_theta - v_max;
-    //    }
+        if (fabs(alpha) <= limiar_theta){
+            w = (k*v_max*alpha/180);
+            //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
+            v = -v_max*fabs(alpha)/limiar_theta + v_max;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            w = k*v_max*alpha/180;
+            //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
+            v = v_max*fabs(alpha)/limiar_theta - v_max;
+        }
 
 
 
@@ -1036,9 +1036,9 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     //    }
 
 
-    v = v_max;
-    w = kp*alpha/180 - kd*(alpha - last_phi);
-    limiar_theta = 90 + delta_limiar;
+//    v = v_max;
+//    w = kp*alpha/180 - kd*(alpha - last_phi);
+//    limiar_theta = 90 + delta_limiar;
 
     // Navegação PID / Derivativo realimentação
 
@@ -1065,7 +1065,7 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     //    v = v_max;
     //    w = kp*alpha/180 + 0*(last_phi - robo->get_angle());
 
-    last_phi = alpha;
+//    last_phi = alpha;
 
 
 
@@ -1107,7 +1107,7 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
 
     cont++;
 
-    //cout << "Contador: " << cont << endl;
+    cout << "Contador: " << cont << endl;
 
 }
 
