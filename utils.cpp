@@ -211,3 +211,38 @@ bool ball_area_limit(vector<Point> p){
     }
     return 0;
 }
+
+pair <double, double> Low_pass_filter_coeff (float cutoff)
+{
+    pair <double, double> coeff;
+    double a;
+    double b;
+    a = ( 1 - sin(cutoff) ) / cos(cutoff);
+    b = ( 1 - a)/2;
+    coeff.first = a;
+    coeff.second = b;
+    return coeff;
+}
+
+Point Low_pass_filter_Centroid(Point centroid, Point last_centroid, Point last_proc_centroid, pair<double, double> coeff)
+{
+
+    int x;
+    int y;
+
+    x = (int) coeff.second * centroid.x + coeff.second * last_centroid.x + coeff.first * last_proc_centroid.x;
+    y = (int) coeff.second * centroid.y + coeff.second * last_centroid.y + coeff.first * last_proc_centroid.y;
+    Point centroid_proc = Point(x, y);
+
+    return centroid_proc;
+}
+
+double Low_pass_filter_Theta(double angle, double last_angle, double last_proc_angle, pair<double, double> coeff)
+{
+    return coeff.second * angle + coeff.second * last_angle + coeff.first * last_proc_angle;
+}
+
+
+
+
+

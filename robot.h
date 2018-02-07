@@ -32,20 +32,20 @@ struct Encoder{
 class Robot
 {
 private:
-    int channel;    //Communication channel
+    int channel;                            //Communication channel
     int n_loss, n_detected;
     int flag_fuzzy;
     Point2d output_fuzzy;
-    double angle, last_angle, ang_predict;   //Rotation angle
+    double angle, angle_raw, last_angle, ang_predict, last_angle_raw;   //Rotation angle
     double ang_tolerance;
-    double w;   //Angular velocity
-    double loss_rate;   //Rate of detection failure of the robot.
+    double w;                                //Angular velocity
+    double loss_rate;                        //Rate of detection failure of the robot.
     bool detected;
-    Point centroid, last_centroid; //Robot general centroid
-    Point2d centroid_cm;
+    Point centroid, centroid_raw, last_centroid, last_centroid_raw;  //Robot general centroid in pixels
+    Point2d centroid_cm, last_centroid_cm;
     Point centroid_predict;
     double pos_tolerance;
-    Point color_cent, team_cent;    //Centroid from the half role color and from team color
+    Point color_cent, team_cent;             //Centroid from the half role color and from team color
     Point line_slope;
     string nick, ID, role;
     vector<Point> pos_hist;
@@ -55,6 +55,8 @@ private:
     pair<float, float> _vel; //Velocity percepted by the camera Vx, Vy
     static Serial serial;
 public:
+    bool LPF_filter;
+
     Robot();
 
     /**************************************
@@ -77,7 +79,9 @@ public:
     double get_ang_vel(); //get angular velocity w
     pair<float, float> get_velocities();
     Point get_centroid();
+    Point get_centroid_raw();
     Point get_last_centroid();
+    Point get_last_centroid_raw();
     Point2d get_pos();
     Point get_predic_centroid();
     pair<vector<Point>, vector<Point> > get_contour();
@@ -85,8 +89,10 @@ public:
     int get_flag_fuzzy();
     int get_channel();
     double get_angle();
-    double get_predic_angle();
+    double get_angle_raw();
+    double get_last_angle_raw();
     double get_last_angle();
+    double get_predic_angle();
     double get_loss_rate();
     Point get_line_slope();
     Point get_from_pos_hist(int rank);
@@ -109,8 +115,10 @@ public:
     void set_output_fuzzy(Point2d);
     void set_channel(int channel = -1);
     void set_angle(double angle);
+    void set_angle_raw(double angle_raw);
     void set_lin_vel(pair<float, float>);
     void set_centroid(Point p = Point(-1, -1));
+    void set_centroid_raw(Point p = Point(-1, -1));
     void set_line_slope(Point p);
     void set_color_cent(Point p);
     void set_team_cent(Point p);

@@ -8,17 +8,18 @@
 #include <opencv2/core/core.hpp>
 #include "robot.h"
 
-#define FIELD_WIDTH 132
-#define FIELD_HEIGHT 175
+#define NUM_ROBOTS 3
+#define FIELD_WIDTH 130
+#define FIELD_HEIGHT 174
 #define MIN_ROBOT_AREA 10
 #define MAX_ROBOT_AREA 500
 #define MIN_BALL_AREA 10
 #define MAX_BALL_AREA 200
 #define MAX_CENT_DIST 20
-#define DEFAULT_NROWS 382   //Default number of the rows of the frame
-#define DEFAULT_NCOLS 505   //Default number of the columns of the frame
-#define X_CONV_CONST 0.346534653   //Conversion constant for the X axis (cm/px) height/cols
-#define Y_CONV_CONST 0.345549738 //Conversion constant for the Y axis (cm/px) width/rows
+#define DEFAULT_NROWS 393   //Default number of the rows of the frame
+#define DEFAULT_NCOLS 520   //Default number of the columns of the frame
+#define X_CONV_CONST 0.334615385   //Conversion constant for the X axis (cm/px) height/cols
+#define Y_CONV_CONST 0.330788804  //Conversion constant for the Y axis (cm/px) width/rows
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265
 #define INF 2000000
@@ -48,5 +49,9 @@ bool sort_by_largest_x(Point a, Point b);
 bool area_limit(std::vector<Point> p);
 bool ball_area_limit(std::vector<Point> p);
 
+
+pair <double, double> Low_pass_filter_coeff (float cutoff); // Returns the LPF coefficients given cutoff frequency (0 <= freq <= pi)
+Point Low_pass_filter_Centroid(Point centroid, Point last_centroid, Point last_proc_centroid, pair<double, double> coeff); // Low Pass Filter
+double Low_pass_filter_Theta(double angle, double last_angle, double last_proc_angle, pair<double, double> coeff); // Low Pass Filter
 
 #endif // UTILS_H
