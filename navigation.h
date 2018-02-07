@@ -63,7 +63,7 @@ public:
     float Gaussian_Func(float);
     void set_thetaDir(float);
     float get_direction_CPU();
-    float theta_dir,the_fih,phi;
+    float theta_dir,the_fih,phi,g_size;
 
 };
 

@@ -640,9 +640,9 @@ void soccer_window::on_change_strategy_clicked(){
     if(strategy == "Test")
         num_strategy = 0;
     else if (strategy == "Strategy 1")
-        num_strategy = 0;
+        num_strategy = 1;
     else if (strategy == "Strategy 2")
-        num_strategy = 0;
+        num_strategy = 2;
 
     fuzzy->set_strategy(num_strategy);
 }

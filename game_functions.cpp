@@ -130,7 +130,7 @@ void Game_functions::run(){
             guardian(&selec_robot.r1, 0, &vels[0]);
             break;
         case 100:
-            test(&selec_robot.r1, 0, &vels[0]);
+            CPU(&selec_robot.r1, 0, &vels[0]);
             break;
         }
 
@@ -1635,7 +1635,7 @@ void Game_functions::CPU(Robot *robo, int num_Robo, pair<float, float> *vels)
     else
         enemy_prox = enemy_pos[2];
 
-//Corrige Posicionamento novamente
+    //Corrige Posicionamento novamente
     ball_pos.y = -ball_pos.y;
     centroid_atk.y=-centroid_atk.y;
 
@@ -1655,12 +1655,13 @@ void Game_functions::CPU(Robot *robo, int num_Robo, pair<float, float> *vels)
     ball_pos.y = -ball_pos.y;
     centroid_atk.y=-centroid_atk.y;
 
-
     //set_thetaDir(70*M_PI/180);
     //cout << "ball x " << ball_pos.x << " - ball y " << ball_pos.y << endl;
     //cout << "theta_dir " << theta_dir/M_PI*180 << endl;
     //cout << "Angulo robo " << robo->get_angle() << endl;
     meta = ball_pos;
+
+    set_g_size(meta,robo);
 
     univector_field(robo,enemy_prox,meta);
 
@@ -1680,9 +1681,32 @@ void Game_functions::CPU(Robot *robo, int num_Robo, pair<float, float> *vels)
         set_direction(centroid_atk,centroid_def);
         cout << "CPH" << endl;
     }
+    else if (((robo_pos.x < 25 || robo_pos.x > 145) && (robo_pos.y < 35 || robo_pos.y > 100)) || robo_pos.y < 15  || robo_pos.y > 115){ // Angulo do CPH
+        while(iterator_cph()>1E-6);
+        set_direction(centroid_atk,centroid_def);
+        cout << "CPH" << endl;
+    }
     else{
         cout << "CPU" << endl;
     }
 
+
+}
+
+void Game_functions::set_g_size(Point2d meta , Robot *robo)
+{
+    if(centroid_atk.x > centroid_def.x){
+        if (robo->get_pos().x > meta.x)
+            g_size = 0;
+        else
+            g_size = 6;
+    }
+    else
+    {
+        if (robo->get_pos().x > meta.x)
+            g_size = 6;
+        else
+            g_size = 0;
+    }
 
 }

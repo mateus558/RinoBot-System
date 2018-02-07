@@ -319,20 +319,18 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
         the_fih = fih_AUF;
     else
         the_fih = fih_AUF*Gaussian_Func(d-d_min) + fih_TUF*(1-Gaussian_Func(d-d_min));
-//        cout << "the_fih: " << the_fih << endl; //TESTE DELETAR
+    //        cout << "the_fih: " << the_fih << endl; //TESTE DELETAR
 
 }
 
 float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
 {
-    float Kr = 2.0725,g_size,theta_up,theta_down,rho_up,rho_down;
+    float Kr = 20;
+    float theta_up,theta_down,rho_up,rho_down;
     float de = 7;
     Vector3d p(xi,yi,1),ph(0,0,0);
-    if (xi > meta.x)
-        g_size = 0;
-    else
-        g_size = 2;
 
+    //cout << "g_size " << g_size << endl;
     MatrixXd m_trans(3,3),m_rot(3,3);
     m_trans  << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
     m_rot << cos(-theta_dir),-sin(-theta_dir),0,sin(-theta_dir),cos(-theta_dir),0,0,0,1;
@@ -364,7 +362,7 @@ void Navigation::set_thetaDir(float theta)
 
 float Navigation::get_direction_CPU()
 {
-return -phi;
+    return -phi;
 }
 
 float Navigation::repulsive_angle(float x, float y, Point2d pos)
