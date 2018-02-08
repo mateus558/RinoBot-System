@@ -289,7 +289,7 @@ Navigation::~Navigation(){
 void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
 {
     float k0 = 0.12;
-    float d_min = 2;
+    float d_min = 15;   // Raio de Influencia do repulsivo
     float norma_s,fih_AUF,fih_TUF;
     float d = sqrt(pow(robo->get_pos().x - enemy.x, 2)+ pow(robo->get_pos().y - enemy.y, 2));  //distancia entre o robo e o obstaculo
     Point2d s, enemy_vel, robo_vel, virtual_obj;
@@ -312,13 +312,20 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
         virtual_obj.y = enemy.y + (d*s.y/norma_s);
     }
 
+   // std::cout << "X:" << virtual_obj.x << std::endl;
+    //std::cout << "Y:" << virtual_obj.y << std::endl;
+
     fih_AUF = repulsive_angle(robo->get_pos().x, robo->get_pos().y, virtual_obj);
-    fih_TUF = hyperbolic_spiral(robo->get_pos().y, robo->get_pos().x, meta);
+    fih_TUF = -hyperbolic_spiral(robo->get_pos().y, robo->get_pos().x, meta);
 
     if (d <= d_min)
         the_fih = fih_AUF;
+        //the_fih = fih_AUF*Gaussian_Func(d-d_min) + fih_TUF*(1-Gaussian_Func(d-d_min));
+        //cout << "Angulo:" << the_fih ;
     else
         the_fih = fih_AUF*Gaussian_Func(d-d_min) + fih_TUF*(1-Gaussian_Func(d-d_min));
+        //the_fih = (fih_AUF+fih_TUF)/2;
+        //the_fih = fih_TUF;
     //        cout << "the_fih: " << the_fih << endl; //TESTE DELETAR
 
 }
@@ -377,7 +384,8 @@ float Navigation::repulsive_angle(float x, float y, Point2d pos)
 }
 
 float Navigation::Gaussian_Func(float r){
-    float delta = (4.57/2),G;
+    float delta = 0.3;
+    float G;
     G = pow(M_E,(-pow(r,2)/(2*pow(delta,2))));
     return G;
 }

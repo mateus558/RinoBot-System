@@ -124,13 +124,13 @@ void Game_functions::run(){
             goalkeeper(&selec_robot.r1, 0, &vels[0]);
             break;
         case 10:
-            killer(&selec_robot.r1, 0, &vels[0]);
+            CPU(&selec_robot.r1, 0, &vels[0]);  //killer
             break;
         case 11:
             guardian(&selec_robot.r1, 0, &vels[0]);
             break;
         case 100:
-            CPU(&selec_robot.r1, 0, &vels[0]);
+            CPU(&selec_robot.r1, 0, &vels[0]); //test
             break;
         }
 
@@ -162,13 +162,13 @@ void Game_functions::run(){
             goalkeeper(&selec_robot.r2, 1, &vels[1]);
             break;
         case 10:
-            killer(&selec_robot.r2, 1, &vels[1]);
+            CPU(&selec_robot.r2, 1, &vels[1]); // killer
             break;
         case 11:
             guardian(&selec_robot.r2, 1, &vels[1]);
             break;
         case 100:
-            test(&selec_robot.r2, 1, &vels[1]);
+            CPU(&selec_robot.r2, 1, &vels[1]); //test
             break;
         }
         //print_grid();
