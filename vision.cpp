@@ -572,7 +572,7 @@ void Vision::run()
             info.atk_area = tatk_points;
             info.def_area = tdef_points;
         }*/
-        
+      
         //Apply blurring and gamma corretion methods
         vision_frame = proccess_frame(vision_frame, vision_frame);
 

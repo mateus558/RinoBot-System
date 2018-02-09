@@ -22,7 +22,6 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
     eye->set_mode(0);
     ui->setupUi(this);
     ui->spinBox->setValue(0);
-    //setAttribute(Qt::WA_DeleteOnClose);
     eye->set_camid(ui->spinBox->value());
     connect(ui->configRobots, SIGNAL(clicked(bool)), this, SLOT(on_configRobots_clicked()));
     connect(serial_settings_dialog, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
@@ -79,14 +78,23 @@ void SetParameters::on_initCapture_clicked()
             QMessageBox msgBox;
             msgBox.setText("The camera could not be opened!");
             msgBox.exec();
+            ui->initCapture->setText("Off");
+            ui->initCapture->setStyleSheet("background-color: red");
+            return;
         }
         eye->Play();
-        ui->initCapture->setText(QString("Stop Capture"));
+
+        ui->initCapture->setStyleSheet("background-color: green");
+        ui->initCapture->setText("On");
+        //ui->initCapture->setText(QString("Stop Capture"));
     }else{
         eye->Stop();
         eye->wait();
         eye->release_cam();
-        ui->initCapture->setText(QString("Init Capture"));
+
+        ui->initCapture->setText("Off");
+        ui->initCapture->setStyleSheet("background-color: red");
+        //ui->initCapture->setText(QString("Init Capture"));
     }
 }
 
@@ -198,7 +206,8 @@ void SetParameters::on_T1_color_clicked()
         eye->Stop();
         eye->release_cam();
     }
-    set_team_color->set_robot("T1");
+
+    set_team_color->set_subject("T1");
     set_team_color->set_camid(cam_id);
     set_team_color->show();
 }
@@ -209,7 +218,7 @@ void SetParameters::on_T2_color_clicked()
         eye->Stop();
         eye->release_cam();
     }
-    set_team_color->set_robot("T2");
+    set_team_color->set_subject("T2");
     set_team_color->set_camid(cam_id);
     set_team_color->show();
 }
@@ -221,7 +230,7 @@ void SetParameters::on_ball_color_clicked()
         eye->Stop();
         eye->release_cam();
     }
-    set_team_color->set_robot("ball");
+    set_team_color->set_subject("ball");
     set_team_color->set_camid(cam_id);
     set_team_color->show();
 }
@@ -338,3 +347,7 @@ void SetParameters::on_calibrate_camera_clicked()
     //system("./Config/camera_calib.sh");
 }
 
+void SetParameters::on_spinBox_valueChanged(int camID)
+{
+    eye->set_camid(camID);
+}
