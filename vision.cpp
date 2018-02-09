@@ -507,6 +507,7 @@ void Vision::run()
     bool scaleFactorComputed = false;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
+    set_LPF_Coefficients( Low_pass_filter_coeff(0.3) );
 
     to_transf.resize(6);
     transf.resize(6);
@@ -597,6 +598,7 @@ void Vision::run()
 				//  Aplica na bola tb...
 				// ====================================== 
 
+
                 if (get_LPF_flag())
                 {
                     if(!first_itr_LPF){
@@ -614,6 +616,7 @@ void Vision::run()
                         first_itr_LPF = !first_itr_LPF;
                     }
                 }
+
 
                 //Compute the linear and angular velocity of the ball
                 info.ball_vel.first /= deltaT;
