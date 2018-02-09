@@ -32,7 +32,7 @@ SetColorRange::SetColorRange(QWidget *parent) :
 void SetColorRange::showEvent(QShowEvent *event){
     QWidget::showEvent(event);
 
-    string file = "Config/" + this->robot;
+    string file = "Config/" + this->subject;
     fstream input(file, fstream::in);
     int low[3], upper[3];
 
@@ -63,6 +63,8 @@ void SetColorRange::showEvent(QShowEvent *event){
         eye = new Vision;
         eye->set_mode(1);
     }
+
+    on_pushButton_2_clicked();
 }
 
 void SetColorRange::closeEvent(QCloseEvent *event){
@@ -141,6 +143,7 @@ void SetColorRange::on_horizontalSlider_6_sliderMoved(int position)
 
 void SetColorRange::on_pushButton_2_clicked()
 {
+    std::cout << cam_id << std::endl;
     if(!eye->open_camera(cam_id)){
         QMessageBox msgBox;
         msgBox.setText("The camera could not be opened!");
@@ -153,9 +156,9 @@ void SetColorRange::set_camid(int cam_id){
     this->cam_id = cam_id;
 }
 
-void SetColorRange::set_robot(string robot)
+void SetColorRange::set_subject(string subject)
 {
-    this->robot = robot;
+    this->subject = subject;
 }
 
 SetColorRange::~SetColorRange()
@@ -166,7 +169,7 @@ SetColorRange::~SetColorRange()
 void SetColorRange::on_pushButton_clicked()
 {
     int i = 0;
-    string line, path = "Config/" + robot;
+    string line, path = "Config/" + subject;
     stringstream ss;
     fstream file;
 

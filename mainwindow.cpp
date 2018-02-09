@@ -14,9 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
     soccer = new soccer_window;
 
     ui->setupUi(this);
-    QPixmap pix("Untitled1.png");
+    QPixmap pix("rino.png");
     ui->logo->setPixmap(pix);
-    ui->strategy_choosen->addItem("Potential Fields");
     connect(ui->setParameters, SIGNAL(clicked(bool)), this, SLOT(openSetParameters()));
     connect(setparam, SIGNAL(serialSettings(SettingsDialog::Settings)), soccer, SLOT(receiveSerialSettings(SettingsDialog::Settings)), Qt::QueuedConnection);
 }
