@@ -29,8 +29,8 @@ soccer_window::soccer_window(QWidget *parent) :
 
     ui->setupUi(this);
 
-    ui->strategy_options->addItem("Strategy 1");
     ui->strategy_options->addItem("Strategy 2");
+    ui->strategy_options->addItem("Strategy 1");
     ui->strategy_options->addItem("Test");
 
     area_read = false;
@@ -51,6 +51,8 @@ soccer_window::soccer_window(QWidget *parent) :
     ball = new BallDraw;
 
     field->setZValue(-1000);
+    eye->show_area(true);
+    field->showFields = true;
     team_robots.resize(3);
     team_shapes.resize(3);
     enemy.resize(3);
@@ -173,9 +175,9 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
 
-        /*cout << "Presto: " << team_robots[1].get_r_vel() << " " << team_robots[1].get_r_vel() << endl;
-        cout << "Gandalf: " << team_robots[2].get_r_vel() << " " << team_robots[2].get_r_vel() << endl;
-        cout << "Leona: " << team_robots[0].get_r_vel() << " " << team_robots[0].get_r_vel() << endl;*/
+//        cout << "Gandalf: " << team_robots[1].get_r_vel() << " " << team_robots[1].get_l_vel() << endl;
+//        cout << "Presto: " << team_robots[2].get_r_vel() << " " << team_robots[2].get_r_vel() << endl;
+//        cout << "Leona: " << team_robots[0].get_r_vel() << " " << team_robots[0].get_r_vel() << endl;
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
@@ -440,7 +442,7 @@ void soccer_window::on_start_game_2_clicked()
             ui->serial_status_label->setText("Serial Open");
         }
 
-        ui->start_game_2->setText("Stop Game");
+        ui->start_game_2->setText("Stop");
     }else{
         game_started = false;
         run_fuzzy = false;
@@ -453,7 +455,7 @@ void soccer_window::on_start_game_2_clicked()
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
 
-        ui->start_game_2->setText("Start Game");
+        ui->start_game_2->setText("Start");
         ui->serial_status_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->serial_status_label->setText("Serial Closed");
     }
@@ -468,17 +470,24 @@ void soccer_window::on_start_game_clicked()
             QMessageBox msgBox;
             msgBox.setText("The camera could not be opened!");
             msgBox.exec();
+            ui->start_game->setText("Off");
+            ui->start_game->setStyleSheet("background-color: red");
             return;
         }
 
         eye->Play();
-        ui->start_game->setText("Stop Capture");
+
+        ui->start_game->setStyleSheet("background-color: green");
+        ui->start_game->setText("On");
+        //ui->start_game->setText("Stop Capture");
     }else{
         eye->Stop();
         eye->wait();
         eye->release_cam();
 
-        ui->start_game->setText("Start Capture");
+        ui->start_game->setText("Off");
+        ui->start_game->setStyleSheet("background-color: red");
+        //ui->start_game->setText("Start Capture");
     }
 }
 
@@ -643,6 +652,19 @@ void soccer_window::on_change_strategy_clicked(){
         num_strategy = 2;
 
     fuzzy->set_strategy(num_strategy);
+
+    switch(ui->strategy_options->currentIndex())
+    {
+    case 0:
+        ui->currentStrategylbl->setText("Current: 2");
+        break;
+    case 1:
+        ui->currentStrategylbl->setText("Current: 1");
+        break;
+    case 2:
+        ui->currentStrategylbl->setText("Current: Text");
+        break;
+    }
 }
 
 void soccer_window::on_show_field_areas_checkbox_toggled(bool checked)
@@ -666,3 +688,8 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
     eye->show_errors(checked);
 }
 
+
+void soccer_window::on_show_field_areas_checkbox_clicked()
+{
+
+}
