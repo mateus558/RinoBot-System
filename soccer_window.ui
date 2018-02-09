@@ -124,20 +124,6 @@
      <number>100</number>
     </property>
    </widget>
-   <zorder>gandalf_battery_level</zorder>
-   <zorder>leona_battery_level</zorder>
-   <zorder>presto_baterry_level</zorder>
-   <zorder>cam_id_spinBox</zorder>
-   <zorder>fps_label</zorder>
-   <zorder>cam_id_label</zorder>
-   <zorder>fps_lcd</zorder>
-   <zorder>change_strategy</zorder>
-   <zorder>start_game</zorder>
-   <zorder>start_game_2</zorder>
-   <zorder>switch_fields</zorder>
-   <zorder>strategy_options</zorder>
-   <zorder>optionsGroupBox</zorder>
-   <zorder>read_parameters</zorder>
   </widget>
   <widget class="QGroupBox" name="robots_roles_group">
    <property name="geometry">
@@ -236,7 +222,7 @@
      <x>10</x>
      <y>200</y>
      <width>191</width>
-     <height>141</height>
+     <height>161</height>
     </rect>
    </property>
    <property name="title">
@@ -683,6 +669,80 @@
     <string>Set Camera: </string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="swapteamscbk">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>330</y>
+     <width>111</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Swap Teams</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="chopFrequencylbl">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>500</y>
+     <width>121</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Chop Frequency:</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="horizontalSlider">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>520</y>
+     <width>171</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>99</number>
+   </property>
+   <property name="singleStep">
+    <number>1</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLCDNumber" name="chopFrequencylcd">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>540</y>
+     <width>81</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">Background-color: #000;</string>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="startFilterbtn">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>490</y>
+     <width>41</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Off</string>
+   </property>
+  </widget>
   <zorder>optionsGroupBox</zorder>
   <zorder>start_game</zorder>
   <zorder>switch_fields</zorder>
@@ -706,6 +766,11 @@
   <zorder>strategylbl</zorder>
   <zorder>currentStrategylbl</zorder>
   <zorder>cameralbl</zorder>
+  <zorder>swapteamscbk</zorder>
+  <zorder>chopFrequencylbl</zorder>
+  <zorder>horizontalSlider</zorder>
+  <zorder>chopFrequencylcd</zorder>
+  <zorder>startFilterbtn</zorder>
  </widget>
  <resources/>
  <connections/>

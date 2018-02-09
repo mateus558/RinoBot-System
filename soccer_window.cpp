@@ -693,3 +693,48 @@ void soccer_window::on_show_field_areas_checkbox_clicked()
 {
 
 }
+
+void soccer_window::on_swapteamscbk_clicked() // testar
+{
+    vector<Robot> robots = eye->get_robots();
+
+    vector<int> low_team1_color = robots[0].get_team_low_color();
+    vector<int> upper_team1_color = robots[0].get_team_upper_color();
+    vector<int> low_team2_color = robots[0].get_team_low_color();
+    vector<int> upper_team2_color = robots[4].get_team_upper_color();
+
+    robots[0].set_team_low_color(low_team2_color);
+    robots[0].set_team_upper_color(upper_team2_color);
+    robots[4].set_team_low_color(low_team1_color);
+    robots[4].set_team_upper_color(upper_team1_color);
+
+    eye->set_robots(robots);
+}
+
+void soccer_window::on_horizontalSlider_sliderMoved(int position) //slider para indicar mandar a frequencia de corte
+{
+    double chopFrequency;
+    if(position != 0)
+    {
+        chopFrequency = (position)*pi/100;
+        //emviar para a variavel correta
+    }
+}
+
+void soccer_window::on_startFilterbtn_clicked() //liga e desliga o filtro
+{
+    if(eye->get_LPF_flag() == 0)
+    {
+        eye->set_LPF_flag(1);
+        ui->startFilterbtn->setStyleSheet("background-color: green");
+        ui->startFilterbtn->setText("On");
+        ui->horizontalSlider->setVisible(true);
+        ui->chopFrequencylcd->setVisible(true);
+    }else{
+        eye->set_LPF_flag(0);
+        ui->startFilterbtn->setText("Off");
+        ui->startFilterbtn->setStyleSheet("background-color: red");
+        ui->horizontalSlider->setVisible(false);
+        ui->chopFrequencylcd->setVisible(false);
+    }
+}

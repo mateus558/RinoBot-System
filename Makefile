@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = Rinobot_System1.0.0
-DISTDIR = /home/rinobot/Desktop/RinoBot-System-New_Vision/.tmp/Rinobot_System1.0.0
+DISTDIR = /home/rinobot/Documents/RinoBot-System/.tmp/Rinobot_System1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/home/rinobot/Qt/5.8/gcc_64/lib
 LIBS          = $(SUBLIBS) `pkg-config --cflags --libs opencv` -L/home/rinobot/Qt/5.8/gcc_64/lib -lQt5Widgets -lQt5Gui -lQt5SerialPort -lQt5Core -lGL -lpthread 
@@ -997,7 +997,7 @@ moc_mainwindow.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QMainWindow \
 		mainwindow.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
 
 moc_vision.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QMutex \
 		../../Qt/5.8/gcc_64/include/QtCore/qmutex.h \
@@ -1249,7 +1249,7 @@ moc_vision.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QMutex \
 		vision.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include vision.h -o moc_vision.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include vision.h -o moc_vision.cpp
 
 moc_setparameters.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QMainWindow \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qmainwindow.h \
@@ -1513,7 +1513,7 @@ moc_setparameters.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QMainWindow \
 		setparameters.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include setparameters.h -o moc_setparameters.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include setparameters.h -o moc_setparameters.cpp
 
 moc_configrobots.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QWidget \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qwidget.h \
@@ -1771,7 +1771,7 @@ moc_configrobots.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QWidget \
 		configrobots.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include configrobots.h -o moc_configrobots.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include configrobots.h -o moc_configrobots.cpp
 
 moc_setcolorrange.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QWidget \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qwidget.h \
@@ -2028,7 +2028,7 @@ moc_setcolorrange.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QWidget \
 		setcolorrange.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include setcolorrange.h -o moc_setcolorrange.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include setcolorrange.h -o moc_setcolorrange.cpp
 
 moc_settingsdialog.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QDialog \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qdialog.h \
@@ -2138,7 +2138,7 @@ moc_settingsdialog.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QDialog \
 		settingsdialog.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include settingsdialog.h -o moc_settingsdialog.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include settingsdialog.h -o moc_settingsdialog.cpp
 
 moc_soccer_window.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QMainWindow \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qmainwindow.h \
@@ -2406,7 +2406,7 @@ moc_soccer_window.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QMainWindow \
 		soccer_window.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include soccer_window.h -o moc_soccer_window.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include soccer_window.h -o moc_soccer_window.cpp
 
 moc_fuzzy.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QThread \
 		../../Qt/5.8/gcc_64/include/QtCore/qthread.h \
@@ -2527,7 +2527,7 @@ moc_fuzzy.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QThread \
 		fuzzy.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include fuzzy.h -o moc_fuzzy.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include fuzzy.h -o moc_fuzzy.cpp
 
 moc_serial.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QTimer \
 		../../Qt/5.8/gcc_64/include/QtCore/qtimer.h \
@@ -2642,7 +2642,7 @@ moc_serial.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QTimer \
 		serial.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include serial.h -o moc_serial.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include serial.h -o moc_serial.cpp
 
 moc_navigation.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QThread \
 		../../Qt/5.8/gcc_64/include/QtCore/qthread.h \
@@ -2763,7 +2763,7 @@ moc_navigation.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QThread \
 		navigation.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include navigation.h -o moc_navigation.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include navigation.h -o moc_navigation.cpp
 
 moc_game_functions.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QThread \
 		../../Qt/5.8/gcc_64/include/QtCore/qthread.h \
@@ -2886,7 +2886,7 @@ moc_game_functions.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QThread \
 		game_functions.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include game_functions.h -o moc_game_functions.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include game_functions.h -o moc_game_functions.cpp
 
 moc_video4linuxconfig.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QWidget \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qwidget.h \
@@ -3140,7 +3140,7 @@ moc_video4linuxconfig.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QWidget \
 		video4linuxconfig.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include video4linuxconfig.h -o moc_video4linuxconfig.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include video4linuxconfig.h -o moc_video4linuxconfig.cpp
 
 moc_mover.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QThread \
 		../../Qt/5.8/gcc_64/include/QtCore/qthread.h \
@@ -3264,7 +3264,7 @@ moc_mover.cpp: ../../Qt/5.8/gcc_64/include/QtCore/QThread \
 		mover.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
-	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Desktop/RinoBot-System-New_Vision -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mover.h -o moc_mover.cpp
+	/home/rinobot/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/rinobot/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/rinobot/Documents/RinoBot-System -I/usr/local/include/opencv2 -I/home/rinobot/Qt/5.8/gcc_64/include -I/home/rinobot/Qt/5.8/gcc_64/include/QtWidgets -I/home/rinobot/Qt/5.8/gcc_64/include/QtGui -I/home/rinobot/Qt/5.8/gcc_64/include/QtSerialPort -I/home/rinobot/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mover.h -o moc_mover.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -3860,7 +3860,39 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QGraphicsItem \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qgraphicsitem.h \
 		mover.h \
-		ui_mainwindow.h
+		ui_mainwindow.h \
+		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QStatusBar \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstatusbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 vision.o: vision.cpp ../../Qt/5.8/gcc_64/include/QtWidgets/QMessageBox \
@@ -4375,7 +4407,43 @@ setparameters.o: setparameters.cpp setparameters.h \
 		setcolorrange.h \
 		../../Qt/5.8/gcc_64/include/QtGui/QCloseEvent \
 		video4linuxconfig.h \
-		ui_setparameters.h
+		ui_setparameters.h \
+		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLCDNumber \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlcdnumber.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QSpinBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qspinbox.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QStatusBar \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstatusbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o setparameters.o setparameters.cpp
 
 robot.o: robot.cpp utils.h \
@@ -4862,7 +4930,48 @@ configrobots.o: configrobots.cpp configrobots.h \
 		settingsdialog.h \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QDialog \
 		utils.h \
-		ui_configrobots.h
+		ui_configrobots.h \
+		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qicon.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QComboBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qcombobox.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLineEdit \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlineedit.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qtextcursor.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qtextformat.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qtextoption.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QSpinBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qspinbox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o configrobots.o configrobots.cpp
 
 setcolorrange.o: setcolorrange.cpp setcolorrange.h \
@@ -5119,6 +5228,43 @@ setcolorrange.o: setcolorrange.cpp setcolorrange.h \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QDialog \
 		utils.h \
 		ui_setcolorrange.h \
+		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qicon.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QGroupBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qgroupbox.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLCDNumber \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlcdnumber.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QSlider \
 		../../Qt/5.8/gcc_64/include/QtCore/QFile \
 		../../Qt/5.8/gcc_64/include/QtCore/QTextStream \
 		../../Qt/5.8/gcc_64/include/QtCore/QString
@@ -5350,14 +5496,62 @@ settingsdialog.o: settingsdialog.cpp settingsdialog.h \
 		../../Qt/5.8/gcc_64/include/QtSerialPort/qserialport.h \
 		../../Qt/5.8/gcc_64/include/QtSerialPort/qserialportglobal.h \
 		ui_settingsdialog.h \
+		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qicon.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
+		../../Qt/5.8/gcc_64/include/QtCore/qcoreapplication.h \
+		../../Qt/5.8/gcc_64/include/QtCore/qeventloop.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QCheckBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qcheckbox.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QComboBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qcombobox.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
+		../../Qt/5.8/gcc_64/include/QtCore/qregularexpression.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
+		../../Qt/5.8/gcc_64/include/QtCore/qabstractitemmodel.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QGridLayout \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlayout.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QGroupBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qgroupbox.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../Qt/5.8/gcc_64/include/QtCore/qitemselectionmodel.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QSpacerItem \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QVBoxLayout \
 		../../Qt/5.8/gcc_64/include/QtSerialPort/QSerialPortInfo \
 		../../Qt/5.8/gcc_64/include/QtSerialPort/qserialportinfo.h \
 		../../Qt/5.8/gcc_64/include/QtGui/QIntValidator \
-		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
-		../../Qt/5.8/gcc_64/include/QtCore/qregularexpression.h \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QLineEdit \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qlineedit.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
 		../../Qt/5.8/gcc_64/include/QtGui/qtextcursor.h \
 		../../Qt/5.8/gcc_64/include/QtGui/qtextformat.h \
 		../../Qt/5.8/gcc_64/include/QtGui/qpen.h \
@@ -5632,7 +5826,54 @@ soccer_window.o: soccer_window.cpp ../../Qt/5.8/gcc_64/include/QtWidgets/QMessag
 		../../Qt/5.8/gcc_64/include/QtWidgets/QGraphicsItem \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qgraphicsitem.h \
 		mover.h \
-		ui_soccer_window.h
+		ui_soccer_window.h \
+		../../Qt/5.8/gcc_64/include/QtCore/QLocale \
+		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QCheckBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qcheckbox.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QComboBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qcombobox.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QGraphicsView \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qgraphicsview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qscrollarea.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QGroupBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qgroupbox.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLCDNumber \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlcdnumber.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QProgressBar \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qprogressbar.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QSlider \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QSpinBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qspinbox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o soccer_window.o soccer_window.cpp
 
 fuzzy.o: fuzzy.cpp fuzzy.h \
@@ -6244,7 +6485,42 @@ video4linuxconfig.o: video4linuxconfig.cpp video4linuxconfig.h \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QDialog \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qdialog.h \
 		utils.h \
-		ui_video4linuxconfig.h
+		ui_video4linuxconfig.h \
+		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qicon.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLCDNumber \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlcdnumber.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QSlider
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o video4linuxconfig.o video4linuxconfig.cpp
 
 drawobjects.o: drawobjects.cpp drawobjects.h \
