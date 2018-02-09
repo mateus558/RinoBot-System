@@ -9,6 +9,10 @@
 #include "utils.h"
 #include "vision.h"
 
+/*
+ * TESTE COMMIT
+ * */
+
 using namespace std;
 
 Point null_point = Point(-1, -1);
@@ -18,6 +22,7 @@ Vision::Vision(QObject *parent): QThread(parent)
     Point a, b;
     stop = true;
     showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters = trained= false;
+    first_itr_LPF = true;
     mode = 0;
     cont = 0;
     robots.resize(6);
@@ -52,6 +57,10 @@ Vision::Vision(QObject *parent): QThread(parent)
     x_axis_slope = b - a;
     ball_pos = null_point;
     ball_last_pos = null_point;
+
+    LPF_Coefficients.first = 0.0;
+    LPF_Coefficients.second = 0.0;
+    LPF_flag = false;
 
  // last_P = MatrixXd::Identity(3,3);
 }
@@ -230,13 +239,13 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             robots[r_label].set_team_cent(unk_robot);
             robots[r_label].set_color_cent(col_select.first);
             robots[r_label].set_line_slope(line_slope);
-            robots[r_label].set_angle(angle);
-            robots[r_label].set_centroid(centroid);
+            robots[r_label].set_angle_raw(angle);
+            robots[r_label].set_centroid_raw(centroid);
             robots[r_label].was_detected(true);
             r_set[r_label] = true;
        }else if(r_label != -1){
-            robots[r_label].set_centroid(last_cent);
-            robots[r_label].set_angle(last_angle);
+            robots[r_label].set_centroid_raw(last_cent);
+            robots[r_label].set_angle_raw(last_angle);
             robots[r_label].was_detected(false);
             r_set[r_label] = true;
         }
@@ -247,8 +256,8 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         if(!r_set[i]){
             error = true;
             if(showErrors) cerr << robots[i].get_nick() << " was not found!" << endl;
-            robots[i].set_angle(robots[i].get_last_angle());
-            robots[i].set_centroid(robots[i].get_last_centroid());
+            robots[i].set_angle_raw(robots[i].get_last_angle());
+            robots[i].set_centroid_raw(robots[i].get_last_centroid());
             robots[i].was_detected(false);
         }
     }
@@ -257,11 +266,11 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     for(i = 3, j = 0, dista = INFINITY; i < 6; ++i, ++j){
         if(tirj_cent[1].size() == 0) continue;
         robots[i].set_team_cent(tirj_cent[1][i-3]);
-        robots[i].set_centroid(robots[i].get_team_cent());
+        robots[i].set_centroid_raw(robots[i].get_team_cent());
         robots[i].was_detected(true);
     }
     for(i = t1size; i < 6; ++i){
-        robots[i].set_centroid(null_point);
+        robots[i].set_centroid_raw(null_point);
         robots[i].was_detected(false);
     }
 
@@ -563,11 +572,13 @@ void Vision::run()
             info.atk_area = tatk_points;
             info.def_area = tdef_points;
         }*/
+      
         //Apply blurring and gamma corretion methods
         vision_frame = proccess_frame(vision_frame, vision_frame);
 
         switch(mode){
             case 0: //Visualization mode
+
                 //Convert the frame from RGB color space to HSV
                 cvtColor(vision_frame, vision_frame, CV_BGR2HSV);
 
@@ -575,6 +586,7 @@ void Vision::run()
                 obj_contours = detect_objects(vision_frame, robots).second;
                 //Get the robots from the best candidates selected to game objects
                 robots = fill_robots(obj_contours, robots);
+
 
                 //Compute the variation of time for physics computations
                 end = clock();
@@ -584,6 +596,28 @@ void Vision::run()
                 /***********************************
                  *     Physics Computations Step   *
                  ***********************************/
+                // ====================================== 
+				//  APLICA O FILTRO AQUI!!!!
+				//  Aplica na bola tb...
+				// ====================================== 
+
+                if (get_LPF_flag())
+                {
+                    if(!first_itr_LPF){
+                        for(i = 0; i < 6; i++)
+                        {
+                            robots[i].set_centroid(Low_pass_filter_Centroid( robots[i].get_centroid_raw(),  robots[i].get_last_centroid_raw(),  robots[i].get_last_centroid(), LPF_Coefficients));
+                            robots[i].set_angle(Low_pass_filter_Theta(robots[i].get_angle_raw(), robots[i].get_last_angle_raw(), robots[i].get_last_angle(), LPF_Coefficients));
+                        }
+                    }else{
+                        for(i = 0; i < 6; i++)
+                        {
+                            robots[i].set_centroid(Low_pass_filter_Centroid( robots[i].get_centroid(),  robots[i].get_centroid(),  robots[i].get_centroid(), LPF_Coefficients));
+                            robots[i].set_angle(Low_pass_filter_Theta(robots[i].get_angle(), robots[i].get_last_angle(), robots[i].get_last_angle(), LPF_Coefficients));
+                        }
+                        first_itr_LPF = !first_itr_LPF;
+                    }
+                }
 
                 //Compute the linear and angular velocity of the ball
                 info.ball_vel.first /= deltaT;
@@ -821,6 +855,33 @@ void Vision::set_atk_area(pVector atk_points){
     this->tatk_points = atk_points;
     //sentPoints = false;
 }
+
+void Vision::set_LPF_Coefficients(pair <double, double> coeff)
+{
+    this->LPF_Coefficients = coeff;
+}
+
+pair <double, double> Vision::get_LPF_Coefficients()
+{
+    return LPF_Coefficients;
+}
+
+void Vision::set_LPF_flag(bool lpfFlag)
+{
+    int i;
+
+    LPF_flag = lpfFlag;
+
+    for(i = 0; i < NUM_ROBOTS; i++){
+        robots[i].LPF_filter = lpfFlag;
+    }
+}
+
+bool Vision::get_LPF_flag()
+{
+    return LPF_flag;
+}
+
 
 Vision::~Vision(){
     mutex.lock();

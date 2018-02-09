@@ -37,6 +37,10 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_setToDefault_clicked();
+
+    void on_gain_slider_sliderMoved(int position);
+
 private:
     Ui::video4linuxConfig *ui;
     Vision *eye;

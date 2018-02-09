@@ -42,8 +42,6 @@ void video4linuxConfig::showEvent(QShowEvent *event){
     vector<int> values;
     ifstream file("Config/default_cam_calib.conf");
 
-    system("./Config/camera_calib.sh");
-
     if(!file){
         clog << "File could not be opened! (Camera calibration)" << endl;
 
@@ -62,14 +60,38 @@ void video4linuxConfig::showEvent(QShowEvent *event){
         values.push_back(value);
     }
 
+    system("v4l2-ctl --set-ctrl white_balance_temperature_auto=0");
+    system("v4l2-ctl --set-ctrl power_line_frequency=2");
+    system("v4l2-ctl --set-ctrl exposure_auto_priority=0");
+    system("v4l2-ctl --set-ctrl pan_absolute=0");
+    system("v4l2-ctl --set-ctrl tilt_absolute=0");
+    system("v4l2-ctl --set-ctrl focus_absolute=0");
+    system("v4l2-ctl --set-ctrl focus_auto=0");
+    system("v4l2-ctl --set-ctrl zoom_absolute=100");
+    system("v4l2-ctl --set-ctrl backlight_compensation=1");
+    system("v4l2-ctl --set-ctrl exposure_auto=0");
+
     ui->bright_slider->setValue(values[0]);
+    ui->bright_lcd->display(values[0]);
+
     ui->contrast_slider->setValue(values[1]);
+    ui->contrast_lcd->display(values[1]);
+
     ui->saturation_slider->setValue(values[2]);
-    ui->white_bal_slider->setValue(values[3]);
-    ui->sharpness_slider->setValue(values[4]);
-    ui->exposure_slider->setValue(values[5]);
-    ui->focus_slider->setValue(values[6]);
-    ui->focus_lcd->display(values[6]);
+    ui->saturation_lcd->display(values[2]);
+
+    ui->gain_slider->setValue(values[3]);
+    ui->gain_lcd->display(values[3]);
+
+    ui->white_bal_slider->setValue(values[4]);
+    ui->white_bal_lcd->display(values[4]);
+
+    ui->sharpness_slider->setValue(values[5]);
+    ui->sharpness_lcd->display(values[5]);
+
+    ui->exposure_slider->setValue(values[6]);
+    ui->exposure_lcd->display(values[6]);
+
 }
 
 void video4linuxConfig::on_bright_slider_sliderMoved(int position)
@@ -160,7 +182,23 @@ void video4linuxConfig::on_focus_slider_sliderMoved(int position)
     ui->focus_lcd->display(position);
 }
 
+void video4linuxConfig::on_gain_slider_sliderMoved(int position)
+{
+    std::string command("v4l2-ctl --set-ctrl gain=");
+
+    command = command + std::to_string(position);
+    system(command.c_str());
+    ui->focus_lcd->display(position);
+}
+
 void video4linuxConfig::on_pushButton_2_clicked()
 {
 
 }
+
+void video4linuxConfig::on_setToDefault_clicked()
+{
+    system("./Config/camera_calib.sh");
+}
+
+

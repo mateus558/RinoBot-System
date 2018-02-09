@@ -13,6 +13,7 @@ Robot::Robot(){
     channel = -1;
     centroid = Point(-1, -1);
     last_centroid = centroid;
+    last_centroid_raw = centroid;
     centroid_cm = Point2d(0.0, 0.0);
     team_cent = Point(-1, -1);
     color_cent = Point(-1, -1);
@@ -25,6 +26,7 @@ Robot::Robot(){
     upper_color.assign(3, 255);
     pos_hist.push_back(Point(-1, -1));
     last_angle = loss_rate = 0.0;
+    last_angle_raw = last_angle;
     detected = false;
     pos_tolerance = 2.0; //2cm
     ang_tolerance = 3;
@@ -197,9 +199,30 @@ void Robot::set_angle(double angle)
     this->angle = angle;
 }
 
+void Robot::set_angle_raw(double angle_raw)
+{
+    last_angle_raw = this->angle_raw;
+    this->angle_raw = angle_raw;
+}
+
 double Robot::get_angle()
 {
-    return this->angle;
+    return (LPF_filter)?this->angle:this->angle_raw;
+}
+
+double Robot::get_angle_raw()
+{
+    return this->angle_raw;
+}
+
+double Robot::get_last_angle_raw()
+{
+    return this->last_angle_raw;
+}
+
+double Robot::get_last_angle()
+{
+    return (LPF_filter)?this->last_angle:this->last_angle_raw;
 }
 
 double Robot::get_ang_vel(){
@@ -248,11 +271,6 @@ pair<float, float> Robot::get_velocities(){
     return this->_vel;
 }
 
-double Robot::get_last_angle()
-{
-    return this->last_angle;
-}
-
 void Robot::set_centroid(Point p)
 {
     last_centroid = centroid;
@@ -263,13 +281,34 @@ void Robot::set_centroid(Point p)
     add_pos_hist(p);
 }
 
+void Robot::set_centroid_raw(Point p)
+{
+    last_centroid_raw = centroid_raw;
+    centroid_raw = p;
+}
+
+/**
+ * @brief Robot::get_centroid - Retorna o centroide processado se o filtro passa baixa estiver ativado ou o centroide
+ * cru caso esteja desativado.
+ */
 Point Robot::get_centroid()
-{   if(centroid == Point(-1, -1)) return last_centroid;
-    return this->centroid;
+{
+    if(centroid == Point(-1, -1)) return (LPF_filter)?this->last_centroid:this->last_centroid_raw;
+
+    return (LPF_filter)?this->centroid:this->centroid_raw;
+}
+
+Point Robot::get_centroid_raw()
+{
+    return this->centroid_raw;
 }
 
 Point Robot::get_last_centroid(){
     return last_centroid;
+}
+
+Point Robot::get_last_centroid_raw(){
+    return last_centroid_raw;
 }
 
 Point Robot::get_predic_centroid()

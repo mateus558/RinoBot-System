@@ -7,7 +7,7 @@
 #include <QWaitCondition>
 #include <QtConcurrent/QtConcurrent>
 #include <QGraphicsScene>
-#include <Eigen/Dense>
+// #include <Eigen/Dense>
 #include <opencv2/opencv.hpp>
 #include <queue>
 #include <utility>
@@ -66,6 +66,8 @@ private:
     pVector def_points, tdef_points;
     Matrix3d last_P;
     vector<Robot> robots;
+    pair <double, double> LPF_Coefficients; // Coeficientes do LPF
+    bool first_itr_LPF, LPF_flag; // Flag para a LPF
 
 public slots:
     void updateFuzzyRobots(std::vector<Robot>);
@@ -276,6 +278,15 @@ public:
     /*  upper                                                                        (s)*/
     void set_upper(vector<int> upper);
     vector<int> get_upper();
+
+    // coeficiente do LPF
+    void set_LPF_Coefficients(pair <double, double> coeff);
+
+    pair <double, double> get_LPF_Coefficients();
+
+    // flag do LPF
+    void set_LPF_flag(bool lpfFlag);
+    bool get_LPF_flag();
 
     ~Vision();
 };
