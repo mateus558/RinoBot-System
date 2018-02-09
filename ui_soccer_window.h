@@ -32,7 +32,7 @@ class Ui_soccer_window
 {
 public:
     QPushButton *start_game;
-    QPushButton *switch_fields;
+    QCheckBox *switch_fields;
     QGroupBox *battery_level_group;
     QProgressBar *gandalf_battery_level;
     QProgressBar *leona_battery_level;
@@ -73,6 +73,10 @@ public:
     QLabel *fps_label;
     QPushButton *change_strategy;
     QComboBox *strategy_options;
+    QLabel *gamelbl;
+    QLabel *strategylbl;
+    QLabel *currentStrategylbl;
+    QLabel *cameralbl;
 
     void setupUi(QWidget *soccer_window)
     {
@@ -92,14 +96,14 @@ public:
         soccer_window->setLayoutDirection(Qt::LeftToRight);
         start_game = new QPushButton(soccer_window);
         start_game->setObjectName(QStringLiteral("start_game"));
-        start_game->setGeometry(QRect(730, 10, 171, 41));
+        start_game->setGeometry(QRect(140, 370, 41, 31));
         start_game->setMaximumSize(QSize(171, 41));
-        switch_fields = new QPushButton(soccer_window);
+        switch_fields = new QCheckBox(soccer_window);
         switch_fields->setObjectName(QStringLiteral("switch_fields"));
-        switch_fields->setGeometry(QRect(730, 110, 171, 41));
+        switch_fields->setGeometry(QRect(20, 300, 171, 41));
         battery_level_group = new QGroupBox(soccer_window);
         battery_level_group->setObjectName(QStringLiteral("battery_level_group"));
-        battery_level_group->setGeometry(QRect(80, 480, 181, 101));
+        battery_level_group->setGeometry(QRect(270, 480, 181, 101));
         gandalf_battery_level = new QProgressBar(battery_level_group);
         gandalf_battery_level->setObjectName(QStringLiteral("gandalf_battery_level"));
         gandalf_battery_level->setGeometry(QRect(10, 30, 161, 16));
@@ -114,9 +118,14 @@ public:
         presto_baterry_level->setAutoFillBackground(false);
         presto_baterry_level->setStyleSheet(QStringLiteral(""));
         presto_baterry_level->setValue(100);
+        gandalf_battery_level->raise();
+        leona_battery_level->raise();
+        presto_baterry_level->raise();
+        start_game->raise();
+        switch_fields->raise();
         robots_roles_group = new QGroupBox(soccer_window);
         robots_roles_group->setObjectName(QStringLiteral("robots_roles_group"));
-        robots_roles_group->setGeometry(QRect(270, 480, 120, 101));
+        robots_roles_group->setGeometry(QRect(460, 480, 120, 101));
         gandalf_role_label = new QLabel(robots_roles_group);
         gandalf_role_label->setObjectName(QStringLiteral("gandalf_role_label"));
         gandalf_role_label->setGeometry(QRect(8, 30, 101, 20));
@@ -128,16 +137,16 @@ public:
         presto_role_label->setGeometry(QRect(10, 70, 101, 20));
         gandalf_label = new QLabel(soccer_window);
         gandalf_label->setObjectName(QStringLiteral("gandalf_label"));
-        gandalf_label->setGeometry(QRect(20, 510, 59, 14));
+        gandalf_label->setGeometry(QRect(200, 500, 59, 14));
         leona_label = new QLabel(soccer_window);
         leona_label->setObjectName(QStringLiteral("leona_label"));
-        leona_label->setGeometry(QRect(20, 530, 59, 14));
+        leona_label->setGeometry(QRect(210, 530, 59, 14));
         presto_label = new QLabel(soccer_window);
         presto_label->setObjectName(QStringLiteral("presto_label"));
-        presto_label->setGeometry(QRect(20, 550, 59, 14));
+        presto_label->setGeometry(QRect(210, 560, 59, 14));
         optionsGroupBox = new QGroupBox(soccer_window);
         optionsGroupBox->setObjectName(QStringLiteral("optionsGroupBox"));
-        optionsGroupBox->setGeometry(QRect(740, 420, 161, 121));
+        optionsGroupBox->setGeometry(QRect(10, 200, 191, 141));
         show_field_areas_checkbox = new QCheckBox(optionsGroupBox);
         show_field_areas_checkbox->setObjectName(QStringLiteral("show_field_areas_checkbox"));
         show_field_areas_checkbox->setGeometry(QRect(10, 30, 101, 20));
@@ -149,13 +158,13 @@ public:
         show_rcentroids_checkbox->setGeometry(QRect(10, 70, 131, 20));
         show_visionlogs_checkbox = new QCheckBox(optionsGroupBox);
         show_visionlogs_checkbox->setObjectName(QStringLiteral("show_visionlogs_checkbox"));
-        show_visionlogs_checkbox->setGeometry(QRect(10, 90, 141, 20));
+        show_visionlogs_checkbox->setGeometry(QRect(10, 89, 141, 21));
         read_parameters = new QPushButton(soccer_window);
         read_parameters->setObjectName(QStringLiteral("read_parameters"));
-        read_parameters->setGeometry(QRect(730, 170, 171, 41));
+        read_parameters->setGeometry(QRect(90, 50, 141, 31));
         detection_status_group = new QGroupBox(soccer_window);
         detection_status_group->setObjectName(QStringLiteral("detection_status_group"));
-        detection_status_group->setGeometry(QRect(400, 480, 141, 101));
+        detection_status_group->setGeometry(QRect(590, 480, 141, 101));
         gandalf_detec_label = new QLabel(detection_status_group);
         gandalf_detec_label->setObjectName(QStringLiteral("gandalf_detec_label"));
         gandalf_detec_label->setGeometry(QRect(40, 30, 91, 20));
@@ -188,22 +197,22 @@ public:
         presto_loss_rate->setGeometry(QRect(130, 70, 31, 16));
         cam_id_label = new QLabel(soccer_window);
         cam_id_label->setObjectName(QStringLiteral("cam_id_label"));
-        cam_id_label->setGeometry(QRect(760, 390, 59, 14));
+        cam_id_label->setGeometry(QRect(10, 410, 91, 21));
         cam_id_spinBox = new QSpinBox(soccer_window);
         cam_id_spinBox->setObjectName(QStringLiteral("cam_id_spinBox"));
-        cam_id_spinBox->setGeometry(QRect(820, 390, 47, 23));
+        cam_id_spinBox->setGeometry(QRect(130, 410, 47, 23));
         cam_id_spinBox->setMaximum(999);
         cam_id_spinBox->setValue(0);
         start_game_2 = new QPushButton(soccer_window);
         start_game_2->setObjectName(QStringLiteral("start_game_2"));
-        start_game_2->setGeometry(QRect(730, 60, 171, 41));
+        start_game_2->setGeometry(QRect(10, 50, 71, 31));
         game_view = new QGraphicsView(soccer_window);
         game_view->setObjectName(QStringLiteral("game_view"));
-        game_view->setGeometry(QRect(10, 10, 711, 461));
+        game_view->setGeometry(QRect(240, 10, 671, 461));
         game_view->setMaximumSize(QSize(721, 471));
         groupBox = new QGroupBox(soccer_window);
         groupBox->setObjectName(QStringLiteral("groupBox"));
-        groupBox->setGeometry(QRect(550, 480, 161, 91));
+        groupBox->setGeometry(QRect(740, 480, 161, 91));
         ball_detec_label = new QLabel(groupBox);
         ball_detec_label->setObjectName(QStringLiteral("ball_detec_label"));
         ball_detec_label->setGeometry(QRect(40, 30, 111, 20));
@@ -220,19 +229,31 @@ public:
         serial_status_label->setGeometry(QRect(40, 60, 91, 20));
         fps_lcd = new QLCDNumber(soccer_window);
         fps_lcd->setObjectName(QStringLiteral("fps_lcd"));
-        fps_lcd->setGeometry(QRect(810, 560, 81, 23));
+        fps_lcd->setGeometry(QRect(100, 440, 81, 23));
         fps_lcd->setStyleSheet(QStringLiteral("Background-color: #000;"));
         fps_label = new QLabel(soccer_window);
         fps_label->setObjectName(QStringLiteral("fps_label"));
-        fps_label->setGeometry(QRect(750, 560, 31, 20));
+        fps_label->setGeometry(QRect(10, 440, 31, 20));
         change_strategy = new QPushButton(soccer_window);
         change_strategy->setObjectName(QStringLiteral("change_strategy"));
-        change_strategy->setGeometry(QRect(730, 260, 171, 41));
+        change_strategy->setGeometry(QRect(140, 150, 81, 31));
         strategy_options = new QComboBox(soccer_window);
         strategy_options->setObjectName(QStringLiteral("strategy_options"));
-        strategy_options->setGeometry(QRect(730, 310, 171, 25));
+        strategy_options->setGeometry(QRect(10, 150, 121, 31));
         strategy_options->setCursor(QCursor(Qt::ArrowCursor));
         strategy_options->setLocale(QLocale(QLocale::English, QLocale::UnitedStatesVirginIslands));
+        gamelbl = new QLabel(soccer_window);
+        gamelbl->setObjectName(QStringLiteral("gamelbl"));
+        gamelbl->setGeometry(QRect(10, 20, 67, 17));
+        strategylbl = new QLabel(soccer_window);
+        strategylbl->setObjectName(QStringLiteral("strategylbl"));
+        strategylbl->setGeometry(QRect(10, 100, 81, 17));
+        currentStrategylbl = new QLabel(soccer_window);
+        currentStrategylbl->setObjectName(QStringLiteral("currentStrategylbl"));
+        currentStrategylbl->setGeometry(QRect(10, 120, 91, 17));
+        cameralbl = new QLabel(soccer_window);
+        cameralbl->setObjectName(QStringLiteral("cameralbl"));
+        cameralbl->setGeometry(QRect(10, 370, 101, 31));
         optionsGroupBox->raise();
         start_game->raise();
         switch_fields->raise();
@@ -252,6 +273,10 @@ public:
         fps_label->raise();
         change_strategy->raise();
         strategy_options->raise();
+        gamelbl->raise();
+        strategylbl->raise();
+        currentStrategylbl->raise();
+        cameralbl->raise();
 
         retranslateUi(soccer_window);
 
@@ -261,7 +286,7 @@ public:
     void retranslateUi(QWidget *soccer_window)
     {
         soccer_window->setWindowTitle(QApplication::translate("soccer_window", "Play Soccer", Q_NULLPTR));
-        start_game->setText(QApplication::translate("soccer_window", "Start Capture", Q_NULLPTR));
+        start_game->setText(QApplication::translate("soccer_window", "Off", Q_NULLPTR));
         switch_fields->setText(QApplication::translate("soccer_window", "Switch ATK/DEF Area", Q_NULLPTR));
         battery_level_group->setTitle(QApplication::translate("soccer_window", "Battery Levels:", Q_NULLPTR));
         robots_roles_group->setTitle(QApplication::translate("soccer_window", "Robots Roles:", Q_NULLPTR));
@@ -288,14 +313,18 @@ public:
         leona_loss_rate->setText(QString());
         presto_loss_rate->setText(QString());
         cam_id_label->setText(QApplication::translate("soccer_window", "Cam ID:", Q_NULLPTR));
-        start_game_2->setText(QApplication::translate("soccer_window", "Start Game", Q_NULLPTR));
+        start_game_2->setText(QApplication::translate("soccer_window", "Game", Q_NULLPTR));
         groupBox->setTitle(QApplication::translate("soccer_window", "Other Info:", Q_NULLPTR));
         ball_detec_label->setText(QApplication::translate("soccer_window", "Ball not found", Q_NULLPTR));
         ball_detec_col_label->setText(QString());
         serial_status_col_label->setText(QString());
         serial_status_label->setText(QApplication::translate("soccer_window", "Serial Closed", Q_NULLPTR));
         fps_label->setText(QApplication::translate("soccer_window", "FPS:", Q_NULLPTR));
-        change_strategy->setText(QApplication::translate("soccer_window", "Change Strategy", Q_NULLPTR));
+        change_strategy->setText(QApplication::translate("soccer_window", "Change", Q_NULLPTR));
+        gamelbl->setText(QApplication::translate("soccer_window", "Game:", Q_NULLPTR));
+        strategylbl->setText(QApplication::translate("soccer_window", "Strategy:", Q_NULLPTR));
+        currentStrategylbl->setText(QApplication::translate("soccer_window", "Current: ", Q_NULLPTR));
+        cameralbl->setText(QApplication::translate("soccer_window", "Set Camera: ", Q_NULLPTR));
     } // retranslateUi
 
 };

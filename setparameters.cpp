@@ -78,14 +78,23 @@ void SetParameters::on_initCapture_clicked()
             QMessageBox msgBox;
             msgBox.setText("The camera could not be opened!");
             msgBox.exec();
+            ui->initCapture->setText("Off");
+            ui->initCapture->setStyleSheet("background-color: red");
+            return;
         }
         eye->Play();
-        ui->initCapture->setText(QString("Stop Capture"));
+
+        ui->initCapture->setStyleSheet("background-color: green");
+        ui->initCapture->setText("On");
+        //ui->initCapture->setText(QString("Stop Capture"));
     }else{
         eye->Stop();
         eye->wait();
         eye->release_cam();
-        ui->initCapture->setText(QString("Init Capture"));
+
+        ui->initCapture->setText("Off");
+        ui->initCapture->setStyleSheet("background-color: red");
+        //ui->initCapture->setText(QString("Init Capture"));
     }
 }
 

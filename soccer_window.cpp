@@ -442,7 +442,7 @@ void soccer_window::on_start_game_2_clicked()
             ui->serial_status_label->setText("Serial Open");
         }
 
-        ui->start_game_2->setText("Stop Game");
+        ui->start_game_2->setText("Stop");
     }else{
         game_started = false;
         run_fuzzy = false;
@@ -455,7 +455,7 @@ void soccer_window::on_start_game_2_clicked()
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[0].get_channel(), make_pair(0, 0));
 
-        ui->start_game_2->setText("Start Game");
+        ui->start_game_2->setText("Start");
         ui->serial_status_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->serial_status_label->setText("Serial Closed");
     }
@@ -470,17 +470,24 @@ void soccer_window::on_start_game_clicked()
             QMessageBox msgBox;
             msgBox.setText("The camera could not be opened!");
             msgBox.exec();
+            ui->start_game->setText("Off");
+            ui->start_game->setStyleSheet("background-color: red");
             return;
         }
 
         eye->Play();
-        ui->start_game->setText("Stop Capture");
+
+        ui->start_game->setStyleSheet("background-color: green");
+        ui->start_game->setText("On");
+        //ui->start_game->setText("Stop Capture");
     }else{
         eye->Stop();
         eye->wait();
         eye->release_cam();
 
-        ui->start_game->setText("Start Capture");
+        ui->start_game->setText("Off");
+        ui->start_game->setStyleSheet("background-color: red");
+        //ui->start_game->setText("Start Capture");
     }
 }
 
@@ -645,6 +652,19 @@ void soccer_window::on_change_strategy_clicked(){
         num_strategy = 2;
 
     fuzzy->set_strategy(num_strategy);
+
+    switch(ui->strategy_options->currentIndex())
+    {
+    case 0:
+        ui->currentStrategylbl->setText("Current: 2");
+        break;
+    case 1:
+        ui->currentStrategylbl->setText("Current: 1");
+        break;
+    case 2:
+        ui->currentStrategylbl->setText("Current: Text");
+        break;
+    }
 }
 
 void soccer_window::on_show_field_areas_checkbox_toggled(bool checked)
