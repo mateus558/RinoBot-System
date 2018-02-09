@@ -58,8 +58,8 @@ Vision::Vision(QObject *parent): QThread(parent)
     ball_pos = null_point;
     ball_last_pos = null_point;
 
-    LPF_Coefficients.first = 0.0;
-    LPF_Coefficients.second = 0.0;
+    LPF_Coefficients_C.first = 0.0;
+    LPF_Coefficients_C.second = 0.0;
     LPF_flag = false;
 
  // last_P = MatrixXd::Identity(3,3);
@@ -511,7 +511,8 @@ void Vision::run()
     bool scaleFactorComputed = false;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
-    set_LPF_Coefficients( Low_pass_filter_coeff(0.3) );
+    set_LPF_Coefficients_C( Low_pass_filter_coeff(2.5) );
+    set_LPF_Coefficients_A( Low_pass_filter_coeff(0.8) );
 
     to_transf.resize(6);
     transf.resize(6);
@@ -603,19 +604,23 @@ void Vision::run()
 				// ====================================== 
 
 
+                cout << get_LPF_flag() << endl;
+
+                set_LPF_flag(1);
+
                 if (get_LPF_flag())
                 {
                     if(!first_itr_LPF){
                         for(i = 0; i < 6; i++)
                         {
-                            robots[i].set_centroid(Low_pass_filter_Centroid( robots[i].get_centroid_raw(),  robots[i].get_last_centroid_raw(),  robots[i].get_last_centroid(), LPF_Coefficients));
-                            robots[i].set_angle(Low_pass_filter_Theta(robots[i].get_angle_raw(), robots[i].get_last_angle_raw(), robots[i].get_last_angle(), LPF_Coefficients));
+                            robots[i].set_centroid(Low_pass_filter_Centroid( robots[i].get_centroid_raw(),  robots[i].get_last_centroid_raw(),  robots[i].get_last_centroid(), LPF_Coefficients_C));
+                            robots[i].set_angle(Low_pass_filter_Theta(robots[i].get_angle_raw(), robots[i].get_last_angle_raw(), robots[i].get_last_angle(), LPF_Coefficients_A));
                         }
                     }else{
                         for(i = 0; i < 6; i++)
                         {
-                            robots[i].set_centroid(Low_pass_filter_Centroid( robots[i].get_centroid(),  robots[i].get_centroid(),  robots[i].get_centroid(), LPF_Coefficients));
-                            robots[i].set_angle(Low_pass_filter_Theta(robots[i].get_angle(), robots[i].get_last_angle(), robots[i].get_last_angle(), LPF_Coefficients));
+                            robots[i].set_centroid(Low_pass_filter_Centroid( robots[i].get_centroid(),  robots[i].get_centroid(),  robots[i].get_centroid(), LPF_Coefficients_C));
+                            robots[i].set_angle(Low_pass_filter_Theta(robots[i].get_angle(), robots[i].get_last_angle(), robots[i].get_last_angle(), LPF_Coefficients_A));
                         }
                         first_itr_LPF = !first_itr_LPF;
                     }
@@ -859,14 +864,24 @@ void Vision::set_atk_area(pVector atk_points){
     //sentPoints = false;
 }
 
-void Vision::set_LPF_Coefficients(pair <double, double> coeff)
+void Vision::set_LPF_Coefficients_C(pair <double, double> coeff)
 {
-    this->LPF_Coefficients = coeff;
+    this->LPF_Coefficients_C = coeff;
 }
 
-pair <double, double> Vision::get_LPF_Coefficients()
+pair <double, double> Vision::get_LPF_Coefficients_C()
 {
-    return LPF_Coefficients;
+    return LPF_Coefficients_C;
+}
+
+void Vision::set_LPF_Coefficients_A(pair <double, double> coeff)
+{
+    this->LPF_Coefficients_A = coeff;
+}
+
+pair <double, double> Vision::get_LPF_Coefficients_A()
+{
+    return LPF_Coefficients_A;
 }
 
 void Vision::set_LPF_flag(bool lpfFlag)

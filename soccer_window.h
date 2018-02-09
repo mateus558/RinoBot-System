@@ -55,6 +55,11 @@ private slots:
 
     void on_show_field_areas_checkbox_clicked();
 
+    void on_cbkLPF_toggled(bool checked);
+
+
+    void on_switch_fields_toggled(bool checked);
+
 private:
     Fuzzy *fuzzy;
     Game_functions *leona;
