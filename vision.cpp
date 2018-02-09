@@ -9,6 +9,10 @@
 #include "utils.h"
 #include "vision.h"
 
+/*
+ * TESTE COMMIT
+ * */
+
 using namespace std;
 
 Point null_point = Point(-1, -1);
