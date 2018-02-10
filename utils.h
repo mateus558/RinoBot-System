@@ -14,7 +14,7 @@
 #define MIN_ROBOT_AREA 10
 #define MAX_ROBOT_AREA 500
 #define MIN_BALL_AREA 10
-#define MAX_BALL_AREA 200
+#define MAX_BALL_AREA 150
 #define MAX_CENT_DIST 20
 #define COORD_BLOCK_SIZE 1  //Size of the coord unit in cm^2
 #define PI 3.14159265

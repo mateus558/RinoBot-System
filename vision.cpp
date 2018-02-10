@@ -511,12 +511,8 @@ void Vision::run()
 {
     int delay = (1000/this->FPS);
     int i = 0, itr = 0;
-<<<<<<< HEAD
-    double elapsed_secs;
     bool init = false;
-=======
     double elapsed_secs, xScaleFactor = 1.0, yScaleFactor = 1.0;
->>>>>>> 0ef2ac79c44c8285e8d0deb85160bdd501cca89c
     clock_t begin, end;
     bool scaleFactorComputed = false;
     vector<pMatrix> obj_contours;
@@ -544,53 +540,17 @@ void Vision::run()
 
         //Get sub frame and fit in the frame size (cropping)
         raw_frame = crop_image(raw_frame);
+        vision_frame = raw_frame;
 
         if(!init){
             DEFAULT_NCOLS = raw_frame.cols;
             DEFAULT_NROWS = raw_frame.rows;
-            X_CONV_CONST = FIELD_HEIGHT / DEFAULT_NCOLS;
-            Y_CONV_CONST = FIELD_WIDTH / DEFAULT_NROWS;
+            X_CONV_CONST = (double) FIELD_HEIGHT / DEFAULT_NCOLS;
+            Y_CONV_CONST = (double) FIELD_WIDTH / DEFAULT_NROWS;
 
             init = !init;
         }
-        //Resize the image for the default image size.
-        //For downsampling the area interpolation method is being used.
-        //For upsampling the cubic interpolation method is being used.
-        if(raw_frame.cols > DEFAULT_NCOLS && raw_frame.rows > DEFAULT_NROWS){
-            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_AREA); // resize to 1024x768 resolution
-        }else if(raw_frame.cols < DEFAULT_NCOLS && raw_frame.rows < DEFAULT_NROWS){
-            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC);
-        }else if(raw_frame.cols > DEFAULT_NCOLS || raw_frame.rows > DEFAULT_NROWS){
-            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_AREA);
-        }else{
-            resize(raw_frame, vision_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC);
-        }
 
-        /*
-         *  Tentativa de ajustar escala nos pontos delimitantes do campo
-         *
-         * if(!scaleFactorComputed){
-            xScaleFactor = DEFAULT_NCOLS / raw_frame.cols;
-            yScaleFactor = DEFAULT_NROWS / raw_frame.rows;
-
-            scaleFactorComputed = !scaleFactorComputed;
-            for(i = 0; i < tatk_points.size(); i++){
-                tatk_points[i].x *= xScaleFactor;
-                tatk_points[i].y *= yScaleFactor;
-            }
-            for(i = 0; i < tdef_points.size(); i++){
-                tdef_points[i].x *= xScaleFactor;
-                tdef_points[i].y *= yScaleFactor;
-            }
-            for(i = 0; i < tmap_points.size(); i++){
-                tmap_points[i].x *= xScaleFactor;
-                tmap_points[i].y *= yScaleFactor;
-            }
-            info.map_area = tmap_points;
-            info.atk_area = tatk_points;
-            info.def_area = tdef_points;
-        }*/
-      
         //Apply blurring and gamma corretion methods
         vision_frame = proccess_frame(vision_frame, vision_frame);
 

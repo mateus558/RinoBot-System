@@ -174,10 +174,6 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
-
-//        cout << "Gandalf: " << team_robots[1].get_r_vel() << " " << team_robots[1].get_l_vel() << endl;
-//        cout << "Presto: " << team_robots[2].get_r_vel() << " " << team_robots[2].get_r_vel() << endl;
-//        cout << "Leona: " << team_robots[0].get_r_vel() << " " << team_robots[0].get_r_vel() << endl;
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
@@ -201,7 +197,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         field->fieldPoints = map_area;
         field->atkPoints = atk_area;
         field->defPoints = def_area;
-        prepare_game_scene(percep.img_size.x, percep.img_size.y);
+        prepare_game_scene(DEFAULT_NCOLS, DEFAULT_NROWS);
         area_read = true;
         centroid_atk = (atk_area[2] + atk_area[3] + atk_area[4] + atk_area[5])/4;
         centroid_def = (def_area[2] + def_area[3] + def_area[4] + def_area[5])/4;
@@ -711,11 +707,12 @@ void soccer_window::on_swapteamscbk_clicked() // testar
 
 void soccer_window::on_horizontalSlider_sliderMoved(int position) //slider para indicar mandar a frequencia de corte
 {
-    double chopFrequency;
+    double cutoffFrequency;
     if(position != 0)
     {
-        chopFrequency = (position)*pi/100;
-        //emviar para a variavel correta
+        cutoffFrequency = (position)*pi/100;
+
+        //enviar para a variavel correta
     }
 }
 

@@ -18,7 +18,6 @@ class soccer_window;
 class soccer_window : public QWidget
 {
     Q_OBJECT
-
 public:
     explicit soccer_window(QWidget *parent = 0);
     void load_serial_cfg();

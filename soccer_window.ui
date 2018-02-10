@@ -39,7 +39,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>370</y>
+     <y>410</y>
      <width>41</width>
      <height>31</height>
     </rect>
@@ -222,7 +222,7 @@
      <x>10</x>
      <y>200</y>
      <width>191</width>
-     <height>161</height>
+     <height>181</height>
     </rect>
    </property>
    <property name="title">
@@ -450,7 +450,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>410</y>
+     <y>450</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -463,7 +463,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>410</y>
+     <y>450</y>
      <width>47</width>
      <height>23</height>
     </rect>
@@ -579,7 +579,7 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>440</y>
+     <y>480</y>
      <width>81</width>
      <height>23</height>
     </rect>
@@ -592,7 +592,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>440</y>
+     <y>480</y>
      <width>31</width>
      <height>20</height>
     </rect>
@@ -673,7 +673,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>370</y>
+     <y>410</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -686,7 +686,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>330</y>
+     <y>350</y>
      <width>111</width>
      <height>23</height>
     </rect>
@@ -695,26 +695,26 @@
     <string>Swap Teams</string>
    </property>
   </widget>
-  <widget class="QLabel" name="chopFrequencylbl">
+  <widget class="QLabel" name="cutoffFrequencylbl">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>500</y>
+     <y>520</y>
      <width>121</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
-    <string>Chop Frequency:</string>
+    <string>Cutoff Frequency:</string>
    </property>
   </widget>
   <widget class="QSlider" name="horizontalSlider">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>520</y>
+     <y>540</y>
      <width>171</width>
-     <height>16</height>
+     <height>20</height>
     </rect>
    </property>
    <property name="maximum">
@@ -731,7 +731,7 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>540</y>
+     <y>560</y>
      <width>81</width>
      <height>23</height>
     </rect>
@@ -747,7 +747,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>490</y>
+     <y>510</y>
      <width>41</width>
      <height>31</height>
     </rect>
@@ -780,7 +780,7 @@
   <zorder>currentStrategylbl</zorder>
   <zorder>cameralbl</zorder>
   <zorder>swapteamscbk</zorder>
-  <zorder>chopFrequencylbl</zorder>
+  <zorder>cutoffFrequencylbl</zorder>
   <zorder>horizontalSlider</zorder>
   <zorder>chopFrequencylcd</zorder>
   <zorder>startFilterbtn</zorder>
