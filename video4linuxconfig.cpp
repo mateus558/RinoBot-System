@@ -80,8 +80,8 @@ void video4linuxConfig::showEvent(QShowEvent *event){
     ui->saturation_slider->setValue(values[2]);
     ui->saturation_lcd->display(values[2]);
 
-    ui->gain_slider->setValue(values[3]);
-    ui->gain_lcd->display(values[3]);
+    //ui->gain_slider->setValue(values[3]);
+    //ui->gain_lcd->display(values[3]);
 
     ui->white_bal_slider->setValue(values[4]);
     ui->white_bal_lcd->display(values[4]);

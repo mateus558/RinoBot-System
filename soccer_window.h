@@ -63,6 +63,10 @@ private slots:
 
     void on_chopFrequencyhsd_sliderMoved(int position);
 
+    void on_cbkLPF_toggled(bool checked);
+
+    void on_switch_fields_toggled(bool checked);
+
 private:
     Fuzzy *fuzzy;
     Game_functions *leona;

@@ -60,3 +60,4 @@ FORMS    += mainwindow.ui \
 INCLUDEPATH += "/usr/local/include/opencv2"
 LIBS += `pkg-config --cflags --libs opencv`
 QT += serialport
+

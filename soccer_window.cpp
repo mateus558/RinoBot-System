@@ -669,7 +669,6 @@ void soccer_window::on_change_strategy_clicked(){
 
 void soccer_window::on_show_field_areas_checkbox_toggled(bool checked)
 {
-    eye->show_area(checked);
     field->showFields = checked;
 }
 
@@ -688,10 +687,9 @@ void soccer_window::on_show_visionlogs_checkbox_toggled(bool checked)
     eye->show_errors(checked);
 }
 
-
-void soccer_window::on_show_field_areas_checkbox_clicked()
+void soccer_window::on_cbkLPF_toggled(bool checked)
 {
-
+    eye->set_LPF_flag(checked);
 }
 
 void soccer_window::on_swapteamscbk_clicked() // testar
