@@ -512,11 +512,11 @@ void Vision::run()
     int delay = (1000/this->FPS);
     int i = 0, itr = 0;
     bool init = false;
-    double elapsed_secs, xScaleFactor = 1.0, yScaleFactor = 1.0;
-    clock_t begin, end;
-    bool scaleFactorComputed = false;
+    double elapsed_secs;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
+    clock_t begin, end;
+
     set_LPF_Coefficients_C( Low_pass_filter_coeff(2.5) );
     set_LPF_Coefficients_A( Low_pass_filter_coeff(0.8) );
 
@@ -574,10 +574,6 @@ void Vision::run()
                 /***********************************
                  *     Physics Computations Step   *
                  ***********************************/
-                // ====================================== 
-				//  APLICA O FILTRO AQUI!!!!
-				//  Aplica na bola tb...
-				// ====================================== 
 
                 set_LPF_flag(1);
 

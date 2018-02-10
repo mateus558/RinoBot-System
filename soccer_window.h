@@ -52,19 +52,13 @@ private slots:
 
     void on_change_strategy_clicked();
 
-    void on_show_field_areas_checkbox_clicked();
-
     void on_swapteamscbk_clicked();
 
     void on_horizontalSlider_sliderMoved(int position);
 
     void on_startFilterbtn_clicked();
 
-    void on_chopFrequencyhsd_sliderMoved(int position);
-
     void on_cbkLPF_toggled(bool checked);
-
-    void on_switch_fields_toggled(bool checked);
 
 private:
     Fuzzy *fuzzy;

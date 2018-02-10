@@ -234,6 +234,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         team_shapes[i]->team_contour = cont.first;
         team_shapes[i]->role_contour = cont.second;
         enemy[i]->pos = percep.enemy_robots[i].get_centroid();
+
         for(j = 0; j < 3; j++){
             vector<int> lower, upper;
 
@@ -711,7 +712,7 @@ void soccer_window::on_horizontalSlider_sliderMoved(int position) //slider para 
     if(position != 0)
     {
         cutoffFrequency = (position)*pi/100;
-
+        cout << cutoffFrequency << endl;
         //enviar para a variavel correta
     }
 }
