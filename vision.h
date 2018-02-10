@@ -117,23 +117,6 @@ public:
      ************************************************************************************/
 
     /************************************************************************************
-        @brief draw_field Desenha os pontos-chave do campo. (Borda)
-
-        @param frame Frame aonde os pontos-chave serão desenhados.
-        @return Mat Frame com os pontos já desenhado.
-     ************************************************************************************/
-    Mat draw_field(Mat frame);
-
-    /************************************************************************************
-        @brief draw_robots Desenha os robôs e suas informações na tela.
-
-        @param frame Frame where they will be draw.
-        @param robots Robots to draw.
-        @return Mat
-    ************************************************************************************/
-    Mat draw_robots(Mat frame, vector<Robot> robots);
-
-    /************************************************************************************
         @brief detect_colors Returns a mask with the pixels in the given range (Thresholding).
 
         @param vision_frame Frame where the thresholding will be applied.

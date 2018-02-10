@@ -17,7 +17,6 @@ SetColorRange::SetColorRange(QWidget *parent) :
     ui->setupUi(this);
 
 
-    //setAttribute(Qt::WA_DeleteOnClose);
     connect(ui->horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_sliderMoved(int)));
     connect(ui->horizontalSlider_2, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_2_sliderMoved(int)));
     connect(ui->horizontalSlider_3, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_3_sliderMoved(int)));

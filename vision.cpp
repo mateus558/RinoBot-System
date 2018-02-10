@@ -422,90 +422,6 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
     return res;
 }
 
-Mat Vision::draw_robots(Mat frame, vector<Robot> robots)
-{
-    int i, size = robots.size();
-    double angle, predic_angle;
-    Point cent, predic_cent, team_cent, color_cent, inter;
-
-    if(ball_pos != null_point){
-        circle(frame, ball_pos, 10, Scalar(255, 0, 0));
-    }
-    for(i = 0; i < size-3; ++i){
-        cent = robots[i].get_centroid();
-        predic_cent = robots[i].get_predic_centroid();
-        team_cent = robots[i].get_team_cent();
-        color_cent = robots[i].get_color_cent();
-        angle = robots[i].get_angle();
-        predic_angle = robots[i].get_predic_angle();
-
-        if(cent == null_point) continue;
-
-        // Funcao que desenha as circunferencias com centros nos centroides das cores da equipa e do robo
-        if(showCenters){
-            circle(frame, team_cent, 5, Scalar(0, 255, 0), 1*(i+1));
-            circle(frame, color_cent, 5, Scalar(0, 255, 0), 1*(i+1));
-        }
-
-        // Desenha as circunferencia com centro no centroide do robo
-        // e a linha que indica a orientacao da direcao do robo (para onde ele esta olhando)
-        circle(frame, cent, 20, Scalar(0, 255, 0), 1.5);
-        inter = Point(cent.x + 20 * cos(angle * PI / 180.0), cent.y - 20 * sin(angle * PI / 180.0));
-        line(frame, cent, inter, Scalar(0, 255, 0), 1);
-
-        // Desenha a posicao prevista do robo
-        if(predic_cent != cent){
-            circle(frame, predic_cent, 20, Scalar(255, 0, 255), 1.5);
-            inter = Point(predic_cent.x + 20 * cos(predic_angle * PI / 180.0), predic_cent.y - 20 * sin(predic_angle * PI / 180.0));
-            line(frame, predic_cent, inter, Scalar(255, 0, 255), 1);
-        }
-
-        if(showNames)
-            putText(frame, robots[i].get_nick(), cent + Point(0, -2), FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
-    }
-
-    // Desenha o time adversario (por meio de circunferencias)
-    for(i = size-3; i < size; ++i){
-        cent = robots[i].get_centroid();
-        if(cent == null_point) continue;
-        else cent += Point(2,2);
-        circle(frame, cent , 20, Scalar(0, 0, 255), 1);
-    }
-
-    return frame;
-}
-
-Mat Vision::draw_field(Mat frame)
-{
-    int i = 0, atk_size = atk_points.size(), map_size = map_points.size(), def_size = def_points.size();
-    Point def_cent, atk_cent;
-
-    if(showArea && map_size > 0){
-        //Draw map area points
-        for(i = 0; i < map_size; ++i){
-            circle(frame, tmap_points[i], 1, Scalar(0,0,255), 2);
-        }
-
-        //Draw attack area points
-        for(i = 0; i < atk_size; ++i){
-            circle(frame, tatk_points[i], 1, Scalar(255,0,0), 2);
-        }
-
-        atk_cent = (tatk_points[0]+tatk_points[7])/2;
-        putText(frame, "ATK Area", atk_cent, FONT_HERSHEY_PLAIN, 1, Scalar(255, 0, 0), 2);
-
-        //Draw defense area points
-        for(i = 0; i < def_size; ++i){
-            circle(frame, tdef_points[i], 1, Scalar(0,255,0), 2);
-        }
-
-        def_cent = (tdef_points[0]+tdef_points[7])/2;
-        putText(frame, "DEF Area", def_cent, FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 2);
-    }
-
-    return vision_frame;
-}
-
 
 void Vision::run()
 {
@@ -607,11 +523,6 @@ void Vision::run()
                     robots[i].predict_info(deltaT*2);
                 }
 
-                if(!play){
-                    //Draw information in the frame if the game is not being played
-                    vision_frame = draw_robots(vision_frame, robots);
-                    vision_frame = draw_field(vision_frame);
-                }
                 break;
             case 1: //Set color mode
                 resize(raw_frame, raw_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution
