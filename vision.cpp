@@ -13,6 +13,11 @@ using namespace std;
 
 Point null_point = Point(-1, -1);
 
+int DEFAULT_NROWS;
+int DEFAULT_NCOLS;
+double X_CONV_CONST;
+double Y_CONV_CONST;
+
 Vision::Vision(QObject *parent): QThread(parent)
 {
     Point a, b;
@@ -497,6 +502,7 @@ void Vision::run()
     int delay = (1000/this->FPS);
     int i = 0, itr = 0;
     double elapsed_secs;
+    bool init = false;
     clock_t begin, end;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
@@ -521,9 +527,15 @@ void Vision::run()
 
         //Get sub frame and fit in the frame size (cropping)
         raw_frame = crop_image(raw_frame);
-        info.img_size.x = raw_frame.cols;
-        info.img_size.y = raw_frame.rows;
 
+        if(!init){
+            DEFAULT_NCOLS = raw_frame.cols;
+            DEFAULT_NROWS = raw_frame.rows;
+            X_CONV_CONST = FIELD_HEIGHT / DEFAULT_NCOLS;
+            Y_CONV_CONST = FIELD_WIDTH / DEFAULT_NROWS;
+
+            init = !init;
+        }
         //Resize the image for the default image size.
         //For downsampling the area interpolation method is being used.
         //For upsampling the cubic interpolation method is being used.
