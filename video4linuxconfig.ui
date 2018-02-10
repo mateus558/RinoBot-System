@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>697</width>
-    <height>299</height>
+    <width>1056</width>
+    <height>505</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -230,8 +230,8 @@
     <rect>
      <x>390</x>
      <y>10</y>
-     <width>291</width>
-     <height>201</height>
+     <width>640</width>
+     <height>480</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -356,23 +356,23 @@
   <widget class="QPushButton" name="setToDefault">
    <property name="geometry">
     <rect>
-     <x>17</x>
-     <y>260</y>
-     <width>111</width>
-     <height>25</height>
+     <x>30</x>
+     <y>330</y>
+     <width>141</width>
+     <height>91</height>
     </rect>
    </property>
    <property name="text">
     <string>Set to Default</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="Init_Capture_btn">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>260</y>
-     <width>89</width>
-     <height>25</height>
+     <x>190</x>
+     <y>330</y>
+     <width>141</width>
+     <height>91</height>
     </rect>
    </property>
    <property name="text">

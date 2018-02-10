@@ -19,7 +19,6 @@ video4linuxConfig::video4linuxConfig(QWidget *parent) :
 
     eye->set_mode(1);
 
-
     connect(ui->bright_slider, SIGNAL(valueChanged(int)), this, SLOT(on_bright_slider_sliderMoved(int)));
     connect(ui->contrast_slider, SIGNAL(valueChanged(int)), this, SLOT(on_contrast_slider_sliderMoved(int)));
     connect(ui->saturation_slider, SIGNAL(valueChanged(int)), this, SLOT(on_saturation_slider_sliderMoved(int)));
@@ -27,6 +26,12 @@ video4linuxConfig::video4linuxConfig(QWidget *parent) :
     connect(ui->sharpness_slider, SIGNAL(valueChanged(int)), this, SLOT(on_sharpness_slider_sliderMoved(int)));
     connect(ui->exposure_slider, SIGNAL(valueChanged(int)), this, SLOT(on_exposure_slider_sliderMoved(int)));
     connect(ui->focus_slider, SIGNAL(valueChanged(int)), this, SLOT(on_focus_slider_sliderMoved(int)));
+    connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
+}
+
+void video4linuxConfig::set_camid(int cam_id)
+{
+    this->cam_id = cam_id;
 }
 
 video4linuxConfig::~video4linuxConfig()
@@ -62,14 +67,15 @@ void video4linuxConfig::showEvent(QShowEvent *event){
 
     system("v4l2-ctl --set-ctrl white_balance_temperature_auto=0");
     system("v4l2-ctl --set-ctrl power_line_frequency=2");
-    system("v4l2-ctl --set-ctrl exposure_auto_priority=0");
+    system("v4l2-ctl --set-ctrl exposure_auto=1");
+    system("v4l2-ctl --set-ctrl exposure_auto_priority=1");
     system("v4l2-ctl --set-ctrl pan_absolute=0");
     system("v4l2-ctl --set-ctrl tilt_absolute=0");
-    system("v4l2-ctl --set-ctrl focus_absolute=0");
     system("v4l2-ctl --set-ctrl focus_auto=0");
+    system("v4l2-ctl --set-ctrl focus_absolute=0");
     system("v4l2-ctl --set-ctrl zoom_absolute=100");
     system("v4l2-ctl --set-ctrl backlight_compensation=1");
-    system("v4l2-ctl --set-ctrl exposure_auto=0");
+
 
     ui->bright_slider->setValue(values[0]);
     ui->bright_lcd->display(values[0]);
@@ -80,8 +86,8 @@ void video4linuxConfig::showEvent(QShowEvent *event){
     ui->saturation_slider->setValue(values[2]);
     ui->saturation_lcd->display(values[2]);
 
-    //ui->gain_slider->setValue(values[3]);
-    //ui->gain_lcd->display(values[3]);
+    ui->gain_slider->setValue(values[3]);
+    ui->gain_lcd->display(values[3]);
 
     ui->white_bal_slider->setValue(values[4]);
     ui->white_bal_lcd->display(values[4]);
@@ -92,6 +98,23 @@ void video4linuxConfig::showEvent(QShowEvent *event){
     ui->exposure_slider->setValue(values[6]);
     ui->exposure_lcd->display(values[6]);
 
+    if(eye == NULL)
+    {
+        eye = new Vision;
+        eye->set_mode(1);
+    }
+
+}
+
+void video4linuxConfig::closeEvent(QCloseEvent *event)
+{
+     QWidget::closeEvent(event);
+
+    if(!eye->isStopped()){
+        eye->Stop();
+        eye->wait();
+        eye->release_cam();
+    }
 }
 
 void video4linuxConfig::on_bright_slider_sliderMoved(int position)
@@ -188,8 +211,19 @@ void video4linuxConfig::on_gain_slider_sliderMoved(int position)
 
     command = command + std::to_string(position);
     system(command.c_str());
-    ui->focus_lcd->display(position);
+    ui->gain_lcd->display(position);
 }
+
+void video4linuxConfig::updateVisionUI(QImage img)
+{
+    if(!img.isNull())
+    {
+        ui->camera_view->setAlignment(Qt::AlignCenter);
+        ui->camera_view->setPixmap(QPixmap::fromImage(img).scaled(ui->camera_view->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
+    }
+}
+
+
 
 void video4linuxConfig::on_pushButton_2_clicked()
 {
@@ -202,3 +236,14 @@ void video4linuxConfig::on_setToDefault_clicked()
 }
 
 
+
+void video4linuxConfig::on_Init_Capture_btn_clicked()
+{
+    if(!eye->open_camera(cam_id)){
+        QMessageBox msgBox;
+        msgBox.setText("The camera could not be opened!");
+        msgBox.exec();
+    }
+    eye->Play();
+
+}

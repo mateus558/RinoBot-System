@@ -142,7 +142,7 @@ void SetColorRange::on_horizontalSlider_6_sliderMoved(int position)
 
 void SetColorRange::on_pushButton_2_clicked()
 {
-    std::cout << cam_id << std::endl;
+    //std::cout << cam_id << std::endl;
     if(!eye->open_camera(cam_id)){
         QMessageBox msgBox;
         msgBox.setText("The camera could not be opened!");

@@ -343,6 +343,12 @@ SetParameters::~SetParameters()
 
 void SetParameters::on_calibrate_camera_clicked()
 {
+    if(!eye->isStopped())
+    {
+        eye->Stop();
+        eye->release_cam();
+    }
+    calib_camera->set_camid(cam_id);
     calib_camera->show();
     //system("./Config/camera_calib.sh");
 }

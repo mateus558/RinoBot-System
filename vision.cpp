@@ -481,7 +481,6 @@ void Vision::run()
                 //Get the robots from the best candidates selected to game objects
                 robots = fill_robots(obj_contours, robots);
 
-
                 //Compute the variation of time for physics computations
                 end = clock();
                 elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
