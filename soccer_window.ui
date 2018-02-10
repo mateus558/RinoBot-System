@@ -124,20 +124,6 @@
      <number>100</number>
     </property>
    </widget>
-   <zorder>gandalf_battery_level</zorder>
-   <zorder>leona_battery_level</zorder>
-   <zorder>presto_baterry_level</zorder>
-   <zorder>cam_id_spinBox</zorder>
-   <zorder>fps_label</zorder>
-   <zorder>cam_id_label</zorder>
-   <zorder>fps_lcd</zorder>
-   <zorder>change_strategy</zorder>
-   <zorder>start_game</zorder>
-   <zorder>start_game_2</zorder>
-   <zorder>switch_fields</zorder>
-   <zorder>strategy_options</zorder>
-   <zorder>optionsGroupBox</zorder>
-   <zorder>read_parameters</zorder>
   </widget>
   <widget class="QGroupBox" name="robots_roles_group">
    <property name="geometry">
@@ -236,7 +222,7 @@
      <x>10</x>
      <y>200</y>
      <width>191</width>
-     <height>141</height>
+     <height>161</height>
     </rect>
    </property>
    <property name="title">
@@ -292,6 +278,19 @@
     </property>
     <property name="text">
      <string>Show Vision Logs</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>171</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>CheckBox</string>
     </property>
    </widget>
   </widget>
