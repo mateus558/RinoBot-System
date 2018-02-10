@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>697</width>
-    <height>251</height>
+    <height>299</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,7 +59,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>100</y>
+     <y>130</y>
      <width>111</width>
      <height>17</height>
     </rect>
@@ -72,7 +72,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>130</y>
+     <y>160</y>
      <width>111</width>
      <height>17</height>
     </rect>
@@ -85,7 +85,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>160</y>
+     <y>190</y>
      <width>81</width>
      <height>17</height>
     </rect>
@@ -98,7 +98,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>190</y>
+     <y>220</y>
      <width>81</width>
      <height>17</height>
     </rect>
@@ -159,7 +159,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>100</y>
+     <y>130</y>
      <width>160</width>
      <height>16</height>
     </rect>
@@ -178,7 +178,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>130</y>
+     <y>160</y>
      <width>160</width>
      <height>16</height>
     </rect>
@@ -194,7 +194,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>160</y>
+     <y>190</y>
      <width>160</width>
      <height>16</height>
     </rect>
@@ -213,7 +213,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>190</y>
+     <y>220</y>
      <width>160</width>
      <height>16</height>
     </rect>
@@ -293,7 +293,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>100</y>
+     <y>130</y>
      <width>64</width>
      <height>23</height>
     </rect>
@@ -309,7 +309,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>130</y>
+     <y>160</y>
      <width>64</width>
      <height>23</height>
     </rect>
@@ -325,7 +325,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>160</y>
+     <y>190</y>
      <width>64</width>
      <height>23</height>
     </rect>
@@ -341,7 +341,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>190</y>
+     <y>220</y>
      <width>64</width>
      <height>23</height>
     </rect>
@@ -353,11 +353,11 @@
     <number>250</number>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="setToDefault">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>220</y>
+     <x>17</x>
+     <y>260</y>
      <width>111</width>
      <height>25</height>
     </rect>
@@ -370,13 +370,58 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>220</y>
+     <y>260</y>
      <width>89</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
     <string>Init Capture</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="gain_label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>100</y>
+     <width>91</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Gain:</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="gain_slider">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>100</y>
+     <width>160</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>255</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLCDNumber" name="gain_lcd">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>100</y>
+     <width>64</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">Background-Color: #000</string>
+   </property>
+   <property name="intValue" stdset="0">
+    <number>255</number>
    </property>
   </widget>
  </widget>

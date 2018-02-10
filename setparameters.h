@@ -51,6 +51,8 @@ private slots:
 
     void on_calibrate_camera_clicked();
 
+    void on_spinBox_valueChanged(int camID);
+
 private:
     int cam_id;
     Ui::SetParameters *ui;
