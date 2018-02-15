@@ -433,8 +433,9 @@ void Vision::run()
     vector<Point> to_transf, transf;
     clock_t begin, end;
 
-    set_LPF_Coefficients_C( Low_pass_filter_coeff(2.5) );
-    set_LPF_Coefficients_A( Low_pass_filter_coeff(0.8) );
+    set_LPF_Coefficients_C( Low_pass_filter_coeff(1.8) );
+    set_LPF_Coefficients_A( Low_pass_filter_coeff(1) );
+
 
     to_transf.resize(6);
     transf.resize(6);
@@ -490,10 +491,12 @@ void Vision::run()
                  *     Physics Computations Step   *
                  ***********************************/
 
-                set_LPF_flag(1);
-
-                if (get_LPF_flag())
+                for(i = 0; i < 6; i++)
                 {
+
+                }
+
+                if (get_LPF_flag()){
                     if(!first_itr_LPF){
                         for(i = 0; i < 6; i++)
                         {
@@ -508,7 +511,14 @@ void Vision::run()
                         }
                         first_itr_LPF = !first_itr_LPF;
                     }
+                }else{
+                    for(i = 0; i < 6; i++)
+                    {
+                        robots[i].set_centroid(robots[i].get_centroid_raw());
+                        robots[i].set_angle(robots[i].get_angle_raw());
+                    }
                 }
+
 
 
                 //Compute the linear and angular velocity of the ball

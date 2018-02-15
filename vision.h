@@ -66,8 +66,8 @@ private:
     pVector def_points, tdef_points;
     Matrix3d last_P;
     vector<Robot> robots;
-    pair <double, double> LPF_Coefficients_C; // Coeficientes do LPF
-    pair <double, double> LPF_Coefficients_A; // Coeficientes do LPF
+    pair <double, double> LPF_Coefficients_C; // Coeficientes do LPF (centroid do robo)
+    pair <double, double> LPF_Coefficients_A; // Coeficientes do LPF (angulo do robo)
     bool first_itr_LPF, LPF_flag; // Flag para a LPF
 
 public slots:

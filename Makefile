@@ -3137,6 +3137,8 @@ moc_video4linuxconfig.cpp: ../../Qt/5.8/gcc_64/include/QtWidgets/QWidget \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QDialog \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qdialog.h \
 		utils.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/QMessageBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qmessagebox.h \
 		video4linuxconfig.h \
 		moc_predefs.h \
 		../../Qt/5.8/gcc_64/bin/moc
@@ -3860,39 +3862,7 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QGraphicsItem \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qgraphicsitem.h \
 		mover.h \
-		ui_mainwindow.h \
-		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QStatusBar \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstatusbar.h
+		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 vision.o: vision.cpp ../../Qt/5.8/gcc_64/include/QtWidgets/QMessageBox \
@@ -4407,43 +4377,7 @@ setparameters.o: setparameters.cpp setparameters.h \
 		setcolorrange.h \
 		../../Qt/5.8/gcc_64/include/QtGui/QCloseEvent \
 		video4linuxconfig.h \
-		ui_setparameters.h \
-		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLCDNumber \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlcdnumber.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QSpinBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qspinbox.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QStatusBar \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstatusbar.h
+		ui_setparameters.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o setparameters.o setparameters.cpp
 
 robot.o: robot.cpp utils.h \
@@ -4930,48 +4864,7 @@ configrobots.o: configrobots.cpp configrobots.h \
 		settingsdialog.h \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QDialog \
 		utils.h \
-		ui_configrobots.h \
-		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qicon.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QComboBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qcombobox.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLineEdit \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlineedit.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qtextcursor.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qtextformat.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qtextoption.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QSpinBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qspinbox.h
+		ui_configrobots.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o configrobots.o configrobots.cpp
 
 setcolorrange.o: setcolorrange.cpp setcolorrange.h \
@@ -5228,43 +5121,6 @@ setcolorrange.o: setcolorrange.cpp setcolorrange.h \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QDialog \
 		utils.h \
 		ui_setcolorrange.h \
-		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qicon.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QGroupBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qgroupbox.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLCDNumber \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlcdnumber.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QSlider \
 		../../Qt/5.8/gcc_64/include/QtCore/QFile \
 		../../Qt/5.8/gcc_64/include/QtCore/QTextStream \
 		../../Qt/5.8/gcc_64/include/QtCore/QString
@@ -5496,62 +5352,14 @@ settingsdialog.o: settingsdialog.cpp settingsdialog.h \
 		../../Qt/5.8/gcc_64/include/QtSerialPort/qserialport.h \
 		../../Qt/5.8/gcc_64/include/QtSerialPort/qserialportglobal.h \
 		ui_settingsdialog.h \
-		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qicon.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
-		../../Qt/5.8/gcc_64/include/QtCore/qcoreapplication.h \
-		../../Qt/5.8/gcc_64/include/QtCore/qeventloop.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QCheckBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qcheckbox.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QComboBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qcombobox.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
-		../../Qt/5.8/gcc_64/include/QtCore/qregularexpression.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
-		../../Qt/5.8/gcc_64/include/QtCore/qabstractitemmodel.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QGridLayout \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qgridlayout.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlayout.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlayoutitem.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qboxlayout.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QGroupBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qgroupbox.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QHBoxLayout \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../Qt/5.8/gcc_64/include/QtCore/qitemselectionmodel.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QSpacerItem \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QVBoxLayout \
 		../../Qt/5.8/gcc_64/include/QtSerialPort/QSerialPortInfo \
 		../../Qt/5.8/gcc_64/include/QtSerialPort/qserialportinfo.h \
 		../../Qt/5.8/gcc_64/include/QtGui/QIntValidator \
+		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
+		../../Qt/5.8/gcc_64/include/QtCore/qregularexpression.h \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QLineEdit \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qlineedit.h \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
 		../../Qt/5.8/gcc_64/include/QtGui/qtextcursor.h \
 		../../Qt/5.8/gcc_64/include/QtGui/qtextformat.h \
 		../../Qt/5.8/gcc_64/include/QtGui/qpen.h \
@@ -5826,54 +5634,7 @@ soccer_window.o: soccer_window.cpp ../../Qt/5.8/gcc_64/include/QtWidgets/QMessag
 		../../Qt/5.8/gcc_64/include/QtWidgets/QGraphicsItem \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qgraphicsitem.h \
 		mover.h \
-		ui_soccer_window.h \
-		../../Qt/5.8/gcc_64/include/QtCore/QLocale \
-		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QCheckBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qcheckbox.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QComboBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qcombobox.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QGraphicsView \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qgraphicsview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qscrollarea.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QGroupBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qgroupbox.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLCDNumber \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlcdnumber.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QProgressBar \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qprogressbar.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QSlider \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QSpinBox \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qspinbox.h
+		ui_soccer_window.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o soccer_window.o soccer_window.cpp
 
 fuzzy.o: fuzzy.cpp fuzzy.h \
@@ -6485,42 +6246,9 @@ video4linuxconfig.o: video4linuxconfig.cpp video4linuxconfig.h \
 		../../Qt/5.8/gcc_64/include/QtWidgets/QDialog \
 		../../Qt/5.8/gcc_64/include/QtWidgets/qdialog.h \
 		utils.h \
-		ui_video4linuxconfig.h \
-		../../Qt/5.8/gcc_64/include/QtCore/QVariant \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QAction \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qaction.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qicon.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QApplication \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qapplication.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qguiapplication.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qinputmethod.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QButtonGroup \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QHeaderView \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qheaderview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../Qt/5.8/gcc_64/include/QtGui/qvalidator.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qstyle.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabbar.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qrubberband.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLCDNumber \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlcdnumber.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QLabel \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qlabel.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QPushButton \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
-		../../Qt/5.8/gcc_64/include/QtWidgets/QSlider
+		../../Qt/5.8/gcc_64/include/QtWidgets/QMessageBox \
+		../../Qt/5.8/gcc_64/include/QtWidgets/qmessagebox.h \
+		ui_video4linuxconfig.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o video4linuxconfig.o video4linuxconfig.cpp
 
 drawobjects.o: drawobjects.cpp drawobjects.h \

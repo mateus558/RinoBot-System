@@ -106,7 +106,7 @@ void Game_functions::run(){
         //cout << "Gandalf: " << r1_flag << endl;
         //        cout << selec_robot.r1.get_angle() << endl;
         // << " POS Y: " << selec_robot.r1.get_pos().y << endl;
-        // cout << "Angle: " << selec_robot.r1.get_angle() << endl;
+//        cout << selec_robot.r1.get_angle() << " " << selec_robot.r1.get_angle_raw() << endl;
         switch (r1_flag){
         case 0:
             defender(&selec_robot.r1, 0, &vels[0]);
@@ -130,7 +130,7 @@ void Game_functions::run(){
             guardian(&selec_robot.r1, 0, &vels[0]);
             break;
         case 100:
-            CPU(&selec_robot.r1, 0, &vels[0]); //test
+            test(&selec_robot.r1, 0, &vels[0]); //test
             break;
         }
 
@@ -145,6 +145,7 @@ void Game_functions::run(){
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
         //cout << "Presto: " << r2_flag << endl;
+        cout << selec_robot.r2.get_angle() << " " << selec_robot.r2.get_angle_raw() << endl;
         switch (r2_flag){
         case 0:
             defender(&selec_robot.r2, 1, &vels[1]);
@@ -1679,16 +1680,17 @@ void Game_functions::CPU(Robot *robo, int num_Robo, pair<float, float> *vels)
     if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
         while(iterator_cph()>1E-6);
         set_direction(centroid_atk,centroid_def);
-        cout << "CPH" << endl;
+//        cout << "CPH" << endl;
     }
     else if (((robo_pos.x < 25 || robo_pos.x > 145) && (robo_pos.y < 35 || robo_pos.y > 100)) || robo_pos.y < 15  || robo_pos.y > 115){ // Angulo do CPH
         while(iterator_cph()>1E-6);
         set_direction(centroid_atk,centroid_def);
-        cout << "CPH" << endl;
+//        cout << "CPH" << endl;
     }
     else{
-        cout << "CPU" << endl;
+//        cout << "CPU" << endl;
     }
+
 
 
 }

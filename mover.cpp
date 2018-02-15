@@ -168,7 +168,7 @@ void Mover::calcula_velocidades(Robot *r, Game_functions *potencial_fields, pair
         velocity_guardian(r, potencial_fields , vels);
         break;
     case 100:
-        velocity_CPU(r, potencial_fields , vels); //velocity_test
+        velocity_test(r, potencial_fields , vels); //velocity_test
         break;
     }
 }
@@ -1087,6 +1087,22 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     v = - v_max;
     w = kp*alpha/180 + kd*(alpha - last_phi);
 
+    if (fabs(alpha) <= limiar_theta ){
+        //v = v_max;
+        v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 - delta_limiar;
+        //cout << "Frente" << endl;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        //v = - v_max;
+        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 + delta_limiar;
+        //cout << "Trás" << endl;
+    }
+
     last_phi = alpha;
 
     //    v = v_max;
@@ -1122,23 +1138,23 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     vels->second = v+w*l;
 
 
-    // cout << "Vel Esquerda:" << vels->first << endl;
-    //cout << "Vel Direita:" << vels->second << endl;
+//    cout << "Vel Esquerda:" << vels->first << endl;
+//    cout << "Vel Direita:" << vels->second << endl;
 
-    //    ang_vel = robo->get_ang_vel();
-    //    ang_vel = ang_vel*3.141592/180;
+    ang_vel = robo->get_ang_vel();
+    ang_vel = ang_vel*3.141592/180;
 
-    //    vel = robo->get_velocities();
+    vel = robo->get_velocities();
 
-    //    vel.first = vel.first*X_CONV_CONST;
-    //    vel.second = vel.second*Y_CONV_CONST;
+    vel.first = vel.first*X_CONV_CONST;
+    vel.second = vel.second*Y_CONV_CONST;
 
-    //cout << "Angular:" << ang_vel << endl;
+    cout << "Angular:" << ang_vel << endl;
 
-    //double mod_vel = sqrt(pow(vel.first,2) + pow(vel.second,2));
+    double mod_vel = sqrt(pow(vel.first,2) + pow(vel.second,2));
 
     //cout << "Linear Calculada:" << v << endl;
-    //cout << "Linear:" << mod_vel/100 << endl << endl << endl;
+//    cout << "Linear:" << mod_vel/100 << endl << endl << endl;
     //cont = cont + 1;
     //cout << "Contador: " << cont << endl;
 
@@ -1146,7 +1162,7 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
 
     cont++;
 
-    cout << "Contador: " << cont << endl;
+//    cout << "Contador: " << cont << endl;
 
 }
 
@@ -1677,7 +1693,7 @@ void Mover::velocity_CPU(Robot *robo, Game_functions *pot_fields, pair<float, fl
     // Apagar
     v_max = 0.75;
     v_delta = 0.3;
-    kp = 16;
+    kp = 13;
     kd = 0.003;
 
     theta = ajusta_angulo((theta));

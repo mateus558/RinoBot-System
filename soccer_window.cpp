@@ -695,7 +695,7 @@ void soccer_window::on_swapteamscbk_clicked() // testar
 
     vector<int> low_team1_color = robots[0].get_team_low_color();
     vector<int> upper_team1_color = robots[0].get_team_upper_color();
-    vector<int> low_team2_color = robots[0].get_team_low_color();
+    vector<int> low_team2_color = robots[4].get_team_low_color();
     vector<int> upper_team2_color = robots[4].get_team_upper_color();
 
     robots[0].set_team_low_color(low_team2_color);
@@ -708,12 +708,15 @@ void soccer_window::on_swapteamscbk_clicked() // testar
 
 void soccer_window::on_horizontalSlider_sliderMoved(int position) //slider para indicar mandar a frequencia de corte
 {
-    double cutoffFrequency;
+    double cutoffFrequency_A;
     if(position != 0)
     {
-        cutoffFrequency = (position)*pi/100;
-        cout << cutoffFrequency << endl;
+        cutoffFrequency_A = (position)*pi/100;
+        cout << cutoffFrequency_A << endl;
         //enviar para a variavel correta
+//        eye->set_LPF_Coefficients_C(Low_pass_filter_coeff(( cutoffFrequency_A )));
+//        eye->set_LPF_Coefficients_A(Low_pass_filter_coeff(( cutoffFrequency_C )));
+
     }
 }
 
@@ -733,4 +736,6 @@ void soccer_window::on_startFilterbtn_clicked() //liga e desliga o filtro
         ui->horizontalSlider->setVisible(false);
         ui->chopFrequencylcd->setVisible(false);
     }
+
+    cout << eye->get_LPF_flag() << endl;
 }

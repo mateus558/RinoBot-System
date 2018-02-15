@@ -50,7 +50,6 @@ bool sort_by_largest_x(Point a, Point b);
 bool area_limit(std::vector<Point> p);
 bool ball_area_limit(std::vector<Point> p);
 
-
 pair <double, double> Low_pass_filter_coeff (float cutoff); // Returns the LPF coefficients given cutoff frequency (0 <= freq <= pi)
 Point Low_pass_filter_Centroid(Point centroid, Point last_centroid, Point last_proc_centroid, pair<double, double> coeff); // Low Pass Filter
 double Low_pass_filter_Theta(double angle, double last_angle, double last_proc_angle, pair<double, double> coeff); // Low Pass Filter
