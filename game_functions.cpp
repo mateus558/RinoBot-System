@@ -86,7 +86,7 @@ void Game_functions::run(){
             goalkeeper(&selec_robot.r3, 2, &vels[2]);
             break;
         case 10:
-            killer(&selec_robot.r3, 2, &vels[2]);
+            killer_cpu(&selec_robot.r3, 2, &vels[2]);
             break;
         case 11:
             guardian(&selec_robot.r3, 2, &vels[2]);
@@ -106,7 +106,7 @@ void Game_functions::run(){
         //cout << "Gandalf: " << r1_flag << endl;
         //        cout << selec_robot.r1.get_angle() << endl;
         // << " POS Y: " << selec_robot.r1.get_pos().y << endl;
-//        cout << selec_robot.r1.get_angle() << " " << selec_robot.r1.get_angle_raw() << endl;
+        //        cout << selec_robot.r1.get_angle() << " " << selec_robot.r1.get_angle_raw() << endl;
         switch (r1_flag){
         case 0:
             defender(&selec_robot.r1, 0, &vels[0]);
@@ -124,7 +124,7 @@ void Game_functions::run(){
             goalkeeper(&selec_robot.r1, 0, &vels[0]);
             break;
         case 10:
-            CPU(&selec_robot.r1, 0, &vels[0]);  //killer
+            killer_cpu(&selec_robot.r1, 0, &vels[0]);  //killer
             break;
         case 11:
             guardian(&selec_robot.r1, 0, &vels[0]);
@@ -145,7 +145,7 @@ void Game_functions::run(){
     {
         int r2_flag = selec_robot.r2.get_flag_fuzzy();
         //cout << "Presto: " << r2_flag << endl;
-        cout << selec_robot.r2.get_angle() << " " << selec_robot.r2.get_angle_raw() << endl;
+        // cout << selec_robot.r2.get_angle() << " " << selec_robot.r2.get_angle_raw() << endl;
         switch (r2_flag){
         case 0:
             defender(&selec_robot.r2, 1, &vels[1]);
@@ -163,13 +163,13 @@ void Game_functions::run(){
             goalkeeper(&selec_robot.r2, 1, &vels[1]);
             break;
         case 10:
-            CPU(&selec_robot.r2, 1, &vels[1]); // killer
+            killer_cpu(&selec_robot.r2, 1, &vels[1]); // killer
             break;
         case 11:
             guardian(&selec_robot.r2, 1, &vels[1]);
             break;
         case 100:
-            CPU(&selec_robot.r2, 1, &vels[1]); //test
+            test(&selec_robot.r2, 1, &vels[1]); //test
             break;
         }
         //print_grid();
@@ -515,7 +515,7 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
 
         }else{
             Point2d vec_ball_def = centroid_def - ball_pos;
-            double aux = (0.45/270)*euclidean_dist(centroid_def,ball_pos);
+            double aux = (0.45/200)*euclidean_dist(centroid_def,ball_pos);
 
             meta = ball_pos + vec_ball_def*aux;
             meta.y = ball_pos.y;
@@ -611,7 +611,7 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
         }
         else{
             //Utiliza o robo para definição do epsilon
-            set_epsilon(0.3 + euclidean_dist(robo->get_pos(),ball_pos)/200);
+            set_epsilon(0.4 + euclidean_dist(robo->get_pos(),ball_pos)/200);
 
             //Corrige Posicionamento
             ball_pos.y = -ball_pos.y;
@@ -888,7 +888,7 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
         else
             team_prox = team_pos[2];*/
 
-        set_epsilon(0.3 + euclidean_dist(robo->get_pos(),ball_pos)/250);
+        set_epsilon(0.4 + euclidean_dist(robo->get_pos(),ball_pos)/250);
         // cout << " epsilon: " << e << endl;
 
         // Calculo do angulo de orientacao usar no ataque leve para dribles
@@ -1325,7 +1325,7 @@ void Game_functions::avoid_penalties(){
     if (centroid_atk.x > ball_pos.x){
         //cout << "Reconheceu a area de defesa" << endl;
         if(ball_pos.x > 0 && ball_pos.y > 0){
-            meta.x = centroid_def.x + 35;
+            meta.x = centroid_def.x + 50;
             meta.y = centroid_def.y;
             meta_grid = convert_C_to_G(meta);
             //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
@@ -1337,7 +1337,7 @@ void Game_functions::avoid_penalties(){
     }
     else{
         if(ball_pos.x > 0 && ball_pos.y > 0){
-            meta.x = centroid_def.x - 35;
+            meta.x = centroid_def.x - 50;
             meta.y = centroid_def.y;
             meta_grid = convert_C_to_G(meta);
             //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
@@ -1618,7 +1618,7 @@ void Game_functions::robo_grid_position(Robot *robo_leona, Robot *robo_gandalf, 
 
 }
 
-void Game_functions::CPU(Robot *robo, int num_Robo, pair<float, float> *vels)
+void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *vels)
 {
     //Utiliza o robo amigo mais próximo para definição do epsilon
     Point2d enemy_prox,robo_pos,meta;
@@ -1677,19 +1677,61 @@ void Game_functions::CPU(Robot *robo, int num_Robo, pair<float, float> *vels)
         //tratar a meta aqui
     }
 
-    if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
-        while(iterator_cph()>1E-6);
-        set_direction(centroid_atk,centroid_def);
-//        cout << "CPH" << endl;
-    }
-    else if (((robo_pos.x < 25 || robo_pos.x > 145) && (robo_pos.y < 35 || robo_pos.y > 100)) || robo_pos.y < 15  || robo_pos.y > 115){ // Angulo do CPH
-        while(iterator_cph()>1E-6);
-        set_direction(centroid_atk,centroid_def);
-//        cout << "CPH" << endl;
+    double def_area_x = def_area[0].x*X_CONV_CONST;
+    double def_area_y1 = def_area[1].y*Y_CONV_CONST;
+    double def_area_y2 = def_area[6].y*Y_CONV_CONST;
+
+
+    if (centroid_atk.x > ball_pos.x){
+        if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
+            avoid_penalties();
+            while(iterator_cph()>1E-6);
+            set_direction(centroid_atk,centroid_def);
+        }
+        else{
+            if (ball_pos.x < 45 || (ball_pos.x > 145 && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
+                return2defense(robo);
+
+                while(iterator_cph()>1E-6);
+                set_direction(centroid_atk,centroid_def);
+                //        cout << "CPH" << endl;
+            }
+            else{
+                        cout << "CPU" << endl;
+            }
+
+
+        }
     }
     else{
-//        cout << "CPU" << endl;
+        if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
+            avoid_penalties();
+            while(iterator_cph()>1E-6);
+            set_direction(centroid_atk,centroid_def);
+        }
+        else{
+
+            if (ball_pos.x > 125 || (ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
+                return2defense(robo);
+                while(iterator_cph()>1E-6);
+                set_direction(centroid_atk,centroid_def);
+                //        cout << "CPH" << endl;
+            }
+            else{
+                        cout << "CPU" << endl;
+            }
+        }
     }
+
+
+//    if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
+//        while(iterator_cph()>1E-6);
+//        set_direction(centroid_atk,centroid_def);
+//        //        cout << "CPH" << endl;
+//    }
+//    else{
+//        //        cout << "CPU" << endl;
+//    }
 
 
 

@@ -83,7 +83,7 @@ public:
     void set_centroid_def(Point2d);
     Point convert_C_to_G(Point2d);
 
-    void velocity_CPU(Robot *, Game_functions  *, pair<float, float>*);
+    void velocity_killer_cpu(Robot *, Game_functions  *, pair<float, float>*);
 
     ~Mover();
 };

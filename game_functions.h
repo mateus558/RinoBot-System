@@ -78,7 +78,7 @@ public:
 
     void robo_grid_position(Robot *, Robot *, Robot *);
 
-    void CPU(Robot *, int, pair<float, float>*);   // Univector Func
+    void killer_cpu(Robot *, int, pair<float, float>*);   // Univector Func
     void set_g_size(Point2d meta, Robot *robo);
 
     ~Game_functions();

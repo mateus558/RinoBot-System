@@ -272,7 +272,7 @@ void Fuzzy::another_fuzzification(){
         {
             for(j=0;j<=100;j++)
             {
-                limite[i][j] = min_function(D[i],y_alto[j]);
+                limite[i][j] = min_function(D[i],y_medio2[j]);
             }
         }
     }

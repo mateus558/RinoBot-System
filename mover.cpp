@@ -6,28 +6,34 @@
 #include "utils.h"
 
 using namespace std;
+
+// Constantes para qualquer robô
 double delta_limiar = 10; //Cinemática: 15, PID:
 double limiar_theta = 90 + delta_limiar;
-double v_max = 1;
+double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
+
+// Constantes para robôs de linha
+double v_max = 0.75;
 double v_delta = 0.5;
 double w_max = 7;
+double k = (w_max/v_max);
+double dist_giro = 7;
+double vel_giro_lado = 1.0;
+double vel_giro_atk = 0.5;
+double v_atk = 1.6;
+
+// Constantes para o goleiro
 double v_max_gol = 0.5;
 double v_max_gol_ef = 0.8;
 double w_max_gol = 5;
-double k = (w_max/v_max);
 double kgol = (w_max_gol/v_max_gol);
-double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
-double dist_giro = 7;
 double dist_giro_gol = 7.5;
-double vel_giro_lado = 1.0;
-double vel_giro_atk = 0.5;
 double vel_giro_gol = 1.0;
-double v_atk = 1;
-int cont = 0;
-int cont_desvia = 0;
-double last_phi = 0;
-double kp = 15;
-double kd = 0.003;
+
+// Constantes para a movimentação com PID
+double last_phi = 0; // Última orientação do robô
+double kp = 13;  // Ganho proporcional
+double kd = 0.003;  // Ganho derivativo
 
 
 Serial Mover::serial;
@@ -162,7 +168,7 @@ void Mover::calcula_velocidades(Robot *r, Game_functions *potencial_fields, pair
         velocity_goalkeeper(r, potencial_fields , vels);
         break;
     case 10:
-        velocity_CPU(r, potencial_fields , vels);  //velocity_killer
+        velocity_killer_cpu(r, potencial_fields , vels);  //velocity_killer
         break;
     case 11:
         velocity_guardian(r, potencial_fields , vels);
@@ -450,29 +456,48 @@ void Mover::velocity_defender(Robot *robo, Game_functions *pot_fields, pair<floa
     double v,w,theta,alpha;
     pair<float, float> vel;
 
-    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
-        v_max = 1;
-        k = w_max/v_max;
-    }
-    else{
-        v_max = 0.5;
-        k = w_max/v_max;
-    }
+//    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
+//        v_max = 1;
+//        k = w_max/v_max;
+//    }
+//    else{
+//        v_max = 0.5;
+//        k = w_max/v_max;
+//    }
 
     theta = pot_fields->get_direction(robot_grid);
     alpha = theta - robo->get_angle();
     alpha = ajusta_angulo(alpha);
 
-    if (fabs(alpha) <= limiar_theta){
-        w = k*v_max*alpha/180;
-        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+
+        //PID
+    if (fabs(alpha) <= limiar_theta ){
+        //v = v_max;
+        v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 - delta_limiar;
+        //cout << "Frente" << endl;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = k*v_max*alpha/180;
-        v = v_max*fabs(alpha)/limiar_theta - v_max
-                ;
+        //v = - v_max;
+        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 + delta_limiar;
+        //cout << "Trás" << endl;
     }
+
+
+    //Cinemática
+//    if (fabs(alpha) <= limiar_theta){
+//        w = k*v_max*alpha/180;
+//        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+//    }
+//    else{
+//        alpha = ajusta_angulo(alpha+180);
+//        w = k*v_max*alpha/180;
+//        v = v_max*fabs(alpha)/limiar_theta - v_max;
+//    }
     //Desvio obstáculos
     if (fabs(alpha) > 70 && fabs(alpha) < 110){
         v = 0;
@@ -493,28 +518,47 @@ void Mover::velocity_defensive_midfielder(Robot *robo, Game_functions *pot_field
     double v,w,theta,alpha;
     pair<float, float> vel;
 
-    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
-        v_max = 1;
-        k = w_max/v_max;
-    }
-    else{
-        v_max = 0.5;
-        k = w_max/v_max;
-    }
+//    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
+//        v_max = 1;
+//        k = w_max/v_max;
+//    }
+//    else{
+//        v_max = 0.5;
+//        k = w_max/v_max;
+//    }
 
     theta = pot_fields->get_direction(robot_grid);
     alpha = theta - robo->get_angle();
     alpha = ajusta_angulo(alpha);
 
-    if (fabs(alpha) <= limiar_theta){
-        w = k*v_max*alpha/180;
-        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+        //PID
+    if (fabs(alpha) <= limiar_theta ){
+        //v = v_max;
+        v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 - delta_limiar;
+        //cout << "Frente" << endl;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = k*v_max*alpha/180;
-        v = v_max*fabs(alpha)/limiar_theta - v_max;
+        //v = - v_max;
+        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 + delta_limiar;
+        //cout << "Trás" << endl;
     }
+
+
+    //Cinemática
+//    if (fabs(alpha) <= limiar_theta){
+//        w = k*v_max*alpha/180;
+//        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+//    }
+//    else{
+//        alpha = ajusta_angulo(alpha+180);
+//        w = k*v_max*alpha/180;
+//        v = v_max*fabs(alpha)/limiar_theta - v_max;
+//    }
     //Desvio obstáculos
     if (fabs(alpha) > 70 && fabs(alpha) < 110){
         v = 0;
@@ -560,28 +604,47 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
     double v,w,theta,alpha;
     pair<float, float> vel;
 
-    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
-        v_max = 1;
-        k = w_max/v_max;
-    }
-    else{
-        v_max = 0.5;
-        k = w_max/v_max;
-    }
+//    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
+//        v_max = 1;
+//        k = w_max/v_max;
+//    }
+//    else{
+//        v_max = 0.5;
+//        k = w_max/v_max;
+//    }
 
     theta = pot_fields->get_direction(robot_grid);
     alpha = theta - robo->get_angle();
     alpha = ajusta_angulo(alpha);
 
-    if (fabs(alpha) <= limiar_theta){
-        w = k*v_max*alpha/180;
-        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+        //PID
+    if (fabs(alpha) <= limiar_theta ){
+        //v = v_max;
+        v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 - delta_limiar;
+        //cout << "Frente" << endl;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = k*v_max*alpha/180;
-        v = v_max*fabs(alpha)/limiar_theta - v_max;
+        //v = - v_max;
+        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 + delta_limiar;
+        //cout << "Trás" << endl;
     }
+
+
+    //Cinemática
+//    if (fabs(alpha) <= limiar_theta){
+//        w = k*v_max*alpha/180;
+//        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+//    }
+//    else{
+//        alpha = ajusta_angulo(alpha+180);
+//        w = k*v_max*alpha/180;
+//        v = v_max*fabs(alpha)/limiar_theta - v_max;
+//    }
     //Desvio obstáculos
     if (fabs(alpha) > 70 && fabs(alpha) < 110){
         v = 0;
@@ -589,9 +652,9 @@ void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields
     vels->first = v - w*l;
     vels->second = v + w*l;
 
-    if (euclidean_dist(robo->get_pos(),ball_pos) > 20 && euclidean_dist(robo->get_pos(), pot_fields->get_meta()) < 10){
-        robot_orientation(robo, pot_fields, vels); // Se o robo estiver na meta, ele aponta para a bola
-    }
+//    if (euclidean_dist(robo->get_pos(),ball_pos) > 20 && euclidean_dist(robo->get_pos(), pot_fields->get_meta()) < 10){
+//        robot_orientation(robo, pot_fields, vels); // Se o robo estiver na meta, ele aponta para a bola
+//    }
 
     atk_orientation(robo, pot_fields, vels);
     rotate(robo, vels);
@@ -666,28 +729,48 @@ void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float
     double v,w,theta,alpha;
     pair<float, float> vel;
 
-    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
-        v_max = 1;
-        k = w_max/v_max;
-    }
-    else{
-        v_max = 0.5;
-        k = w_max/v_max;
-    }
+//    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
+//        v_max = 1;
+//        k = w_max/v_max;
+//    }
+//    else{
+//        v_max = 0.5;
+//        k = w_max/v_max;
+//    }
 
     theta = pot_fields->get_direction(robot_grid);
     alpha = theta - robo->get_angle();
     alpha = ajusta_angulo(alpha);
 
-    if (fabs(alpha) <= limiar_theta){
-        w = k*v_max*alpha/180;
-        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+
+        //PID
+    if (fabs(alpha) <= limiar_theta ){
+        //v = v_max;
+        v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 - delta_limiar;
+        //cout << "Frente" << endl;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = k*v_max*alpha/180;
-        v = v_max*fabs(alpha)/limiar_theta - v_max;
+        //v = - v_max;
+        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 + delta_limiar;
+        //cout << "Trás" << endl;
     }
+
+
+    //Cinemática
+//    if (fabs(alpha) <= limiar_theta){
+//        w = k*v_max*alpha/180;
+//        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+//    }
+//    else{
+//        alpha = ajusta_angulo(alpha+180);
+//        w = k*v_max*alpha/180;
+//        v = v_max*fabs(alpha)/limiar_theta - v_max;
+//    }
     //Desvio obstáculos
     if (fabs(alpha) > 70 && fabs(alpha) < 110){
         v = 0;
@@ -768,14 +851,14 @@ void Mover::velocity_guardian(Robot *robo, Game_functions *pot_fields, pair<floa
     double v,w,theta,alpha;
     pair<float, float> vel;
 
-    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
-        v_max = 1;
-        k = w_max/v_max;
-    }
-    else{
-        v_max = 0.5;
-        k = w_max/v_max;
-    }
+    //    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
+    //        v_max = 1;
+    //        k = w_max/v_max;
+    //    }
+    //    else{
+    //        v_max = 0.75;
+    //        k = w_max/v_max;
+    //    }
 
     theta = pot_fields->get_direction(robot_grid);
     alpha = theta - robo->get_angle();
@@ -783,44 +866,36 @@ void Mover::velocity_guardian(Robot *robo, Game_functions *pot_fields, pair<floa
 
 
 
-    // Apagar
-    v_max = 0.75;
-    v_delta = 0.3;
-    kp = 16;
-    kd = 0.003;
 
-
-            //PID
-
-
-        if (fabs(alpha) <= limiar_theta ){
-            //v = v_max;
-            v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-            w = kp*alpha/180 + kd*(alpha - last_phi);
-            limiar_theta = 90 - delta_limiar;
-            //cout << "Frente" << endl;
-        }
-        else{
-            alpha = ajusta_angulo(alpha+180);
-            //v = - v_max;
-            v = v_delta*fabs(alpha)/limiar_theta - v_max;
-            w = kp*alpha/180 + kd*(alpha - last_phi);
-            limiar_theta = 90 + delta_limiar;
-            //cout << "Trás" << endl;
-        }
+    //PID
+    if (fabs(alpha) <= limiar_theta ){
+        //v = v_max;
+        v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 - delta_limiar;
+        //cout << "Frente" << endl;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        //v = - v_max;
+        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 + delta_limiar;
+        //cout << "Trás" << endl;
+    }
 
 
     //Cinemática
 
-//    if (fabs(alpha) <= limiar_theta){
-//        w = (k*v_max*alpha/180);
-//        v = -v_max*fabs(alpha)/limiar_theta + v_max;
-//    }
-//    else{
-//        alpha = ajusta_angulo(alpha+180);
-//        w = k*v_max*alpha/180;
-//        v = v_max*fabs(alpha)/limiar_theta - v_max;
-//    }
+    //    if (fabs(alpha) <= limiar_theta){
+    //        w = (k*v_max*alpha/180);
+    //        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+    //    }
+    //    else{
+    //        alpha = ajusta_angulo(alpha+180);
+    //        w = k*v_max*alpha/180;
+    //        v = v_max*fabs(alpha)/limiar_theta - v_max;
+    //    }
 
     //Desvio obstáculos
     if (fabs(alpha) > 70 && fabs(alpha) < 110){
@@ -880,47 +955,41 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     alpha = ajusta_angulo(alpha);
 
 
-         //PID
-
-
-//            if (fabs(alpha) <= limiar_theta ){
-//            //v = v_max;
-//            v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-//            w = kp*alpha/180 + kd*(alpha - last_phi);
-//            limiar_theta = 90 - delta_limiar;
-//            //cout << "Frente" << endl;
-//        }
-//        else{
-//            alpha = ajusta_angulo(alpha+180);
-//            //v = - v_max;
-//            v = v_delta*fabs(alpha)/limiar_theta - v_max;
-//            w = kp*alpha/180 + kd*(alpha - last_phi);
-//            limiar_theta = 90 + delta_limiar;
-//            //cout << "Trás" << endl;
-//        }
-
-
-
-       //Cinemática
-
-    if (fabs(alpha) <= limiar_theta){
-        w = (k*v_max*alpha/180);
-        //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
-        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+        //PID
+    if (fabs(alpha) <= limiar_theta ){
+        //v = v_max;
+        v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 - delta_limiar;
+        //cout << "Frente" << endl;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = k*v_max*alpha/180;
-        //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
-        v = v_max*fabs(alpha)/limiar_theta - v_max;
+        //v = - v_max;
+        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 + delta_limiar;
+        //cout << "Trás" << endl;
     }
+
+
+    //Cinemática
+
+//    if (fabs(alpha) <= limiar_theta){
+//        w = (k*v_max*alpha/180);
+//        //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
+//        v = -v_max*fabs(alpha)/limiar_theta + v_max;
+//    }
+//    else{
+//        alpha = ajusta_angulo(alpha+180);
+//        w = k*v_max*alpha/180;
+//        //w = k*v_max*pow(alpha/180,2)*(alpha/fabs(alpha));
+//        v = v_max*fabs(alpha)/limiar_theta - v_max;
+//    }
 
     //Desvio obstáculos
     if (fabs(alpha) > 70 && fabs(alpha) < 110){
         v = 0;
-        //cont_desvia = cont_desvia+1;
-        //cout << "Desviou: "<< endl;
-        //w = 1.3*w;
     }
 
     vels->first = v-w*l;
@@ -1138,8 +1207,8 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     vels->second = v+w*l;
 
 
-//    cout << "Vel Esquerda:" << vels->first << endl;
-//    cout << "Vel Direita:" << vels->second << endl;
+    //    cout << "Vel Esquerda:" << vels->first << endl;
+    //    cout << "Vel Direita:" << vels->second << endl;
 
     ang_vel = robo->get_ang_vel();
     ang_vel = ang_vel*3.141592/180;
@@ -1154,15 +1223,9 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     double mod_vel = sqrt(pow(vel.first,2) + pow(vel.second,2));
 
     //cout << "Linear Calculada:" << v << endl;
-//    cout << "Linear:" << mod_vel/100 << endl << endl << endl;
-    //cont = cont + 1;
-    //cout << "Contador: " << cont << endl;
+    //    cout << "Linear:" << mod_vel/100 << endl << endl << endl;
 
     rotate(robo, vels);
-
-    cont++;
-
-//    cout << "Contador: " << cont << endl;
 
 }
 
@@ -1470,7 +1533,7 @@ void Mover::atk_situation(Robot *robo, Game_functions *pot_fields, pair<float, f
         //cout << "Angulo bola robo: " << ang_ball_robot << " - Angulo ataque robo: " << ang_atk_robot << endl;
     }*/
     if (centroid_def.x < centroid_atk.x) {
-        if (robo_pos.x <= ball_pos.x && fabs(ang_ball_robot) < 30 && fabs(ang_atk_robot) < 30 && euclidean_dist(ball_pos,robo->get_pos()) < 10 && (ball_pos.y > (centroid_def.y - 40)) && (ball_pos.y < (centroid_def.y + 40))){
+        if (robo_pos.x <= ball_pos.x && fabs(ang_ball_robot) < 20 && fabs(ang_atk_robot) < 30 && euclidean_dist(ball_pos,robo->get_pos()) < 10 && (ball_pos.y > (centroid_def.y - 40)) && (ball_pos.y < (centroid_def.y + 40))){
             if (fabs(robo->get_angle()) < 90){
                 vels->first = v_atk;
                 vels->second = v_atk;
@@ -1485,7 +1548,7 @@ void Mover::atk_situation(Robot *robo, Game_functions *pot_fields, pair<float, f
         }
     }
     else if(centroid_atk.x < centroid_def.x){
-        if (robo_pos.x >= ball_pos.x && fabs(ang_ball_robot) < 30 && fabs(ang_atk_robot) < 30 && euclidean_dist(ball_pos,robo->get_pos()) < 10 && (ball_pos.y > (centroid_def.y - 40)) && (ball_pos.y < (centroid_def.y + 40))){
+        if (robo_pos.x >= ball_pos.x && fabs(ang_ball_robot) < 20 && fabs(ang_atk_robot) < 30 && euclidean_dist(ball_pos,robo->get_pos()) < 10 && (ball_pos.y > (centroid_def.y - 40)) && (ball_pos.y < (centroid_def.y + 40))){
             if (fabs(robo->get_angle()) < 90){
                 vels->first = -v_atk;
                 vels->second = -v_atk;
@@ -1656,7 +1719,7 @@ double Mover::ajusta_angulo(double angle){
     return angle;
 }
 
-void Mover::velocity_CPU(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels)
+void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels)
 {
     Point2d ball_v;
     pair <double,double> vel;
@@ -1665,58 +1728,56 @@ void Mover::velocity_CPU(Robot *robo, Game_functions *pot_fields, pair<float, fl
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
 
+
     // Calcula velocidades
 
     double v,w,theta,alpha;
     theta = pot_fields->get_direction_CPU() * 180 / M_PI;  // Angulo do CPU
-//    std::cout << "Theta: " << theta << std::endl;
     Point2d robo_pos;
     robo_pos = robo->get_pos();
 
-    if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){ // Angulo do CPH
-        theta = pot_fields->get_direction(robot_grid);
-    }
+//    if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){ // Angulo do CPH
+//        theta = pot_fields->get_direction(robot_grid);
+//    }
+//    else{
+//    }
 
-    if (((robo_pos.x < 25 || robo_pos.x > 145) && (robo_pos.y < 35 || robo_pos.y > 100)) || robo_pos.y < 15  || robo_pos.y > 115){ // Angulo do CPH
-        theta = pot_fields->get_direction(robot_grid);
-        delta_limiar = 10;
+    double def_area_x = def_area[0].x*X_CONV_CONST;
+    double def_area_y1 = def_area[1].y*Y_CONV_CONST;
+    double def_area_y2 = def_area[6].y*Y_CONV_CONST;
 
+
+    if (centroid_atk.x > ball_pos.x){
+        if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
+            theta = pot_fields->get_direction(robot_grid);
+        else
+            if (ball_pos.x < 45 || (ball_pos.x > 145 && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
+                theta = pot_fields->get_direction(robot_grid);
     }
     else{
-        delta_limiar = 10;
+        if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
+            theta = pot_fields->get_direction(robot_grid);
+        else{
 
+            if (ball_pos.x > 125 || (ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
+                theta = pot_fields->get_direction(robot_grid);
+        }
     }
 
 
+//    if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
+//        while(iterator_cph()>1E-6);
+//        set_direction(centroid_atk,centroid_def);
+//        //        cout << "CPH" << endl;
+//    }
+//    else{
+//        //        cout << "CPU" << endl;
+//    }
 
-
-    // Apagar
-    v_max = 0.75;
-    v_delta = 0.3;
-    kp = 13;
-    kd = 0.003;
 
     theta = ajusta_angulo((theta));
-   // cout << "theta: " << theta << endl; //TESTE DELETAR
     alpha = theta - robo->get_angle();
     alpha = ajusta_angulo(alpha);
-
-    //    if(fabs(alpha) > 30){
-    //        v_max = 0.5;
-    //        kp = 15;
-    //        kd = 0.002;
-    //    }
-    //    else{
-    //        v_max = 0.6;
-    //        kp = 15;
-    //        kd = 0.001;
-    //    }
-    //    v_max = 0.1;
-    //    kp = 15;
-    //    kd = 0.0008;
-
-    //cout << "Alpha: " << alpha << endl << endl;
-
 
 
 
@@ -1739,52 +1800,32 @@ void Mover::velocity_CPU(Robot *robo, Game_functions *pot_fields, pair<float, fl
     //    }
 
 
-
-
-    //     Navegação PID / Derivativo na entrada
-
-    //    kp = 16;//    v = v_max;
-    //    w = kp*alpha/180 + kd*(alpha - last_phi);
-    //        v = v_max;
-    //    kd = 0.0001;
-        if (fabs(alpha) <= limiar_theta ){
-            //v = v_max;
-            v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-            w = kp*alpha/180 + kd*(alpha - last_phi);
-            limiar_theta = 90 - delta_limiar;
-            //cout << "Frente" << endl;
-        }
-        else{
-            alpha = ajusta_angulo(alpha+180);
-            //v = - v_max;
-            v = v_delta*fabs(alpha)/limiar_theta - v_max;
-            w = kp*alpha/180 + kd*(alpha - last_phi);
-            limiar_theta = 90 + delta_limiar;
-            //cout << "Trás" << endl;
-        }
-//    v = v_max;
-//    w = kp*alpha/180 + kd*(alpha - last_phi);
-    //        v = v_max;
-    //        w = kp*alpha/180 + kd*(alpha - last_phi);
+    if (fabs(alpha) <= limiar_theta ){
+        v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 - delta_limiar;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+        w = kp*alpha/180 + kd*(alpha - last_phi);
+        limiar_theta = 90 + delta_limiar;
+    }
+    // cout << "V: " << v << endl;
 
     //Desvio obstáculos
     if (fabs(alpha) > 75 && fabs(alpha) < 105 && euclidean_dist(robo->get_pos(), ball_pos)<40){
         v = 0;
-        //cont_desvia = cont_desvia+1;
-        //cout << "Desviou: "<< endl;
-        //w = 1.3*w;
     }
 
 
-
     last_phi = alpha;
-
 
     vels->first = v-w*l;
     vels->second = v+w*l;
 
     rotate(robo, vels);
-    //atk_situation(robo,pot_fields,vels);
+    atk_situation(robo,pot_fields,vels);
 
 
 
@@ -1803,9 +1844,6 @@ void Mover::velocity_CPU(Robot *robo, Game_functions *pot_fields, pair<float, fl
     //cout << "Linear Calculada:" << v << endl;
     //cout << "Linear:" << mod_vel/100 << endl << endl << endl;
 
-
-
-    //    rotate(robo, vels);
 
 
 }
