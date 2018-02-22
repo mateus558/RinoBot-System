@@ -66,7 +66,9 @@ public:
     void robot_orientation(Robot *, Game_functions  *, pair<float, float>*);
     void atk_orientation(Robot *, Game_functions  *, pair<float, float>*);
     void atk_situation(Robot *,Game_functions *,pair<float,float>*);
+    void atk_situation_inv(Robot *,Game_functions *,pair<float,float>*);
     void rotate(Robot *, pair<float, float>*);
+    void rotate_inv(Robot *, pair<float, float>*);
     void kick_rotate(Robot *, pair<float, float>*);
     Point2d prevision_atk(Robot *);
     double ajusta_angulo(double);

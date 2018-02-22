@@ -215,7 +215,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         leona->set_centroid_def(centroid_def); //salva a area de def para a leona
         leona->set_def_area(def_area);
 
-        presto->set_centroid_atk(centroid_atk); //salva a area de atk para o presto
+        presto->set_centroid_atk(centroid_atk); //salva a area de atk para o presto Inverter para treinar ATK vs DEF
         presto->set_centroid_def(centroid_def); //salva a area de def para o presto
         presto->set_def_area(def_area);
 

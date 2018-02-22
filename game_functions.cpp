@@ -1648,10 +1648,12 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     if (vec_ball_atk.y < 0)
         ang_ball_atk = -ang_ball_atk;
     //ajusta angulos para menores que 180 e maiores que -180
-    if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
-    else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
+    if (ang_ball_atk > 180)
+        ang_ball_atk = ang_ball_atk - 360;
+    else if (ang_ball_atk < -180)
+        ang_ball_atk = ang_ball_atk + 360;
     //cout << "Angulo bola atk: " << ang_ball_atk << endl;
-    set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
+    //set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
     //Corrige Posicionamento novamente
     ball_pos.y = -ball_pos.y;
     centroid_atk.y=-centroid_atk.y;
@@ -1664,7 +1666,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
 
     set_g_size(meta,robo);
 
-    univector_field(robo,enemy_prox,meta);
+    //univector_field(robo,enemy_prox,meta);
 
 
     //Chama o CPH nos cantos
@@ -1682,7 +1684,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     double def_area_y2 = def_area[6].y*Y_CONV_CONST;
 
 
-    if (centroid_atk.x > ball_pos.x){
+    if (centroid_atk.x > centroid_def.x){
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
             avoid_penalties();
             while(iterator_cph()>1E-6);
@@ -1690,14 +1692,21 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
         }
         else{
             if (ball_pos.x < 45 || (ball_pos.x > 145 && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
-                return2defense(robo);
 
-                while(iterator_cph()>1E-6);
-                set_direction(centroid_atk,centroid_def);
+                //CPH nos cantos
+                //                return2defense(robo);
+                //                while(iterator_cph()>1E-6);
+                //                set_direction(centroid_atk,centroid_def);
                 //        cout << "CPH" << endl;
+
+                if(ball_pos.y<centroid_atk.y /*&& robo_pos.y<centroid_atk.y*/)
+                    set_thetaDir(-45*pi/180);
+                if(ball_pos.y>centroid_atk.y /*&& robo_pos.y>centroid_atk.y*/)
+                    set_thetaDir(45*pi/180);
             }
             else{
-//                cout << "CPU" << endl;
+                set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
+                //                cout << "CPU" << endl;
             }
 
 
@@ -1711,13 +1720,22 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
         }
         else{
 
-            if (ball_pos.x > 125 || (ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
-                return2defense(robo);
-                while(iterator_cph()>1E-6);
-                set_direction(centroid_atk,centroid_def);
-                //        cout << "CPH" << endl;
+            if (ball_pos.x > 125 || (ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){ //antes 15 e 115
+
+                //CPH nos cantos
+                //                return2defense(robo);
+                //                while(iterator_cph()>1E-6);
+                //                set_direction(centroid_atk,centroid_def);
+                //                //        cout << "CPH" << endl;
+
+                if(ball_pos.y<centroid_atk.y /*&& robo_pos.y<centroid_atk.y*/)
+                    set_thetaDir(-135*pi/180);
+                if(ball_pos.y>centroid_atk.y /*&& robo_pos.y>centroid_atk.y*/)
+                    set_thetaDir(+135*pi/180);
+
             }
             else{
+                set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
                 cout << "CPU" << endl;
             }
         }
@@ -1733,7 +1751,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     //        //        cout << "CPU" << endl;
     //    }
 
-
+    univector_field(robo,enemy_prox,meta);
 
 }
 
@@ -1824,14 +1842,14 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
             }
             else{
                 if(ball_pos.y < centroid_def.y - 35){
-                meta.x = centroid_def.x - 8;
-                meta.y = centroid_def.y - 45;
-                set_thetaDir(0);
+                    meta.x = centroid_def.x - 8;
+                    meta.y = centroid_def.y - 45;
+                    set_thetaDir(0);
                 }
                 else if(ball_pos.y > centroid_def.y + 35){
-                meta.x = centroid_def.x - 8;
-                meta.y = centroid_def.y + 45;
-                set_thetaDir(0);
+                    meta.x = centroid_def.x - 8;
+                    meta.y = centroid_def.y + 45;
+                    set_thetaDir(0);
                 }
                 else{
                     meta.x = centroid_def.x - line_root_defender;
