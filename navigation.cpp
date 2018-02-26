@@ -288,46 +288,75 @@ Navigation::~Navigation(){
 
 void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
 {
+    Point2d robo_pos;
+    robo_pos = robo->get_pos();
     float k0 = 0.12;
-    float d_min = 15;   // Raio de Influencia do repulsivo
+    float r = 30;        // Raio de Influencia do repulsivo
+    float d_min = 21;   // Raio de Influencia do repulsivo
     float norma_s,fih_AUF,fih_TUF;
-    float d = sqrt(pow(robo->get_pos().x - enemy.x, 2)+ pow(robo->get_pos().y - enemy.y, 2));  //distancia entre o robo e o obstaculo
+    float d = euclidean_dist(robo_pos, enemy);  //distancia entre o robo e o obstaculo
     Point2d s, enemy_vel, robo_vel, virtual_obj;
     enemy_vel.x = 0;
     enemy_vel.y = 0;
-    robo_vel.x = robo->get_velocities().first*X_CONV_CONST;
-    robo_vel.y = robo->get_velocities().second*Y_CONV_CONST;
-    s.x = k0 * ( enemy_vel.x - robo_vel.x); // Velocidade
-    s.y = k0*(enemy_vel.y - robo_vel.y);
-    norma_s = sqrt(pow(s.x,2)+ pow(s.y,2));
+    //    robo_vel.x = robo->get_velocities().first*X_CONV_CONST;
+    //    robo_vel.y = robo->get_velocities().second*Y_CONV_CONST;
+    //    s.x = k0 * ( enemy_vel.x - robo_vel.x); // Velocidade
+    //    s.y = k0*(enemy_vel.y - robo_vel.y);
+    //    norma_s = sqrt(pow(s.x,2)+ pow(s.y,2));
 
-    if (d >= norma_s)
-    {
-        virtual_obj.x = enemy.x + s.x;
-        virtual_obj.y = enemy.y + s.y;
-    }
-    else
-    {
-        virtual_obj.x = enemy.x + (d*s.x/norma_s);
-        virtual_obj.y = enemy.y + (d*s.y/norma_s);
-    }
+    //    if (d >= norma_s)
+    //    {
+    //        virtual_obj.x = enemy.x + s.x;
+    //        virtual_obj.y = enemy.y + s.y;
+    //    }
+    //    else
+    //    {
+    //        virtual_obj.x = enemy.x + (d*s.x/norma_s);
+    //        virtual_obj.y = enemy.y + (d*s.y/norma_s);
+    //    }
 
-   // std::cout << "X:" << virtual_obj.x << std::endl;
+    // std::cout << "X:" << virtual_obj.x << std::endl;
     //std::cout << "Y:" << virtual_obj.y << std::endl;
 
-    fih_AUF = repulsive_angle(robo->get_pos().x, robo->get_pos().y, virtual_obj);
     fih_TUF = -hyperbolic_spiral(robo->get_pos().y, robo->get_pos().x, meta);
 
-    if (d <= d_min)
-        the_fih = fih_AUF;
-        //the_fih = fih_AUF*Gaussian_Func(d-d_min) + fih_TUF*(1-Gaussian_Func(d-d_min));
-        //cout << "Angulo:" << the_fih ;
-    else
-        the_fih = fih_AUF*Gaussian_Func(d-d_min) + fih_TUF*(1-Gaussian_Func(d-d_min));
-        //the_fih = (fih_AUF+fih_TUF)/2;
-        //the_fih = fih_TUF;
-    //        cout << "the_fih: " << the_fih << endl; //TESTE DELETAR
 
+    // Repulsive Otario
+
+    fih_AUF = tangencial_repulsive(robo,meta,enemy,r);
+
+    if (d <= r)
+        the_fih = fih_AUF;
+    else
+        the_fih = fih_AUF*Gaussian_Func(d - r) + fih_TUF*(1-Gaussian_Func(d - r));
+
+
+    // Fim do Repulsive otario
+
+    // Repulsive whirlpool
+
+    //    fih_AUF = repulsive_angle(robo->get_pos().x, robo->get_pos().y, enemy);
+    //    float r_aux = d_min;
+    ////    float dist_o_m = euclidean_dist( meta, enemy);
+
+    ////    if (dist_o_m <= r_aux)
+    ////        r_aux -= dist_o_m;
+
+    //    Point2d robo_aux = robo->get_pos();
+    //    float dist_r_o = euclidean_dist( enemy, robo_aux);
+    //    if(dist_r_o < r_aux)
+    //    {
+    //        the_fih = whirlpool_repulsive( robo, meta, enemy, fih_AUF);
+    //    }
+    //    else
+    //    {
+    //        the_fih = fih_TUF;
+    //    }
+
+    // Fim do repulsive whirlpool
+
+    //        cout << "the_fih: " << the_fih << endl; //TESTE DELETAR
+    //cout << d <<endl;
 }
 
 float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
@@ -369,10 +398,11 @@ void Navigation::set_thetaDir(float theta)
 
 float Navigation::get_direction_CPU()
 {
-    return -phi;
+//    return the_fih;   // Angulo hiperbole+repulsive
+        return -phi;      //Angulo da hiperbole
 }
 
-float Navigation::repulsive_angle(float x, float y, Point2d pos)
+float Navigation::repulsive_angle(float y, float x, Point2d pos)
 {
     float alpha;
     if(x - pos.x < 0)
@@ -384,8 +414,69 @@ float Navigation::repulsive_angle(float x, float y, Point2d pos)
 }
 
 float Navigation::Gaussian_Func(float r){
-    float delta = 0.3;
+    float delta = 0.25;
     float G;
     G = pow(M_E,(-pow(r,2)/(2*pow(delta,2))));
     return G;
+}
+
+float Navigation::tangencial_repulsive(Robot *robot, Point2d meta, Point2d obstaculo, float r){
+    float alpha,omega,zeta,dist_robo_obst;
+    int rot;
+    omega = repulsive_angle(robot->get_pos().x,robot->get_pos().y,meta);  // Angulo entre o robo e a bola
+    zeta = repulsive_angle(obstaculo.x,obstaculo.y,meta);                  // Angulo entre o obstaculo e a bola
+
+    if(omega < 0 && zeta < 0){
+        if(zeta <= omega){
+            rot = -1;
+        }
+        else{
+            rot = 1;
+        }
+    }
+    else{
+        if(zeta <= omega){
+            rot = 1;
+        }
+        else{
+            rot = -1;
+        }
+    }
+
+    Point2d robo_pos;
+    robo_pos = robot->get_pos();
+    //    robo_pos.y = robot->get_pos().y;
+    dist_robo_obst = euclidean_dist(robo_pos,obstaculo);
+
+    alpha = atan(r/dist_robo_obst);
+    cout << endl << "repulsive otario: " << alpha*180/pi << endl;
+    return alpha;
+}
+
+float Navigation::whirlpool_repulsive(Robot *robot, Point2d meta, Point2d obstaculo, float angle_rep){
+    float alpha,omega,zeta,dist_robo_obst;
+    int rot;
+    omega = repulsive_angle(robot->get_pos().x,robot->get_pos().y,meta);  // Angulo entre o robo e a bola
+    zeta = repulsive_angle(obstaculo.x,obstaculo.y,meta);                  // Angulo entre o obstaculo e a bola
+
+    rot = -pi/4;
+
+    if(omega < 0 && zeta < 0){
+        if(zeta <= omega){
+            alpha = angle_rep - rot;
+        }
+        else{
+            alpha = angle_rep + rot;
+        }
+    }
+    else{
+        if(zeta <= omega){
+            alpha = angle_rep + rot;
+        }
+        else{
+            alpha = angle_rep - rot;
+        }
+    }
+    cout << endl << endl << "rep: " << angle_rep*180/pi << endl << endl;
+    return alpha;
 }

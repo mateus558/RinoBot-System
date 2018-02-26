@@ -13,7 +13,7 @@ double limiar_theta = 90 + delta_limiar;
 double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
-double v_max = 0.7; //0.75
+double v_max = 0.75; //0.75
 double v_delta = 0.5;
 double w_max = 7;
 double k = (w_max/v_max);
@@ -33,8 +33,7 @@ double vel_giro_gol = 1.0;
 
 // Constantes para a movimentação com PID
 double last_phi = 0; // Última orientação do robô
-double kp = 17
-;  // Ganho proporcional 13
+double kp = 15;  // Ganho proporcional 13
 double kd = 0.003;  // Ganho derivativo
 
 
@@ -2025,7 +2024,7 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     theta = pot_fields->get_direction_CPU() * 180 / M_PI;  // Angulo do CPU
     Point2d robo_pos;
     robo_pos = robo->get_pos();
-
+    cout << endl << "tetinhaa: "<< theta << endl;
     //    if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){ // Angulo do CPH
     //        theta = pot_fields->get_direction(robot_grid);
     //    }

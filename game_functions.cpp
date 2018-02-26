@@ -1636,6 +1636,9 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     else
         enemy_prox = enemy_pos[2];
 
+    //enemy_prox.x -= 10;
+   // cout << endl << "x: " << enemy_prox.x << " y: " << enemy_prox.y << endl;  // Deleta
+
     //Corrige Posicionamento novamente
     ball_pos.y = -ball_pos.y;
     centroid_atk.y=-centroid_atk.y;
@@ -1736,7 +1739,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
             }
             else{
                 set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
-                cout << "CPU" << endl;
+                //cout << "CPU" << endl;
             }
         }
     }
