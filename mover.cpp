@@ -10,14 +10,14 @@ using namespace std;
 // Constantes para qualquer robô
 double delta_limiar = 10; //Cinemática: 15, PID:
 double limiar_theta = 90 + delta_limiar;
-double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
+//double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
 double v_max = 0.75; //0.75
 double v_delta = 0.5;
 double w_max = 7;
 double k = (w_max/v_max);
-double dist_giro = 8;
+double dist_giro = 9.0;
 double vel_giro_lado = 1.0;
 double vel_giro_atk = 0.5;
 double v_atk = 1.6;
@@ -33,8 +33,8 @@ double vel_giro_gol = 1.0;
 
 // Constantes para a movimentação com PID
 double last_phi = 0; // Última orientação do robô
-double kp = 15;  // Ganho proporcional 13
-double kd = 0.003;  // Ganho derivativo
+//double kp = 15;  // Ganho proporcional 13
+//double kd = 0.003;  // Ganho derivativo
 
 
 Serial Mover::serial;
@@ -152,6 +152,7 @@ void Mover::team_changed(){
 
 
 void Mover::calcula_velocidades(Robot *r, Game_functions *potencial_fields, pair<float, float> *vels){
+    set_params(r);
     switch (r->get_flag_fuzzy()){
     case 0:
         velocity_defender(r, potencial_fields , vels);
@@ -183,6 +184,10 @@ void Mover::calcula_velocidades(Robot *r, Game_functions *potencial_fields, pair
 void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
     Point2d robot_pos = robo->get_pos();
     Point robot_grid = convert_C_to_G(robot_pos);
+
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
 
     Point2d ball_v;
 
@@ -506,6 +511,10 @@ void Mover::velocity_defender(Robot *robo, Game_functions *pot_fields, pair<floa
     Point2d eixo_x(1.0,0.0);
     Point2d robo_pos = robo->get_pos();
 
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
+
     double v,w,theta,alpha;
     pair<float, float> vel;
 
@@ -572,6 +581,10 @@ void Mover::velocity_defensive_midfielder(Robot *robo, Game_functions *pot_field
     Point2d robo_pos = robo->get_pos();
     double v,w,theta,alpha;
     pair<float, float> vel;
+
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
 
     //    if(euclidean_dist(robo_pos, pot_fields->get_meta()) > 30){
     //        v_max = 1;
@@ -649,6 +662,10 @@ void Mover::velocity_defensive_midfielder(Robot *robo, Game_functions *pot_field
 
 void Mover::velocity_ofensive_midfielder(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
     Point2d ball_v;
+
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
 
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
@@ -780,6 +797,10 @@ void Mover::velocity_striker(Robot *robo, Game_functions *pot_fields, pair<float
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
 
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
+
     // Calcula velocidades
     Point robot_grid = convert_C_to_G(robo->get_pos());
     Point2d eixo_x(1.0,0.0);
@@ -903,6 +924,9 @@ void Mover::velocity_guardian(Robot *robo, Game_functions *pot_fields, pair<floa
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
 
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
 
     // Calcula velocidades
     Point robot_grid = convert_C_to_G(robo->get_pos());
@@ -983,6 +1007,10 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     Point2d ball_v;
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
+
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
 
     for (int cont_vel = 0; cont_vel < 4; cont_vel ++){
         media_ball_v[cont_vel] = media_ball_v[cont_vel+1];
@@ -1169,6 +1197,10 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
 
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
+
     // Calcula velocidades
     Point robot_grid = convert_C_to_G(robo->get_pos());
     Point2d eixo_x(1.0,0.0);
@@ -1297,6 +1329,10 @@ void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, f
 
 void Mover::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
     double alpha,w;
+    double kp = r->get_kp();
+    double kd = r->get_kd();
+    double l = r->get_l_size();
+
     alpha = 90 - r->get_angle();
     alpha = ajusta_angulo(alpha);
     if (fabs(alpha) <= limiar_theta){
@@ -1314,6 +1350,9 @@ void Mover::goalkeeper_orientation(Robot *r, pair<float, float> *vels){
 
 void Mover::robot_orientation(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
     double alpha,w;
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
 
     Point2d ball_v;
     ball_v.x = ball_vel.first / 100;
@@ -1392,6 +1431,10 @@ void Mover::atk_orientation(Robot *robo, Game_functions *pot_fields, pair<float,
     Point2d ball_v;
     Point2d eixo_x(1.0,0.0);
     double alpha,w;
+
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
 
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
@@ -2017,6 +2060,9 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
 
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
 
     // Calcula velocidades
 
@@ -2035,33 +2081,33 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     double def_area_y1 = def_area[1].y*Y_CONV_CONST;
     double def_area_y2 = def_area[6].y*Y_CONV_CONST;
 
-              //CPH
+    //CPH
     if (centroid_atk.x > ball_pos.x){ //Comentar tudo para ATK vs DEF
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
             theta = pot_fields->get_direction(robot_grid);
-//        else
-//            if (ball_pos.x < 45 || (ball_pos.x > 145 && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
-//                theta = pot_fields->get_direction(robot_grid);
+        //        else
+        //            if (ball_pos.x < 45 || (ball_pos.x > 145 && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
+        //                theta = pot_fields->get_direction(robot_grid);
     }
     else{
         if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
             theta = pot_fields->get_direction(robot_grid);
-//        else{
+        //        else{
 
-//            if (ball_pos.x > 125 || (ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
-//                theta = pot_fields->get_direction(robot_grid);
-//        }
+        //            if (ball_pos.x > 125 || (ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
+        //                theta = pot_fields->get_direction(robot_grid);
+        //        }
     }
 
 
-//     //   if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
-//     //       while(iterator_cph()>1E-6);
-//    //        set_direction(centroid_atk,centroid_def);
-//    //        //        cout << "CPH" << endl;
-//    //    }
-//    //    else{
-//    //        //        cout << "CPU" << endl;
-//    //    }
+    //     //   if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
+    //     //       while(iterator_cph()>1E-6);
+    //    //        set_direction(centroid_atk,centroid_def);
+    //    //        //        cout << "CPH" << endl;
+    //    //    }
+    //    //    else{
+    //    //        //        cout << "CPU" << endl;
+    //    //    }
 
 
     theta = ajusta_angulo((theta));
@@ -2146,6 +2192,10 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
     Point2d robot_pos = robo->get_pos();
     Point robot_grid = convert_C_to_G(robot_pos);
 
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
+
     Point2d ball_v;
 
     double v,w,theta,alpha;
@@ -2193,8 +2243,8 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
         if (ball_v.x < 0 && ball_pos.x > centroid_def.x + line_root_defender){
             if (robo->get_angle() > 0){
                 v = -(aux_position_y-robot_pos.y)/tempo;
-                if(v > 1){
-                    v = 1;
+                if(v > v_max_gol_ef){
+                    v = v_max_gol_ef;
                 }
                 vels->first = v - w*l;
                 vels->second = v + w*l;
@@ -2219,25 +2269,25 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
                 //ball_v.y = (ball_v.y / fabs(ball_v.y)) * 0.4;
 
                 if (robo->get_angle() > 0 && ball_pos.y < robot_pos.y ){
-                    v = fabs(ball_v.y) - 0.05*(ball_pos.y-robot_pos.y);
+                    v = fabs(ball_v.y) - 0.03*(ball_pos.y-robot_pos.y);
                 }
                 else if (robo->get_angle() > 0 && ball_pos.y > robot_pos.y){
-                    v = -fabs(ball_v.y) - 0.05*(ball_pos.y-robot_pos.y);
+                    v = -fabs(ball_v.y) - 0.03*(ball_pos.y-robot_pos.y);
                 }
                 else if (robo->get_angle() < 0 && ball_pos.y < robot_pos.y ){
-                    v = -fabs(ball_v.y) + 0.05*(ball_pos.y-robot_pos.y);
+                    v = -fabs(ball_v.y) + 0.03*(ball_pos.y-robot_pos.y);
                 }
                 else if (robo->get_angle() < 0 && ball_pos.y > robot_pos.y ){
-                    v = fabs(ball_v.y) + 0.05*(ball_pos.y-robot_pos.y);
+                    v = fabs(ball_v.y) + 0.03*(ball_pos.y-robot_pos.y);
                 }
                 //cout << "FollowBall" << endl;
 
             }
-            if(v > 1){
-                v = 1;
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
             }
-            else if(v < -1){
-                v = -1;
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
             }
             vels->first = v - w*l;
             vels->second = v + w*l;
@@ -2276,11 +2326,11 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
             if (fabs(alpha) > 65 && fabs(alpha) < 115){
                 v = 0;
             }
-            if(v > 1){
-                v = 1;
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
             }
-            else if(v < -1){
-                v = -1;
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
             }
             vels->first = v - w*l;
             vels->second = v + w*l;
@@ -2307,22 +2357,22 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
 
             if (robo->get_angle() > 0){
                 v = -(aux_position_y-robot_pos.y)/tempo;
-                if(v > 1){
-                    v = 1;
+                if(v > v_max_gol_ef){
+                    v = v_max_gol_ef;
                 }
-                else if(v < -1){
-                    v = -1;
+                else if(v < -v_max_gol_ef){
+                    v = -v_max_gol_ef;
                 }
                 vels->first = v - w*l;
                 vels->second = v + w*l;
             }
             else if (robo->get_angle() < 0){
                 v = (aux_position_y-robot_pos.y)/tempo;
-                if(v > 1){
-                    v = 1;
+                if(v > v_max_gol_ef){
+                    v = v_max_gol_ef;
                 }
-                else if(v < -1){
-                    v = -1;
+                else if(v < -v_max_gol_ef){
+                    v = -v_max_gol_ef;
                 }
                 vels->first = v - w*l;
                 vels->second = v + w*l;
@@ -2336,25 +2386,25 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
                 //ball_v.y = (ball_v.y / fabs(ball_v.y)) * 0.4;
 
                 if (robo->get_angle() > 0 && ball_pos.y < robot_pos.y ){
-                    v = fabs(ball_v.y) - 0.05*(ball_pos.y-robot_pos.y);
+                    v = fabs(ball_v.y) - 0.03*(ball_pos.y-robot_pos.y);
                 }
                 else if (robo->get_angle() > 0 && ball_pos.y > robot_pos.y){
-                    v = -fabs(ball_v.y) - 0.05*(ball_pos.y-robot_pos.y);
+                    v = -fabs(ball_v.y) - 0.03*(ball_pos.y-robot_pos.y);
                 }
                 else if (robo->get_angle() < 0 && ball_pos.y < robot_pos.y ){
-                    v = -fabs(ball_v.y) + 0.05*(ball_pos.y-robot_pos.y);
+                    v = -fabs(ball_v.y) + 0.03*(ball_pos.y-robot_pos.y);
                 }
                 else if (robo->get_angle() < 0 && ball_pos.y > robot_pos.y ){
-                    v = fabs(ball_v.y) + 0.05*(ball_pos.y-robot_pos.y);
+                    v = fabs(ball_v.y) + 0.03*(ball_pos.y-robot_pos.y);
                 }
-               // cout << "FollowBall" << endl;
+                // cout << "FollowBall" << endl;
 
             }
-            if(v > 1){
-                v = 1;
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
             }
-            else if(v < -1){
-                v = -1;
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
             }
             vels->first = v - w*l;
             vels->second = v + w*l;
@@ -2394,11 +2444,11 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
             if (fabs(alpha) > 65 && fabs(alpha) < 115){
                 v = 0;
             }
-            if(v > 1){
-                v = 1;
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
             }
-            else if(v < -1){
-                v = -1;
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
             }
             vels->first = v - w*l;
             vels->second = v + w*l;
@@ -2420,4 +2470,35 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
     rotate(robo, vels);
     kick_rotate(robo, vels);
 
+}
+
+void Mover::set_params(Robot * robo){
+    switch(robo->get_channel())
+    {
+    case 1: //roda travando
+        robo->set_kp(13);
+        robo->set_kd(0.003);
+        robo->set_l_size(0.030);
+        break;
+    case 2: //ok
+        robo->set_kp(13);
+        robo->set_kd(0.003);
+        robo->set_l_size(0.030);
+        break;
+    case 3: //ok
+        robo->set_kp(13);
+        robo->set_kd(0.0025);
+        robo->set_l_size(0.030);
+        break;
+    case 4: //ok
+        robo->set_kp(13);
+        robo->set_kd(0.003);
+        robo->set_l_size(0.030);
+        break;
+    case 8: //trocar roda
+        robo->set_kp(15);
+        robo->set_kd(0.003);
+        robo->set_l_size(0.028);
+        break;
+    }
 }

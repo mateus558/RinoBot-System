@@ -32,6 +32,7 @@ struct Encoder{
 class Robot
 {
 private:
+    double kp, kd, l;
     int channel;                            //Communication channel
     int n_loss, n_detected;
     int flag_fuzzy;
@@ -57,6 +58,7 @@ private:
 public:
     bool LPF_filter;
 
+
     Robot();
 
     /**************************************
@@ -74,6 +76,9 @@ public:
      *  Get functions *
      ******************/
 
+    double get_kp();
+    double get_kd();
+    double get_l_size();
     float get_l_vel();
     float get_r_vel();
     double get_ang_vel(); //get angular velocity w
@@ -131,6 +136,9 @@ public:
     void set_team_upper_color(vector<int> upper_color);
     void set_low_color(vector<int> low_color);
     void set_upper_color(vector<int> upper_color);
+    void set_kp(double);
+    void set_kd(double);
+    void set_l_size(double);
 
     /***************************
      *  Miscelaneous functions *

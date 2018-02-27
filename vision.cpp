@@ -151,14 +151,15 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     contours[2].erase(it, contours[2].end());
 
     //Get the robots moments and centroids for each team (their team color half)
+    Point2f tempCenter;
     for(i = 0; i < 2; ++i){
+//        vector<RotatedRect> minRect( contours[i+1].size() );
         if(contours[i+1].size() > 0){
             for(j = 0; j < contours[i+1].size(); ++j){
-                temp_moment = moments(contours[i+1][j]);
-                t_m[i].push_back(temp_moment);
-                //Get centroid from robot team color half
-                tirj_cent[i].push_back(Point(t_m[i][j].m10/t_m[i][j].m00, t_m[i][j].m01/t_m[i][j].m00));
-
+                RotatedRect minRect = minAreaRect( Mat(contours[i+1][j]) );
+                tempCenter = minRect.center;
+                tirj_cent[i].push_back(tempCenter);
+                cout << "teamColor" << minRect.angle << endl << endl;
             }
             //If there's less than 3 centroids, set the remaining as null
             if(contours[i+1].size() < 3){
@@ -172,17 +173,15 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Get the robots moments only for team 1 (their color half)
     for(i = 0; i < 3; ++i){
+//        vector<RotatedRect> minRect_team( contours[i+3].size() );
+
         csize = contours[i + 3].size();
         if(csize > 0){
             for(j = 0; j < csize; ++j){
-                temp_moment = moments(contours[i + 3][j]);
-                r_m[i].push_back(temp_moment);
+                RotatedRect minRect_team = minAreaRect( Mat(contours[i + 3][j]) );
+                tempCenter = minRect_team.center;
+                r_col_cent[i].push_back(tempCenter);
             }
-            //Get centroid from robot color half
-            for(j = 0; j < csize; ++j){
-                r_col_cent[i].push_back(Point(r_m[i][j].m10/r_m[i][j].m00, r_m[i][j].m01/r_m[i][j].m00));
-            }
-
         }else{
             //If there's no contour, the robot wasn't detected, set the last valid position
             r_col_cent[i].push_back(null_point);

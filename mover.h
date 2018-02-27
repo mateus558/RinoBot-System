@@ -89,6 +89,8 @@ public:
 
     void velocity_killer_cpu(Robot *, Game_functions  *, pair<float, float>*);
     void velocity_defender_root(Robot *, Game_functions  *, pair<float, float>*);
+
+    void set_params(Robot *);
     ~Mover();
 };
 

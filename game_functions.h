@@ -23,7 +23,7 @@ private:
     Point2d ball_pos; //posicao em cm da bola
     Point2d centroid_atk; //posicao em cm do centro da area de atk
     Point2d centroid_def; //posicao em cm do centro da area de def
-    double line_root_defender = 45;
+    double line_root_defender = 32;
     pVector def_area;
     pair<double, double> ball_vel;
     vector<pair<float, float> > vels;

@@ -155,7 +155,7 @@ void Navigation::set_grid_orientation(Point meta){
     int i, j;
     for (i = 0; i < 28; i++){
         for (j = 0; j < 36; j++){
-            if (i > 7 && i < 20 && (j == 3 || j == 33)){
+            if (i > 7 && i < 20 && (j == 3 || j == 4 || j == 33 || j == 32)){
                 if (meta.y < i){
                     tGrid[i][j] = 90;
                 }
@@ -363,9 +363,8 @@ float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
 {
     float Kr = 20;
     float theta_up,theta_down,rho_up,rho_down;
-    float de = 7;
     Vector3d p(xi,yi,1),ph(0,0,0);
-
+    float de = 7;
     //cout << "g_size " << g_size << endl;
     MatrixXd m_trans(3,3),m_rot(3,3);
     m_trans  << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
@@ -449,7 +448,7 @@ float Navigation::tangencial_repulsive(Robot *robot, Point2d meta, Point2d obsta
     dist_robo_obst = euclidean_dist(robo_pos,obstaculo);
 
     alpha = atan(r/dist_robo_obst);
-    cout << endl << "repulsive otario: " << alpha*180/pi << endl;
+  //  cout << endl << "repulsive otario: " << alpha*180/pi << endl;
     return alpha;
 }
 
@@ -479,4 +478,12 @@ float Navigation::whirlpool_repulsive(Robot *robot, Point2d meta, Point2d obstac
     }
     cout << endl << endl << "rep: " << angle_rep*180/pi << endl << endl;
     return alpha;
+}
+
+void Navigation::set_kr(float aux){
+    Kr = aux;
+}
+
+float Navigation::get_kr(){
+    return Kr;
 }
