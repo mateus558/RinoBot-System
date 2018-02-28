@@ -29,6 +29,7 @@ soccer_window::soccer_window(QWidget *parent) :
 
     ui->setupUi(this);
 
+    ui->strategy_options->addItem("Strategy 3");
     ui->strategy_options->addItem("Strategy 2");
     ui->strategy_options->addItem("Strategy 1");
     ui->strategy_options->addItem("Test");
@@ -174,6 +175,7 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
+        cout << endl << endl << "vr: " << team_robots[0].get_r_vel() << "    vl: " << team_robots[0].get_l_vel() << endl << endl;
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
@@ -215,8 +217,8 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         leona->set_centroid_def(centroid_def); //salva a area de def para a leona
         leona->set_def_area(def_area);
 
-        presto->set_centroid_atk(centroid_atk); //salva a area de atk para o presto Inverter para treinar ATK vs DEF
-        presto->set_centroid_def(centroid_def); //salva a area de def para o presto
+        presto->set_centroid_atk(centroid_def); //salva a area de atk para o presto Inverter para treinar ATK vs DEF
+        presto->set_centroid_def(centroid_atk); //salva a area de def para o presto
         presto->set_def_area(def_area);
 
         gandalf->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf
@@ -631,7 +633,7 @@ void soccer_window::on_read_parameters_clicked()
 
 
     //caso não seja selecionado nada na change strategy é forçada a nova estrategia
-    fuzzy->set_strategy(2);
+    fuzzy->set_strategy(3);
 }
 
 void soccer_window::on_change_strategy_clicked(){
@@ -647,18 +649,23 @@ void soccer_window::on_change_strategy_clicked(){
         num_strategy = 1;
     else if (strategy == "Strategy 2")
         num_strategy = 2;
+    else if (strategy == "Strategy 3")
+        num_strategy = 3;
 
     fuzzy->set_strategy(num_strategy);
 
     switch(ui->strategy_options->currentIndex())
     {
     case 0:
-        ui->currentStrategylbl->setText("Current: 2");
+        ui->currentStrategylbl->setText("Current: 3");
         break;
     case 1:
-        ui->currentStrategylbl->setText("Current: 1");
+        ui->currentStrategylbl->setText("Current: 2");
         break;
     case 2:
+        ui->currentStrategylbl->setText("Current: 1");
+        break;
+    case 3:
         ui->currentStrategylbl->setText("Current: Text");
         break;
     }

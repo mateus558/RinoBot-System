@@ -159,7 +159,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
                 RotatedRect minRect = minAreaRect( Mat(contours[i+1][j]) );
                 tempCenter = minRect.center;
                 tirj_cent[i].push_back(tempCenter);
-                cout << "teamColor" << minRect.angle << endl << endl;
+//                cout << "teamColor" << minRect.angle << endl << endl;
             }
             //If there's less than 3 centroids, set the remaining as null
             if(contours[i+1].size() < 3){

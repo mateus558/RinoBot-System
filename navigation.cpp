@@ -271,7 +271,7 @@ bool Navigation::is_running(){
 void Navigation::Stop(){
     stop = true;
 }
-
+        //cout  << "Entrou" << the_fih*180/pi << endl;
 bool Navigation::isStopped() const
 {
     return this->stop;
@@ -291,7 +291,7 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
     Point2d robo_pos;
     robo_pos = robo->get_pos();
     float k0 = 0.12;
-    float r = 30;        // Raio de Influencia do repulsivo
+    float r = 15;        // Raio de Influencia do repulsivo
     float d_min = 21;   // Raio de Influencia do repulsivo
     float norma_s,fih_AUF,fih_TUF;
     float d = euclidean_dist(robo_pos, enemy);  //distancia entre o robo e o obstaculo
@@ -325,11 +325,12 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
 
     fih_AUF = tangencial_repulsive(robo,meta,enemy,r);
 
-    if (d <= r)
-        the_fih = fih_AUF;
-    else
+    if (d <= r){
+        the_fih = fih_AUF ;
+        }
+    else{
         the_fih = fih_AUF*Gaussian_Func(d - r) + fih_TUF*(1-Gaussian_Func(d - r));
-
+     }
 
     // Fim do Repulsive otario
 
@@ -337,10 +338,10 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
 
     //    fih_AUF = repulsive_angle(robo->get_pos().x, robo->get_pos().y, enemy);
     //    float r_aux = d_min;
-    ////    float dist_o_m = euclidean_dist( meta, enemy);
+    //    float dist_o_m = euclidean_dist( meta, enemy);
 
-    ////    if (dist_o_m <= r_aux)
-    ////        r_aux -= dist_o_m;
+    //    if (dist_o_m <= r_aux)
+    //        r_aux -= dist_o_m;
 
     //    Point2d robo_aux = robo->get_pos();
     //    float dist_r_o = euclidean_dist( enemy, robo_aux);
@@ -397,7 +398,7 @@ void Navigation::set_thetaDir(float theta)
 
 float Navigation::get_direction_CPU()
 {
-//    return the_fih;   // Angulo hiperbole+repulsive
+    //return the_fih;   // Angulo hiperbole+repulsive
         return -phi;      //Angulo da hiperbole
 }
 
@@ -422,25 +423,25 @@ float Navigation::Gaussian_Func(float r){
 float Navigation::tangencial_repulsive(Robot *robot, Point2d meta, Point2d obstaculo, float r){
     float alpha,omega,zeta,dist_robo_obst;
     int rot;
-    omega = repulsive_angle(robot->get_pos().x,robot->get_pos().y,meta);  // Angulo entre o robo e a bola
-    zeta = repulsive_angle(obstaculo.x,obstaculo.y,meta);                  // Angulo entre o obstaculo e a bola
+/*    omega = repulsive_angle(robot->get_pos().x,robot->get_pos().y,meta);  // Angulo entre o robo e a bola
+    zeta = repulsive_angle(obstaculo.x,obstaculo.y,meta);*/                  // Angulo entre o obstaculo e a bola
 
-    if(omega < 0 && zeta < 0){
-        if(zeta <= omega){
-            rot = -1;
-        }
-        else{
-            rot = 1;
-        }
-    }
-    else{
-        if(zeta <= omega){
-            rot = 1;
-        }
-        else{
-            rot = -1;
-        }
-    }
+//    if(omega < 0 && zeta < 0){
+//        if(zeta <= omega){
+//            rot = -1;
+//        }
+//        else{
+//            rot = 1;
+//        }
+//    }
+//    else{
+//        if(zeta <= omega){
+//            rot = 1;
+//        }
+//        else{
+//            rot = -1;
+//        }
+//    }
 
     Point2d robo_pos;
     robo_pos = robot->get_pos();
