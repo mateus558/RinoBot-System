@@ -16,6 +16,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
+
+    ui->currentStrategylbl->setText("Current: 3");
+    ui->cbox_strategyOptions->addItem("Strategy 3");
     ui->cbox_strategyOptions->addItem("Strategy 2");
     ui->cbox_strategyOptions->addItem("Strategy 1");
     ui->cbox_strategyOptions->addItem("- Strategy Test -");
@@ -29,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     area_read = false;
     eye = new Vision;
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
+    fuzzy->set_strategy(3);
     leona = new Game_functions; //instancia o objeto leona na rotina do sistema
     presto = new Game_functions; //instancia o objeto presto na rotina do sistema
     gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
@@ -46,25 +50,32 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /****************** SETS INFORMATION WINDOW DATA *******************/
     iWindowData.eye = eye;
-    iWindowData.ball.vel_vision = 0.0;
+    iWindowData.ball.vel_vision.first = 0.0;
+    iWindowData.ball.vel_vision.second = 0.0;
     iWindowData.ball.x = 0.0;
     iWindowData.ball.y = 0.0;
     iWindowData.robots[GANDALF].channel = 0.0;
     iWindowData.robots[GANDALF].vel_max = 0.0;
-    iWindowData.robots[GANDALF].vel_strategy = 0.0;
-    iWindowData.robots[GANDALF].vel_vision = 0.0;
+    iWindowData.robots[GANDALF].vel_strategy.first = 0.0;
+    iWindowData.robots[GANDALF].vel_strategy.second = 0.0;
+    iWindowData.robots[GANDALF].vel_vision.first = 0.0;
+    iWindowData.robots[GANDALF].vel_vision.second = 0.0;
     iWindowData.robots[GANDALF].x = 0.0;
     iWindowData.robots[GANDALF].y = 0.0;
     iWindowData.robots[LEONA].channel = 0.0;
     iWindowData.robots[LEONA].vel_max = 0.0;
-    iWindowData.robots[LEONA].vel_strategy = 0.0;
-    iWindowData.robots[LEONA].vel_vision = 0.0;
+    iWindowData.robots[LEONA].vel_strategy.first = 0.0;
+    iWindowData.robots[LEONA].vel_strategy.second = 0.0;
+    iWindowData.robots[LEONA].vel_vision.first = 0.0;
+    iWindowData.robots[LEONA].vel_vision.second = 0.0;
     iWindowData.robots[LEONA].x = 0.0;
     iWindowData.robots[LEONA].y = 0.0;
     iWindowData.robots[PRESTO].channel = 0.0;
     iWindowData.robots[PRESTO].vel_max = 0.0;
-    iWindowData.robots[PRESTO].vel_strategy = 0.0;
-    iWindowData.robots[PRESTO].vel_vision = 0.0;
+    iWindowData.robots[PRESTO].vel_strategy.first = 0.0;
+    iWindowData.robots[PRESTO].vel_strategy.second = 0.0;
+    iWindowData.robots[PRESTO].vel_vision.first = 0.0;
+    iWindowData.robots[PRESTO].vel_vision.second = 0.0;
     iWindowData.robots[PRESTO].x = 0.0;
     iWindowData.robots[PRESTO].y = 0.0;
 
@@ -95,7 +106,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateFuzzyRobots(std::vector<Robot>)));
     connect(this, SIGNAL(updateVisionInfo(std::vector<Robot>)), eye, SLOT(updateMoverRobots(std::vector<Robot>)));
     connect(this, SIGNAL(updateInformationWindow(InfoParameters)), iWindow, SLOT(updateData(InfoParameters)));
-//    connect(setparam, SIGNAL(serialSettings(SettingsDialog::Settings)), soccer, SLOT(receiveSerialSettings(SettingsDialog::Settings)), Qt::QueuedConnection);
 
     qRegisterMetaType<SettingsDialog::Settings>("SettingsDialog::Settings");
 
@@ -196,6 +206,15 @@ void MainWindow::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
+        if (fabs(team_robots[1].get_l_vel()) < 0.05 && fabs(team_robots[1].get_r_vel()) < 0.05 && fabs(team_robots[2].get_l_vel()) < 0.05 && fabs(team_robots[2].get_r_vel()) < 0.05){
+            if(ui->actionSwap_Roles->isChecked()){
+                ui->actionSwap_Roles->setChecked(false);
+                fuzzy->set_roles(false);
+            }else{
+                ui->actionSwap_Roles->setChecked(true);
+                fuzzy->set_roles(true);
+            }
+        }
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
@@ -272,6 +291,8 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
         }
         team_shapes[i]->pos = c;
     }
+    //Atualiza informação da velocidade da bola
+    iWindowData.ball.vel_vision = percep.ball_vel;
 
     leona->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para a leona
     presto->set_ball_vel(percep.ball_vel); //salva a velocidade da bola para o presto
@@ -284,6 +305,11 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
         ball_pos = percep.ball_pos_cm;
         ball->pos = percep.ball_pos;
         ball->contour = percep.ball_contour;
+
+        //Atualiza informação da posição da bola
+        iWindowData.ball.x = percep.ball_pos_cm.x;
+        iWindowData.ball.y = percep.ball_pos_cm.y;
+
         for(i = 0; i < ball->color.size(); i++){
             ball->color[i] = percep_info.ball_color.second[i] + percep.ball_color.first[i];
             ball->color[i] /= 2;
@@ -343,23 +369,56 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
     mover->set_ball_pos(ball_pos);
     mover->set_def_area(def_area);
 
+    /*******************  GANDALF DETECTED  **********************/
     if(percep.team_robots[1].is_detected()){
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->gandalf_detec_label->setText("Detected");
+
+        //Atualiza informação da posição do gandalf
+        Robot r = percep.team_robots[1];
+        iWindowData.robots[GANDALF].x = r.get_centroid().x;
+        iWindowData.robots[GANDALF].y = r.get_centroid().y;
+        iWindowData.robots[GANDALF].vel_vision = r.get_velocities();
+        iWindowData.robots[GANDALF].channel = r.get_channel();
+        iWindowData.robots[GANDALF].vel_strategy.first = r.get_l_vel();
+        iWindowData.robots[GANDALF].vel_strategy.second = r.get_l_vel();
     }else{
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->gandalf_detec_label->setText("Not Detected");
     }
+
+    /*******************  LEONA DETECTED  **********************/
     if(percep.team_robots[0].is_detected()){
         ui->leona_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->leona_detec_label->setText("Detected");
+
+        //Atualiza informação da posição do gandalf
+        Robot r = percep.team_robots[0];
+        iWindowData.robots[LEONA].x = r.get_centroid().x;
+        iWindowData.robots[LEONA].y = r.get_centroid().y;
+        iWindowData.robots[LEONA].vel_vision = r.get_velocities();
+        iWindowData.robots[LEONA].channel = r.get_channel();
+        iWindowData.robots[LEONA].vel_strategy.first = r.get_l_vel();
+        iWindowData.robots[LEONA].vel_strategy.second = r.get_l_vel();
+
     }else{
         ui->leona_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->leona_detec_label->setText("Not Detected");
     }
+
+    /*******************  PRESTO DETECTED  **********************/
     if(percep.team_robots[2].is_detected()){
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->presto_detec_label->setText("Detected");
+
+        //Atualiza informação da posição do gandalf
+        Robot r = percep.team_robots[2];
+        iWindowData.robots[PRESTO].x = r.get_centroid().x;
+        iWindowData.robots[PRESTO].y = r.get_centroid().y;
+        iWindowData.robots[PRESTO].vel_vision = r.get_velocities();
+        iWindowData.robots[PRESTO].channel = r.get_channel();
+        iWindowData.robots[PRESTO].vel_strategy.first = r.get_l_vel();
+        iWindowData.robots[PRESTO].vel_strategy.second = r.get_l_vel();
     }else{
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->presto_detec_label->setText("Not Detected");
@@ -437,6 +496,8 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
             run_mover = false;
         }
     }
+
+    emit updateInformationWindow(iWindowData);
 }
 
 void MainWindow::updateFPS(double fps){
@@ -517,18 +578,23 @@ void MainWindow::on_btn_changeStrategy_clicked()
         num_strategy = 1;
     else if (strategy == "Strategy 2")
         num_strategy = 2;
+    else if (strategy == "Strategy 3")
+        num_strategy = 3;
 
     fuzzy->set_strategy(num_strategy);
 
     switch(ui->cbox_strategyOptions->currentIndex())
     {
     case 0:
-        ui->currentStrategylbl->setText("Current: 2");
+        ui->currentStrategylbl->setText("Current: 3");
         break;
     case 1:
-        ui->currentStrategylbl->setText("Current: 1");
+        ui->currentStrategylbl->setText("Current: 2");
         break;
     case 2:
+        ui->currentStrategylbl->setText("Current: 1");
+        break;
+    case 3:
         ui->currentStrategylbl->setText("Current: Text");
         break;
     }
@@ -728,4 +794,9 @@ void MainWindow::on_actionOpen_InfoWindow_triggered()
 
 void MainWindow::on_InfoWindow_closed(){
     iWindowOpen = false;
+}
+
+void MainWindow::on_actionSwap_Roles_triggered(bool checked)
+{
+    fuzzy->set_roles(checked);
 }

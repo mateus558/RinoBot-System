@@ -163,6 +163,40 @@
      <string notr="true">Background-Color: #000</string>
     </property>
    </widget>
+   <widget class="QLabel" name="lbl_MinHueBar">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>30</y>
+      <width>161</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_MaxHueBar">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>60</y>
+      <width>161</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <zorder>lbl_MinHueBar</zorder>
+   <zorder>lbl_MaxHueBar</zorder>
+   <zorder>label_4</zorder>
+   <zorder>horizontalSlider_4</zorder>
+   <zorder>lcdNumber_4</zorder>
+   <zorder>label</zorder>
+   <zorder>horizontalSlider</zorder>
+   <zorder>lcdNumber</zorder>
   </widget>
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">

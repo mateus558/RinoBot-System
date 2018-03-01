@@ -40,11 +40,17 @@ public:
 
 private slots:
     void updateMoverRobots(Selector);
+
     void updateFuzzyRobots(Selector);
+
     void updatePerceptionInfo(Vision::Perception);
+
     void updateSerialSettings(SettingsDialog::Settings);
+
     void receiveSerialSettings(SettingsDialog::Settings);
+
     void updateFPS(double);
+
     void on_actionOpen_Camera_triggered(bool checked);
 
     void on_btn_startGame_clicked();
@@ -64,6 +70,8 @@ private slots:
     void on_actionShow_Areas_triggered(bool checked);
 
     void on_actionOpen_InfoWindow_triggered();
+
+    void on_actionSwap_Roles_triggered(bool checked);
 
 signals:
     void updateVisionInfo(std::vector<Robot>);

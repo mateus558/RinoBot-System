@@ -16,15 +16,15 @@ using namespace std;
 struct BallInfo{
     double x;
     double y;
-    double vel_vision;
+    pair<float,float> vel_vision;
 };
 
 struct RobotInfo{
     double channel;
     double x;
     double y;
-    double vel_strategy;
-    double vel_vision;
+    pair<float,float> vel_strategy;
+    pair<float,float> vel_vision;
     double vel_max;
 };
 /**************ROBOT INFO********************

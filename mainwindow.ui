@@ -427,6 +427,7 @@
     <addaction name="actionShow_VisionLog"/>
     <addaction name="actionSwap_ATK_DEF"/>
     <addaction name="actionSwap_Teams"/>
+    <addaction name="actionSwap_Roles"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_InfoWindow"/>
    </widget>
@@ -501,6 +502,14 @@
    </property>
    <property name="shortcut">
     <string>I</string>
+   </property>
+  </action>
+  <action name="actionSwap_Roles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Swap Roles</string>
    </property>
   </action>
  </widget>

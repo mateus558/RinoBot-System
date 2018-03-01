@@ -16,7 +16,11 @@ SetColorRange::SetColorRange(QWidget *parent) :
     eye = new Vision;
     ui->setupUi(this);
 
-
+    QPixmap img("../RinoBot-System/hueBar.png");
+    ui->lbl_MaxHueBar->setPixmap(img);
+    ui->lbl_MaxHueBar->setScaledContents(true);
+    ui->lbl_MinHueBar->setPixmap(img);
+    ui->lbl_MinHueBar->setScaledContents(true);
     connect(ui->horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_sliderMoved(int)));
     connect(ui->horizontalSlider_2, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_2_sliderMoved(int)));
     connect(ui->horizontalSlider_3, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_3_sliderMoved(int)));

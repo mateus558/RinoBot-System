@@ -175,7 +175,7 @@ void InformationWindow::updateData(){
     //manipulating gandalf
     channel = "Canal: " +  QString::number(data.robots[GANDALF].channel);
     ui->channelGandalflbl->setText(channel);
-    velocity = "Speed: " + QString::number(data.robots[GANDALF].vel_strategy);
+    velocity = "Speed: (" +  QString::number(data.robots[GANDALF].vel_strategy.first) + " , " + QString::number(data.robots[GANDALF].vel_strategy.second) + ")";
     ui->velocityGandalflbl->setText(velocity);
     velocityMax =  "Speed Máx: " + QString::number(data.robots[GANDALF].vel_max);
     ui->velocityMaxGandalflbl->setText(velocityMax);
@@ -183,7 +183,7 @@ void InformationWindow::updateData(){
     //manipulating leona
     channel = "Canal: " +  QString::number(data.robots[LEONA].channel);
     ui->channelLeonalbl->setText(channel);
-    velocity = "Speed: " + QString::number(data.robots[LEONA].vel_strategy);
+    velocity = "Speed: (" +  QString::number(data.robots[LEONA].vel_strategy.first) + " , " + QString::number(data.robots[LEONA].vel_strategy.second) + ")";
     ui->velocityLeonalbl->setText(velocity);
     velocityMax =  "Speed Máx: " + QString::number(data.robots[LEONA].vel_max);
     ui->velocityMaxLeonalbl->setText(velocityMax);
@@ -191,7 +191,7 @@ void InformationWindow::updateData(){
     //manipulating presto
     channel = "Canal: " +  QString::number(data.robots[PRESTO].channel);
     ui->channelPrestolbl->setText(channel);
-    velocity = "Speed: " + QString::number(data.robots[PRESTO].vel_strategy);
+    velocity = "Speed: (" +  QString::number(data.robots[PRESTO].vel_strategy.first) + " , " + QString::number(data.robots[PRESTO].vel_strategy.second) + ")";
     ui->velocityPrestolbl->setText(velocity);
     velocityMax =  "Speed Máx: " + QString::number(data.robots[PRESTO].vel_max);
     ui->velocityMaxPrestolbl->setText(velocityMax);
@@ -199,24 +199,24 @@ void InformationWindow::updateData(){
     //manipulating gandalf
     posicao = "Posição: (" +  QString::number(data.robots[GANDALF].x) + " , " + QString::number(data.robots[GANDALF].y) + ")";
     ui->positionGandalflbl->setText(posicao);
-    velocity = "Speed: " + QString::number(data.robots[GANDALF].vel_vision);
+    velocity = "Speed: (" +  QString::number(data.robots[GANDALF].vel_vision.first) + " , " + QString::number(data.robots[GANDALF].vel_vision.second) + ")";
     ui->velocityGandalflbl_2->setText(velocity);
 
     //manipulating leona
     posicao = "Posição: (" +  QString::number(data.robots[LEONA].x) + " , " + QString::number(data.robots[LEONA].y) + ")";
     ui->positionLeonalbl->setText(posicao);
-    velocity = "Speed: " + QString::number(data.robots[LEONA].vel_vision);
+    velocity = "Speed: (" +  QString::number(data.robots[LEONA].vel_vision.first) + " , " + QString::number(data.robots[LEONA].vel_vision.second) + ")";
     ui->velocityLeonalbl_2->setText(velocity);
 
     //manipulating presto
     posicao = "Posição: (" +  QString::number(data.robots[PRESTO].x) + " , " + QString::number(data.robots[PRESTO].y) + ")";
     ui->positionPrestolbl->setText(posicao);
-    velocity = "Speed: " + QString::number(data.robots[PRESTO].vel_vision);
+    velocity = "Speed: (" +  QString::number(data.robots[PRESTO].vel_vision.first) + " , " + QString::number(data.robots[PRESTO].vel_vision.second) + ")";
     ui->velocityPrestolbl_2->setText(velocity);
 
     //manipulating ball
     posicao = "Posição: (" +  QString::number(data.ball.x) + " , " + QString::number(data.ball.y) + ")";
     ui->positionBalllbl->setText(posicao);
-    velocity = "Speed: " + QString::number(data.ball.vel_vision);
+    velocity = "Speed: (" +  QString::number(data.ball.vel_vision.first) + " , " + QString::number(data.ball.vel_vision.second) + ")";
     ui->velocityBalllbl->setText(velocity);
 }
