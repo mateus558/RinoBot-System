@@ -365,7 +365,7 @@ float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
     float Kr = 20;
     float theta_up,theta_down,rho_up,rho_down;
     Vector3d p(xi,yi,1),ph(0,0,0);
-    float de = 7;
+    float de = 5;
     //cout << "g_size " << g_size << endl;
     MatrixXd m_trans(3,3),m_rot(3,3);
     m_trans  << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
