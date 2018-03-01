@@ -63,7 +63,11 @@ public:
     float Gaussian_Func(float);
     void set_thetaDir(float);
     float get_direction_CPU();
-    float theta_dir,the_fih,phi,g_size;
+    float tangencial_repulsive(Robot*, Point2d, Point2d, float );
+    float whirlpool_repulsive(Robot*, Point2d, Point2d obstaculo, float );
+    float theta_dir,the_fih,phi,g_size,Kr;
+    void set_kr(float);
+    float get_kr();
 
 };
 

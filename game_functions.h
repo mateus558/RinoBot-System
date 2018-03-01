@@ -13,6 +13,7 @@ class Game_functions: public Navigation
     Q_OBJECT
 private:
     Point2d meta_goalkeeper;
+    Point2d meta_defender_root;
     Point2d meta;
     p2dVector team_pos;
     Point ball_pos_grid;
@@ -22,6 +23,7 @@ private:
     Point2d ball_pos; //posicao em cm da bola
     Point2d centroid_atk; //posicao em cm do centro da area de atk
     Point2d centroid_def; //posicao em cm do centro da area de def
+    double line_root_defender = 32;
     pVector def_area;
     pair<double, double> ball_vel;
     vector<pair<float, float> > vels;
@@ -73,12 +75,15 @@ public:
     bool isStopped() const;
     void team_changed();
     Point2d get_meta_goalkeeper();
+    Point2d get_meta_defender_root();
     Point2d get_meta();
     Point convert_C_to_G(Point2d);
 
     void robo_grid_position(Robot *, Robot *, Robot *);
 
     void killer_cpu(Robot *, int, pair<float, float>*);   // Univector Func
+    void defender_root(Robot *, int, pair<float, float>*);   // Univector Func
+
     void set_g_size(Point2d meta, Robot *robo);
 
     ~Game_functions();

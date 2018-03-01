@@ -29,6 +29,7 @@ private:
     Point2d ball_pos; //posicao em cm da bola
     Point2d centroid_atk; //posicao em cm do centro da area de atk
     Point2d centroid_def; //posicao em cm do centro da area de def
+    double line_root_defender = 45;
     pVector def_area;
     pair<double, double> ball_vel;
     vector<pair<float, float> > vels;
@@ -65,7 +66,10 @@ public:
     void robot_orientation(Robot *, Game_functions  *, pair<float, float>*);
     void atk_orientation(Robot *, Game_functions  *, pair<float, float>*);
     void atk_situation(Robot *,Game_functions *,pair<float,float>*);
+    void atk_situation_inv(Robot *,Game_functions *,pair<float,float>*);
     void rotate(Robot *, pair<float, float>*);
+    void rotate_inv(Robot *, pair<float, float>*);
+    void kick_rotate(Robot *, pair<float, float>*);
     Point2d prevision_atk(Robot *);
     double ajusta_angulo(double);
     void Play();
@@ -84,7 +88,9 @@ public:
     Point convert_C_to_G(Point2d);
 
     void velocity_killer_cpu(Robot *, Game_functions  *, pair<float, float>*);
+    void velocity_defender_root(Robot *, Game_functions  *, pair<float, float>*);
 
+    void set_params(Robot *);
     ~Mover();
 };
 

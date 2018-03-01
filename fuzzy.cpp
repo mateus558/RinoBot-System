@@ -53,7 +53,7 @@ bool Fuzzy::isStopped() const
 void Fuzzy::Play(){
     if(isStopped())
         stop = false;
-   start();
+    start();
 }
 
 void Fuzzy::Stop(){
@@ -91,7 +91,7 @@ void Fuzzy::run(){
             //tratar bola aqui
         }
     }
-    else if (num_strategy == 2){
+    else if (num_strategy == 2 || num_strategy == 3){
         calcula_another_input();
         another_fuzzification();
         another_defuzzification();
@@ -148,53 +148,53 @@ void Fuzzy::calcula_input(Robot r){
 
     //Calculo FA - AngBallAliado e AngAtkAliado
 
-        //Corrige Posicionamento
-        ball_pos.y = -ball_pos.y;
-        robot_pos.y = -robot_pos.y;
-        centroid_atk.y=-centroid_atk.y;
+    //Corrige Posicionamento
+    ball_pos.y = -ball_pos.y;
+    robot_pos.y = -robot_pos.y;
+    centroid_atk.y=-centroid_atk.y;
 
-        //Calcula angulo entre robo e bola
-        Point2d vec_ball_robot = ball_pos-robot_pos;
-        double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
-        //cout << ball_pos.x << endl;
-        //Corrige o angulo
-        if (vec_ball_robot.y < 0)
-                ang_vec_ball_eixox = -ang_vec_ball_eixox;
+    //Calcula angulo entre robo e bola
+    Point2d vec_ball_robot = ball_pos-robot_pos;
+    double ang_vec_ball_eixox = angle_two_points(vec_ball_robot,eixo_x);
+    //cout << ball_pos.x << endl;
+    //Corrige o angulo
+    if (vec_ball_robot.y < 0)
+        ang_vec_ball_eixox = -ang_vec_ball_eixox;
 
-        double ang_ball_robot = ang_vec_ball_eixox - angle;
+    double ang_ball_robot = ang_vec_ball_eixox - angle;
 
-        //Calcula angulo entre robo e gol adversario
-        Point2d vec_atk_robot = centroid_atk-robot_pos;
-        double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
+    //Calcula angulo entre robo e gol adversario
+    Point2d vec_atk_robot = centroid_atk-robot_pos;
+    double ang_vec_atk_eixox = angle_two_points(vec_atk_robot,eixo_x);
 
-        //Corrige o angulo
-        if (vec_atk_robot.y < 0)
-                ang_vec_atk_eixox = -ang_vec_atk_eixox;
+    //Corrige o angulo
+    if (vec_atk_robot.y < 0)
+        ang_vec_atk_eixox = -ang_vec_atk_eixox;
 
-        double ang_atk_robot = ang_vec_atk_eixox - angle;
+    double ang_atk_robot = ang_vec_atk_eixox - angle;
 
-        //ajusta angulos para menores que 180 e maiores que -180
-        if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot - 360;
-        else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
-        if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
-        else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
+    //ajusta angulos para menores que 180 e maiores que -180
+    if (ang_ball_robot>180) ang_ball_robot = ang_ball_robot - 360;
+    else if (ang_ball_robot<-180) ang_ball_robot = ang_ball_robot + 360;
+    if (ang_atk_robot>180) ang_atk_robot = ang_atk_robot - 360;
+    else if (ang_atk_robot<-180) ang_atk_robot = ang_atk_robot + 360;
 
 
-        if (ang_ball_robot <= 90 && ang_ball_robot >= -90)
-            aux1 = (90 - fabs(ang_ball_robot))/90;
-        else
-            aux1 = (-90 + fabs(ang_ball_robot))/90;
-        if (ang_atk_robot <= 90 && ang_atk_robot >= -90)
-            aux2 = (90 - fabs(ang_atk_robot))/90;
-        else
-            aux2 = (-90 + fabs(ang_atk_robot))/90;
+    if (ang_ball_robot <= 90 && ang_ball_robot >= -90)
+        aux1 = (90 - fabs(ang_ball_robot))/90;
+    else
+        aux1 = (-90 + fabs(ang_ball_robot))/90;
+    if (ang_atk_robot <= 90 && ang_atk_robot >= -90)
+        aux2 = (90 - fabs(ang_atk_robot))/90;
+    else
+        aux2 = (-90 + fabs(ang_atk_robot))/90;
 
-        input[2]= 0.7*aux1+0.3*aux2;
-        input[2] = (round(input[2]*100))/100;
+    input[2]= 0.7*aux1+0.3*aux2;
+    input[2] = (round(input[2]*100))/100;
 
-        ball_pos.y = -ball_pos.y;
-        robot_pos.y = -robot_pos.y;
-        centroid_atk.y=-centroid_atk.y;
+    ball_pos.y = -ball_pos.y;
+    robot_pos.y = -robot_pos.y;
+    centroid_atk.y=-centroid_atk.y;
 }
 
 //Inicio fuzzy 4x4
@@ -203,12 +203,12 @@ void Fuzzy::calcula_input(Robot r){
 void Fuzzy::calcula_another_input(){
     if (centroid_atk.x > ball_pos.x )/*ata
     cando para direita*/{
-       input[0] = round((ball_pos.x-10)/1.5); //Arrumado para x max 150 e valor inteiro *100
-       input[1] = round(ball_pos.y /1.3);
+        input[0] = round((ball_pos.x-10)/1.5); //Arrumado para x max 150 e valor inteiro *100
+        input[1] = round(ball_pos.y /1.3);
     }
     else if (centroid_atk.x <= ball_pos.x){
-       input[0] = round((160 - ball_pos.x) / 1.5); //Arrumado para x max 150 e valor inteiro *100
-       input[1] = round((130 - ball_pos.y) / 1.3);
+        input[0] = round((160 - ball_pos.x) / 1.5); //Arrumado para x max 150 e valor inteiro *100
+        input[1] = round((130 - ball_pos.y) / 1.3);
     }
 }
 
@@ -245,9 +245,9 @@ void Fuzzy::another_fuzzification(){
     {
         for(j=0;j<4;j++)
         {
-                aux3 = min_function(mi[0][i],mi[1][j]);//Mapeando póssibilidades
-                D[cont] = aux3; //armazena os mim das funções de pertinencia
-                cont++;
+            aux3 = min_function(mi[0][i],mi[1][j]);//Mapeando póssibilidades
+            D[cont] = aux3; //armazena os mim das funções de pertinencia
+            cont++;
         }
 
     }
@@ -267,7 +267,7 @@ void Fuzzy::another_fuzzification(){
                 limite[i][j] = min_function(D[i],y_medio1[j]);
             }
         }
-       //Referente ao no fuzzy ALTO
+        //Referente ao no fuzzy ALTO
         else if( i >= 12 && i <= 15)
         {
             for(j=0;j<=100;j++)
@@ -289,8 +289,8 @@ void Fuzzy::another_fuzzification(){
 
     for(i=0;i<cont;i++)//Percorre o vetor D
     {
-       //if((i%2 == 0 && i <=11) || i == 14 || i == 15){
-       if(i%2 == 0){
+        //if((i%2 == 0 && i <=11) || i == 14 || i == 15){
+        if(i%2 == 0){
             for(j=0;j<=100;j++)
             {
                 limite[i][j] = min_function(D[i],y_medio1[j]);
@@ -322,7 +322,7 @@ void Fuzzy::another_defuzzification(){
     int i,j,aux1;
     for(i=0;i<=100;i++)
     {
-    //Formula que gera o centro de massa da função de maximo
+        //Formula que gera o centro de massa da função de maximo
         sum1 = sum1 + d_universe[i]*y_output1[i];
         sum2 = sum2 + y_output1[i];
     }
@@ -333,20 +333,20 @@ void Fuzzy::another_defuzzification(){
 
     for(i=0;i<=100;i++)
     {
-    //Formula que gera o centro de massa da função de maximo
+        //Formula que gera o centro de massa da função de maximo
         sum1 = sum1 + d_universe[i]*y_output2[i];
         sum2 = sum2 + y_output2[i];
     }
-    output2 = sum1/sum2; //posição de saida em y    
+    output2 = sum1/sum2; //posição de saida em y
 
     //Passando saidas para gamefunction
     if(centroid_atk.x > ball_pos.x ){
-       output_meta.x = output1*150 +10;
-       output_meta.y = output2*130;
+        output_meta.x = output1*150 +10;
+        output_meta.y = output2*130;
     }
     else if (centroid_atk.x <= ball_pos.x ){
-       output_meta.x = 160 - output1*150;
-       output_meta.y = 130 - output2*130;
+        output_meta.x = 160 - output1*150;
+        output_meta.y = 130 - output2*130;
     }
 
 }
@@ -523,7 +523,7 @@ void Fuzzy::set_objectives(){
             }
             else {
                 decisao_robo[1] = 2;
-            }         
+            }
         }
         else{
             //tratar aqui
@@ -622,6 +622,18 @@ void Fuzzy::set_objectives(){
         selec_robot.r2.set_output_fuzzy(output_meta);
         selec_robot.r3.set_output_fuzzy(output_meta);
     }
+    else if(num_strategy == 3){
+        if(!swap_roles){
+            selec_robot.r1.set_flag_fuzzy(21, centroid_atk, centroid_def, ball_pos); //gandalf
+            selec_robot.r2.set_flag_fuzzy(10, centroid_atk, centroid_def, ball_pos); //presto
+        }
+        else{
+            selec_robot.r1.set_flag_fuzzy(10, centroid_atk, centroid_def, ball_pos); //gandalf
+            selec_robot.r2.set_flag_fuzzy(21, centroid_atk, centroid_def, ball_pos); //presto
+        }
+        selec_robot.r3.set_flag_fuzzy(4, centroid_atk, centroid_def, ball_pos); //leona
+
+    }
     else if(num_strategy == 0){
         // Teste
         selec_robot.r1.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //gandalf
@@ -631,7 +643,6 @@ void Fuzzy::set_objectives(){
     else{
         // tratar aqui
     }
-
 }
 
 bool Fuzzy::get_flag_finish(){
@@ -773,4 +784,8 @@ void Fuzzy::set_centroid_def(Point2d centroid_def){
 
 void Fuzzy::set_strategy(char num){
     num_strategy = num;
+}
+
+void Fuzzy::set_roles(bool checked){
+    swap_roles = checked;
 }

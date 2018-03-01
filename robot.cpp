@@ -630,3 +630,27 @@ float Robot::get_l_vel(){
 float Robot::get_r_vel(){
     return vel.second;
 }
+
+double Robot::get_kp(){
+    return kp;
+}
+
+double Robot::get_kd(){
+    return kd;
+}
+
+double Robot::get_l_size(){
+    return l;
+}
+
+void Robot::set_kp(double aux){
+    kp = aux;
+}
+
+void Robot::set_kd(double aux){
+    kd = aux;
+}
+
+void Robot::set_l_size(double aux){
+    l = aux;
+}

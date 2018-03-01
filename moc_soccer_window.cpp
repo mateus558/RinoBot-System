@@ -21,8 +21,13 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_soccer_window_t {
+<<<<<<< HEAD
     QByteArrayData data[32];
     char stringdata0[701];
+=======
+    QByteArrayData data[29];
+    char stringdata0[619];
+>>>>>>> origin/IronCup2018
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -59,10 +64,14 @@ QT_MOC_LITERAL(24, 512, 31), // "on_horizontalSlider_sliderMoved"
 QT_MOC_LITERAL(25, 544, 8), // "position"
 QT_MOC_LITERAL(26, 553, 25), // "on_startFilterbtn_clicked"
 QT_MOC_LITERAL(27, 579, 17), // "on_cbkLPF_toggled"
+<<<<<<< HEAD
 QT_MOC_LITERAL(28, 597, 29), // "on_strategy_options_activated"
 QT_MOC_LITERAL(29, 627, 4), // "arg1"
 QT_MOC_LITERAL(30, 632, 36), // "on_show_field_areas_checkbox_..."
 QT_MOC_LITERAL(31, 669, 31) // "on_show_rnames_checkBox_clicked"
+=======
+QT_MOC_LITERAL(28, 597, 21) // "on_swap_roles_clicked"
+>>>>>>> origin/IronCup2018
 
     },
     "soccer_window\0updateVisionInfo\0\0"
@@ -82,9 +91,13 @@ QT_MOC_LITERAL(31, 669, 31) // "on_show_rnames_checkBox_clicked"
     "on_swapteamscbk_clicked\0"
     "on_horizontalSlider_sliderMoved\0"
     "position\0on_startFilterbtn_clicked\0"
+<<<<<<< HEAD
     "on_cbkLPF_toggled\0on_strategy_options_activated\0"
     "arg1\0on_show_field_areas_checkbox_clicked\0"
     "on_show_rnames_checkBox_clicked"
+=======
+    "on_cbkLPF_toggled\0on_swap_roles_clicked"
+>>>>>>> origin/IronCup2018
 };
 #undef QT_MOC_LITERAL
 
@@ -94,7 +107,11 @@ static const uint qt_meta_data_soccer_window[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
+<<<<<<< HEAD
       23,   14, // methods
+=======
+      21,   14, // methods
+>>>>>>> origin/IronCup2018
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -102,6 +119,7 @@ static const uint qt_meta_data_soccer_window[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
+<<<<<<< HEAD
        1,    1,  129,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
@@ -127,6 +145,31 @@ static const uint qt_meta_data_soccer_window[] = {
       28,    1,  175,    2, 0x08 /* Private */,
       30,    0,  178,    2, 0x08 /* Private */,
       31,    0,  179,    2, 0x08 /* Private */,
+=======
+       1,    1,  119,    2, 0x06 /* Public */,
+
+ // slots: name, argc, parameters, tag, flags
+       4,    1,  122,    2, 0x0a /* Public */,
+       6,    1,  125,    2, 0x0a /* Public */,
+       7,    1,  128,    2, 0x0a /* Public */,
+       9,    1,  131,    2, 0x0a /* Public */,
+      11,    1,  134,    2, 0x0a /* Public */,
+      12,    1,  137,    2, 0x0a /* Public */,
+      13,    0,  140,    2, 0x08 /* Private */,
+      14,    0,  141,    2, 0x08 /* Private */,
+      15,    0,  142,    2, 0x08 /* Private */,
+      16,    1,  143,    2, 0x08 /* Private */,
+      18,    1,  146,    2, 0x08 /* Private */,
+      19,    1,  149,    2, 0x08 /* Private */,
+      20,    1,  152,    2, 0x08 /* Private */,
+      21,    0,  155,    2, 0x08 /* Private */,
+      22,    0,  156,    2, 0x08 /* Private */,
+      23,    0,  157,    2, 0x08 /* Private */,
+      24,    1,  158,    2, 0x08 /* Private */,
+      26,    0,  161,    2, 0x08 /* Private */,
+      27,    1,  162,    2, 0x08 /* Private */,
+      28,    1,  165,    2, 0x08 /* Private */,
+>>>>>>> origin/IronCup2018
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    2,
@@ -151,9 +194,13 @@ static const uint qt_meta_data_soccer_window[] = {
     QMetaType::Void, QMetaType::Int,   25,
     QMetaType::Void,
     QMetaType::Void, QMetaType::Bool,   17,
+<<<<<<< HEAD
     QMetaType::Void, QMetaType::QString,   29,
     QMetaType::Void,
     QMetaType::Void,
+=======
+    QMetaType::Void, QMetaType::Bool,   17,
+>>>>>>> origin/IronCup2018
 
        0        // eod
 };
@@ -184,9 +231,13 @@ void soccer_window::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 17: _t->on_horizontalSlider_sliderMoved((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 18: _t->on_startFilterbtn_clicked(); break;
         case 19: _t->on_cbkLPF_toggled((*reinterpret_cast< bool(*)>(_a[1]))); break;
+<<<<<<< HEAD
         case 20: _t->on_strategy_options_activated((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         case 21: _t->on_show_field_areas_checkbox_clicked(); break;
         case 22: _t->on_show_rnames_checkBox_clicked(); break;
+=======
+        case 20: _t->on_swap_roles_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+>>>>>>> origin/IronCup2018
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -227,6 +278,7 @@ int soccer_window::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
+<<<<<<< HEAD
         if (_id < 23)
             qt_static_metacall(this, _c, _id, _a);
         _id -= 23;
@@ -234,6 +286,15 @@ int soccer_window::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         if (_id < 23)
             *reinterpret_cast<int*>(_a[0]) = -1;
         _id -= 23;
+=======
+        if (_id < 21)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 21;
+    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 21)
+            *reinterpret_cast<int*>(_a[0]) = -1;
+        _id -= 21;
+>>>>>>> origin/IronCup2018
     }
     return _id;
 }

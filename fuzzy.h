@@ -46,6 +46,7 @@ private:
     vector<int> decisao_robo;
 
     int num_strategy;  // 0 = teste CPH/CPO; 1 = fuzzy antigo (defensor+ataque); 2 = fuzzy novo (guardian and killer)
+    bool swap_roles = false;
     double output; //saida do fuzzy antigo
     double output1; //saida do fuzzy novo
     double output2; //saida do fuzzy novo
@@ -88,6 +89,7 @@ public:
     void set_centroid_atk(Point2d);
     void set_centroid_def(Point2d);
     void set_strategy(char);
+    void set_roles(bool);
     Point convert_C_to_G(Point2d);
     ~Fuzzy();
 };
