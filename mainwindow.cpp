@@ -32,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent) :
     area_read = false;
     eye = new Vision;
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
-    fuzzy->set_strategy(3);
     leona = new Game_functions; //instancia o objeto leona na rotina do sistema
     presto = new Game_functions; //instancia o objeto presto na rotina do sistema
     gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
@@ -46,6 +45,9 @@ MainWindow::MainWindow(QWidget *parent) :
     game_scene = new QGraphicsScene;
     field = new FieldDraw;
     ball = new BallDraw;
+
+    //caso não seja selecionado nada na change strategy é forçada a nova estrategia
+    fuzzy->set_strategy(3);
 
 
     /****************** SETS INFORMATION WINDOW DATA *******************/
@@ -206,15 +208,18 @@ void MainWindow::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
-        if (fabs(team_robots[1].get_l_vel()) < 0.05 && fabs(team_robots[1].get_r_vel()) < 0.05 && fabs(team_robots[2].get_l_vel()) < 0.05 && fabs(team_robots[2].get_r_vel()) < 0.05){
-            if(ui->actionSwap_Roles->isChecked()){
-                ui->actionSwap_Roles->setChecked(false);
-                fuzzy->set_roles(false);
-            }else{
-                ui->actionSwap_Roles->setChecked(true);
-                fuzzy->set_roles(true);
-            }
-        }
+
+        // Troca de funções da estratégia 3
+//        if (fabs(team_robots[1].get_l_vel()) < 0.05 && fabs(team_robots[1].get_r_vel()) < 0.05 && fabs(team_robots[2].get_l_vel()) < 0.05 && fabs(team_robots[2].get_r_vel()) < 0.05){
+//            if(ui->actionSwap_Roles->isChecked()){
+//                ui->actionSwap_Roles->setChecked(false);
+//                fuzzy->set_roles(false);
+//            }else{
+//                ui->actionSwap_Roles->setChecked(true);
+//                fuzzy->set_roles(true);
+//            }
+//        }
+
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
@@ -712,9 +717,6 @@ void MainWindow::on_actionRead_Parameters_triggered()
 
     eye->set_ball(ball_range);
 
-
-    //caso não seja selecionado nada na change strategy é forçada a nova estrategia
-    fuzzy->set_strategy(2);
 }
 
 void MainWindow::on_actionSet_Parameters_triggered()

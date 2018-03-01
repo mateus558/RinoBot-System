@@ -1656,7 +1656,7 @@ void Mover::atk_situation(Robot *robo, Game_functions *pot_fields, pair<float, f
                 vels->first = -v_atk;
                 vels->second = -v_atk;
             }
-            cout << "Ataque Situation 1" << endl;
+//            cout << "Ataque Situation 1" << endl;
         }
         else{
 
@@ -1672,7 +1672,7 @@ void Mover::atk_situation(Robot *robo, Game_functions *pot_fields, pair<float, f
                 vels->first = v_atk;
                 vels->second = v_atk;
             }
-            cout << "Ataque Situation 2" << endl;
+//            cout << "Ataque Situation 2" << endl;
         }
         else{
 
