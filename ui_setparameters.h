@@ -54,7 +54,7 @@ public:
     {
         if (SetParameters->objectName().isEmpty())
             SetParameters->setObjectName(QStringLiteral("SetParameters"));
-        SetParameters->setWindowModality(Qt::ApplicationModal);
+        SetParameters->setWindowModality(Qt::NonModal);
         SetParameters->resize(997, 516);
         centralwidget = new QWidget(SetParameters);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
