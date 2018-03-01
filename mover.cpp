@@ -2088,7 +2088,6 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     if (centroid_atk.x > ball_pos.x){ //Comentar tudo para ATK vs DEF
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
             theta = pot_fields->get_direction(robot_grid);
-            cout << "Rodrigay" << endl;
         //        else
         //            if (ball_pos.x < 45 || (ball_pos.x > 145 && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
         //                theta = pot_fields->get_direction(robot_grid);
@@ -2096,23 +2095,22 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     else{
         if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
             theta = pot_fields->get_direction(robot_grid);
-            cout << "Rodrigay" << endl;
         //        else{
-
         //            if (ball_pos.x > 125 || (ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
         //                theta = pot_fields->get_direction(robot_grid);
         //        }
     }
 
+   //Teste ataque
 
-    //     //   if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
-    //     //       while(iterator_cph()>1E-6);
-    //    //        set_direction(centroid_atk,centroid_def);
-    //    //        //        cout << "CPH" << endl;
-    //    //    }
-    //    //    else{
-    //    //        //        cout << "CPU" << endl;
-    //    //    }
+     if (centroid_atk.x > centroid_def.x){
+        if(abs(ball_pos.y-centroid_def.y) < 20 && ((centroid_atk.x - ball_pos.x) < 26) && robo_pos.x < ball_pos.x - 7)
+            theta = pot_fields->get_direction(robot_grid);
+    }
+    else{
+        if(abs(ball_pos.y-centroid_def.y) < 20 && ((ball_pos.x - centroid_atk.x) < 26) && robo_pos.x > ball_pos.x + 7)
+            theta = pot_fields->get_direction(robot_grid);
+    }
 
 
     theta = ajusta_angulo((theta));
@@ -2164,21 +2162,24 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
 
     last_phi = alpha;
 
-// Limitando o Matador
-//    if(centroid_atk.x > centroid_def.x){
-//        if(ball_pos.x < centroid_def.x + 60)
-//            v = 0;
-//    }
-//    else{
-//        if(ball_pos.x > centroid_def.x - 60)
-//            v = 0;
-//    }
+    // Limitando o Matador
+    if(centroid_atk.x > centroid_def.x){
+        if(ball_pos.x < centroid_def.x + 60 && robo->get_pos().x > ball_pos.x)
+            v = 0;
+    }
+    else{
+        if(ball_pos.x > centroid_def.x - 60 && robo->get_pos().x < ball_pos.x)
+            v = 0;
+    }
+
+
+
 
     vels->first = v-w*l;
     vels->second = v+w*l;
 
-    rotate_inv(robo, vels); //Colocar a inv para ATK vs DEF
-    atk_situation_inv(robo,pot_fields,vels); //Colocar a inv para ATK vs DEF
+    rotate(robo, vels); //Colocar a inv para ATK vs DEF
+    atk_situation(robo,pot_fields,vels); //Colocar a inv para ATK vs DEF
 
 
 

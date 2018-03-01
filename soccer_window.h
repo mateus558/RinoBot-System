@@ -60,6 +60,8 @@ private slots:
 
     void on_cbkLPF_toggled(bool checked);
 
+    void on_swap_roles_clicked(bool checked);
+
 private:
     Fuzzy *fuzzy;
     Game_functions *leona;

@@ -623,8 +623,14 @@ void Fuzzy::set_objectives(){
         selec_robot.r3.set_output_fuzzy(output_meta);
     }
     else if(num_strategy == 3){
-        selec_robot.r1.set_flag_fuzzy(21, centroid_atk, centroid_def, ball_pos); //gandalf
-        selec_robot.r2.set_flag_fuzzy(10, centroid_atk, centroid_def, ball_pos); //presto
+        if(!swap_roles){
+            selec_robot.r1.set_flag_fuzzy(21, centroid_atk, centroid_def, ball_pos); //gandalf
+            selec_robot.r2.set_flag_fuzzy(10, centroid_atk, centroid_def, ball_pos); //presto
+        }
+        else{
+            selec_robot.r1.set_flag_fuzzy(10, centroid_atk, centroid_def, ball_pos); //gandalf
+            selec_robot.r2.set_flag_fuzzy(21, centroid_atk, centroid_def, ball_pos); //presto
+        }
         selec_robot.r3.set_flag_fuzzy(4, centroid_atk, centroid_def, ball_pos); //leona
 
     }
@@ -778,4 +784,8 @@ void Fuzzy::set_centroid_def(Point2d centroid_def){
 
 void Fuzzy::set_strategy(char num){
     num_strategy = num;
+}
+
+void Fuzzy::set_roles(bool checked){
+    swap_roles = checked;
 }

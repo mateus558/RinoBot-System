@@ -69,7 +69,7 @@ soccer_window::soccer_window(QWidget *parent) :
     Robot::config_serial(serial_config);
 
     connect(eye, SIGNAL(framesPerSecond(double)), this, SLOT(updateFPS(double)));
-    connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);  
+    connect(eye, SIGNAL(infoPercepted(Vision::Perception)), this, SLOT(updatePerceptionInfo(Vision::Perception)), Qt::QueuedConnection);
     connect(fuzzy, SIGNAL(emitRobots(Selector)), this, SLOT(updateFuzzyRobots(Selector)), Qt::QueuedConnection);
     connect(mover, SIGNAL(emitRobots(Selector)), this, SLOT(updateMoverRobots(Selector)), Qt::QueuedConnection);
     //connect(leona, SIGNAL(emitRobots(Selector)), this, SLOT(updateGameFunctionsRobots(Selector)), Qt::QueuedConnection);
@@ -175,7 +175,7 @@ void soccer_window::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
-        cout << endl << endl << "vr: " << team_robots[0].get_r_vel() << "    vl: " << team_robots[0].get_l_vel() << endl << endl;
+//        cout << endl << endl << "vr: " << team_robots[0].get_r_vel() << "    vl: " << team_robots[0].get_l_vel() << endl << endl;
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
         Robot::send_velocities(team_robots[2].get_channel(), make_pair(0, 0));
@@ -217,8 +217,8 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
         leona->set_centroid_def(centroid_def); //salva a area de def para a leona
         leona->set_def_area(def_area);
 
-        presto->set_centroid_atk(centroid_def); //salva a area de atk para o presto Inverter para treinar ATK vs DEF
-        presto->set_centroid_def(centroid_atk); //salva a area de def para o presto
+        presto->set_centroid_atk(centroid_atk); //salva a area de atk para o presto Inverter para treinar ATK vs DEF
+        presto->set_centroid_def(centroid_def); //salva a area de def para o presto
         presto->set_def_area(def_area);
 
         gandalf->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf
@@ -356,7 +356,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
             fuzzy->wait();
         }
         fuzzy->Play();
-     }
+    }
 
     if(!run_leona || !run_presto || !run_gandalf){
         fuzzy->wait();
@@ -378,7 +378,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
             leona->wait();
         }
         leona->Play();
-     }
+    }
 
     //inicia a thread do presto caso ela nao esteja em execucao
     if(run_presto){
@@ -394,7 +394,7 @@ void soccer_window::updatePerceptionInfo(Vision::Perception percep_info){
             gandalf->wait();
         }
         gandalf->Play();
-     }
+    }
 
     //inicia a thread da mover caso ela nao esteja em execucao
     if(run_mover){
@@ -721,8 +721,8 @@ void soccer_window::on_horizontalSlider_sliderMoved(int position) //slider para 
         cutoffFrequency_A = (position)*pi/100;
         cout << cutoffFrequency_A << endl;
         //enviar para a variavel correta
-//        eye->set_LPF_Coefficients_C(Low_pass_filter_coeff(( cutoffFrequency_A )));
-//        eye->set_LPF_Coefficients_A(Low_pass_filter_coeff(( cutoffFrequency_C )));
+        //        eye->set_LPF_Coefficients_C(Low_pass_filter_coeff(( cutoffFrequency_A )));
+        //        eye->set_LPF_Coefficients_A(Low_pass_filter_coeff(( cutoffFrequency_C )));
 
     }
 }
@@ -745,4 +745,9 @@ void soccer_window::on_startFilterbtn_clicked() //liga e desliga o filtro
     }
 
     cout << eye->get_LPF_flag() << endl;
+}
+
+void soccer_window::on_swap_roles_clicked(bool checked)
+{
+    fuzzy->set_roles(checked);
 }

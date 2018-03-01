@@ -84,6 +84,7 @@ public:
     QSlider *horizontalSlider;
     QLCDNumber *chopFrequencylcd;
     QPushButton *startFilterbtn;
+    QCheckBox *swap_roles;
 
     void setupUi(QWidget *soccer_window)
     {
@@ -107,7 +108,7 @@ public:
         start_game->setMaximumSize(QSize(171, 41));
         switch_fields = new QCheckBox(soccer_window);
         switch_fields->setObjectName(QStringLiteral("switch_fields"));
-        switch_fields->setGeometry(QRect(20, 300, 171, 41));
+        switch_fields->setGeometry(QRect(20, 320, 171, 41));
         battery_level_group = new QGroupBox(soccer_window);
         battery_level_group->setObjectName(QStringLiteral("battery_level_group"));
         battery_level_group->setGeometry(QRect(270, 480, 181, 101));
@@ -148,7 +149,7 @@ public:
         presto_label->setGeometry(QRect(210, 560, 59, 14));
         optionsGroupBox = new QGroupBox(soccer_window);
         optionsGroupBox->setObjectName(QStringLiteral("optionsGroupBox"));
-        optionsGroupBox->setGeometry(QRect(10, 200, 191, 181));
+        optionsGroupBox->setGeometry(QRect(10, 220, 191, 181));
         show_field_areas_checkbox = new QCheckBox(optionsGroupBox);
         show_field_areas_checkbox->setObjectName(QStringLiteral("show_field_areas_checkbox"));
         show_field_areas_checkbox->setGeometry(QRect(10, 30, 101, 20));
@@ -261,7 +262,7 @@ public:
         cameralbl->setGeometry(QRect(10, 410, 101, 31));
         swapteamscbk = new QCheckBox(soccer_window);
         swapteamscbk->setObjectName(QStringLiteral("swapteamscbk"));
-        swapteamscbk->setGeometry(QRect(20, 350, 111, 23));
+        swapteamscbk->setGeometry(QRect(20, 370, 111, 23));
         cutoffFrequencylbl = new QLabel(soccer_window);
         cutoffFrequencylbl->setObjectName(QStringLiteral("cutoffFrequencylbl"));
         cutoffFrequencylbl->setGeometry(QRect(10, 520, 121, 17));
@@ -279,6 +280,9 @@ public:
         startFilterbtn = new QPushButton(soccer_window);
         startFilterbtn->setObjectName(QStringLiteral("startFilterbtn"));
         startFilterbtn->setGeometry(QRect(140, 510, 41, 31));
+        swap_roles = new QCheckBox(soccer_window);
+        swap_roles->setObjectName(QStringLiteral("swap_roles"));
+        swap_roles->setGeometry(QRect(20, 194, 107, 29));
         optionsGroupBox->raise();
         start_game->raise();
         switch_fields->raise();
@@ -307,6 +311,7 @@ public:
         horizontalSlider->raise();
         chopFrequencylcd->raise();
         startFilterbtn->raise();
+        swap_roles->raise();
 
         retranslateUi(soccer_window);
 
@@ -359,6 +364,7 @@ public:
         swapteamscbk->setText(QApplication::translate("soccer_window", "Swap Teams", Q_NULLPTR));
         cutoffFrequencylbl->setText(QApplication::translate("soccer_window", "Cutoff Frequency:", Q_NULLPTR));
         startFilterbtn->setText(QApplication::translate("soccer_window", "Off", Q_NULLPTR));
+        swap_roles->setText(QApplication::translate("soccer_window", "Swap Roles", Q_NULLPTR));
     } // retranslateUi
 
 };

@@ -58,7 +58,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>300</y>
+     <y>320</y>
      <width>171</width>
      <height>41</height>
     </rect>
@@ -220,7 +220,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>200</y>
+     <y>220</y>
      <width>191</width>
      <height>181</height>
     </rect>
@@ -686,7 +686,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>350</y>
+     <y>370</y>
      <width>111</width>
      <height>23</height>
     </rect>
@@ -756,6 +756,19 @@
     <string>Off</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="swap_roles">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>194</y>
+     <width>107</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Swap Roles</string>
+   </property>
+  </widget>
   <zorder>optionsGroupBox</zorder>
   <zorder>start_game</zorder>
   <zorder>switch_fields</zorder>
@@ -784,6 +797,7 @@
   <zorder>horizontalSlider</zorder>
   <zorder>chopFrequencylcd</zorder>
   <zorder>startFilterbtn</zorder>
+  <zorder>swap_roles</zorder>
  </widget>
  <resources/>
  <connections/>
