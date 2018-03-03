@@ -269,7 +269,7 @@ void Game_functions::return2goal(){
 
         while(iterator_cph()>1E-6);
         set_direction(centroid_atk,centroid_def);
-        set_grid_orientation(meta_grid);
+        //set_grid_orientation(meta_grid);
     }
 }
 

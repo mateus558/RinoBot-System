@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <utility>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include "robot.h"

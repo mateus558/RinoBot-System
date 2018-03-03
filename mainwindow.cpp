@@ -210,15 +210,15 @@ void MainWindow::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
 
         // Troca de funções da estratégia 3
-//        if (fabs(team_robots[1].get_l_vel()) < 0.05 && fabs(team_robots[1].get_r_vel()) < 0.05 && fabs(team_robots[2].get_l_vel()) < 0.05 && fabs(team_robots[2].get_r_vel()) < 0.05){
-//            if(ui->actionSwap_Roles->isChecked()){
-//                ui->actionSwap_Roles->setChecked(false);
-//                fuzzy->set_roles(false);
-//            }else{
-//                ui->actionSwap_Roles->setChecked(true);
-//                fuzzy->set_roles(true);
-//            }
-//        }
+        if (fabs(team_robots[1].get_l_vel()) < 0.05 && fabs(team_robots[1].get_r_vel()) < 0.05 && fabs(team_robots[2].get_l_vel()) < 0.05 && fabs(team_robots[2].get_r_vel()) < 0.05){
+            if(ui->actionSwap_Roles->isChecked()){
+                ui->actionSwap_Roles->setChecked(false);
+                fuzzy->set_roles(false);
+            }else{
+                ui->actionSwap_Roles->setChecked(true);
+                fuzzy->set_roles(true);
+            }
+        }
 
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
