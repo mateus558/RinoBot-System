@@ -17,7 +17,6 @@ class video4linuxConfig : public QWidget
 public:
     explicit video4linuxConfig(QWidget *parent = 0);
     void set_camid(int cam_id);
-    std::pair<std::vector<std::string>, std::vector<int> > read_default_calib();
     ~video4linuxConfig();
 
 public slots:
@@ -25,8 +24,6 @@ public slots:
 
 private slots:
     void showEvent(QShowEvent *event);
-
-    void closeEvent(QCloseEvent *event);
 
     void on_bright_slider_sliderMoved(int position);
 
@@ -50,10 +47,21 @@ private slots:
 
     void on_Init_Capture_btn_clicked();
 
+    void update_v4l();
+
+    void update_sliders();
+
+    void read_default();
+
+    void read_params(std::string fileName);
+
 private:
     Ui::video4linuxConfig *ui;
     Vision *eye;
     int cam_id;
+    vector<int> values;
+
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // VIDEO4LINUXCONFIG_H
