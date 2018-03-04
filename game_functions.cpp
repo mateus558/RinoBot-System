@@ -1751,7 +1751,6 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 //    cout << "CPU" << endl;
             }
 
-
         }
     }
     else{
@@ -1792,6 +1791,27 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     //    else{
     //        //        cout << "CPU" << endl;
     //    }
+
+
+
+    // Caso merda, comenta
+    if (centroid_atk.x > centroid_def.x){
+        if(ball_pos.y < centroid_def.y - 35 && ball_pos.y > centroid_def.y - 20){
+            set_thetaDir(-30*pi/180);
+        }
+        if(ball_pos.y < centroid_def.y + 35 && ball_pos.y > centroid_def.y + 20){
+            set_thetaDir(150*pi/180 + pi);
+        }
+    }
+    else{
+        if(ball_pos.y < centroid_def.y - 35 && ball_pos.y > centroid_def.y - 20){
+            set_thetaDir(-150*pi/180);
+        }
+        if(ball_pos.y < centroid_def.y + 35 && ball_pos.y > centroid_def.y + 20){
+            set_thetaDir(30*pi/180 + pi);
+        }
+    }
+
 
     if (centroid_atk.x > centroid_def.x){
         if(abs(ball_pos.y-centroid_def.y)<20 && ((centroid_atk.x - ball_pos.x)<26) && robo_pos.x < ball_pos.x - 3){

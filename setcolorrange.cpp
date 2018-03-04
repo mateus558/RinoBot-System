@@ -16,7 +16,7 @@ SetColorRange::SetColorRange(QWidget *parent) :
     eye = new Vision;
     ui->setupUi(this);
 
-    QPixmap img("../RinoBot-System/hueBar.png");
+    QPixmap img("../RinoBot-System/hueBar3.png");
     ui->lbl_MaxHueBar->setPixmap(img);
     ui->lbl_MaxHueBar->setScaledContents(true);
     ui->lbl_MinHueBar->setPixmap(img);
@@ -43,7 +43,7 @@ void SetColorRange::showEvent(QShowEvent *event){
         ui->horizontalSlider->setValue(0);
         ui->horizontalSlider_2->setValue(0);
         ui->horizontalSlider_3->setValue(0);
-        ui->horizontalSlider_4->setValue(255);
+        ui->horizontalSlider_4->setValue(180);
         ui->horizontalSlider_5->setValue(255);
         ui->horizontalSlider_6->setValue(255);
         clog << "Values set to default." << endl;

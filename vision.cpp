@@ -72,10 +72,23 @@ Vision::Vision(QObject *parent): QThread(parent)
 
 Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) //Detect colors in [low,upper] range
 {
-    Mat mask;
+    Mat mask, mask1, mask2;
+    int changeVar;
 
     //Generate mask with the points in the range
-    inRange(vision_frame, Scalar(low[0],low[1],low[2]), Scalar(upper[0],upper[1],upper[2]), mask);
+    if(low[0]>upper[0]){
+        changeVar = low[0];
+        low[0] = upper[0];
+        upper[0] = changeVar;
+        inRange(vision_frame, Scalar(0,low[1],low[2]), Scalar(low[0],upper[1],upper[2]), mask1);
+        inRange(vision_frame, Scalar(upper[0],low[1],low[2]), Scalar(180,upper[1],upper[2]), mask2);
+        mask  = mask1 | mask2;
+
+
+    }else{
+        inRange(vision_frame, Scalar(low[0],low[1],low[2]), Scalar(upper[0],upper[1],upper[2]), mask);
+    }
+
 
     //Attempt to remove noise (or small objects)
     morphologyEx(mask, mask, MORPH_OPEN, Mat(), Point(-1, -1), 2);
@@ -405,7 +418,7 @@ Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
     //Gamma correction
     dest = adjust_gamma(1.0 , dest);
     //Apply gaussian blur
-    GaussianBlur(dest, dest, Size(5,5), 1.8);
+    GaussianBlur(dest, dest, Size(9,9), 1.8);
 
     return dest;
 }
