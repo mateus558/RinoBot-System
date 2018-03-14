@@ -243,6 +243,16 @@ double Low_pass_filter_Theta(double angle, double last_angle, double last_proc_a
     return coeff.second * angle + coeff.second * last_angle + coeff.first * last_proc_angle;
 }
 
+double sign(double aux){
+    if (aux < 0)
+        return -1;
+    else if (aux > 0)
+        return 1;
+    else
+        return 0;
+
+}
+
 
 
 

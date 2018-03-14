@@ -13,8 +13,8 @@ double limiar_theta = 90 + delta_limiar;
 //double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
-double v_max = 0.8; //0.75
-double v_delta = 0.4;
+double v_max = 0.6; //0.75
+double v_delta = 0.3;
 double w_max = 7;
 double k = (w_max/v_max);
 double dist_giro = 8.0;
@@ -36,6 +36,15 @@ double last_phi = 0; // Última orientação do robô
 //double kp = 15;  // Ganho proporcional 13
 //double kd = 0.003;  // Ganho derivativo
 
+//Constantes para teste do novo controlador
+double last_robo_pos_x = 0;
+double last_robo_pos_y = 0;
+double v = 0.5;
+double v_min = 0.5;
+double Kw = 0.1;
+double k_distance = 0.5;
+double last_theta;
+double Rm = v_max*w_max;
 
 Serial Mover::serial;
 
@@ -2167,18 +2176,66 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     }
 
 
+//    // Novo Controlador
+
+//    double robo_pos_dx = robo_pos.x - last_robo_pos_x;
+//    double robo_pos_dy = robo_pos.y - last_robo_pos_y;
+//    if (robo_pos_dx < 0.001 || robo_pos_dx > -0.001)
+//        robo_pos_dx = 0.001;
+//    if (robo_pos_dy < 0.001 || robo_pos_dy > -0.001)
+//        robo_pos_dy = 0.001;
+//    double dtheta = theta - last_theta;
+//    double fi_v = (dtheta)*cos(robo->get_angle()) + (dtheta)*sin(robo->get_angle());
+//    cout << "Robo_pos_dx: " << robo_pos_dx << endl;
+//    cout << "Robo_pos_dy: " << robo_pos_dy << endl;
+//    cout << "dtheta: " << dtheta << endl;
+//    cout << "fi_v : " << fi_v << endl;
+
+//    double v1 = fabs((2*v_max - l*Kw*sqrt(fabs(alpha)))/ (2 + l*fabs(fi_v)));
+//    double v2 = fabs((sqrt((Kw*Kw) + 4*Rm*fabs(fi_v)) - Kw*sqrt(fabs(alpha))) / (2*fabs(fi_v)));
+//    double v3 = abs(k_distance*euclidean_dist(robo_pos, ball_pos));
+
+//    if (v1 <= v2 && v1 <= v3){
+//        v = v1;
+//        cout << "V1: " << v << endl;
+//    }
+//    else if (v2 < v1 && v2 < v3){
+//        v = v2;
+//        cout << "V2: " << v << endl;
+//    }
+//    else if (v3 < v1 && v3 < v2){
+//        v = v3;
+//        cout << "V3: " << v << endl;
+//    }
+
+//    if (v < v_min){
+//        v = v_min;
+//        cout << "Vmin: " << v << endl;
+//    }
+
+
+
+//    v = 0.5;
+//    cout << "V: " << v << endl;
+//    w = fi_v + Kw*sign(alpha)*sqrt(fabs(alpha));
+//    cout << "W: " << w << endl;
+//    last_theta = theta;
+//    last_robo_pos_x = robo_pos.x;
+//    last_robo_pos_y = robo_pos.y;
+
+
 
     last_phi = alpha;
 
-    // Limitando o Matador
-    if(centroid_atk.x > centroid_def.x){
-        if(ball_pos.x < centroid_def.x + 60 && robo->get_pos().x > ball_pos.x)
-            v = 0;
-    }
-    else{
-        if(ball_pos.x > centroid_def.x - 60 && robo->get_pos().x < ball_pos.x)
-            v = 0;
-    }
+//    // Limitando o Matador
+//    if(centroid_atk.x > centroid_def.x){
+//        if(ball_pos.x < centroid_def.x + 60 && robo->get_pos().x > ball_pos.x)
+//            v = 0;
+//    }
+//    else{
+//        if(ball_pos.x > centroid_def.x - 60 && robo->get_pos().x < ball_pos.x)
+//            v = 0;
+//    }
 
 
 
@@ -2186,8 +2243,8 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     vels->first = v-w*l;
     vels->second = v+w*l;
 
-    rotate(robo, vels); //Colocar a inv para ATK vs DEF
-    atk_situation(robo,pot_fields,vels); //Colocar a inv para ATK vs DEF
+    //rotate(robo, vels); //Colocar a inv para ATK vs DEF
+    //atk_situation(robo,pot_fields,vels); //Colocar a inv para ATK vs DEF
 
 
 
