@@ -586,6 +586,11 @@ void Vision::run()
         info.team_robots[1] = robots[1];
         info.team_robots[2] = robots[2];
 
+        //cout<<"Leona: "<<info.team_robots[0].get_pos()<<"   "<<info.team_robots[0].get_angle()<<endl;
+        //cout<<"Gandalf: " <<info.team_robots[1].get_pos()<<"   "<<info.team_robots[1].get_angle()<<endl;
+        //cout<<"Presto: " <<info.team_robots[2].get_pos()<<"   "<<info.team_robots[2].get_angle()<<endl;
+        //cout<<"Ball: "<<info.ball_pos_cm << endl;
+
         FPS = 1.0/deltaT;
 
         //Sending information
