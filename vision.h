@@ -58,6 +58,7 @@ private:
     pair<vector<int>, vector<int> > ball_color;
     Point ball_pos;
     bool ball_found;
+    MatrixXf m;
     Point2d ball_pos_cm;
     Point ball_last_pos;
     Point x_axis_slope, def_centroid, atk_centroid;
@@ -70,7 +71,8 @@ private:
     pair <double, double> LPF_Coefficients_A; // Coeficientes do LPF (angulo do robo)
     bool first_itr_LPF, LPF_flag; // Flag para a LPF
 
-    void prepareColorMatrices();
+    void generateColorCalibTransform();
+    void applyColorTransform(Mat);
 public slots:
     void updateFuzzyRobots(std::vector<Robot>);
     void updateMoverRobots(std::vector<Robot>);

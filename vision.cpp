@@ -435,7 +435,7 @@ void Vision::run()
     set_LPF_Coefficients_C( Low_pass_filter_coeff(1.8) );
     set_LPF_Coefficients_A( Low_pass_filter_coeff(1) );
 
-    prepareColorMatrices();
+    generateColorCalibTransform();
 
     to_transf.resize(6);
     transf.resize(6);
@@ -450,7 +450,7 @@ void Vision::run()
             cerr << "A frame could not be read! (Vision)" << endl;
             return;
         }
-
+        applyColorTransform(raw_frame);
         /**************************************
          *         Pre-Processing Step        *
          **************************************/
@@ -611,17 +611,16 @@ void Vision::Play()
     }
 }
 
-void Vision::prepareColorMatrices()
+void Vision::generateColorCalibTransform()
 {
     int i, j, rsize = robots.size();
     vector<int> low, upper;
     vector<vector<int> > mean_color;
     MatrixXf C(3, 3), colors(3, 3);
 
-    C << 0, 0, 1,
-         0, 1, 0,
-         1, 1, 0;
-    cout << C << endl;
+    C << 0, 0, 255,
+         0, 255, 0,
+         255, 255, 0;
 
     for(j = 0; j <= 4; j += 2){
         if(j != 2){
@@ -645,7 +644,25 @@ void Vision::prepareColorMatrices()
         }
     }
 
-    this->m = C.bdcSvd(ComputeThinU | ComputeThinV).solve(colors);
+    m = C.bdcSvd(ComputeThinU | ComputeThinV).solve(colors);
+}
+
+void Vision::applyColorTransform(Mat img)
+{
+    int i;
+    MatrixXf c(1,3), k(1,3);
+    MatIterator_<Vec3b> it, end;
+
+    for( it = img.begin<Vec3b>(), end = img.end<Vec3b>(); it != end; ++it)
+    {
+        for(i = 0; i < c.cols(); i++){
+            c(0, i) = int((*it)[i]);
+        }
+        k = c * m;
+        (*it)[0] = (unsigned char)(k(0, 0));
+        (*it)[1] = (unsigned char)(k(0, 1));
+        (*it)[2] = (unsigned char)(k(0, 2));
+    }
 }
 
 void Vision::updateFuzzyRobots(std::vector<Robot> team_robots){
