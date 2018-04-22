@@ -58,6 +58,7 @@ private:
     pair<vector<int>, vector<int> > ball_color;
     Point ball_pos;
     bool ball_found;
+    MatrixXf m;
     Point2d ball_pos_cm;
     Point ball_last_pos;
     Point x_axis_slope, def_centroid, atk_centroid;

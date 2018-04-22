@@ -435,6 +435,7 @@ void Vision::run()
     set_LPF_Coefficients_C( Low_pass_filter_coeff(1.8) );
     set_LPF_Coefficients_A( Low_pass_filter_coeff(1) );
 
+    prepareColorMatrices();
 
     to_transf.resize(6);
     transf.resize(6);
@@ -517,8 +518,6 @@ void Vision::run()
                         robots[i].set_angle(robots[i].get_angle_raw());
                     }
                 }
-
-
 
                 //Compute the linear and angular velocity of the ball
                 info.ball_vel.first /= deltaT;
@@ -610,6 +609,43 @@ void Vision::Play()
             stop = false;
         start();
     }
+}
+
+void Vision::prepareColorMatrices()
+{
+    int i, j, rsize = robots.size();
+    vector<int> low, upper;
+    vector<vector<int> > mean_color;
+    MatrixXf C(3, 3), colors(3, 3);
+
+    C << 0, 0, 1,
+         0, 1, 0,
+         1, 1, 0;
+    cout << C << endl;
+
+    for(j = 0; j <= 4; j += 2){
+        if(j != 2){
+            low = robots[j].get_team_low_color();
+            upper = robots[j].get_team_upper_color();
+        }else{
+            low = robots[j].get_low_color();
+            upper = robots[j].get_upper_color();
+        }
+        std::transform(low.begin(), low.end(), upper.begin(), upper.begin(), std::plus<int>());
+        for(i = 0; i < low.size(); i++){
+            low[i] /= 2;
+        }
+
+        mean_color.push_back(low);
+    }
+
+    for(i = 0; i < mean_color.size(); i++){
+        for(j = 0; j < mean_color[0].size(); j++){
+            colors(i, j) = mean_color[i][j];
+        }
+    }
+
+    this->m = C.bdcSvd(ComputeThinU | ComputeThinV).solve(colors);
 }
 
 void Vision::updateFuzzyRobots(std::vector<Robot> team_robots){
