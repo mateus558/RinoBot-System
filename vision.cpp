@@ -22,6 +22,31 @@ int DEFAULT_NCOLS;
 double X_CONV_CONST;
 double Y_CONV_CONST;
 
+void pixelMultiply(Vec3b &pixel){
+
+}
+
+struct ColorSpaceTransform
+{
+  MatrixXf m;
+
+  ColorSpaceTransform(MatrixXf M){
+      m = M;
+  }
+  void operator ()(Vec3b &pixel, const int * position) const
+  {
+      int i;
+      MatrixXf c(1,3), k(1,3);
+      for(i = 0; i < c.cols(); i++){
+          c(0, i) = int(pixel[i]);
+      }
+      k = c * m;
+      pixel[0] = (unsigned char)(k(0, 0));
+      pixel[1] = (unsigned char)(k(0, 1));
+      pixel[2] = (unsigned char)(k(0, 2));
+  }
+};
+
 Vision::Vision(QObject *parent): QThread(parent)
 {
     Point a, b;
@@ -436,7 +461,6 @@ void Vision::run()
     set_LPF_Coefficients_A( Low_pass_filter_coeff(1) );
 
     generateColorCalibTransform();
-    cout << m << endl;
     to_transf.resize(6);
     transf.resize(6);
 
@@ -450,7 +474,6 @@ void Vision::run()
             cerr << "A frame could not be read! (Vision)" << endl;
             return;
         }
-        applyColorTransform(raw_frame);
         /**************************************
          *         Pre-Processing Step        *
          **************************************/
@@ -470,6 +493,7 @@ void Vision::run()
 
         //Apply blurring and gamma corretion methods
         vision_frame = proccess_frame(vision_frame, vision_frame);
+        //raw_frame.forEach<Vec3b>(ColorSpaceTransform(m));
 
         switch(mode){
             case 0: //Visualization mode
@@ -630,8 +654,9 @@ void Vision::generateColorCalibTransform()
             low = robots[j].get_low_color();
             upper = robots[j].get_upper_color();
         }
-        std::transform(low.begin(), low.end(), upper.begin(), upper.begin(), std::plus<int>());
+
         for(i = 0; i < low.size(); i++){
+            low[i] += upper[i];
             low[i] /= 2;
         }
 
