@@ -436,7 +436,7 @@ void Vision::run()
     set_LPF_Coefficients_A( Low_pass_filter_coeff(1) );
 
     generateColorCalibTransform();
-
+    cout << m << endl;
     to_transf.resize(6);
     transf.resize(6);
 
@@ -620,7 +620,7 @@ void Vision::generateColorCalibTransform()
 
     C << 0, 0, 255,
          0, 255, 0,
-         255, 255, 0;
+         255, 0, 0;
 
     for(j = 0; j <= 4; j += 2){
         if(j != 2){
@@ -641,10 +641,12 @@ void Vision::generateColorCalibTransform()
     for(i = 0; i < mean_color.size(); i++){
         for(j = 0; j < mean_color[0].size(); j++){
             colors(i, j) = mean_color[i][j];
+            cout << mean_color[i][j] << " ";
         }
+        cout << endl;
     }
 
-    m = C.bdcSvd(ComputeThinU | ComputeThinV).solve(colors);
+    m = colors.bdcSvd(ComputeThinU | ComputeThinV).solve(C);
 }
 
 void Vision::applyColorTransform(Mat img)
