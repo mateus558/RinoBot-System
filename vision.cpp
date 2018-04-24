@@ -22,6 +22,31 @@ int DEFAULT_NCOLS;
 double X_CONV_CONST;
 double Y_CONV_CONST;
 
+void pixelMultiply(Vec3b &pixel){
+
+}
+
+struct ColorSpaceTransform
+{
+  MatrixXf m;
+
+  ColorSpaceTransform(MatrixXf M){
+      m = M;
+  }
+  void operator ()(Vec3b &pixel, const int * position) const
+  {
+      int i;
+      MatrixXf c(1,3), k(1,3);
+      for(i = 0; i < c.cols(); i++){
+          c(0, i) = int(pixel[i]);
+      }
+      k = c * m;
+      pixel[0] = (unsigned char)(k(0, 0));
+      pixel[1] = (unsigned char)(k(0, 1));
+      pixel[2] = (unsigned char)(k(0, 2));
+  }
+};
+
 Vision::Vision(QObject *parent): QThread(parent)
 {
     Point a, b;
@@ -435,7 +460,7 @@ void Vision::run()
     set_LPF_Coefficients_C( Low_pass_filter_coeff(1.8) );
     set_LPF_Coefficients_A( Low_pass_filter_coeff(1) );
 
-
+    generateColorCalibTransform();
     to_transf.resize(6);
     transf.resize(6);
 
@@ -449,7 +474,6 @@ void Vision::run()
             cerr << "A frame could not be read! (Vision)" << endl;
             return;
         }
-
         /**************************************
          *         Pre-Processing Step        *
          **************************************/
@@ -469,6 +493,7 @@ void Vision::run()
 
         //Apply blurring and gamma corretion methods
         vision_frame = proccess_frame(vision_frame, vision_frame);
+        //raw_frame.forEach<Vec3b>(ColorSpaceTransform(m));
 
         switch(mode){
             case 0: //Visualization mode
@@ -517,8 +542,6 @@ void Vision::run()
                         robots[i].set_angle(robots[i].get_angle_raw());
                     }
                 }
-
-
 
                 //Compute the linear and angular velocity of the ball
                 info.ball_vel.first /= deltaT;
@@ -609,6 +632,63 @@ void Vision::Play()
         if(isStopped())
             stop = false;
         start();
+    }
+}
+
+void Vision::generateColorCalibTransform()
+{
+    int i, j, rsize = robots.size();
+    vector<int> low, upper;
+    vector<vector<int> > mean_color;
+    MatrixXf C(3, 3), colors(3, 3);
+
+    C << 0, 0, 255,
+         0, 255, 0,
+         255, 0, 0;
+
+    for(j = 0; j <= 4; j += 2){
+        if(j != 2){
+            low = robots[j].get_team_low_color();
+            upper = robots[j].get_team_upper_color();
+        }else{
+            low = robots[j].get_low_color();
+            upper = robots[j].get_upper_color();
+        }
+
+        for(i = 0; i < low.size(); i++){
+            low[i] += upper[i];
+            low[i] /= 2;
+        }
+
+        mean_color.push_back(low);
+    }
+
+    for(i = 0; i < mean_color.size(); i++){
+        for(j = 0; j < mean_color[0].size(); j++){
+            colors(i, j) = mean_color[i][j];
+            cout << mean_color[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    m = colors.bdcSvd(ComputeThinU | ComputeThinV).solve(C);
+}
+
+void Vision::applyColorTransform(Mat img)
+{
+    int i;
+    MatrixXf c(1,3), k(1,3);
+    MatIterator_<Vec3b> it, end;
+
+    for( it = img.begin<Vec3b>(), end = img.end<Vec3b>(); it != end; ++it)
+    {
+        for(i = 0; i < c.cols(); i++){
+            c(0, i) = int((*it)[i]);
+        }
+        k = c * m;
+        (*it)[0] = (unsigned char)(k(0, 0));
+        (*it)[1] = (unsigned char)(k(0, 1));
+        (*it)[2] = (unsigned char)(k(0, 2));
     }
 }
 

@@ -3,7 +3,7 @@
  <class>SetParameters</class>
  <widget class="QMainWindow" name="SetParameters">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>
