@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+ #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "settingsdialog.h"
 
@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+
     int i;
     qRegisterMetaType<Vision::Perception>("Vision::Perception");
     qRegisterMetaType<Selector>("Selector");
@@ -47,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ball = new BallDraw;
 
     //caso não seja selecionado nada na change strategy é forçada a nova estrategia
-    fuzzy->set_strategy(3);
+    fuzzy->set_strategy(0);
 
 
     /****************** SETS INFORMATION WINDOW DATA *******************/
@@ -507,6 +509,7 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
 
 void MainWindow::updateFPS(double fps){
     ui->lcd_fps->display(fps);
+
 }
 
 void MainWindow::updateSerialSettings(SettingsDialog::Settings settings){
@@ -629,6 +632,8 @@ void MainWindow::on_actionShow_VisionLog_triggered(bool checked)
 
 void MainWindow::on_actionRead_Parameters_triggered()
 {
+
+
     int ch;
     char cwd[1024];
     vector<Robot> robots = eye->get_robots();

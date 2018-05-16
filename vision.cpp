@@ -603,6 +603,7 @@ void Vision::run()
 
         msleep(delay);
     }
+
 }
 
 bool Vision::open_camera(int camid)

@@ -10,7 +10,6 @@ int state_escanteio = 0;
 int cont_corner = 0;
 using namespace std;
 
-
 Serial Game_functions::serial;
 
 Game_functions::Game_functions()
@@ -193,9 +192,11 @@ void Game_functions::run(){
 
     //robo_grid_position(&selec_robot.r3, &selec_robot.r1, &selec_robot.r2); //printar posições e grid
 
+
     Point2d a = prevision_atk(&selec_robot.r1);
 
     flag_finish_functions = true;
+
 
     //Point2d a = prevision_atk(&selec_robot.r2);
 
@@ -1670,7 +1671,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
         ang_ball_atk = ang_ball_atk + 360;
 
 
-    cout << "Angulo bola atk: " << ang_ball_atk << endl;
+   // cout << "Angulo bola atk: " << ang_ball_atk << endl;
     //set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
 
     //Calcula angulo entre o robô e a bola
@@ -1683,7 +1684,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
         ang_robot_ball = ang_robot_ball - 360;
     else if (ang_robot_ball < -180)
         ang_robot_ball = ang_robot_ball + 360;
-    cout << "Angulo robo bola: " << ang_robot_ball << endl;
+   // cout << "Angulo robo bola: " << ang_robot_ball << endl;
 
     //Corrige Posicionamento novamente
     ball_pos.y = -ball_pos.y;
@@ -1695,17 +1696,17 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     //cout << "theta_dir " << theta_dir/M_PI*180 << endl;
     //cout << "Angulo robo " << robo->get_angle() << endl;
 
-    cout << "Robo.x: " << robo_pos.x << endl;
+    //cout << "Robo.x: " << robo_pos.x << endl;
     double y_limit_atk = (robo_pos.x + centroid_atk.x)*tan(ang_robot_ball*M_PI/180);
     double gol_y_limit;
-    cout << "y_limit_atk: " << y_limit_atk << endl;
-    cout << "roboy " << robo_pos.y << endl;
-    cout << "bolay " << ball_pos.y << endl;
+   // cout << "y_limit_atk: " << y_limit_atk << endl;
+   // cout << "roboy " << robo_pos.y << endl;
+//    cout << "bolay " << ball_pos.y << endl;
     if (centroid_atk.y > centroid_def.y)
         gol_y_limit = robo_pos.y - y_limit_atk;
      else
         gol_y_limit = robo_pos.y + y_limit_atk;
-    cout << "posy_limit: " << gol_y_limit << endl;
+   // cout << "posy_limit: " << gol_y_limit << endl;
     //Até o cálculo, correto. Falta: arrumar a direção do cpu (lembrar se o robo tiver atrás da bola)
 
     // Limitando o Killer na defesa
@@ -1770,14 +1771,14 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                     set_thetaDir(30*pi/180);
             }
             else{
-                if (fabs(y_limit_atk) < 22){ //22 é o limite comparado ao centro, tem que arrumar para o centro do gol em y
+                /*if (fabs(y_limit_atk) < 22){ //22 é o limite comparado ao centro, tem que arrumar para o centro do gol em y
                     set_thetaDir(-ang_robot_ball*M_PI/180);
                     cout << "Ang_robot_ball" << endl;
                  }
                  else{
                     set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
                     cout << "Ang_ball_atk" << endl;
-                }
+                }*/
                 set_thetaDir(-ang_ball_atk*M_PI/180);
             }
 
@@ -1806,14 +1807,14 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
 
             }
             else{
-                 if (fabs(y_limit_atk) < 22){
+                 /*if (fabs(y_limit_atk) < 22){
                     set_thetaDir(-ang_robot_ball*M_PI/180);
                     cout << "Ang_robot_ball" << endl;
                  }
                  else{
                     set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
                     cout << "Ang_ball_atk" << endl;
-                }
+                }*/
                 set_thetaDir(-ang_ball_atk*M_PI/180);
             }
         }

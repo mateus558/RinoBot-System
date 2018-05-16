@@ -636,9 +636,9 @@ void Fuzzy::set_objectives(){
     }
     else if(num_strategy == 0){
         // Teste
-        selec_robot.r1.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //gandalf
-        selec_robot.r2.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //presto
-        selec_robot.r3.set_flag_fuzzy(100, centroid_atk, centroid_def, ball_pos); //leona
+        selec_robot.r1.set_flag_fuzzy(0, centroid_atk, centroid_def, ball_pos); //gandalf
+        selec_robot.r2.set_flag_fuzzy(10, centroid_atk, centroid_def, ball_pos); //presto
+        selec_robot.r3.set_flag_fuzzy(0, centroid_atk, centroid_def, ball_pos); //leona
     }
     else{
         // tratar aqui
