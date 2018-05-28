@@ -207,6 +207,7 @@ void MainWindow::updateMoverRobots(Selector selec_robot){
 
 
     if(game_started){
+        cout << "contador msg: " << cont_msg++ << endl;
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
@@ -389,6 +390,7 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
         iWindowData.robots[GANDALF].channel = r.get_channel();
         iWindowData.robots[GANDALF].vel_strategy.first = r.get_l_vel();
         iWindowData.robots[GANDALF].vel_strategy.second = r.get_l_vel();
+        //cout << "Angulo robô: " << r.get_angle() << endl;
     }else{
         ui->gandalf_detec_col_label->setStyleSheet("QLabel { background-color : red; }");
         ui->gandalf_detec_label->setText("Not Detected");
@@ -399,7 +401,7 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
         ui->leona_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->leona_detec_label->setText("Detected");
 
-        //Atualiza informação da posição do gandalf
+        //Atualiza informação da posição do leona
         Robot r = percep.team_robots[0];
         iWindowData.robots[LEONA].x = r.get_centroid().x;
         iWindowData.robots[LEONA].y = r.get_centroid().y;
@@ -418,7 +420,7 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
         ui->presto_detec_col_label->setStyleSheet("QLabel { background-color : green; }");
         ui->presto_detec_label->setText("Detected");
 
-        //Atualiza informação da posição do gandalf
+        //Atualiza informação da posição do presto
         Robot r = percep.team_robots[2];
         iWindowData.robots[PRESTO].x = r.get_centroid().x;
         iWindowData.robots[PRESTO].y = r.get_centroid().y;

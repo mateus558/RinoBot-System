@@ -13,8 +13,8 @@ double limiar_theta = 90 + delta_limiar;
 //double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
-double v_max = 0.8; //0.75
-double v_delta = 0.3;
+double v_max = 0.6; //0.75
+double v_delta = 0.25;
 double w_max = 7;
 double k = (w_max/v_max);
 double dist_giro = 8.0;
@@ -2589,8 +2589,8 @@ void Mover::set_params(Robot * robo){
         robo->set_l_size(0.033);
         break;
     case 9: //trocar roda
-        robo->set_kp(22.5);
-        robo->set_kd(0.03);
+        robo->set_kp(15);
+        robo->set_kd(0.003);
         robo->set_l_size(0.034);
         break;
     }

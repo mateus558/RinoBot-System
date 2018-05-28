@@ -79,6 +79,7 @@ signals:
     void updateInformationWindow(InfoParameters data);
 
 private:
+    int cont_msg;
     SetParameters *setparam;
     InformationWindow *iWindow;
     InfoParameters iWindowData;

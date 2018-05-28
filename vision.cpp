@@ -91,9 +91,17 @@ Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) 
 
 
     //Attempt to remove noise (or small objects)
-    morphologyEx(mask, mask, MORPH_OPEN, Mat(), Point(-1, -1), 2);
-    morphologyEx(mask, mask, MORPH_CLOSE, Mat(), Point(-1, -1), 2);
+    // Antigo:
 
+    morphologyEx(mask, mask, MORPH_CLOSE, Mat(), Point(-1, -1), 2);
+    morphologyEx(mask, mask, MORPH_OPEN, Mat(), Point(-1, -1), 1, 2);
+
+    /*
+    Mat kernelClose = Mat::ones(5, 5, CV_8U);
+    Mat kernelOpen = Mat::ones(3, 3, CV_8U);
+    morphologyEx(mask, mask, MORPH_CLOSE, kernelClose, Point(-1, -1), 1, BORDER_CONSTANT);
+    morphologyEx(mask, mask, MORPH_OPEN, kernelOpen, Point(-1, -1), 1, BORDER_CONSTANT);
+    */
     return mask;
 }
 
@@ -186,8 +194,6 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
 
     //Get the robots moments only for team 1 (their color half)
     for(i = 0; i < 3; ++i){
-//        vector<RotatedRect> minRect_team( contours[i+3].size() );
-
         csize = contours[i + 3].size();
         if(csize > 0){
             for(j = 0; j < csize; ++j){
@@ -248,8 +254,21 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
         if(!not_t1 && r_label != -1){   //If the robot is from team 1 and he could be identified by the color half
             line_slope =  unk_robot - col_select.first;
             centroid = Point((unk_robot.x + col_select.first.x)/2, (unk_robot.y + col_select.first.y)/2);
-            angle = fabs(angle_two_points(line_slope, x_axis_slope));
+
+            // Para o chapéu ANTIGO:
+            /*
+            angle = fabs( angle_two_points(line_slope, x_axis_slope) );
             angle = (col_select.first.y <= unk_robot.y)?angle:-angle;
+            //*/
+
+            // Para o chapéu NOVO:
+            //*
+            double angle_field = atan2(x_axis_slope.y, x_axis_slope.x);
+            double angle_robot = atan2(line_slope.y, line_slope.x);
+            angle = angle_robot - angle_field - PI/4;
+            angle = -(angle * 180.0 / PI);
+            if(angle > 180) angle = angle - 360;
+            //*/
 
             robots[r_label].set_team_contour(contours[1][i]);
             robots[r_label].set_role_contour(contours[r_label + 3][col_select.second.second]);
