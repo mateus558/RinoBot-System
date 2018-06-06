@@ -2175,6 +2175,10 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
         w = kp*alpha/180 + kd*(alpha-last_phi);
         limiar_theta = 90 + delta_limiar;
     }
+
+    v = v_delta*fabs(alpha)/limiar_theta - v_max;
+    w = kp*alpha/180 + kd*(alpha - last_phi);
+
     // //cout << "V: " << v << endl;
 
     //Desvio obstáculos
@@ -2529,6 +2533,7 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
             //                    w = kgol*v_max_gol*alpha/180;
             //                    v = v_max_gol*fabs(alpha)/limiar_theta - v_max_gol;
             //                }
+
             if (fabs(alpha) > 65 && fabs(alpha) < 115){
                 v = 0;
             }

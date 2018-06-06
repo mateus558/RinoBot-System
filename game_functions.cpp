@@ -1697,14 +1697,14 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     //cout << "Angulo robo " << robo->get_angle() << endl;
 
     //cout << "Robo.x: " << robo_pos.x << endl;
-    double y_limit_atk = (robo_pos.x + centroid_atk.x)*tan(ang_robot_ball*M_PI/180);
+    double y_limit_atk = fabs(robo_pos.x - centroid_atk.x)*tan(ang_robot_ball*M_PI/180);
     double gol_y_limit;
    // cout << "y_limit_atk: " << y_limit_atk << endl;
    // cout << "roboy " << robo_pos.y << endl;
 //    cout << "bolay " << ball_pos.y << endl;
-    if (centroid_atk.y > centroid_def.y)
+    if (robo_pos.y > ball_pos.y)
         gol_y_limit = robo_pos.y - y_limit_atk;
-     else
+    else
         gol_y_limit = robo_pos.y + y_limit_atk;
    // cout << "posy_limit: " << gol_y_limit << endl;
     //Até o cálculo, correto. Falta: arrumar a direção do cpu (lembrar se o robo tiver atrás da bola)
@@ -1771,7 +1771,8 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                     set_thetaDir(30*pi/180);
             }
             else{
-                /*if (fabs(y_limit_atk) < 22){ //22 é o limite comparado ao centro, tem que arrumar para o centro do gol em y
+                /*/ Angulo robo bola
+                if (fabs(gol_y_limit - centroid_atk.y) < 22){ //22 é o limite comparado ao centro, tem que arrumar para o centro do gol em y
                     set_thetaDir(-ang_robot_ball*M_PI/180);
                     cout << "Ang_robot_ball" << endl;
                  }
@@ -1779,6 +1780,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                     set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
                     cout << "Ang_ball_atk" << endl;
                 }*/
+                // Angulo bola atk
                 set_thetaDir(-ang_ball_atk*M_PI/180);
             }
 
@@ -1807,7 +1809,8 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
 
             }
             else{
-                 /*if (fabs(y_limit_atk) < 22){
+                /*/ Angulo robo bola
+                if (fabs(gol_y_limit - centroid_atk.y) < 22){
                     set_thetaDir(-ang_robot_ball*M_PI/180);
                     cout << "Ang_robot_ball" << endl;
                  }
@@ -1815,6 +1818,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                     set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
                     cout << "Ang_ball_atk" << endl;
                 }*/
+                // Angulo bola atk
                 set_thetaDir(-ang_ball_atk*M_PI/180);
             }
         }
