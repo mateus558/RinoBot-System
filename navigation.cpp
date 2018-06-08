@@ -362,30 +362,91 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
 
 float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
 {
-    float Kr = 20;
-    float theta_up,theta_down,rho_up,rho_down;
+
+// ----- CPU ANTIGO - ROTACIONADO COM G_SIZE--------
+
+//    float Kr = 20;
+//    float theta_up,theta_down,rho_up,rho_down;
+//    Vector3d p(xi,yi,1),ph(0,0,0);
+//    float de = 5;
+//    //cout << "g_size " << g_size << endl;
+//    MatrixXd m_trans(3,3),m_rot(3,3);
+//    m_trans  << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
+//    m_rot << cos(-theta_dir),-sin(-theta_dir),0,sin(-theta_dir),cos(-theta_dir),0,0,0,1;
+
+//    ph = m_rot*m_trans*p;
+//    //std::cout << ph << std::endl << std::endl;
+//    theta_up = atan2((ph(1)-de-g_size),ph(0)) + theta_dir;
+//    theta_down = atan2((ph(1)+de+g_size),ph(0)) + theta_dir;
+//    rho_up = sqrt(pow(ph(0),2) + pow((ph(1)-de-g_size),2));
+//    rho_down = sqrt(pow(ph(0),2) + pow((ph(1)+de+g_size),2));
+
+//    if (ph(1)>g_size)
+//        phi = theta_up + pi*(2-(de+Kr)/(rho_up+Kr))/2;
+//    else if (ph(1)< -g_size)
+//        phi = theta_down - pi*(2-(de+Kr)/(rho_down+Kr))/2;
+//    else
+//        phi = theta_dir;
+
+//    cout << "phi: " << phi << endl; //TESTE DELETAR
+
+//    return phi;
+
+
+// ------- CPU NOVO - ROTACIONADO -----------
+
+
+    float Kr = 0.1;
+    float theta, rho, y_aux, yl, yr , phi_cw, phi_ccw;
+    float pl[2], pr[2], vec[2];
+    float de = 0.5;
     Vector3d p(xi,yi,1),ph(0,0,0);
-    float de = 5;
-    //cout << "g_size " << g_size << endl;
-    MatrixXd m_trans(3,3),m_rot(3,3);
-    m_trans  << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
+
+    Matrix3d m_trans1(3,3),m_trans2(3,3),m_rot(3,3);
+    // Matriz para transladar a bola pra origem
+    m_trans1 << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
+    // Matriz para transladar a bola da origem pra posição original
+    m_trans2 << 1 ,0 ,meta.x, 0, 1, meta.y, 0, 0, 1;
+
     m_rot << cos(-theta_dir),-sin(-theta_dir),0,sin(-theta_dir),cos(-theta_dir),0,0,0,1;
 
-    ph = m_rot*m_trans*p;
-    //std::cout << ph << std::endl << std::endl;
-    theta_up = atan2((ph(1)-de-g_size),ph(0)) + theta_dir;
-    theta_down = atan2((ph(1)+de+g_size),ph(0)) + theta_dir;
-    rho_up = sqrt(pow(ph(0),2) + pow((ph(1)-de-g_size),2));
-    rho_down = sqrt(pow(ph(0),2) + pow((ph(1)+de+g_size),2));
+    ph = m_trans2*m_rot*m_trans1*p;
 
-    if (ph(1)>g_size)
-        phi = theta_up + pi*(2-(de+Kr)/(rho_up+Kr))/2;
-    else if (ph(1)< -g_size)
-        phi = theta_down - pi*(2-(de+Kr)/(rho_down+Kr))/2;
-    else
-        phi = theta_dir;
+    pl[0] = ph(0);
+    pl[1] = ph(1) - de;
+    pr[0] = ph(0);
+    pr[1] = ph(1) + de;
 
-    //cout << "phi: " << phi << endl; //TESTE DELETAR
+    y_aux = ph(1) - meta.y;
+
+    yl = y_aux + de;
+    yr = y_aux - de;
+
+
+    rho = sqrt(pow(pl[0]-meta.x,2)+pow(pl[1]-meta.y,2));
+    theta = atan2(pl[1]-meta.y,pl[0]-meta.x);
+
+    if (rho > de){
+        phi_ccw = theta + pi*(2-((de+Kr)/(rho+Kr)))/2;
+    }else{
+        phi_ccw = theta + pi*sqrt(rho/de)/2;
+    }
+
+    rho = sqrt(pow(pr[0]-meta.x,2)+pow(pr[1]-meta.y,2));
+    theta = atan2(pr[1]-meta.y,pr[0]-meta.x);
+
+    if (rho > de){
+        phi_cw = theta - pi*(2-((de+Kr)/(rho+Kr)))/2;
+    }else{
+        phi_cw = theta - pi*sqrt(rho/de)/2;
+    }
+
+    vec[0] = (yl*cos(phi_ccw) - yr*cos(phi_cw))/(2*de);
+    vec[1] = (yl*sin(phi_ccw) - yr*sin(phi_cw))/(2*de);
+
+    phi = atan2(vec[1],vec[0]) + theta_dir;
+
+    cout<<"Este é o phi: "<<phi<<endl; //DELETAR
 
     return phi;
 
@@ -434,7 +495,7 @@ float Navigation::tangencial_repulsive(Robot *robot, Point2d meta, Point2d obsta
 //            rot = 1;
 //        }
 //    }
-//    else{
+//    else{usado
 //        if(zeta <= omega){
 //            rot = 1;
 //        }
@@ -488,3 +549,37 @@ void Navigation::set_kr(float aux){
 float Navigation::get_kr(){
     return Kr;
 }
+
+//float navigation::repulsive_Math(Robot *robo, Point2d ball, btVector3 obj){
+//float rot_angle = pi/2;
+//float k_const = 1;
+//float m = (ball.y-obj.y)/(ball.x-obj.x);
+//float norm = sqrt(pow(obj.x - robo.pose.x,2) + pow(obj.y - robo.pose.y,2));
+//int a;
+//btVector3 vec_out, vec_tan, vec;
+//MatrixXd rot(2,2);
+//MatrixXd vec_tan_aux(2,1), vec_aux(2,1);
+//k_const = 0.06*norm;
+//float psi;
+
+
+//        if(robo.pose.y-obj.y > m*(robo.pose.x-obj.x))
+//            a = -1;
+//        else
+//            a = 1;
+
+//        vec_out.x = ball.x - robo.pose.x;
+//        vec_out.y = ball.y - robo.pose.y;
+
+//        rot << cos(a*rot_angle), sin(a*rot_angle), -sin(a*rot_angle), cos(a*rot_angle);
+//        vec_aux << vec_out.x, vec_out.y;
+//        vec_tan_aux = rot*vec_aux;
+//        vec_tan.x = vec_tan_aux(0);
+//        vec_tan.y = vec_tan_aux(1);
+
+//        vec.x = vec_tan.x + k_const*vec_out.x;
+//        vec.y = vec_tan.y + k_const*vec_out.y;
+
+//        psi = atan(vec.y/vec.x);
+//        return psi;
+//}

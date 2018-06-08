@@ -2176,8 +2176,8 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
         limiar_theta = 90 + delta_limiar;
     }
 
-    v = v_delta*fabs(alpha)/limiar_theta - v_max;
-    w = kp*alpha/180 + kd*(alpha - last_phi);
+//    v = v_delta*fabs(alpha)/limiar_theta - v_max;
+//    w = kp*alpha/180 + kd*(alpha - last_phi);
 
     // //cout << "V: " << v << endl;
 
@@ -2254,9 +2254,8 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
 
     rotate(robo, vels); //Colocar a inv para ATK vs DEF
     atk_situation(robo,pot_fields,vels); //Colocar a inv para ATK vs DEF
-    cout << "Esquerda: " << vels->first << endl;
-    cout << "Direita: " << vels->second << endl;
-
+    cout << "Esquerda: " << vels->first << endl; //Cout ativo
+    cout << "Direita: " << vels->second << endl; //Cout ativo
 
     //    ang_vel = robo->get_ang_vel();
     //    ang_vel = ang_vel*3.141592/180;
