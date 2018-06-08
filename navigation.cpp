@@ -446,7 +446,7 @@ float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
 
     phi = atan2(vec[1],vec[0]) + theta_dir;
 
-    cout<<"Este é o phi: "<<phi<<endl; //DELETAR
+    //cout<<"Este é o phi: "<<phi<<endl; //DELETAR
 
     return phi;
 

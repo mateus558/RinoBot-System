@@ -13,8 +13,8 @@ double limiar_theta = 90 + delta_limiar;
 //double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
-double v_max = 0.6; //0.75
-double v_delta = 0.25;
+double v_max = 0.70; //0.75
+double v_delta = 0.3;
 double w_max = 7;
 double k = (w_max/v_max);
 double dist_giro = 8.0;
@@ -2091,6 +2091,108 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     double kd = robo->get_kd();
     double l = robo->get_l_size();
 
+    //Troca de direcoes
+    Point2d obst_prox;
+    Point2d wall_1 = robo->get_pos();
+    Point2d wall_2 = robo->get_pos();
+    Point2d wall_3 = robo->get_pos();
+    Point2d wall_4 = robo->get_pos();
+
+    wall_1.x = 160;
+    wall_2.x = 10;
+    wall_3.y = 0;
+    wall_4.y = 130;
+
+    double d0 = euclidean_dist(robo->get_pos(), enemy_pos[0]);
+    double d1 = euclidean_dist(robo->get_pos(), enemy_pos[1]);
+    double d2 = euclidean_dist(robo->get_pos(), enemy_pos[2]);
+    double d3 = euclidean_dist(robo->get_pos(), selec_robot.r1.get_pos()); //Gandalf
+    double d4 = euclidean_dist(robo->get_pos(), selec_robot.r2.get_pos()); // Presto
+    double d5 = euclidean_dist(robo->get_pos(), selec_robot.r3.get_pos()); //Leona
+    double d6 = euclidean_dist(robo->get_pos(), wall_1);
+    double d7 = euclidean_dist(robo->get_pos(), wall_2);
+    double d8 = euclidean_dist(robo->get_pos(), wall_3);
+    double d9 = euclidean_dist(robo->get_pos(), wall_4);
+    double distancia_permitida = 10;
+    double distancia_obst;
+
+    // Distancia com o mesmo time
+    if (robo->get_pos().x == selec_robot.r1.get_pos().x && robo->get_pos().y == selec_robot.r1.get_pos().y ){
+        d3 = 1000;
+    }
+
+    if (robo->get_pos().x == selec_robot.r2.get_pos().x && robo->get_pos().y == selec_robot.r2.get_pos().y ){
+        d4 = 1000;
+    }
+
+    if (robo->get_pos().x == selec_robot.r3.get_pos().x && robo->get_pos().y == selec_robot.r3.get_pos().y ){
+        d5 = 1000;
+    }
+
+
+    // Distancia com os adversarios
+    if (d0 <= d1 && d0 <= d2 && d0 <= d3 && d0 <= d4 && d0 <= d5 && d0 <= d6 && d0 <= d7 && d0 <= d8 && d0 <= d9 && d0 > 0){
+        obst_prox = enemy_pos[0];
+    }
+    if (d1 <= d0 && d1 <= d2 && d1 <= d3 && d1 <= d4 && d1 <= d5 && d1 <= d6 && d1 <= d7 && d1 <= d8 && d1 <= d9 && d1 > 0){
+        obst_prox = enemy_pos[1];
+    }
+    if (d2 <= d0 && d2 <= d1 && d2 <= d3 && d2 <= d4 && d2 <= d5 && d2 <= d6 && d2 <= d7 && d2 <= d8 && d2 <= d9 && d2 > 0){
+        obst_prox = enemy_pos[2];
+    }
+
+    if (d3 <= d0 && d3 <= d1 && d3 <= d2 && d3 <= d4 && d3 <= d5 && d3 <= d6 && d3 <= d7 && d3 <= d8 && d3 <= d9 && d3 > 0){
+        obst_prox = selec_robot.r1.get_pos();
+    }
+    if (d4 <= d0 && d4 <= d1 && d4 <= d2 && d4 <= d3 && d4 <= d5 && d4 <= d6 && d4 <= d7 && d4 <= d8 && d4 <= d9 && d4 > 0){
+        obst_prox = selec_robot.r2.get_pos();
+    }
+    if (d5 <= d0 && d5 <= d1 && d5 <= d2 && d5 <= d3 && d5 <= d4 && d5 <= d6 && d5 <= d7 && d5 <= d8 && d5 <= d9 && d5 > 0){
+        obst_prox = selec_robot.r3.get_pos();
+    }
+
+    // Distancia com as barreiras
+    if (d6 <= d0 && d6 <= d1 && d6 <= d2 && d6 <= d3 && d6 <= d4 && d6 <= d5 && d6 <= d7 && d6 <= d8 && d6 <= d9 && d6 > 0){
+        obst_prox = wall_1;
+    }
+    if (d7 <= d0 && d7 <= d1 && d7 <= d2 && d7 <= d3 && d7 <= d4 && d7 <= d5 && d7 <= d6 && d7 <= d8 && d7 <= d9 && d7 > 0){
+        obst_prox = wall_2;
+    }
+    if (d8 <= d0 && d8 <= d1 && d8 <= d2 && d8 <= d3 && d8 <= d4 && d8 <= d5 && d8 <= d6 && d8 <= d7 && d8 <= d9 && d8 > 0){
+        obst_prox = wall_3;
+    }
+    if (d9 <= d0 && d9 <= d1 && d9 <= d2 && d9 <= d3 && d9 <= d4 && d9 <= d5 && d9 <= d6 && d9 <= d7 && d9 <= d8 && d9 > 0){
+        obst_prox = wall_4;
+    }
+    distancia_obst = euclidean_dist(robo->get_pos(), obst_prox);
+
+    //cout << "robo x " << robo->get_pos().x << " robo y " << robo->get_pos().y << endl;
+    //cout << "obj x " << obst_prox.x << " obj y " << obst_prox.y << endl;
+
+    double angle = vector_angle(robo->get_pos(),obst_prox);
+    double another_ang = fabs(robo->get_angle() - angle);
+    if(another_ang > 180){
+        another_ang -= 360;
+    }
+    if(another_ang < -180)
+    {
+        another_ang += 360;
+    }
+
+    if(killer_direction && distancia_obst < distancia_permitida && fabs(another_ang) < 40)
+    {
+        killer_direction = false;
+    }
+    else if(!killer_direction && distancia_obst < distancia_permitida && fabs(another_ang) > 180 - 40)
+    {
+        killer_direction = true;
+    }
+    cout << "direc: " << killer_direction << endl;
+    cout << "distancia obstaculo: " << distancia_obst << endl;
+    cout << "Angulo obstaculo " << another_ang << endl;
+
+    // Fim da troca
+
     // Calcula velocidades
 
     double v,w,theta,alpha;
@@ -2163,8 +2265,7 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
 
 
     //PID
-
-    if (fabs(alpha) <= limiar_theta ){
+    /*if (fabs(alpha) <= limiar_theta ){
         v = -v_delta*fabs(alpha)/limiar_theta + v_max;
         w = kp*alpha/180  + kd*(alpha-last_phi);
         limiar_theta = 90 - delta_limiar;
@@ -2174,7 +2275,21 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
         v = v_delta*fabs(alpha)/limiar_theta - v_max;
         w = kp*alpha/180 + kd*(alpha-last_phi);
         limiar_theta = 90 + delta_limiar;
+    }*/
+
+    //PID Unidirection
+    if (killer_direction){
+        v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+        w = kp*alpha/180  + kd*(theta-last_theta_control);
+        limiar_theta = 90 - delta_limiar;
     }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+        w = kp*alpha/180 + kd*(theta-last_theta_control);
+        limiar_theta = 90 + delta_limiar;
+    }
+
 
 //    v = v_delta*fabs(alpha)/limiar_theta - v_max;
 //    w = kp*alpha/180 + kd*(alpha - last_phi);
@@ -2182,9 +2297,9 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     // //cout << "V: " << v << endl;
 
     //Desvio obstáculos
-    if (fabs(alpha) > 75 && fabs(alpha) < 105 && euclidean_dist(robo->get_pos(), ball_pos)<40){
+    /*if (fabs(alpha) > 75 && fabs(alpha) < 105 && euclidean_dist(robo->get_pos(), ball_pos)<40){
         v = 0;
-    }
+    }*/
 
 
 //    // Novo Controlador
@@ -2254,8 +2369,8 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
 
     rotate(robo, vels); //Colocar a inv para ATK vs DEF
     atk_situation(robo,pot_fields,vels); //Colocar a inv para ATK vs DEF
-    cout << "Esquerda: " << vels->first << endl; //Cout ativo
-    cout << "Direita: " << vels->second << endl; //Cout ativo
+    //cout << "Esquerda: " << vels->first << endl; //Cout ativo
+    //cout << "Direita: " << vels->second << endl; //Cout ativo
 
     //    ang_vel = robo->get_ang_vel();
     //    ang_vel = ang_vel*3.141592/180;
@@ -2588,8 +2703,8 @@ void Mover::set_params(Robot * robo){
         robo->set_l_size(0.030);
         break;
     case 8: //trocar roda
-        robo->set_kp(15);
-        robo->set_kd(0.0035);
+        robo->set_kp(12);
+        robo->set_kd(0.005);
         robo->set_l_size(0.033);
         break;
     case 9: //trocar roda

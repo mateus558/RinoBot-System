@@ -207,7 +207,6 @@ void MainWindow::updateMoverRobots(Selector selec_robot){
 
 
     if(game_started){
-        cout << "contador msg: " << cont_msg++ << endl;
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));

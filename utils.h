@@ -40,6 +40,7 @@ typedef std::vector<std::vector<Point2d> > p2dMatrix; //double precision Point m
 
 double euclidean_dist(Point2d p, Point2d q);
 double angle_two_points(Point2d p, Point2d q);
+double vector_angle(Point2d p, Point2d q);
 std::pair<Matrix3d, Vector3d> kalman_filter(Vector3d pos_cam, Vector2d v_w, Vector3d last_pos , double dt, Matrix3d last_P);
 vector<int> hsv2rgb(vector<int> in);
 bool read_points(std::string fname, std::vector<Point> &points);

@@ -256,18 +256,18 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             centroid = Point((unk_robot.x + col_select.first.x)/2, (unk_robot.y + col_select.first.y)/2);
 
             // Para o chapéu ANTIGO:
-
+            /*
             angle = fabs( angle_two_points(line_slope, x_axis_slope) );
             angle = (col_select.first.y <= unk_robot.y)?angle:-angle;
-
+            //*/
 
             // Para o chapéu NOVO:
             //*
-//            double angle_field = atan2(x_axis_slope.y, x_axis_slope.x);
-//            double angle_robot = atan2(line_slope.y, line_slope.x);
-//            angle = angle_robot - angle_field - PI/4;
-//            angle = -(angle * 180.0 / PI);
-//            if(angle > 180) angle = angle - 360;
+            double angle_field = atan2(x_axis_slope.y, x_axis_slope.x);
+            double angle_robot = atan2(line_slope.y, line_slope.x);
+            angle = angle_robot - angle_field - PI/4;
+            angle = -(angle * 180.0 / PI);
+            if(angle > 180) angle = angle - 360;
             //*/
 
             robots[r_label].set_team_contour(contours[1][i]);

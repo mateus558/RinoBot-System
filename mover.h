@@ -40,6 +40,7 @@ private:
     bool team_chang;
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
     Selec selec_iterador;
+    bool killer_direction = 1; // frente = 1; tras = 0
 
 protected:
     void msleep(int ms);
