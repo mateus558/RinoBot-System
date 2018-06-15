@@ -292,12 +292,16 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
     robo_pos = robo->get_pos();
     float k0 = 0.12;
     float r = 15;        // Raio de Influencia do repulsivo
-    float d_min = 21;   // Raio de Influencia do repulsivo
+    float d_min = 17;   // Raio de Influencia do repulsivo
     float norma_s,fih_AUF,fih_TUF;
     float d = euclidean_dist(robo_pos, enemy);  //distancia entre o robo e o obstaculo
+    float d_ball = euclidean_dist(robo_pos, meta);
     Point2d s, enemy_vel, robo_vel, virtual_obj;
     enemy_vel.x = 0;
     enemy_vel.y = 0;
+    Point2d p1,p2;
+    float ang_p1, ang_p2, ang_ball_robot;
+    MatrixXd vec_obj(2,1), vec_p1(2,1), vec_p2(2,1), rot_matrix(2,2);
     //    robo_vel.x = robo->get_velocities().first*X_CONV_CONST;
     //    robo_vel.y = robo->get_velocities().second*Y_CONV_CONST;
     //    s.x = k0 * ( enemy_vel.x - robo_vel.x); // Velocidade
@@ -321,20 +325,20 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
     fih_TUF = -hyperbolic_spiral(robo->get_pos().y, robo->get_pos().x, meta);
 
 
-    // Repulsive Otario
+    // ------------ Repulsive Otario ------------------------------------------\\
 
-    fih_AUF = tangencial_repulsive(robo,meta,enemy,r);
+    //fih_AUF = tangencial_repulsive(robo,meta,enemy,r);
 
-    if (d <= r){
-        the_fih = fih_AUF ;
-        }
-    else{
-        the_fih = fih_AUF*Gaussian_Func(d - r) + fih_TUF*(1-Gaussian_Func(d - r));
-     }
+    //if (d <= r){
+    //    the_fih = fih_AUF ;
+    //    }
+    //else{
+    //    the_fih = fih_AUF*Gaussian_Func(d - r) + fih_TUF*(1-Gaussian_Func(d - r));
+    // }
 
     // Fim do Repulsive otario
 
-    // Repulsive whirlpool
+    // --------------- Repulsive whirlpool ----------------------------------\\
 
     //    fih_AUF = repulsive_angle(robo->get_pos().x, robo->get_pos().y, enemy);
     //    float r_aux = d_min;
@@ -355,6 +359,76 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
     //    }
 
     // Fim do repulsive whirlpool
+
+    // ----------------------- Repulsive_Math ----------------------------\\
+
+    fih_AUF = repulsive_Math(robo,enemy,meta);
+
+    vec_obj << meta.x - enemy.x, meta.y - enemy.y;
+    rot_matrix <<  cos(pi/2),sin(pi/2),-sin(pi/2),cos(pi/2);
+    vec_p1 = d_min*rot_matrix*vec_obj/sqrt(pow(vec_obj(0),2)+pow(vec_obj(1),2));
+    rot_matrix <<  cos(-pi/2),sin(-pi/2),-sin(-pi/2),cos(-pi/2);
+    vec_p2 = d_min*rot_matrix*vec_obj/sqrt(pow(vec_obj(0),2)+pow(vec_obj(1),2));
+
+    p1.x = enemy.x + vec_p1(0);
+    p1.y = enemy.y + vec_p1(1);
+
+    p2.x = enemy.x + vec_p2(0);
+    p2.y = enemy.y + vec_p2(1);
+
+    ang_p1 = vector_angle(meta,p1);
+    ang_p2 = vector_angle(meta,p2);
+    ang_ball_robot = vector_angle(meta,robo_pos);
+
+    if(meta.x > enemy.x)
+    {
+        ang_p1 += 360;
+        ang_p2 += 360;
+        ang_ball_robot += 360;
+    }
+
+//    cout << "ang_p1: " << ang_p1 << endl;
+//    cout << "ang_p2: " << ang_p2 << endl;
+//    cout << "ang_ball_robot: " << ang_ball_robot << endl;
+    if(ang_p1 > ang_p2)
+    {
+        if(ang_ball_robot < ang_p1 && ang_ball_robot > ang_p2 && euclidean_dist(meta,robo_pos) > euclidean_dist(meta,enemy))
+        {
+            the_fih = fih_AUF;
+            cout << "obstaculo" << endl;
+        }
+        else
+        {
+            the_fih = fih_TUF;
+            cout << "nao obstaculo" << endl;
+        }
+    }
+    else
+    {
+        if(ang_ball_robot > ang_p1 && ang_ball_robot < ang_p2 && euclidean_dist(meta,robo_pos) > euclidean_dist(meta,enemy))
+        {
+            the_fih = fih_AUF;
+//            cout << "obstaculo" << endl;
+        }
+        else
+        {
+            the_fih = fih_TUF;
+            the_fih = fih_AUF*Gaussian_Func(d - d_min) + fih_TUF*(1-Gaussian_Func(d - d_min));
+//            cout << "nao obstaculo" << endl;
+        }
+    }
+
+
+    if(/*(d <= d_min) &&*/ (d <= d_ball)){
+        the_fih = fih_AUF;
+    }
+    else{
+        the_fih = fih_TUF;
+    }
+
+      the_fih = fih_AUF*Gaussian_Func(d) + fih_TUF*(1-Gaussian_Func(d));
+    //the_fih = fih_AUF;
+    // ----------------------- --------------- ----------------------------\\
 
     //        cout << "the_fih: " << the_fih << endl; //TESTE DELETAR
     //cout << d <<endl;
@@ -396,10 +470,10 @@ float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
 // ------- CPU NOVO - ROTACIONADO -----------
 
 
-    float Kr = 0.1;
+    float Kr = 1;
     float theta, rho, y_aux, yl, yr , phi_cw, phi_ccw;
     float pl[2], pr[2], vec[2];
-    float de = 0.5;
+    float de = 3;
     Vector3d p(xi,yi,1),ph(0,0,0);
 
     Matrix3d m_trans1(3,3),m_trans2(3,3),m_rot(3,3);
@@ -459,8 +533,8 @@ void Navigation::set_thetaDir(float theta)
 
 float Navigation::get_direction_CPU()
 {
-    //return the_fih;   // Angulo hiperbole+repulsive
-        return -phi;      //Angulo da hiperbole
+    return the_fih;   // Angulo hiperbole+repulsive
+//        return -phi;      //Angulo da hiperbole
 }
 
 float Navigation::repulsive_angle(float y, float x, Point2d pos)
@@ -475,7 +549,7 @@ float Navigation::repulsive_angle(float y, float x, Point2d pos)
 }
 
 float Navigation::Gaussian_Func(float r){
-    float delta = 0.25;
+    float delta = 2.25;
     float G;
     G = pow(M_E,(-pow(r,2)/(2*pow(delta,2))));
     return G;
@@ -550,36 +624,46 @@ float Navigation::get_kr(){
     return Kr;
 }
 
-//float navigation::repulsive_Math(Robot *robo, Point2d ball, btVector3 obj){
-//float rot_angle = pi/2;
-//float k_const = 1;
-//float m = (ball.y-obj.y)/(ball.x-obj.x);
-//float norm = sqrt(pow(obj.x - robo.pose.x,2) + pow(obj.y - robo.pose.y,2));
-//int a;
-//btVector3 vec_out, vec_tan, vec;
-//MatrixXd rot(2,2);
-//MatrixXd vec_tan_aux(2,1), vec_aux(2,1);
-//k_const = 0.06*norm;
-//float psi;
+float Navigation::repulsive_Math(Robot *robo, Point2d obj, Point2d ball){
+float rot_angle = pi/2;
+float k_const = 1 , k_larg = 0.05;
+float m = (ball.y-obj.y)/(ball.x-obj.x);
+float norm, psi;
+int a;
+Point2d vec_out, vec_tan, vec, robo_pos;
+MatrixXd rot(2,2);
+MatrixXd vec_tan_aux(2,1), vec_aux(2,1);
 
+robo_pos = robo->get_pos();
+norm = sqrt(pow(obj.x - robo_pos.x,2) + pow(obj.y - robo_pos.y,2));
+k_const = k_larg*norm;
 
-//        if(robo.pose.y-obj.y > m*(robo.pose.x-obj.x))
-//            a = -1;
-//        else
-//            a = 1;
+        if(obj.x <= ball.x){
+            if(robo_pos.y-obj.y > m*(robo_pos.x-obj.x))
+            a = -1;
+            else
+            a = 1;
+        }
+        else {
+            if(robo_pos.y-obj.y > m*(robo_pos.x-obj.x))
+            a = 1;
+            else
+            a = -1;
+        }
+ a= 1;
 
-//        vec_out.x = ball.x - robo.pose.x;
-//        vec_out.y = ball.y - robo.pose.y;
+        vec_out.x = ball.x - robo_pos.x;
+        vec_out.y = ball.y - robo_pos.y;
 
-//        rot << cos(a*rot_angle), sin(a*rot_angle), -sin(a*rot_angle), cos(a*rot_angle);
-//        vec_aux << vec_out.x, vec_out.y;
-//        vec_tan_aux = rot*vec_aux;
-//        vec_tan.x = vec_tan_aux(0);
-//        vec_tan.y = vec_tan_aux(1);
+        rot << cos(a*rot_angle), sin(a*rot_angle), -sin(a*rot_angle), cos(a*rot_angle);
+        vec_aux << vec_out.x, vec_out.y;
+        vec_tan_aux = rot*vec_aux;
+        vec_tan.x = vec_tan_aux(0);
+        vec_tan.y = vec_tan_aux(1);
 
-//        vec.x = vec_tan.x + k_const*vec_out.x;
-//        vec.y = vec_tan.y + k_const*vec_out.y;
+        vec.x = vec_tan.x + k_const*vec_out.x;
+        vec.y = vec_tan.y + k_const*vec_out.y;
 
-//        psi = atan(vec.y/vec.x);
-//        return psi;
-//}
+        psi = atan2(vec.y,vec.x);
+        return -psi;
+}

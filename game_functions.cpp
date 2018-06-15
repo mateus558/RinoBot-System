@@ -1782,6 +1782,26 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 }*/
                 // Angulo bola atk
                 set_thetaDir(-ang_ball_atk*M_PI/180);
+
+                //                //                //Atk any point of goal
+
+//                Point2d aux;
+//                aux.x = centroid_atk.x;
+//                aux.y = robo_pos.y;
+//                float theta = angle_two_points(ball_pos,robo_pos);     // !!!!!!!!!!!!!!!!!!
+//                float cat_ad = euclidean_dist(robo_pos,aux);
+//                float cat_op = cat_ad*tan(theta*pi/180);
+//                float add_pose = cat_op - (centroid_atk.y - robo_pose.y);
+//                Point2d ang_point;
+//                ang_point.y = robo_pos.y + add_pose;
+//                ang_point.x = centroid_atk.x;
+
+//                if((ang_point.y < 85) && (ang_point.y > 45)){   // !!!!!!!!!!!!!!!!
+//                    set_thetaDir(theta*M_PI/180);
+//                }else{
+//                    set_thetaDir(-ang_ball_atk*M_PI/180);
+//                }
+
             }
 
         }
@@ -1817,9 +1837,28 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                  else{
                     set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
                     cout << "Ang_ball_atk" << endl;
-                }*/
+                }/*/
                 // Angulo bola atk
                 set_thetaDir(-ang_ball_atk*M_PI/180);
+
+//                //                //Atk any point of goal
+
+//                Point2d aux;
+//                aux.x = centroid_atk.x;
+//                aux.y = robo_pos.y;
+//                float theta = angle_two_points(ball_pos,robo_pos);     // !!!!!!!!!!!!!!!!!!
+//                float cat_ad = euclidean_dist(robo_pos,aux);
+//                float cat_op = cat_ad*tan(theta*pi/180);
+//                float add_pose = cat_op - (centroid_atk.y - robo_pose.y);
+//                Point2d ang_point;
+//                ang_point.y = robo_pos.y + add_pose;
+//                ang_point.x = centroid_atk.x;
+
+//                if((ang_point.y < 85) && (ang_point.y > 45)){   // !!!!!!!!!!!!!!!!
+//                    set_thetaDir(theta*M_PI/180);
+//                }else{
+//                    set_thetaDir(-ang_ball_atk*M_PI/180);
+//                }
             }
         }
     }

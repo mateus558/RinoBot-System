@@ -13,7 +13,7 @@ double limiar_theta = 90 + delta_limiar;
 //double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
-double v_max = 0.70; //0.75
+double v_max = 0.650; //0.75
 double v_delta = 0.3;
 double w_max = 7;
 double k = (w_max/v_max);
@@ -65,6 +65,8 @@ Mover::Mover()
     team_pos_grid = pVector(3);
     team_chang = false;
     vels.assign(3, make_pair(0, 0));
+    last_killer.x = 0;
+    last_killer.y = 0;
 }
 
 Mover::~Mover(){
@@ -2113,7 +2115,7 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     double d7 = euclidean_dist(robo->get_pos(), wall_2);
     double d8 = euclidean_dist(robo->get_pos(), wall_3);
     double d9 = euclidean_dist(robo->get_pos(), wall_4);
-    double distancia_permitida = 10;
+    double distancia_permitida = 15;
     double distancia_obst;
 
     // Distancia com o mesmo time
@@ -2179,17 +2181,74 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
         another_ang += 360;
     }
 
-    if(killer_direction && distancia_obst < distancia_permitida && fabs(another_ang) < 40)
+    //Restricao de posicao
+    if (distancia_obst < distancia_permitida){
+        if(killer_direction && distancia_obst < distancia_permitida && fabs(another_ang) < 40){
+            if (cont_killer_obst > 5){
+                killer_direction = false;
+                cont_killer_obst = 0;
+                cont_killer_tempo = 0;
+            }
+            else{
+                cont_killer_obst = cont_killer_obst + 1;
+            }
+        }
+        else if(!killer_direction && distancia_obst < distancia_permitida && fabs(another_ang) > 180 - 40){
+            if (cont_killer_obst > 5){
+                killer_direction = true;
+                cont_killer_obst = 0;
+                cont_killer_tempo = 0;
+            }
+            else{
+                cont_killer_obst = cont_killer_obst + 1;
+            }
+        }
+    }
+    else{
+        cont_killer_obst = cont_killer_obst - 1;
+        if (cont_killer_obst < 0){
+            cont_killer_obst = 0;
+        }
+    }
+
+    //Restricao de tempo
+    if(fabs(robo->get_pos().x - last_killer.x) < 0.05 && fabs(robo->get_pos().y - last_killer.y) < 0.05){
+        cont_killer_tempo = cont_killer_tempo + 1;
+         if (cont_killer_tempo > 20){
+            if(killer_direction){
+                killer_direction = false;
+            }
+            else if(!killer_direction){
+                killer_direction = true;
+            }
+
+            cont_killer_tempo = 0;
+            cont_killer_obst = 0;
+            cout << "Trocou direcao" << endl;
+        }
+    }
+    else{
+        cont_killer_tempo = cont_killer_tempo - 1;
+        if (cont_killer_tempo < 0){
+            cont_killer_tempo = 0;
+        }
+    }
+    cout << "COntador tempo " << cont_killer_tempo << endl;
+    last_killer = robo->get_pos();
+
+    /*if(killer_direction && distancia_obst < distancia_permitida && fabs(another_ang) < 40)
     {
         killer_direction = false;
     }
     else if(!killer_direction && distancia_obst < distancia_permitida && fabs(another_ang) > 180 - 40)
     {
         killer_direction = true;
-    }
-    cout << "direc: " << killer_direction << endl;
-    cout << "distancia obstaculo: " << distancia_obst << endl;
-    cout << "Angulo obstaculo " << another_ang << endl;
+    } */
+
+
+//    cout << "direc: " << killer_direction << endl;
+//    cout << "distancia obstaculo: " << distancia_obst << endl;
+//    cout << "Angulo obstaculo " << another_ang << endl;
 
     // Fim da troca
 
@@ -2277,17 +2336,44 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
         limiar_theta = 90 + delta_limiar;
     }*/
 
+        /*if(killer_direction && fabs(alpha) > 180 - 25){
+            killer_direction = false;
+        }
+        else if(!killer_direction && fabs(alpha) < 25)
+        {
+            killer_direction = true;
+        }*/
+
     //PID Unidirection
-    if (killer_direction){
-        v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-        w = kp*alpha/180  + kd*(theta-last_theta_control);
-        limiar_theta = 90 - delta_limiar;
+    if (euclidean_dist(robo_pos, ball_pos) > 20){
+        if (killer_direction){
+            v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+            //w = 9*alpha/180  + 0.0015*(theta-last_theta_control) + 0.0015*(alpha - last_phi);
+            w = kp*alpha/180 + kd*(alpha-last_phi);
+            limiar_theta = 90 - delta_limiar;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            v = v_delta*fabs(alpha)/limiar_theta - v_max;
+            //w = 9*alpha/180 + 0.0015*(theta-last_theta_control) + 0.0015*(alpha - last_phi);
+            w = kp*alpha/180 + kd*(alpha-last_phi);
+            limiar_theta = 90 + delta_limiar;
+        }
     }
-    else{
-        alpha = ajusta_angulo(alpha+180);
-        v = v_delta*fabs(alpha)/limiar_theta - v_max;
-        w = kp*alpha/180 + kd*(theta-last_theta_control);
-        limiar_theta = 90 + delta_limiar;
+    else if (euclidean_dist(robo_pos, ball_pos) < 20){
+        if (fabs(alpha) <= limiar_theta ){
+            v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+            //w = 9*alpha/180  + 0.0015*(theta-last_theta_control) + 0.0015*(alpha - last_phi);
+            w = kp*alpha/180 + kd*(alpha-last_phi);
+            limiar_theta = 90 - delta_limiar;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            v = v_delta*fabs(alpha)/limiar_theta - v_max;
+            //w = 9*alpha/180  + 0.0015*(theta-last_theta_control) + 0.0015*(alpha - last_phi);
+            w = kp*alpha/180 + kd*(alpha-last_phi);
+            limiar_theta = 90 + delta_limiar;
+        }
     }
 
 

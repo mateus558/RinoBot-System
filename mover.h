@@ -41,6 +41,10 @@ private:
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
     Selec selec_iterador;
     bool killer_direction = 1; // frente = 1; tras = 0
+    int cont_killer_obst = 0;
+    int cont_killer_tempo = 0;
+    Point2d last_killer;
+
 
 protected:
     void msleep(int ms);
