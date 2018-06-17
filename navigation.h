@@ -70,6 +70,7 @@ public:
     void set_kr(float);
     float get_kr();
 
+
 };
 
 #endif // NAVIGATION_H

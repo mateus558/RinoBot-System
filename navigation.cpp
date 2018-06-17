@@ -302,39 +302,53 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
     Point2d p1,p2;
     float ang_p1, ang_p2, ang_ball_robot;
     MatrixXd vec_obj(2,1), vec_p1(2,1), vec_p2(2,1), rot_matrix(2,2);
-    //    robo_vel.x = robo->get_velocities().first*X_CONV_CONST;
-    //    robo_vel.y = robo->get_velocities().second*Y_CONV_CONST;
-    //    s.x = k0 * ( enemy_vel.x - robo_vel.x); // Velocidade
-    //    s.y = k0*(enemy_vel.y - robo_vel.y);
-    //    norma_s = sqrt(pow(s.x,2)+ pow(s.y,2));
-
-    //    if (d >= norma_s)
-    //    {
-    //        virtual_obj.x = enemy.x + s.x;
-    //        virtual_obj.y = enemy.y + s.y;
-    //    }
-    //    else
-    //    {
-    //        virtual_obj.x = enemy.x + (d*s.x/norma_s);
-    //        virtual_obj.y = enemy.y + (d*s.y/norma_s);
-    //    }
-
-    // std::cout << "X:" << virtual_obj.x << std::endl;
-    //std::cout << "Y:" << virtual_obj.y << std::endl;
 
     fih_TUF = -hyperbolic_spiral(robo->get_pos().y, robo->get_pos().x, meta);
+
+    // ------------ Repulsive Arquivo ------------------------------------------\\
+
+        robo_vel.x = robo->get_velocities().first*X_CONV_CONST;
+        robo_vel.y = robo->get_velocities().second*Y_CONV_CONST;
+        s.x = k0 * ( enemy_vel.x - robo_vel.x); // Velocidade
+        s.y = k0*(enemy_vel.y - robo_vel.y);
+        norma_s = sqrt(pow(s.x,2)+ pow(s.y,2));
+
+        if (d >= norma_s)
+        {
+            virtual_obj.x = enemy.x + s.x;
+            virtual_obj.y = enemy.y + s.y;
+        }
+        else
+        {
+            virtual_obj.x = enemy.x + (d*s.x/norma_s);
+            virtual_obj.y = enemy.y + (d*s.y/norma_s);
+        }
+
+   //  std::cout << "X:" << virtual_obj.x << std::endl;
+   //  std::cout << "Y:" << virtual_obj.y << std::endl;
+
+        fih_AUF = repulsive_angle(robo->get_pos().x, robo->get_pos().y, enemy);
+
+        if((d <= d_min)){
+            the_fih = fih_AUF;
+        }
+        else{
+            the_fih = fih_AUF*Gaussian_Func(d-d_min) + fih_TUF*(1-Gaussian_Func(d-d_min));
+        }
+
+    // ----------------------------------------------------------------------\\
 
 
     // ------------ Repulsive Otario ------------------------------------------\\
 
-    //fih_AUF = tangencial_repulsive(robo,meta,enemy,r);
+//    fih_AUF = tangencial_repulsive(robo,meta,enemy,r);
 
-    //if (d <= r){
-    //    the_fih = fih_AUF ;
-    //    }
-    //else{
-    //    the_fih = fih_AUF*Gaussian_Func(d - r) + fih_TUF*(1-Gaussian_Func(d - r));
-    // }
+//    if (d <= r){
+//        the_fih = fih_AUF ;
+//        }
+//    else{
+//        the_fih = fih_AUF*Gaussian_Func(d - r) + fih_TUF*(1-Gaussian_Func(d - r));
+//     }
 
     // Fim do Repulsive otario
 
@@ -362,71 +376,71 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
 
     // ----------------------- Repulsive_Math ----------------------------\\
 
-    fih_AUF = repulsive_Math(robo,enemy,meta);
+//    fih_AUF = repulsive_Math(robo,enemy,meta);
 
-    vec_obj << meta.x - enemy.x, meta.y - enemy.y;
-    rot_matrix <<  cos(pi/2),sin(pi/2),-sin(pi/2),cos(pi/2);
-    vec_p1 = d_min*rot_matrix*vec_obj/sqrt(pow(vec_obj(0),2)+pow(vec_obj(1),2));
-    rot_matrix <<  cos(-pi/2),sin(-pi/2),-sin(-pi/2),cos(-pi/2);
-    vec_p2 = d_min*rot_matrix*vec_obj/sqrt(pow(vec_obj(0),2)+pow(vec_obj(1),2));
+//    vec_obj << meta.x - enemy.x, meta.y - enemy.y;
+//    rot_matrix <<  cos(pi/2),sin(pi/2),-sin(pi/2),cos(pi/2);
+//    vec_p1 = d_min*rot_matrix*vec_obj/sqrt(pow(vec_obj(0),2)+pow(vec_obj(1),2));
+//    rot_matrix <<  cos(-pi/2),sin(-pi/2),-sin(-pi/2),cos(-pi/2);
+//    vec_p2 = d_min*rot_matrix*vec_obj/sqrt(pow(vec_obj(0),2)+pow(vec_obj(1),2));
 
-    p1.x = enemy.x + vec_p1(0);
-    p1.y = enemy.y + vec_p1(1);
+//    p1.x = enemy.x + vec_p1(0);
+//    p1.y = enemy.y + vec_p1(1);
 
-    p2.x = enemy.x + vec_p2(0);
-    p2.y = enemy.y + vec_p2(1);
+//    p2.x = enemy.x + vec_p2(0);
+//    p2.y = enemy.y + vec_p2(1);
 
-    ang_p1 = vector_angle(meta,p1);
-    ang_p2 = vector_angle(meta,p2);
-    ang_ball_robot = vector_angle(meta,robo_pos);
+//    ang_p1 = vector_angle(meta,p1);
+//    ang_p2 = vector_angle(meta,p2);
+//    ang_ball_robot = vector_angle(meta,robo_pos);
 
-    if(meta.x > enemy.x)
-    {
-        ang_p1 += 360;
-        ang_p2 += 360;
-        ang_ball_robot += 360;
-    }
+//    if(meta.x > enemy.x)
+//    {
+//        ang_p1 += 360;
+//        ang_p2 += 360;
+//        ang_ball_robot += 360;
+//    }
 
-//    cout << "ang_p1: " << ang_p1 << endl;
-//    cout << "ang_p2: " << ang_p2 << endl;
-//    cout << "ang_ball_robot: " << ang_ball_robot << endl;
-    if(ang_p1 > ang_p2)
-    {
-        if(ang_ball_robot < ang_p1 && ang_ball_robot > ang_p2 && euclidean_dist(meta,robo_pos) > euclidean_dist(meta,enemy))
-        {
-            the_fih = fih_AUF;
-            cout << "obstaculo" << endl;
-        }
-        else
-        {
-            the_fih = fih_TUF;
-            cout << "nao obstaculo" << endl;
-        }
-    }
-    else
-    {
-        if(ang_ball_robot > ang_p1 && ang_ball_robot < ang_p2 && euclidean_dist(meta,robo_pos) > euclidean_dist(meta,enemy))
-        {
-            the_fih = fih_AUF;
+////    cout << "ang_p1: " << ang_p1 << endl;
+////    cout << "ang_p2: " << ang_p2 << endl;
+////    cout << "ang_ball_robot: " << ang_ball_robot << endl;
+//    if(ang_p1 > ang_p2)
+//    {
+//        if(ang_ball_robot < ang_p1 && ang_ball_robot > ang_p2 && euclidean_dist(meta,robo_pos) > euclidean_dist(meta,enemy))
+//        {
+//            the_fih = fih_AUF;
 //            cout << "obstaculo" << endl;
-        }
-        else
-        {
-            the_fih = fih_TUF;
-            the_fih = fih_AUF*Gaussian_Func(d - d_min) + fih_TUF*(1-Gaussian_Func(d - d_min));
+//        }
+//        else
+//        {
+//            the_fih = fih_TUF;
 //            cout << "nao obstaculo" << endl;
-        }
-    }
+//        }
+//    }
+//    else
+//    {
+//        if(ang_ball_robot > ang_p1 && ang_ball_robot < ang_p2 && euclidean_dist(meta,robo_pos) > euclidean_dist(meta,enemy))
+//        {
+//            the_fih = fih_AUF;
+////            cout << "obstaculo" << endl;
+//        }
+//        else
+//        {
+//            the_fih = fih_TUF;
+//            the_fih = fih_AUF*Gaussian_Func(d - d_min) + fih_TUF*(1-Gaussian_Func(d - d_min));
+////            cout << "nao obstaculo" << endl;
+//        }
+//    }
 
 
-    if(/*(d <= d_min) &&*/ (d <= d_ball)){
-        the_fih = fih_AUF;
-    }
-    else{
-        the_fih = fih_TUF;
-    }
+//    if(/*(d <= d_min) &&*/ (d <= d_ball)){
+//        the_fih = fih_AUF;
+//    }
+//    else{
+//        the_fih = fih_TUF;
+//    }
 
-      the_fih = fih_AUF*Gaussian_Func(d) + fih_TUF*(1-Gaussian_Func(d));
+//      the_fih = fih_AUF*Gaussian_Func(d) + fih_TUF*(1-Gaussian_Func(d));
     //the_fih = fih_AUF;
     // ----------------------- --------------- ----------------------------\\
 
@@ -533,8 +547,8 @@ void Navigation::set_thetaDir(float theta)
 
 float Navigation::get_direction_CPU()
 {
-    return the_fih;   // Angulo hiperbole+repulsive
-//        return -phi;      //Angulo da hiperbole
+//    return the_fih;   // Angulo hiperbole+repulsive
+        return -phi;      //Angulo da hiperbole
 }
 
 float Navigation::repulsive_angle(float y, float x, Point2d pos)

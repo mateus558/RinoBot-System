@@ -1982,7 +1982,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
     centroid_atk.y=-centroid_atk.y;
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
-        if (centroid_def.x < centroid_atk.x){
+        /*if (centroid_def.x < centroid_atk.x){
             if (ball_pos.x > centroid_def.x + line_root_defender){
                 if(ball_pos.y < centroid_def.y - 45){
                     meta.x = centroid_def.x + line_root_defender;
@@ -2044,6 +2044,46 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
                     meta.x = centroid_def.x - line_root_defender;
                     meta.y = centroid_def.y;
                 }
+            }
+        }*/
+        if (centroid_def.x > centroid_atk.x){
+            if(ball_pos.y < centroid_def.y - 35  &&  ball_pos.x >= 125){
+                //meta.x = centroid_def.x - 8;
+                //meta.y = centroid_def.y - 45;
+                meta.x = 160;
+                meta.y = 30;
+                set_thetaDir(0);
+            }
+            else if(ball_pos.y > centroid_def.y + 35  &&  ball_pos.x >= 125){
+                //meta.x = centroid_def.x - 8;
+                //meta.y = centroid_def.y + 45;
+                meta.x = 160;
+                meta.y = 100;
+                set_thetaDir(0);
+            }
+            else{
+                meta.x = 125;
+                meta.y = ball_pos.y;
+            }
+        }
+        else if (centroid_def.x <= centroid_atk.x){
+            if(ball_pos.y < centroid_def.y - 35  &&  ball_pos.x < 55){
+                //meta.x = centroid_def.x - 8;
+                //meta.y = centroid_def.y - 45;
+                meta.x = 20;
+                meta.y = 30;
+                set_thetaDir(0);
+            }
+            else if(ball_pos.y > centroid_def.y + 35  &&  ball_pos.x < 55){
+                //meta.x = centroid_def.x - 8;
+                //meta.y = centroid_def.y + 45;
+                meta.x = 20;
+                meta.y = 100;
+                set_thetaDir(0);
+            }
+            else{
+                meta.x = 55;
+                meta.y = ball_pos.y;
             }
         }
         meta_defender_root = meta;

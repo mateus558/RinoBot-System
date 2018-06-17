@@ -438,8 +438,7 @@ Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
     dest = adjust_gamma(1.0 , dest);
     //Apply gaussian blur
     GaussianBlur(dest, dest, Size(9,9), 1.8);
-
-    return dest;
+            return dest;
 }
 
 Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper)   //Detect colors in [low,upper] range

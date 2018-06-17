@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ball = new BallDraw;
 
     //caso não seja selecionado nada na change strategy é forçada a nova estrategia
-    fuzzy->set_strategy(0);
+    fuzzy->set_strategy(3);
 
 
     /****************** SETS INFORMATION WINDOW DATA *******************/
