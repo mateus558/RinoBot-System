@@ -72,6 +72,7 @@ public:
     void atk_orientation(Robot *, Game_functions  *, pair<float, float>*);
     void atk_situation(Robot *,Game_functions *,pair<float,float>*);
     void atk_situation_inv(Robot *,Game_functions *,pair<float,float>*);
+    void atk_situation_any_point(Robot *,Game_functions *,pair<float,float>*);
     void rotate(Robot *, pair<float, float>*);
     void rotate_inv(Robot *, pair<float, float>*);
     void kick_rotate(Robot *, pair<float, float>*);

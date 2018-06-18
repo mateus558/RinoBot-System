@@ -28,6 +28,7 @@ Game_functions::Game_functions()
     team_pos_grid = pVector(3);
     pGrid = dMatrix(28, vector<double>(36, 0.0));
     tGrid = dMatrix(28, vector<double>(36, 0.0));
+    atk_situation_state = false;
 }
 
 Game_functions::~Game_functions(){
@@ -1783,24 +1784,36 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 // Angulo bola atk
                 set_thetaDir(-ang_ball_atk*M_PI/180);
 
-                //                //                //Atk any point of goal
+                //Atk any point of goal
 
-//                Point2d aux;
-//                aux.x = centroid_atk.x;
-//                aux.y = robo_pos.y;
-//                float theta = angle_two_points(ball_pos,robo_pos);     // !!!!!!!!!!!!!!!!!!
-//                float cat_ad = euclidean_dist(robo_pos,aux);
-//                float cat_op = cat_ad*tan(theta*pi/180);
-//                float add_pose = cat_op - (centroid_atk.y - robo_pose.y);
-//                Point2d ang_point;
-//                ang_point.y = robo_pos.y + add_pose;
-//                ang_point.x = centroid_atk.x;
+                Point2d aux;
+                aux.x = centroid_atk.x;
+                aux.y = robo_pos.y;
+                float theta = vector_angle(ball_pos,robo_pos);
+                float cat_ad = euclidean_dist(robo_pos,aux);
+                float cat_op = cat_ad*tan(theta*pi/180);
 
-//                if((ang_point.y < 85) && (ang_point.y > 45)){   // !!!!!!!!!!!!!!!!
-//                    set_thetaDir(theta*M_PI/180);
-//                }else{
-//                    set_thetaDir(-ang_ball_atk*M_PI/180);
-//                }
+                Point2d ang_point;
+                if(centroid_atk.y < robo_pos.y)
+                    ang_point.y = robo_pos.y - fabs(cat_op);
+                else
+                    ang_point.y = robo_pos.y + fabs(cat_op);
+
+                ang_point.x = centroid_atk.x;
+
+//                cout << "thetha: " << theta << endl;
+//                cout << "cat_ad: " << cat_ad << endl;
+//                cout << "cat_op: " << cat_op << endl;
+                //cout << "X: " << ang_point.x << endl;
+                //cout << "Y: " << ang_point.y << endl;
+
+                if((ang_point.y < 85) && (ang_point.y > 45)){   // !!!!!!!!!!!!!!!!
+                    set_thetaDir(-ang_ball_atk*M_PI/180);
+                    Set_atk_situation_state(true);
+                }else{
+                    set_thetaDir(-ang_ball_atk*M_PI/180);
+                    Set_atk_situation_state(false);
+                }
 
             }
 
@@ -1841,24 +1854,36 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 // Angulo bola atk
                 set_thetaDir(-ang_ball_atk*M_PI/180);
 
-//                //                //Atk any point of goal
+                //Atk any point of goal
 
-//                Point2d aux;
-//                aux.x = centroid_atk.x;
-//                aux.y = robo_pos.y;
-//                float theta = angle_two_points(ball_pos,robo_pos);     // !!!!!!!!!!!!!!!!!!
-//                float cat_ad = euclidean_dist(robo_pos,aux);
-//                float cat_op = cat_ad*tan(theta*pi/180);
-//                float add_pose = cat_op - (centroid_atk.y - robo_pose.y);
-//                Point2d ang_point;
-//                ang_point.y = robo_pos.y + add_pose;
-//                ang_point.x = centroid_atk.x;
+                Point2d aux;
+                aux.x = centroid_atk.x;
+                aux.y = robo_pos.y;
+                float theta = vector_angle(ball_pos,robo_pos);
+                float cat_ad = euclidean_dist(robo_pos,aux);
+                float cat_op = cat_ad*tan(theta*pi/180);
 
-//                if((ang_point.y < 85) && (ang_point.y > 45)){   // !!!!!!!!!!!!!!!!
-//                    set_thetaDir(theta*M_PI/180);
-//                }else{
-//                    set_thetaDir(-ang_ball_atk*M_PI/180);
-//                }
+                Point2d ang_point;
+                if(centroid_atk.y < robo_pos.y)
+                    ang_point.y = robo_pos.y - fabs(cat_op);
+                else
+                    ang_point.y = robo_pos.y + fabs(cat_op);
+
+                ang_point.x = centroid_atk.x;
+
+                //cout << "thetha: " << theta << endl;
+                //cout << "cat_ad: " << cat_ad << endl;
+                //cout << "cat_op: " << cat_op << endl;
+                //cout << "X: " << ang_point.x << endl;
+                //cout << "Y: " << ang_point.y << endl;
+
+                if((ang_point.y < 85) && (ang_point.y > 45)){   // !!!!!!!!!!!!!!!!
+                    set_thetaDir(theta*M_PI/180);
+                    Set_atk_situation_state(true);
+                }else{
+                    set_thetaDir(-ang_ball_atk*M_PI/180);
+                    Set_atk_situation_state(false);
+                }
             }
         }
     }
@@ -2122,4 +2147,12 @@ void Game_functions::set_g_size(Point2d meta , Robot *robo)
             g_size = 0;
     }
 
+}
+
+void Game_functions::Set_atk_situation_state(bool value){
+    atk_situation_state = value;
+}
+
+bool Game_functions::Get_atk_situation_state(){
+    return atk_situation_state;
 }

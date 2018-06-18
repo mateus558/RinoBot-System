@@ -302,6 +302,7 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
     Point2d p1,p2;
     float ang_p1, ang_p2, ang_ball_robot;
     MatrixXd vec_obj(2,1), vec_p1(2,1), vec_p2(2,1), rot_matrix(2,2);
+    avoid_state = false;
 
     fih_TUF = -hyperbolic_spiral(robo->get_pos().y, robo->get_pos().x, meta);
 
@@ -335,7 +336,7 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
         else{
             the_fih = fih_AUF*Gaussian_Func(d-d_min) + fih_TUF*(1-Gaussian_Func(d-d_min));
         }
-
+            the_fih = fih_TUF;
     // ----------------------------------------------------------------------\\
 
 
@@ -547,8 +548,8 @@ void Navigation::set_thetaDir(float theta)
 
 float Navigation::get_direction_CPU()
 {
-//    return the_fih;   // Angulo hiperbole+repulsive
-        return -phi;      //Angulo da hiperbole
+    return the_fih;   // Angulo hiperbole+repulsive
+//        return -phi;      //Angulo da hiperbole
 }
 
 float Navigation::repulsive_angle(float y, float x, Point2d pos)
@@ -563,7 +564,7 @@ float Navigation::repulsive_angle(float y, float x, Point2d pos)
 }
 
 float Navigation::Gaussian_Func(float r){
-    float delta = 2.25;
+    float delta = 0.25;
     float G;
     G = pow(M_E,(-pow(r,2)/(2*pow(delta,2))));
     return G;

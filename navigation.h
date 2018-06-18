@@ -67,6 +67,7 @@ public:
     float whirlpool_repulsive(Robot*, Point2d, Point2d obstaculo, float );
     float repulsive_Math(Robot*, Point2d, Point2d);
     float theta_dir,the_fih,phi,g_size,Kr;
+    bool avoid_state;
     void set_kr(float);
     float get_kr();
 

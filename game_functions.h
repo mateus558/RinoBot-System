@@ -33,6 +33,7 @@ private:
     bool team_chang;
     bool calc_Gandalf, calc_Presto, calc_Leona;
     bool vel_Computed;
+    bool atk_situation_state;
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
 
 protected:
@@ -83,6 +84,8 @@ public:
 
     void killer_cpu(Robot *, int, pair<float, float>*);   // Univector Func
     void defender_root(Robot *, int, pair<float, float>*);   // Univector Func
+    void Set_atk_situation_state(bool);
+    bool Get_atk_situation_state();
 
     void set_g_size(Point2d meta, Robot *robo);
 
