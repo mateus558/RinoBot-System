@@ -13,14 +13,14 @@ double limiar_theta = 90 + delta_limiar;
 //double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
-double v_max = 0.35; //0.75
+double v_max = 0.65; //0.75
 double v_delta = 0.3;
 double w_max = 7;
 double k = (w_max/v_max);
 double dist_giro = 8.0;
 double vel_giro_lado = 1.6;
 double vel_giro_atk = 0.5;
-double v_atk = 1.6;
+double v_atk = 0.85;
 
 // Constantes para o goleiro
 double v_max_gol = 0.5;  //0.5
@@ -1817,35 +1817,38 @@ void Mover::atk_situation_inv(Robot *robo, Game_functions *pot_fields, pair<floa
 }
 
 void Mover::atk_situation_any_point(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
-    Point2d virtual_atk = centroid_def;
-    Point2d virtual_def = centroid_atk;
     Point2d robo_pos = robo->get_pos();
     Point2d eixo_x(1.0,0.0);
+    double ang_ball_robot = robo->get_angle()-vector_angle(robo->get_pos(),ball_pos);
+    if (ang_ball_robot > 180)
+    ang_ball_robot -= 360;
+    if (ang_ball_robot < -180)
+    ang_ball_robot += 360;
 
-    if (virtual_def.x < virtual_atk.x) {
-        if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && robo_pos.x < ball_pos.x){
-            if (fabs(robo->get_angle()) < 90){
+    if (centroid_def.x < centroid_atk.x) {
+        if (euclidean_dist(ball_pos,robo->get_pos()) < 10){
+            if (fabs(robo->get_angle()) < 90 &&  fabs(ang_ball_robot) < 30){
                 vels->first = v_atk;
                 vels->second = v_atk;
             }
-            else{
+            else if(fabs(ang_ball_robot) > 150){
                 vels->first = -v_atk;
                 vels->second = -v_atk;
             }
-            cout << "Ataque Situation any point" << endl;
+            //cout << "Ataque Situation any point" << endl;
         }
     }
-    else if(virtual_atk.x < virtual_def.x){
-        if (euclidean_dist(ball_pos,robo->get_pos()) < 10 && robo_pos.x > ball_pos.x){
-            if (fabs(robo->get_angle()) < 90){
-                vels->first = v_atk;
-                vels->second = v_atk;
-            }
-            else{
+    else if(centroid_atk.x < centroid_def.x){
+        if (euclidean_dist(ball_pos,robo->get_pos()) < 10){
+            if (fabs(robo->get_angle()) < 90 && fabs(ang_ball_robot) > 150){
                 vels->first = -v_atk;
                 vels->second = -v_atk;
             }
-            cout << "Ataque Situation any point" << endl;
+            else if(fabs(ang_ball_robot) < 30){
+                vels->first = v_atk;
+                vels->second = v_atk;
+            }
+            //cout << "Ataque Situation any point" << endl;
         }
     }
 }

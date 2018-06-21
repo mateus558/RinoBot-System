@@ -1794,7 +1794,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 float cat_op = cat_ad*tan(theta*pi/180);
 
                 Point2d ang_point;
-                if(centroid_atk.y < robo_pos.y)
+                if(ball_pos.y < robo_pos.y)
                     ang_point.y = robo_pos.y - fabs(cat_op);
                 else
                     ang_point.y = robo_pos.y + fabs(cat_op);
@@ -1807,7 +1807,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 //cout << "X: " << ang_point.x << endl;
                 //cout << "Y: " << ang_point.y << endl;
 
-                if((ang_point.y < 85) && (ang_point.y > 45)){   // !!!!!!!!!!!!!!!!
+                if((ang_point.y < 85) && (ang_point.y > 45) && robo_pos.x < ball_pos.x){   // !!!!!!!!!!!!!!!!
                     set_thetaDir(-ang_ball_atk*M_PI/180);
                     Set_atk_situation_state(true);
                 }else{
@@ -1859,12 +1859,12 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 Point2d aux;
                 aux.x = centroid_atk.x;
                 aux.y = robo_pos.y;
-                float theta = vector_angle(ball_pos,robo_pos);
+                float theta = vector_angle(robo_pos,ball_pos);
                 float cat_ad = euclidean_dist(robo_pos,aux);
                 float cat_op = cat_ad*tan(theta*pi/180);
 
                 Point2d ang_point;
-                if(centroid_atk.y < robo_pos.y)
+                if(ball_pos.y < robo_pos.y)
                     ang_point.y = robo_pos.y - fabs(cat_op);
                 else
                     ang_point.y = robo_pos.y + fabs(cat_op);
@@ -1877,7 +1877,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 //cout << "X: " << ang_point.x << endl;
                 //cout << "Y: " << ang_point.y << endl;
 
-                if((ang_point.y < 85) && (ang_point.y > 45)){   // !!!!!!!!!!!!!!!!
+                if((ang_point.y < 85) && (ang_point.y > 45) && robo_pos.x > ball_pos.x){   // !!!!!!!!!!!!!!!!
                     set_thetaDir(theta*M_PI/180);
                     Set_atk_situation_state(true);
                 }else{
