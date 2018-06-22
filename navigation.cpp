@@ -290,9 +290,9 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
 {
     Point2d robo_pos;
     robo_pos = robo->get_pos();
-    float k0 = 0.12;
+    float k0 = 12;
     float r = 15;        // Raio de Influencia do repulsivo
-    float d_min = 17;   // Raio de Influencia do repulsivo
+    float d_min = 10;   // Raio de Influencia do repulsivo
     float norma_s,fih_AUF,fih_TUF;
     float d = euclidean_dist(robo_pos, enemy);  //distancia entre o robo e o obstaculo
     float d_ball = euclidean_dist(robo_pos, meta);
@@ -332,6 +332,7 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
 
         if((d <= d_min)){
             the_fih = fih_AUF;
+            //cout << "End: "  << endl;
         }
         else{
             the_fih = fih_AUF*Gaussian_Func(d-d_min) + fih_TUF*(1-Gaussian_Func(d-d_min));
@@ -454,90 +455,90 @@ float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
 
 // ----- CPU ANTIGO - ROTACIONADO COM G_SIZE--------
 
-//    float Kr = 20;
-//    float theta_up,theta_down,rho_up,rho_down;
-//    Vector3d p(xi,yi,1),ph(0,0,0);
-//    float de = 5;
-//    //cout << "g_size " << g_size << endl;
-//    MatrixXd m_trans(3,3),m_rot(3,3);
-//    m_trans  << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
-//    m_rot << cos(-theta_dir),-sin(-theta_dir),0,sin(-theta_dir),cos(-theta_dir),0,0,0,1;
+    float Kr = 20;
+    float theta_up,theta_down,rho_up,rho_down;
+    Vector3d p(xi,yi,1),ph(0,0,0);
+    float de = 8;
+    //cout << "g_size " << g_size << endl;
+    MatrixXd m_trans(3,3),m_rot(3,3);
+    m_trans  << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
+    m_rot << cos(-theta_dir),-sin(-theta_dir),0,sin(-theta_dir),cos(-theta_dir),0,0,0,1;
 
-//    ph = m_rot*m_trans*p;
-//    //std::cout << ph << std::endl << std::endl;
-//    theta_up = atan2((ph(1)-de-g_size),ph(0)) + theta_dir;
-//    theta_down = atan2((ph(1)+de+g_size),ph(0)) + theta_dir;
-//    rho_up = sqrt(pow(ph(0),2) + pow((ph(1)-de-g_size),2));
-//    rho_down = sqrt(pow(ph(0),2) + pow((ph(1)+de+g_size),2));
+    ph = m_rot*m_trans*p;
+    //std::cout << ph << std::endl << std::endl;
+    theta_up = atan2((ph(1)-de-g_size),ph(0)) + theta_dir;
+    theta_down = atan2((ph(1)+de+g_size),ph(0)) + theta_dir;
+    rho_up = sqrt(pow(ph(0),2) + pow((ph(1)-de-g_size),2));
+    rho_down = sqrt(pow(ph(0),2) + pow((ph(1)+de+g_size),2));
 
-//    if (ph(1)>g_size)
-//        phi = theta_up + pi*(2-(de+Kr)/(rho_up+Kr))/2;
-//    else if (ph(1)< -g_size)
-//        phi = theta_down - pi*(2-(de+Kr)/(rho_down+Kr))/2;
-//    else
-//        phi = theta_dir;
+    if (ph(1)>g_size)
+        phi = theta_up + pi*(2-(de+Kr)/(rho_up+Kr))/2;
+    else if (ph(1)< -g_size)
+        phi = theta_down - pi*(2-(de+Kr)/(rho_down+Kr))/2;
+    else
+        phi = theta_dir;
 
-//    cout << "phi: " << phi << endl; //TESTE DELETAR
+    //cout << "phi: " << phi << endl; //TESTE DELETAR
 
-//    return phi;
+    return phi;
 
 
 // ------- CPU NOVO - ROTACIONADO -----------
 
 
-    float Kr = 1;
-    float theta, rho, y_aux, yl, yr , phi_cw, phi_ccw;
-    float pl[2], pr[2], vec[2];
-    float de = 3;
-    Vector3d p(xi,yi,1),ph(0,0,0);
+//    float Kr = 5;
+//    float theta, rho, y_aux, yl, yr , phi_cw, phi_ccw;
+//    float pl[2], pr[2], vec[2];
+//    float de = 13;
+//    Vector3d p(xi,yi,1),ph(0,0,0);
 
-    Matrix3d m_trans1(3,3),m_trans2(3,3),m_rot(3,3);
-    // Matriz para transladar a bola pra origem
-    m_trans1 << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
-    // Matriz para transladar a bola da origem pra posição original
-    m_trans2 << 1 ,0 ,meta.x, 0, 1, meta.y, 0, 0, 1;
+//    Matrix3d m_trans1(3,3),m_trans2(3,3),m_rot(3,3);
+//    // Matriz para transladar a bola pra origem
+//    m_trans1 << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
+//    // Matriz para transladar a bola da origem pra posição original
+//    m_trans2 << 1 ,0 ,meta.x, 0, 1, meta.y, 0, 0, 1;
 
-    m_rot << cos(-theta_dir),-sin(-theta_dir),0,sin(-theta_dir),cos(-theta_dir),0,0,0,1;
+//    m_rot << cos(-theta_dir),-sin(-theta_dir),0,sin(-theta_dir),cos(-theta_dir),0,0,0,1;
 
-    ph = m_trans2*m_rot*m_trans1*p;
+//    ph = m_trans2*m_rot*m_trans1*p;
 
-    pl[0] = ph(0);
-    pl[1] = ph(1) - de;
-    pr[0] = ph(0);
-    pr[1] = ph(1) + de;
+//    pl[0] = ph(0);
+//    pl[1] = ph(1) - de;
+//    pr[0] = ph(0);
+//    pr[1] = ph(1) + de;
 
-    y_aux = ph(1) - meta.y;
+//    y_aux = ph(1) - meta.y;
 
-    yl = y_aux + de;
-    yr = y_aux - de;
+//    yl = y_aux + de;
+//    yr = y_aux - de;
 
 
-    rho = sqrt(pow(pl[0]-meta.x,2)+pow(pl[1]-meta.y,2));
-    theta = atan2(pl[1]-meta.y,pl[0]-meta.x);
+//    rho = sqrt(pow(pl[0]-meta.x,2)+pow(pl[1]-meta.y,2));
+//    theta = atan2(pl[1]-meta.y,pl[0]-meta.x);
 
-    if (rho > de){
-        phi_ccw = theta + pi*(2-((de+Kr)/(rho+Kr)))/2;
-    }else{
-        phi_ccw = theta + pi*sqrt(rho/de)/2;
-    }
+//    if (rho > de){
+//        phi_ccw = theta + pi*(2-((de+Kr)/(rho+Kr)))/2;
+//    }else{
+//        phi_ccw = theta + pi*sqrt(rho/de)/2;
+//    }
 
-    rho = sqrt(pow(pr[0]-meta.x,2)+pow(pr[1]-meta.y,2));
-    theta = atan2(pr[1]-meta.y,pr[0]-meta.x);
+//    rho = sqrt(pow(pr[0]-meta.x,2)+pow(pr[1]-meta.y,2));
+//    theta = atan2(pr[1]-meta.y,pr[0]-meta.x);
 
-    if (rho > de){
-        phi_cw = theta - pi*(2-((de+Kr)/(rho+Kr)))/2;
-    }else{
-        phi_cw = theta - pi*sqrt(rho/de)/2;
-    }
+//    if (rho > de){
+//        phi_cw = theta - pi*(2-((de+Kr)/(rho+Kr)))/2;
+//    }else{
+//        phi_cw = theta - pi*sqrt(rho/de)/2;
+//    }
 
-    vec[0] = (yl*cos(phi_ccw) - yr*cos(phi_cw))/(2*de);
-    vec[1] = (yl*sin(phi_ccw) - yr*sin(phi_cw))/(2*de);
+//    vec[0] = (yl*cos(phi_ccw) - yr*cos(phi_cw))/(2*de);
+//    vec[1] = (yl*sin(phi_ccw) - yr*sin(phi_cw))/(2*de);
 
-    phi = atan2(vec[1],vec[0]) + theta_dir;
+//    phi = atan2(vec[1],vec[0]) + theta_dir;
 
-    //cout<<"Este é o phi: "<<phi<<endl; //DELETAR
+//    //cout<<"Este é o phi: "<<phi<<endl; //DELETAR
 
-    return phi;
+//    return phi;
 
 }
 
@@ -564,7 +565,7 @@ float Navigation::repulsive_angle(float y, float x, Point2d pos)
 }
 
 float Navigation::Gaussian_Func(float r){
-    float delta = 0.25;
+    float delta = 30.25;
     float G;
     G = pow(M_E,(-pow(r,2)/(2*pow(delta,2))));
     return G;

@@ -1790,6 +1790,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 aux.x = centroid_atk.x;
                 aux.y = robo_pos.y;
                 float theta = vector_angle(ball_pos,robo_pos);
+                float alpha = vector_angle(robo_pos,ball_pos);
                 float cat_ad = euclidean_dist(robo_pos,aux);
                 float cat_op = cat_ad*tan(theta*pi/180);
 
@@ -1808,7 +1809,8 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 //cout << "Y: " << ang_point.y << endl;
 
                 if((ang_point.y < 85) && (ang_point.y > 45) && robo_pos.x < ball_pos.x){   // !!!!!!!!!!!!!!!!
-                    set_thetaDir(-ang_ball_atk*M_PI/180);
+                    set_thetaDir(alpha*M_PI/180);
+//                    set_thetaDir(-ang_ball_atk*M_PI/180);
                     Set_atk_situation_state(true);
                 }else{
                     set_thetaDir(-ang_ball_atk*M_PI/180);
@@ -1860,6 +1862,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 aux.x = centroid_atk.x;
                 aux.y = robo_pos.y;
                 float theta = vector_angle(robo_pos,ball_pos);
+                float alpha = vector_angle(ball_pos,robo_pos);
                 float cat_ad = euclidean_dist(robo_pos,aux);
                 float cat_op = cat_ad*tan(theta*pi/180);
 
@@ -1878,7 +1881,8 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 //cout << "Y: " << ang_point.y << endl;
 
                 if((ang_point.y < 85) && (ang_point.y > 45) && robo_pos.x > ball_pos.x){   // !!!!!!!!!!!!!!!!
-                    set_thetaDir(theta*M_PI/180);
+                    set_thetaDir(alpha*M_PI/180);
+                   // set_thetaDir(-ang_ball_atk*M_PI/180);
                     Set_atk_situation_state(true);
                 }else{
                     set_thetaDir(-ang_ball_atk*M_PI/180);
@@ -1957,7 +1961,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
 
     for(i = 0; i < 3; ++i){
         /*if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
-                enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);
+                enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);theta_up
                 //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
                 if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
                     set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
