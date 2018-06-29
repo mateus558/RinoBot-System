@@ -79,6 +79,7 @@ public:
     Point2d get_meta_defender_root();
     Point2d get_meta();
     Point convert_C_to_G(Point2d);
+    bool flag_return;
 
     void robo_grid_position(Robot *, Robot *, Robot *);
 
