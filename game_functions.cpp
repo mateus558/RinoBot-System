@@ -2014,6 +2014,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
     centroid_atk.y=-centroid_atk.y;
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
+
         /*if (centroid_def.x < centroid_atk.x){
             if (ball_pos.x > centroid_def.x + line_root_defender){
                 if(ball_pos.y < centroid_def.y - 45){
@@ -2079,6 +2080,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
             }
         }*/
         if (centroid_def.x > centroid_atk.x){
+
         //Variável que determina onde o robô irá se posicionar em x
         int cx = 120;
         //Se a flag estiver ativa, ele entra na return 2 defense
@@ -2096,7 +2098,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
                 //meta.x = centroid_def.x - 8;
                 //meta.y = centroid_def.y + 45;
                 meta.x = 157;
-                meta.y = 120;
+                meta.y = 105;
                 //set_thetaDir(0);
                 flag_return=1;
             }
@@ -2112,48 +2114,96 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
                 meta.y = ball_pos.y;
                 flag_return = 1;
         //Se o robô estiver na faixa do follow ball, parar de ir para a posição e começar a follow
-                if(robo_pos.x<cx+10 && robo_pos.x>80)
+                if(robo_pos.x<cx+10 && robo_pos.x>100)
                 flag_return=0;
         //Se o robô estiver a frente da bola(com uma variável de folga para retornar mesmo na linha da bola
-                if(robo_pos.x<ball_pos.x+5)
+                if(robo_pos.x<ball_pos.x+5){
+                meta.x = cx;
+                meta.y = ball_pos.y;
                 flag_return=1;
+                }
                 }
         }
         else if (centroid_def.x <= centroid_atk.x){
-            if(ball_pos.y < centroid_def.y - 35  &&  ball_pos.x < 55){
+//            if(ball_pos.y < centroid_def.y - 35  &&  ball_pos.x < 55){
+//                //meta.x = centroid_def.x - 8;
+//                //meta.y = centroid_def.y - 45;
+//                meta.x = 20;
+//                meta.y = 30;
+//                set_thetaDir(0);
+//            }
+//            else if(ball_pos.y > centroid_def.y + 35  &&  ball_pos.x < 55){
+//                //meta.x = centroid_def.x - 8;
+//                //meta.y = centroid_def.y + 45;
+//                meta.x = 20;
+//                meta.y = 100;
+//                set_thetaDir(0);
+//            }
+//            else{
+//                meta.x = 55;
+//                meta.y = ball_pos.y;
+//            }
+ //Variável que determina onde o robô irá se posicionar em x
+        int cx = 50;
+        //Se a flag estiver ativa, ele entra na return 2 defense
+        //Se a bola estiver à esqueda da área, defender em cima da linha
+            if(ball_pos.y < centroid_def.y - 35  &&  ball_pos.x <= cx){
                 //meta.x = centroid_def.x - 8;
                 //meta.y = centroid_def.y - 45;
-                meta.x = 20;
-                meta.y = 30;
-                set_thetaDir(0);
+                meta.x = 25;
+                meta.y = 25;
+                //set_thetaDir(0);
+                flag_return=1;
             }
-            else if(ball_pos.y > centroid_def.y + 35  &&  ball_pos.x < 55){
+        //Se a bola estiver à direita da área, defender em cima da linha
+            else if(ball_pos.y > centroid_def.y + 35  &&  ball_pos.x <= cx){
                 //meta.x = centroid_def.x - 8;
                 //meta.y = centroid_def.y + 45;
-                meta.x = 20;
-                meta.y = 100;
-                set_thetaDir(0);
+                meta.x = 25;
+                meta.y = 105;
+                //set_thetaDir(0);
+                flag_return=1;
             }
+       //Se a bola estiver em frente à área ou dentro dela, defender próximo à cruz
+            else if (ball_pos.y > centroid_def.y-35 && ball_pos.y < centroid_def.y+35 && ball_pos.x <= cx){
+            meta.x = cx;
+            meta.y = centroid_def.y-10;
+            flag_return=1;
+            }
+       //Se a bola estiver longe da área, defender sobre a linha das cruzes
             else{
-                meta.x = 55;
+                meta.x = cx;
                 meta.y = ball_pos.y;
-            }
+                flag_return = 1;
+        //Se o robô estiver na faixa do follow ball, parar de ir para a posição e começar a follow
+                if(robo_pos.x > cx-10 && robo_pos.x < 60)
+                flag_return=0;
+        //Se o robô estiver a frente da bola(com uma variável de folga para retornar mesmo na linha da bola
+                if(robo_pos.x > ball_pos.x-5){
+                meta.x = cx;
+                meta.y = ball_pos.y;
+                flag_return=1;
+                }
         }
-        meta_defender_root = meta;
-        cout <<"Meta x: "<<meta.x<<endl;
-        cout<< "Meta y: "<<meta.y<<endl;
 
-        Point meta_grid = convert_C_to_G(meta); //cm to grid
-        if (meta_grid.x > 0 && meta_grid.y > 0){
-            set_potential(meta_grid.y, meta_grid.x, 0);
         }
 
-        while(iterator_cph()>1E-6);
-        set_direction(centroid_atk,centroid_def);
-        //set_grid_orientation(meta_grid);
+    meta_defender_root = meta;
+       // cout <<"Meta x: "<<meta.x<<endl;
+       // cout<< "Meta y: "<<meta.y<<endl;
 
-        set_g_size(meta_defender_root,robo);
-        univector_field(robo,enemy_prox,meta_defender_root);
+//        Point meta_grid = convert_C_to_G(meta); //cm to grid
+//        if (meta_grid.x > 0 && meta_grid.y > 0){
+//            set_potential(meta_grid.y, meta_grid.x, 0);
+//        }
+
+
+//        while(iterator_cph()>1E-6);
+//        set_direction(centroid_atk,centroid_def);
+//        //set_grid_orientation(meta_grid);
+
+//        set_g_size(meta_defender_root,robo);
+//        univector_field(robo,enemy_prox,meta_defender_root);
     }
 }
 
