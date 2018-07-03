@@ -1952,66 +1952,70 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
     init_grid();
     Point2d enemy_prox;
     Point2d robo_pos = robo->get_pos();
-    // Calcula Adsversario mais próximo
-    if ((euclidean_dist(robo_pos,enemy_pos[0]) <= euclidean_dist(robo_pos,enemy_pos[1])) && (euclidean_dist(robo_pos,enemy_pos[0]) <= euclidean_dist(robo_pos,enemy_pos[2])))
-        enemy_prox = enemy_pos[0];
-    else if (euclidean_dist(robo_pos,enemy_pos[1]) <= euclidean_dist(robo_pos,enemy_pos[2]))
-        enemy_prox = enemy_pos[1];
-    else
-        enemy_prox = enemy_pos[2];
+
+//    // Calcula Adsversario mais próximo
+//    if ((euclidean_dist(robo_pos,enemy_pos[0]) <= euclidean_dist(robo_pos,enemy_pos[1])) && (euclidean_dist(robo_pos,enemy_pos[0]) <= euclidean_dist(robo_pos,enemy_pos[2])))
+//        enemy_prox = enemy_pos[0];
+//    else if (euclidean_dist(robo_pos,enemy_pos[1]) <= euclidean_dist(robo_pos,enemy_pos[2]))
+//        enemy_prox = enemy_pos[1];
+//    else
+//        enemy_prox = enemy_pos[2];
+
+    flag_return = 2;
 
     //Setar aliados como obstáculo
 
-    for(i = 0; i < 3; ++i){
-        /*if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
-                enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);theta_up
-                //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
-                if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
-                    set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
-            }else{
-                //tratar posição dos inimigos aqui
-            }*/
+//    for(i = 0; i < 3; ++i){
+//        /*if(enemy_pos[i].x > 0 && enemy_pos[i].y > 0){
+//                enemy_pos_grid[i] = convert_C_to_G(enemy_pos[i]);theta_up
+//                //cout<<"Inimigo "<<enemy_pos_grid[i].x<<" "<<enemy_pos_grid[i].y<<endl;
+//                if(enemy_pos_grid[i].x>0 && enemy_pos_grid[i].y>0)
+//                    set_potential(enemy_pos_grid[i].y, enemy_pos_grid[i].x, 1);
+//            }else{
+//                //tratar posição dos inimigos aqui
+//            }*/
 
-        if(team_pos[i].x > 0 && team_pos[i].y > 0)//Encherga os amigos como obstáculos
-        {
-            if(team_pos[i] == robo->get_pos())//Verifica o robo usado
-            {
-            }
-            else//Seta como 1 o potencial dos robos restantes
-            {
-                team_pos_grid[i] = convert_C_to_G(team_pos[i]);
-                if(team_pos_grid[i].x > 0 && team_pos_grid[i].y > 0){
-                    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
-                }
-                else{
-                    //Tratar Aqui
-                }
-            }
-        }
-        else{
-            //tratar posição dos miguxos aqui
-        }
-    }
+//        if(team_pos[i].x > 0 && team_pos[i].y > 0)//Encherga os amigos como obstáculos
+//        {
+//            if(team_pos[i] == robo->get_pos())//Verifica o robo usado
+//            {
+//            }
+//            else//Seta como 1 o potencial dos robos restantes
+//            {
+//                team_pos_grid[i] = convert_C_to_G(team_pos[i]);
+//                if(team_pos_grid[i].x > 0 && team_pos_grid[i].y > 0){
+//                    set_potential(team_pos_grid[i].y, team_pos_grid[i].x, 1);
+//                }
+//                else{
+//                    //Tratar Aqui
+//                }
+//            }
+//        }
+//        else{
+//            //tratar posição dos miguxos aqui
+//        }
+//    }
 
     //Corrige Posicionamento novamente
-    ball_pos.y = -ball_pos.y;
-    centroid_atk.y=-centroid_atk.y;
+//    ball_pos.y = -ball_pos.y;
+//    centroid_atk.y=-centroid_atk.y;
 
 
-    //Calcula angulo entre a bola e o gol de ataque
-    Point2d vec_ball_atk = meta_defender_root - robo->get_pos();
-    Point2d eixo_x(1.0,0.0);
-    double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
-    if (vec_ball_atk.y < 0)
-        ang_ball_atk = -ang_ball_atk;
-    //ajusta angulos para menores que 180 e maiores que -180
-    if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
-    else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
-    //cout << "Angulo bola atk: " << ang_ball_atk << endl;
-    set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
-    //Corrige Posicionamento novamente
-    ball_pos.y = -ball_pos.y;
-    centroid_atk.y=-centroid_atk.y;
+//    //Calcula angulo entre a bola e o gol de ataque
+//    Point2d vec_ball_atk = meta_defender_root - robo->get_pos();
+//    Point2d eixo_x(1.0,0.0);
+//    double ang_ball_atk = angle_two_points(vec_ball_atk,eixo_x);
+//    if (vec_ball_atk.y < 0)
+//        ang_ball_atk = -ang_ball_atk;
+//    //ajusta angulos para menores que 180 e maiores que -180
+//    if (ang_ball_atk > 180) ang_ball_atk = ang_ball_atk - 360;
+//    else if (ang_ball_atk < -180) ang_ball_atk = ang_ball_atk + 360;
+//    //cout << "Angulo bola atk: " << ang_ball_atk << endl;
+//    set_thetaDir(-ang_ball_atk*M_PI/180);  // Seta a orientação do Univector Field
+//    //Corrige Posicionamento novamente
+//    ball_pos.y = -ball_pos.y;
+//    centroid_atk.y=-centroid_atk.y;
+
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
 
@@ -2088,16 +2092,21 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
             if(ball_pos.y < centroid_def.y - 35  &&  ball_pos.x >= cx){
                 //meta.x = centroid_def.x - 8;
                 //meta.y = centroid_def.y - 45;
-                meta.x = 157;
+                meta.x = 162;
                 meta.y = 25;
                 //set_thetaDir(0);
                 flag_return=1;
+                //cout << "return" << endl;
             }
+//            else{
+//             flag_return = 2;
+//             cout << "else" << endl;
+//            }
         //Se a bola estiver à esquerda da área, defender em cima da linha
             else if(ball_pos.y > centroid_def.y + 35  &&  ball_pos.x >= cx){
                 //meta.x = centroid_def.x - 8;
                 //meta.y = centroid_def.y + 45;
-                meta.x = 157;
+                meta.x = 162;
                 meta.y = 105;
                 //set_thetaDir(0);
                 flag_return=1;
@@ -2106,7 +2115,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
             else if (ball_pos.y > centroid_def.y-35 && ball_pos.y < centroid_def.y+35 && ball_pos.x>cx){
             meta.x = cx;
             meta.y = centroid_def.y-10;
-            flag_return=1;
+            flag_return=2;
             }
        //Se a bola estiver longe da área, defender sobre a linha das cruzes
             else{
@@ -2119,30 +2128,17 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
         //Se o robô estiver a frente da bola(com uma variável de folga para retornar mesmo na linha da bola
                 if(robo_pos.x<ball_pos.x+5){
                 meta.x = cx;
-                meta.y = ball_pos.y;
+                if(ball_pos.y < 65)
+                    meta.y = ball_pos.y + 25;
+                else
+                    meta.y = ball_pos.y - 25;
+
                 flag_return=1;
                 }
                 }
         }
         else if (centroid_def.x <= centroid_atk.x){
-//            if(ball_pos.y < centroid_def.y - 35  &&  ball_pos.x < 55){
-//                //meta.x = centroid_def.x - 8;
-//                //meta.y = centroid_def.y - 45;
-//                meta.x = 20;
-//                meta.y = 30;
-//                set_thetaDir(0);
-//            }
-//            else if(ball_pos.y > centroid_def.y + 35  &&  ball_pos.x < 55){
-//                //meta.x = centroid_def.x - 8;
-//                //meta.y = centroid_def.y + 45;
-//                meta.x = 20;
-//                meta.y = 100;
-//                set_thetaDir(0);
-//            }
-//            else{
-//                meta.x = 55;
-//                meta.y = ball_pos.y;
-//            }
+
  //Variável que determina onde o robô irá se posicionar em x
         int cx = 50;
         //Se a flag estiver ativa, ele entra na return 2 defense
@@ -2150,7 +2146,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
             if(ball_pos.y < centroid_def.y - 35  &&  ball_pos.x <= cx){
                 //meta.x = centroid_def.x - 8;
                 //meta.y = centroid_def.y - 45;
-                meta.x = 25;
+                meta.x = 17;
                 meta.y = 25;
                 //set_thetaDir(0);
                 flag_return=1;
@@ -2159,7 +2155,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
             else if(ball_pos.y > centroid_def.y + 35  &&  ball_pos.x <= cx){
                 //meta.x = centroid_def.x - 8;
                 //meta.y = centroid_def.y + 45;
-                meta.x = 25;
+                meta.x = 17;
                 meta.y = 105;
                 //set_thetaDir(0);
                 flag_return=1;
@@ -2168,7 +2164,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
             else if (ball_pos.y > centroid_def.y-35 && ball_pos.y < centroid_def.y+35 && ball_pos.x <= cx){
             meta.x = cx;
             meta.y = centroid_def.y-10;
-            flag_return=1;
+            flag_return=2;
             }
        //Se a bola estiver longe da área, defender sobre a linha das cruzes
             else{
@@ -2181,7 +2177,11 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
         //Se o robô estiver a frente da bola(com uma variável de folga para retornar mesmo na linha da bola
                 if(robo_pos.x > ball_pos.x-5){
                 meta.x = cx;
-                meta.y = ball_pos.y;
+                if(ball_pos.y < 65)
+                    meta.y = ball_pos.y + 25;
+                else
+                    meta.y = ball_pos.y - 25;
+
                 flag_return=1;
                 }
         }
