@@ -2218,12 +2218,12 @@ void Game_functions::set_g_size(Point2d meta , Robot *robo)
         if (robo->get_pos().x > meta.x)
             g_size = 0;
         else
-            g_size = 6;
+            g_size = 8;
     }
     else
     {
         if (robo->get_pos().x > meta.x)
-            g_size = 6;
+            g_size = 8;
         else
             g_size = 0;
     }

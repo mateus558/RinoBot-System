@@ -13,7 +13,7 @@ double limiar_theta = 90 + delta_limiar;
 //double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
-double v_max = 0.55; //0.75
+double v_max = 0.4; //0.75
 double v_delta = 0.2;
 double w_max = 7;
 double k = (w_max/v_max);
@@ -1265,6 +1265,8 @@ void Mover::velocity_killer(Robot *robo, Game_functions *pot_fields, pair<float,
     //cout << "Linear:" << mod_vel/100 << endl << endl << endl;
     //cout << "Angular:" << ang_vel << endl;*/
 
+
+
 }
 
 void Mover::velocity_test(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
@@ -1868,10 +1870,7 @@ void Mover::atk_situation_any_point(Robot *robo, Game_functions *pot_fields, pai
     Point2d robo_pos = robo->get_pos();
     Point2d eixo_x(1.0,0.0);
     double ang_ball_robot = robo->get_angle()-vector_angle(robo->get_pos(),ball_pos);
-    if (ang_ball_robot > 180)
-        ang_ball_robot -= 360;
-    if (ang_ball_robot < -180)
-        ang_ball_robot += 360;
+    ang_ball_robot = ajusta_angulo(ang_ball_robot);
 
     if (centroid_def.x < centroid_atk.x) {
         if (euclidean_dist(ball_pos,robo->get_pos()) < 10){
@@ -2176,6 +2175,9 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
 
+//    cout << "Ball_pos X: " << ball_pos.x << endl;
+ //   cout << "Ball_pos Y: " << ball_pos.y << endl;
+
     double kp = robo->get_kp();
     double kd = robo->get_kd();
     double l = robo->get_l_size();
@@ -2346,12 +2348,12 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     Point2d robo_pos;
     robo_pos = robo->get_pos();
 
-    //    if(pot_fields->Get_atk_situation_state() == true){
-    //        //theta = vector_angle(robo_pos,ball_pos);
-    //   //     cout << "Entrou" << endl;
-    //    }else{
-    //            cout << "Nao entrou" << endl;
-    //    }
+        if(pot_fields->Get_atk_situation_state() == true){
+            theta = vector_angle(robo_pos,ball_pos);
+       //     cout << "Entrou" << endl;
+        }else{
+                //cout << "Nao entrou" << endl;
+        }
 
     //    cout << endl << "tetinhaa: "<< theta << endl;
     //    if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){ // Angulo do CPH
@@ -2396,6 +2398,8 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     theta = ajusta_angulo((theta));
     alpha = theta - robo->get_angle();
     alpha = ajusta_angulo(alpha);
+
+
 
     //cout << "alp " << alpha << endl;
 
@@ -2443,10 +2447,12 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     double diff_angle;
     //PID Unidirection
     //alpha = ajusta_angulo(vector_angle(robo_pos, ball_pos) - robo->get_angle());
+
     if (euclidean_dist(robo_pos, ball_pos) >= 20){
         if (killer_direction){
             v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-            //w = kp*alpha/180 + kd*(robo.get_angle() - last_angle);
+            //w = kp*alpha/180 + kd*(robo->get_angle() - last_angle);
+            //w = kp*alpha/180 + kd*(alpha-last_phi);
             w = kp*alpha/180 + kd*(alpha-last_phi);
             //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
             limiar_theta = 90 - delta_limiar;
@@ -2462,7 +2468,7 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
         }
     }
     else if (euclidean_dist(robo_pos, ball_pos) < 20){
-        diff_angle = robo->get_angle() - vector_angle(ball_pos,robo_pos);
+        /*diff_angle = robo->get_angle() - vector_angle(ball_pos,robo_pos);
         diff_angle = ajusta_angulo(diff_angle);
         if((fabs(diff_angle < 60) || fabs(diff_angle > 120)) && ((centroid_def.x < centroid_atk.x && robo_pos.x < ball_pos.x) || (centroid_def.x > centroid_atk.x && robo_pos.x > ball_pos.x)))
         {
@@ -2483,7 +2489,7 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
             }
         }
         else
-        {
+        {*/
             //alpha = ajusta_angulo(robo->get_angle() - vector_angle(ball_pos, robo_pos));
             if (fabs(alpha) <= limiar_theta ){
                 v = -v_delta*fabs(alpha)/limiar_theta + v_max;
@@ -2500,10 +2506,11 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
                 limiar_theta = 90 + delta_limiar;
                 //cout << "4" << endl;
             }
-        }
+        //}
     }
 
-    last_angle = robo->get_angle();
+
+
 
     //    v = -v_delta*fabs(alpha)/limiar_theta + v_max;
     //    w = kp*alpha/180 + kd*(alpha-last_phi);
@@ -2577,17 +2584,27 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     //            v = 0;
     //    }
 
+//    cout << "v: " << v << endl;
+//    if(fabs(w) > 2){
+//        if(w > 0)
+//            w = 2;
+//        else
+//            w = -2;
+//    }
     vels->first = v-w*l;
     vels->second = v+w*l;
 
-    //rotate_inv(robo, vels); //Colocar a inv para ATK vs DEF
+    rotate(robo, vels); //Colocar a inv para ATK vs DEF
     //kick_rotate(robo, vels);
-    //atk_situation(robo,pot_fields,vels); //Colocar a inv para ATK vs DEF
+    atk_situation(robo,pot_fields,vels); //Colocar a inv para ATK vs DEF
     //atk_situation_inv(robo,pot_fields,vels);
 
-    //if(pot_fields->Get_atk_situation_state() == true){ // Atk_situation for any point of goal
-    //    atk_situation_any_point(robo,pot_fields,vels);
-    //}
+   // cout << " Velocidade esquerda: " << vels->first << endl;
+   // cout << " Velocidade direita: " << vels->second << endl;
+
+    if(pot_fields->Get_atk_situation_state() == true){ // Atk_situation for any point of goal
+        atk_situation_any_point(robo,pot_fields,vels);
+    }
     //cout << "Esquerda: " << vels->first << endl; //Cout ativo
     //cout << "Direita: " << vels->second << endl; //Cout ativo
 
@@ -3341,7 +3358,7 @@ void Mover::set_params(Robot * robo){
         robo->set_l_size(0.033);
         break;
     case 9: //trocar roda
-        robo->set_kp(7.5);
+        robo->set_kp(6.5);
         robo->set_kd(0.0000);
         robo->set_l_size(0.034);
         break;
@@ -3351,8 +3368,13 @@ void Mover::set_params(Robot * robo){
         robo->set_l_size(0.034);
         break;
     case 11:
-        robo->set_kp(6.8);
-        robo->set_kd(0.00000);
+        robo->set_kp(10);
+        robo->set_kd(0.000);
+        robo->set_l_size(0.034);
+        break;
+    case 12: //Ganhos não ajustados ainda
+        robo->set_kp(7.5);
+        robo->set_kd(0.000);
         robo->set_l_size(0.034);
         break;
     }
