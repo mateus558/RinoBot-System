@@ -551,9 +551,6 @@ void MainWindow::on_btn_startGame_clicked()
         game_started = true;
         //Point convert_C_to_G(Point2d);
 
-      //  pushButton->setShortcut(QKeySequence(Qt::Space_Bar));
-
-
         run_fuzzy = true;
 
         if(!Robot::is_serial_open()){

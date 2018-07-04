@@ -2019,7 +2019,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
 
     if(ball_pos.x > 0 && ball_pos.y > 0){
 
-        /*if (centroid_def.x < centroid_atk.x){
+        if (centroid_def.x < centroid_atk.x){
             if (ball_pos.x > centroid_def.x + line_root_defender){
                 if(ball_pos.y < centroid_def.y - 45){
                     meta.x = centroid_def.x + line_root_defender;
@@ -2082,8 +2082,10 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
                     meta.y = centroid_def.y;
                 }
             }
-        }*/
-        if (centroid_def.x > centroid_atk.x){
+        }
+
+
+        /*if (centroid_def.x > centroid_atk.x){
 
         //Variável que determina onde o robô irá se posicionar em x
         int cx = 120;
@@ -2186,7 +2188,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
                 }
         }
 
-        }
+        }*/
 
     meta_defender_root = meta;
        // cout <<"Meta x: "<<meta.x<<endl;

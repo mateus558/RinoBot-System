@@ -84,7 +84,19 @@
         <string>Game</string>
        </property>
        <property name="shortcut">
-        <string>Space</string>
+        <string>Space, K</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <property name="autoDefault">
+        <bool>true</bool>
+       </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -410,13 +422,8 @@
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1280</width>
-     <height>22</height>
-    </rect>
+   <property name="defaultUp">
+    <bool>true</bool>
    </property>
    <widget class="QMenu" name="menuSettings">
     <property name="title">

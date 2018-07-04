@@ -437,7 +437,7 @@ Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
     //Gamma correction
     dest = adjust_gamma(1.0 , dest);
     //Apply gaussian blur
-    GaussianBlur(dest, dest, Size(9,9), 1.8);
+    GaussianBlur(dest, dest, Size(9,9),0,0);
             return dest;
 }
 
