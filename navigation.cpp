@@ -458,8 +458,8 @@ float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
     float Kr = 20;
     float theta_up,theta_down,rho_up,rho_down;
     Vector3d p(xi,yi,1),ph(0,0,0);
-    float de = 8;
-    //cout << "g_size " << g_size << endl;
+
+    //cout << "de " << de << endl;
     MatrixXd m_trans(3,3),m_rot(3,3);
     m_trans  << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
     m_rot << cos(-theta_dir),-sin(-theta_dir),0,sin(-theta_dir),cos(-theta_dir),0,0,0,1;
@@ -638,6 +638,14 @@ void Navigation::set_kr(float aux){
 
 float Navigation::get_kr(){
     return Kr;
+}
+
+void Navigation::set_de(float aux){
+    de = aux;
+}
+
+float Navigation::get_de(){
+    return de;
 }
 
 float Navigation::repulsive_Math(Robot *robo, Point2d obj, Point2d ball){

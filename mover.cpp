@@ -13,7 +13,7 @@ double limiar_theta = 90 + delta_limiar;
 //double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
-double v_max = 0.4; //0.75
+double v_max = 0.6; //0.75
 double v_delta = 0.2;
 double w_max = 7;
 double k = (w_max/v_max);
@@ -2591,6 +2591,19 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
 //        else
 //            w = -2;
 //    }
+
+    // Teste V = 0, situação de defesa atacante
+
+//    if(centroid_atk.x < centroid_def.x){
+//        if(ball_pos.x > centroid_def.x - 35)
+//            v = 0;
+//    }
+//    else if(centroid_def.x < centroid_atk.x){
+//        if(ball_pos.x < centroid_def.x + 35)
+//            v = 0;
+//    }
+
+
     vels->first = v-w*l;
     vels->second = v+w*l;
 

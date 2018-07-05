@@ -225,40 +225,40 @@ void Game_functions::return2goal(){
         if (ball_pos.x < centroid_atk.x){
             if (ball_pos.x < 90){
                 if(ball_pos.y < 45){
-                    meta.x = centroid_def.x + 12.25;
+                    meta.x = centroid_def.x + 11.25;
                     meta.y = centroid_def.y - 20;
                 }
                 else if(ball_pos.y > 95){
-                    meta.x = centroid_def.x + 12.25;
+                    meta.x = centroid_def.x + 11.25;
                     meta.y = centroid_def.y + 20;
                 }
                 else{
-                    meta.x = centroid_def.x + 12.25;
+                    meta.x = centroid_def.x + 11.25;
                     meta.y = centroid_def.y;
                 }
             }
             else{
-                meta.x = centroid_def.x + 12.25;
+                meta.x = centroid_def.x + 11.25;
                 meta.y = centroid_def.y;
             }
         }
         if (ball_pos.x >= centroid_atk.x){
             if (ball_pos.x > 90){
                 if(ball_pos.y < 45){
-                    meta.x = centroid_def.x - 12.25;
+                    meta.x = centroid_def.x - 11.25;
                     meta.y = centroid_def.y - 20;
                 }
                 else if(ball_pos.y > 95){
-                    meta.x = centroid_def.x - 12.25;
+                    meta.x = centroid_def.x - 11.25;
                     meta.y = centroid_def.y + 20;
                 }
                 else{
-                    meta.x = centroid_def.x - 12.25;
+                    meta.x = centroid_def.x - 11.25;
                     meta.y = centroid_def.y;
                 }
             }
             else{
-                meta.x = centroid_def.x - 12.25;
+                meta.x = centroid_def.x - 11.25;
                 meta.y = centroid_def.y;
             }
         }
@@ -1735,7 +1735,18 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     meta = ball_pos;
 
     set_g_size(meta,robo);
-
+    if(centroid_atk.x < centroid_def.x){
+        if(ball_pos.x > centroid_def.x - 35)
+            set_de(1);
+        else
+            set_de(8);
+    }
+    else if(centroid_def.x < centroid_atk.x){
+        if(ball_pos.x < centroid_def.x + 35)
+            set_de(1);
+        else
+            set_de(8);
+    }
     //univector_field(robo,enemy_prox,meta);
 
 
