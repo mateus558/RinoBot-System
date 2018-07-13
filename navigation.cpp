@@ -455,11 +455,10 @@ float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
 
 // ----- CPU ANTIGO - ROTACIONADO COM G_SIZE--------
 
-    float Kr = 20;
     float theta_up,theta_down,rho_up,rho_down;
     Vector3d p(xi,yi,1),ph(0,0,0);
 
-    //cout << "de " << de << endl;
+    //cout << "kr " << Kr << endl;
     MatrixXd m_trans(3,3),m_rot(3,3);
     m_trans  << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
     m_rot << cos(-theta_dir),-sin(-theta_dir),0,sin(-theta_dir),cos(-theta_dir),0,0,0,1;
