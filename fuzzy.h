@@ -92,6 +92,8 @@ public:
     void set_roles(bool);
     Point convert_C_to_G(Point2d);
     ~Fuzzy();
+    int get_strategy(); //cachaco
+    bool get_roles(); //cachaco
 };
 
 

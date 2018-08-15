@@ -318,8 +318,8 @@ void Fuzzy::another_fuzzification(){
 }
 
 void Fuzzy::another_defuzzification(){
-    double sum1 = 0,sum2 = 0, aux2;
-    int i,j,aux1;
+    double sum1 = 0,sum2 = 0;
+    int i;
     for(i=0;i<=100;i++)
     {
         //Formula que gera o centro de massa da função de maximo
@@ -569,7 +569,6 @@ void Fuzzy::set_objectives(){
         }
     }
     else if(num_strategy == 2){
-        int i = 0;
         if (selec_robot.r1.get_channel() != 8 && euclidean_dist(selec_robot.r1.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r2.get_pos(),centroid_def) && euclidean_dist(selec_robot.r1.get_pos(),centroid_def) <= euclidean_dist(selec_robot.r3.get_pos(),centroid_def)){
             decisao_robo[0] = 4; // goleiro
             if (euclidean_dist(selec_robot.r2.get_pos(),ball_pos) <= euclidean_dist(selec_robot.r3.get_pos(),ball_pos)){
@@ -639,6 +638,21 @@ void Fuzzy::set_objectives(){
         selec_robot.r1.set_flag_fuzzy(0, centroid_atk, centroid_def, ball_pos); //gandalf
         selec_robot.r2.set_flag_fuzzy(10, centroid_atk, centroid_def, ball_pos); //presto
         selec_robot.r3.set_flag_fuzzy(0, centroid_atk, centroid_def, ball_pos); //leona
+    }
+    else if(num_strategy == 8) //R01 strategy by cachaço: gk -> atk -> def -> gk
+    {
+        if(!swap_roles)
+        {
+            selec_robot.r1.set_flag_fuzzy(21, centroid_atk, centroid_def, ball_pos); //gandalf
+            selec_robot.r2.set_flag_fuzzy(10, centroid_atk, centroid_def, ball_pos); //presto
+            selec_robot.r3.set_flag_fuzzy(4, centroid_atk, centroid_def, ball_pos); //leona
+        }
+        else
+        {
+            selec_robot.r1.set_flag_fuzzy(4, centroid_atk, centroid_def, ball_pos); //gandalf
+            selec_robot.r2.set_flag_fuzzy(21, centroid_atk, centroid_def, ball_pos); //presto
+            selec_robot.r3.set_flag_fuzzy(10, centroid_atk, centroid_def, ball_pos); //leona
+        }
     }
     else{
         // tratar aqui
@@ -789,3 +803,14 @@ void Fuzzy::set_strategy(char num){
 void Fuzzy::set_roles(bool checked){
     swap_roles = checked;
 }
+
+int Fuzzy::get_strategy()
+{
+    return this->num_strategy;
+}
+
+bool Fuzzy::get_roles()
+{
+    return this->swap_roles;
+}
+

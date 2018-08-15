@@ -128,6 +128,7 @@ double Navigation::get_neighborhood(int i, int j, int k){
         return right;
         break;
     default:
+        return 0;
         break;
     }
 }
@@ -291,16 +292,13 @@ void Navigation::univector_field(Robot *robo, Point2d enemy, Point2d meta)
     Point2d robo_pos;
     robo_pos = robo->get_pos();
     float k0 = 12;
-    float r = 15;        // Raio de Influencia do repulsivo
     float d_min = 10;   // Raio de Influencia do repulsivo
     float norma_s,fih_AUF,fih_TUF;
     float d = euclidean_dist(robo_pos, enemy);  //distancia entre o robo e o obstaculo
-    float d_ball = euclidean_dist(robo_pos, meta);
     Point2d s, enemy_vel, robo_vel, virtual_obj;
     enemy_vel.x = 0;
     enemy_vel.y = 0;
     Point2d p1,p2;
-    float ang_p1, ang_p2, ang_ball_robot;
     MatrixXd vec_obj(2,1), vec_p1(2,1), vec_p2(2,1), rot_matrix(2,2);
     avoid_state = false;
 
@@ -458,7 +456,7 @@ float Navigation::hyperbolic_spiral(float yi, float xi, Point2d meta)
     float Kr = 20;
     float theta_up,theta_down,rho_up,rho_down;
     Vector3d p(xi,yi,1),ph(0,0,0);
-    float de = 8;
+    float de = 5;
     //cout << "g_size " << g_size << endl;
     MatrixXd m_trans(3,3),m_rot(3,3);
     m_trans  << 1, 0, -meta.x, 0, 1, -meta.y, 0, 0, 1;
@@ -572,8 +570,7 @@ float Navigation::Gaussian_Func(float r){
 }
 
 float Navigation::tangencial_repulsive(Robot *robot, Point2d meta, Point2d obstaculo, float r){
-    float alpha,omega,zeta,dist_robo_obst;
-    int rot;
+    float alpha,dist_robo_obst;
 /*    omega = repulsive_angle(robot->get_pos().x,robot->get_pos().y,meta);  // Angulo entre o robo e a bola
     zeta = repulsive_angle(obstaculo.x,obstaculo.y,meta);*/                  // Angulo entre o obstaculo e a bola
 
@@ -605,7 +602,7 @@ float Navigation::tangencial_repulsive(Robot *robot, Point2d meta, Point2d obsta
 }
 
 float Navigation::whirlpool_repulsive(Robot *robot, Point2d meta, Point2d obstaculo, float angle_rep){
-    float alpha,omega,zeta,dist_robo_obst;
+    float alpha,omega,zeta;
     int rot;
     omega = repulsive_angle(robot->get_pos().x,robot->get_pos().y,meta);  // Angulo entre o robo e a bola
     zeta = repulsive_angle(obstaculo.x,obstaculo.y,meta);                  // Angulo entre o obstaculo e a bola

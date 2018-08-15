@@ -73,6 +73,8 @@ private slots:
 
     void on_actionSwap_Roles_triggered(bool checked);
 
+    void on_pbSwap_clicked();
+
 signals:
     void updateVisionInfo(std::vector<Robot>);
 

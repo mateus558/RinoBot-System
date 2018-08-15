@@ -149,10 +149,7 @@ void video4linuxConfig::updateVisionUI(QImage img)
 
 
 
-void video4linuxConfig::on_pushButton_2_clicked()
-{
-
-}
+void video4linuxConfig::on_pushButton_2_clicked(){}
 
 void video4linuxConfig::on_setToDefault_clicked()
 {

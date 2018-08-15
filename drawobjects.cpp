@@ -93,28 +93,28 @@ void FieldDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     QPainterPath fieldPath = shape(), atkPath, defPath;
 
     if(!showFields){
-       pen = pen1 = QPen(Qt::white, 4);
+        pen = pen1 = QPen(Qt::white, 4);
     }else{
-       font.setPixelSize(20);
-       font.setBold(false);
-       font.setFamily("Arial");
-       pen = QPen(Qt::green, 4);
-       pen1 = QPen(Qt::red, 4);
+        font.setPixelSize(20);
+        font.setBold(false);
+        font.setFamily("Arial");
+        pen = QPen(Qt::green, 4);
+        pen1 = QPen(Qt::red, 4);
 
-       for(i = 0; i < defPoints.size(); i++){
+        for(i = 0; i < defPoints.size(); i++){
             defcenter += defPoints[i];
-       }
+        }
 
-       for(i = 0; i < atkPoints.size(); i++){
+        for(i = 0; i < atkPoints.size(); i++){
             atkcenter += atkPoints[i];
-       }
-       defcenter.x /= defPoints.size();
-       defcenter.y /= defPoints.size();
-       atkcenter.x /= atkPoints.size();
-       atkcenter.y /= atkPoints.size();
-      
-       defPath.addText(defcenter.x, defcenter.y, font, "Defense");
-       atkPath.addText(atkcenter.x, atkcenter.y, font, "Attack");
+        }
+        defcenter.x /= defPoints.size();
+        defcenter.y /= defPoints.size();
+        atkcenter.x /= atkPoints.size();
+        atkcenter.y /= atkPoints.size();
+
+        defPath.addText(defcenter.x, defcenter.y, font, "Defense");
+        atkPath.addText(atkcenter.x, atkcenter.y, font, "Attack");
 
     }
 
@@ -169,8 +169,8 @@ QRectF BallDraw::boundingRect() const
 void BallDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QPainterPath obj = shape();
-   // color = hsv2rgb(color);
-   // cout << color[0] << " " << color[1] << " " << color[2] << endl;
+    // color = hsv2rgb(color);
+    // cout << color[0] << " " << color[1] << " " << color[2] << endl;
     QBrush brush(QColor(color[2],color[1],color[0]));
 
     painter->setPen(Qt::blue);

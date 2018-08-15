@@ -9,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
 
-
     int i;
     qRegisterMetaType<Vision::Perception>("Vision::Perception");
     qRegisterMetaType<Selector>("Selector");
@@ -23,7 +22,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->cbox_strategyOptions->addItem("Strategy 3");
     ui->cbox_strategyOptions->addItem("Strategy 2");
     ui->cbox_strategyOptions->addItem("Strategy 1");
+    ui->cbox_strategyOptions->addItem("R01");
     ui->cbox_strategyOptions->addItem("- Strategy Test -");
+
+    ui->pbSwap->setVisible(false);
+    ui->cbSwap->setVisible(false);
 
     QPixmap pix("rino.png");
     ui->logo->setPixmap(pix);
@@ -112,7 +115,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(updateInformationWindow(InfoParameters)), iWindow, SLOT(updateData(InfoParameters)));
 
     qRegisterMetaType<SettingsDialog::Settings>("SettingsDialog::Settings");
-
 
 }
 
@@ -211,13 +213,17 @@ void MainWindow::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
 
+        cout << "vels: " << team_robots[2].get_r_vel() << endl;
+
         // Troca de funções da estratégia 3
-        if (fabs(team_robots[1].get_l_vel()) < 0.05 && fabs(team_robots[1].get_r_vel()) < 0.05 && fabs(team_robots[2].get_l_vel()) < 0.05 && fabs(team_robots[2].get_r_vel()) < 0.05){
-            if(ui->actionSwap_Roles->isChecked()){
+        if ((fuzzy->get_strategy() == 3) && fabs(team_robots[1].get_l_vel()) < 0.05 && fabs(team_robots[1].get_r_vel()) < 0.05 && fabs(team_robots[2].get_l_vel()) < 0.05 && fabs(team_robots[2].get_r_vel()) < 0.05){
+            if(ui->actionSwap_Roles->isChecked()  || ui->cbSwap->isChecked()){
                 ui->actionSwap_Roles->setChecked(false);
+                ui->cbSwap->setChecked(false);
                 fuzzy->set_roles(false);
             }else{
                 ui->actionSwap_Roles->setChecked(true);
+                ui->cbSwap->setChecked(true);
                 fuzzy->set_roles(true);
             }
         }
@@ -513,7 +519,6 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
 
 void MainWindow::updateFPS(double fps){
     ui->lcd_fps->display(fps);
-
 }
 
 void MainWindow::updateSerialSettings(SettingsDialog::Settings settings){
@@ -547,6 +552,9 @@ void MainWindow::on_actionOpen_Camera_triggered(bool checked)
 
 void MainWindow::on_btn_startGame_clicked()
 {
+    ui->pbSwap->setVisible(true);
+    ui->cbSwap->setVisible(true);
+
     if(!game_started){
         game_started = true;
         //Point convert_C_to_G(Point2d);
@@ -592,6 +600,8 @@ void MainWindow::on_btn_changeStrategy_clicked()
         num_strategy = 2;
     else if (strategy == "Strategy 3")
         num_strategy = 3;
+    else if (strategy == "R01")
+        num_strategy = 8;
 
     fuzzy->set_strategy(num_strategy);
 
@@ -607,7 +617,7 @@ void MainWindow::on_btn_changeStrategy_clicked()
         ui->currentStrategylbl->setText("Current: 1");
         break;
     case 3:
-        ui->currentStrategylbl->setText("Current: Text");
+        ui->currentStrategylbl->setText("Current: R01");
         break;
     }
 }
@@ -809,5 +819,42 @@ void MainWindow::on_InfoWindow_closed(){
 
 void MainWindow::on_actionSwap_Roles_triggered(bool checked)
 {
-    fuzzy->set_roles(checked);
+    //fuzzy->set_roles(checked);
+
+    if(fuzzy->get_roles() == true) //botão swap roles by cachaço
+    {
+        fuzzy->set_roles(false);
+        ui->actionSwap_Roles->setChecked(false);
+        ui->cbSwap->setChecked(false);
+        //cout << "menu off" << endl;
+    }
+    else
+    {
+        fuzzy->set_roles(true);
+        ui->actionSwap_Roles->setChecked(true);
+        ui->cbSwap->setChecked(true);
+        //cout << "menu on" << endl;
+
+    }
+}
+
+void MainWindow::on_pbSwap_clicked() //botão swap roles by cachaço
+{
+
+    {
+        if(fuzzy->get_roles() == true)
+        {
+            ui->actionSwap_Roles->setChecked(false);
+            ui->cbSwap->setChecked(false);
+            fuzzy->set_roles(false);
+            //cout << "botão off" << endl;
+        }
+        else
+        {
+            ui->actionSwap_Roles->setChecked(true);
+            ui->cbSwap->setChecked(true);
+            fuzzy->set_roles(true);
+            //cout << "botão on" << endl;
+        }
+    }
 }

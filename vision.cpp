@@ -67,7 +67,7 @@ Vision::Vision(QObject *parent): QThread(parent)
     LPF_Coefficients_C.second = 0.0;
     LPF_flag = false;
 
- // last_P = MatrixXd::Identity(3,3);
+    // last_P = MatrixXd::Identity(3,3);
 }
 
 Mat Vision::detect_colors(Mat vision_frame, vector<int> low, vector<int> upper) //Detect colors in [low,upper] range
@@ -174,13 +174,13 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
     //Get the robots moments and centroids for each team (their team color half)
     Point2f tempCenter;
     for(i = 0; i < 2; ++i){
-//        vector<RotatedRect> minRect( contours[i+1].size() );
+        //        vector<RotatedRect> minRect( contours[i+1].size() );
         if(contours[i+1].size() > 0){
             for(j = 0; j < contours[i+1].size(); ++j){
                 RotatedRect minRect = minAreaRect( Mat(contours[i+1][j]) );
                 tempCenter = minRect.center;
                 tirj_cent[i].push_back(tempCenter);
-//                cout << "teamColor" << minRect.angle << endl << endl;
+                //                cout << "teamColor" << minRect.angle << endl << endl;
             }
             //If there's less than 3 centroids, set the remaining as null
             if(contours[i+1].size() < 3){
@@ -279,7 +279,7 @@ vector<Robot> Vision::fill_robots(vector<pMatrix> contours, vector<Robot> robots
             robots[r_label].set_centroid_raw(centroid);
             robots[r_label].was_detected(true);
             r_set[r_label] = true;
-       }else if(r_label != -1){
+        }else if(r_label != -1){
             robots[r_label].set_centroid_raw(last_cent);
             robots[r_label].set_angle_raw(last_angle);
             robots[r_label].was_detected(false);
@@ -367,13 +367,13 @@ Mat Vision::adjust_gamma(double gamma, Mat org)
 
     double inverse_gamma = 1.0 / gamma;
 
-     Mat lut_matrix(1, 256, CV_8UC1);
-     uchar * ptr = lut_matrix.ptr();
-     for( int i = 0; i < 256; i++ )
-       ptr[i] = (int)( pow( (double) i / 255.0, inverse_gamma ) * 255.0 );
+    Mat lut_matrix(1, 256, CV_8UC1);
+    uchar * ptr = lut_matrix.ptr();
+    for( int i = 0; i < 256; i++ )
+        ptr[i] = (int)( pow( (double) i / 255.0, inverse_gamma ) * 255.0 );
 
-     Mat result;
-     LUT( org, lut_matrix, result );
+    Mat result;
+    LUT( org, lut_matrix, result );
 
     return result;
 }
@@ -439,7 +439,7 @@ Mat Vision::proccess_frame(Mat orig, Mat dest) //Apply enhancement algorithms
     //Apply gaussian blur
     GaussianBlur(dest, dest, Size(7,7), 0, 0);
     //bilateralFilter(orig, dest, 5, 10, 10);
-            return dest;
+    return dest;
 }
 
 Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vector<int> upper)   //Detect colors in [low,upper] range
@@ -460,6 +460,7 @@ void Vision::run()
     int i = 0, itr = 0;
     bool init = false;
     double elapsed_secs;
+    maxfps=0.03333333;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
     clock_t begin, end;
@@ -503,85 +504,84 @@ void Vision::run()
         vision_frame = proccess_frame(vision_frame, vision_frame);
 
         switch(mode){
-            case 0: //Visualization mode
+        case 0: //Visualization mode
 
-                //Convert the frame from RGB color space to HSV
-                cvtColor(vision_frame, vision_frame, CV_BGR2HSV);
+            //Convert the frame from RGB color space to HSV
+            cvtColor(vision_frame, vision_frame, CV_BGR2HSV);
 
-                //Get the contours of the candidates to game objects
-                obj_contours = detect_objects(vision_frame, robots).second;
-                //Get the robots from the best candidates selected to game objects
-                robots = fill_robots(obj_contours, robots);
+            //Get the contours of the candidates to game objects
+            obj_contours = detect_objects(vision_frame, robots).second;
+            //Get the robots from the best candidates selected to game objects
+            robots = fill_robots(obj_contours, robots);
 
-                //Compute the variation of time for physics computations
-                end = clock();
-                elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-                deltaT = elapsed_secs;
+            //Compute the variation of time for physics computations
+            end = clock();
+            elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+            deltaT = elapsed_secs;
+            if(elapsed_secs < maxfps){
+                deltaT = maxfps;
+            }
 
-                /***********************************
+            /***********************************
                  *     Physics Computations Step   *
                  ***********************************/
 
-                for(i = 0; i < 6; i++)
-                {
 
-                }
-
-                if (get_LPF_flag()){
-                    if(!first_itr_LPF){
-                        for(i = 0; i < 6; i++)
-                        {
-                            robots[i].set_centroid(Low_pass_filter_Centroid( robots[i].get_centroid_raw(),  robots[i].get_last_centroid_raw(),  robots[i].get_last_centroid(), LPF_Coefficients_C));
-                            robots[i].set_angle(Low_pass_filter_Theta(robots[i].get_angle_raw(), robots[i].get_last_angle_raw(), robots[i].get_last_angle(), LPF_Coefficients_A));
-                        }
-                    }else{
-                        for(i = 0; i < 6; i++)
-                        {
-                            robots[i].set_centroid(Low_pass_filter_Centroid( robots[i].get_centroid(),  robots[i].get_centroid(),  robots[i].get_centroid(), LPF_Coefficients_C));
-                            robots[i].set_angle(Low_pass_filter_Theta(robots[i].get_angle(), robots[i].get_last_angle(), robots[i].get_last_angle(), LPF_Coefficients_A));
-                        }
-                        first_itr_LPF = !first_itr_LPF;
+            if (get_LPF_flag()){
+                if(!first_itr_LPF){
+                    for(i = 0; i < 6; i++)
+                    {
+                        robots[i].set_centroid(Low_pass_filter_Centroid( robots[i].get_centroid_raw(),  robots[i].get_last_centroid_raw(),  robots[i].get_last_centroid(), LPF_Coefficients_C));
+                        robots[i].set_angle(Low_pass_filter_Theta(robots[i].get_angle_raw(), robots[i].get_last_angle_raw(), robots[i].get_last_angle(), LPF_Coefficients_A));
                     }
                 }else{
                     for(i = 0; i < 6; i++)
                     {
-                        robots[i].set_centroid(robots[i].get_centroid_raw());
-                        robots[i].set_angle(robots[i].get_angle_raw());
+                        robots[i].set_centroid(Low_pass_filter_Centroid( robots[i].get_centroid(),  robots[i].get_centroid(),  robots[i].get_centroid(), LPF_Coefficients_C));
+                        robots[i].set_angle(Low_pass_filter_Theta(robots[i].get_angle(), robots[i].get_last_angle(), robots[i].get_last_angle(), LPF_Coefficients_A));
                     }
+                    first_itr_LPF = !first_itr_LPF;
                 }
-
-
-
-                //Compute the linear and angular velocity of the ball
-                info.ball_vel.first /= deltaT;
-                info.ball_vel.second /= deltaT;
-
-                for(i = 0; i < 6; i++){
-                    //Compute the linear and angular velocity of each robot
-                    robots[i].compute_velocity(deltaT);
-                    //Predict the robot state in the next n frames
-                    robots[i].predict_info(deltaT*2);
+            }else{
+                for(i = 0; i < 6; i++)
+                {
+                    robots[i].set_centroid(robots[i].get_centroid_raw());
+                    robots[i].set_angle(robots[i].get_angle_raw());
                 }
+            }
 
-                break;
-            case 1: //Set color mode
-                resize(raw_frame, raw_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution
-                raw_frame = setting_mode(raw_frame, vision_frame, low, upper);
 
-                break;
-            default:
-                break;
+
+            //Compute the linear and angular velocity of the ball
+            info.ball_vel.first /= deltaT;
+            info.ball_vel.second /= deltaT;
+
+            for(i = 0; i < 6; i++){
+                //Compute the linear and angular velocity of each robot
+                robots[i].compute_velocity(deltaT);
+                //Predict the robot state in the next n frames
+                robots[i].predict_info(deltaT*2);
+            }
+
+            break;
+        case 1: //Set color mode
+            resize(raw_frame, raw_frame, Size(DEFAULT_NCOLS, DEFAULT_NROWS), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution
+            raw_frame = setting_mode(raw_frame, vision_frame, low, upper);
+
+            break;
+        default:
+            break;
         }
 
-       if(!play){
+        if(!play){
             //If the game is not being played, resize the frame, convert to QImage and send to be shown in the GUI
             cvtColor(raw_frame, raw_frame, CV_BGR2RGB);
             img = QImage((const uchar*)(raw_frame.data), raw_frame.cols, raw_frame.rows, raw_frame.step, QImage::Format_RGB888);
             img.bits();
-        } 
+        }
 
 
-       /***********************************
+        /***********************************
         *   Setting info to be sent step  *
         ***********************************/
 
@@ -619,10 +619,10 @@ void Vision::run()
         if(itr%10 == 0){
             emit framesPerSecond(FPS);
         }
-
-        msleep(delay);
     }
-
+    if(elapsed_secs < maxfps){
+        msleep(1000*(maxfps-elapsed_secs));
+    }
 }
 
 bool Vision::open_camera(int camid)

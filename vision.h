@@ -40,7 +40,7 @@ public:
 private:
     bool stop, showArea, sentPoints, teamsChanged, showNames, showCenters, showErrors, trained, play = false;
     int mode, rows, cols, camid = 0, x_offset, y_offset, cont;
-    double FPS, deltaT;
+    double FPS, deltaT, maxfps;
 
     Mat kmeans_centers, labels, centers;
     Perception info;
