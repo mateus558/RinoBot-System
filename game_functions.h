@@ -26,6 +26,7 @@ private:
     double line_root_defender = 38;
     pVector def_area;
     pair<double, double> ball_vel;
+    vector<Point2d> media_ball_v;
     vector<pair<float, float> > vels;
     static Serial serial;
 
@@ -70,6 +71,7 @@ public:
     void set_calc_Gandalf(bool);
     void set_calc_Presto(bool);
     void set_calc_Leona(bool);
+    void set_line_root_def(double);
     void Play();
     bool is_running();
     void Stop();

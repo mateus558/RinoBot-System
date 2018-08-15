@@ -66,10 +66,12 @@ public:
     float tangencial_repulsive(Robot*, Point2d, Point2d, float );
     float whirlpool_repulsive(Robot*, Point2d, Point2d obstaculo, float );
     float repulsive_Math(Robot*, Point2d, Point2d);
-    float theta_dir,the_fih,phi,g_size,Kr;
+    float theta_dir,the_fih,phi,g_size,Kr,de;
     bool avoid_state;
     void set_kr(float);
     float get_kr();
+    void set_de(float);
+    float get_de();
 
 
 };

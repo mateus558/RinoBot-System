@@ -40,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent) :
     leona = new Game_functions; //instancia o objeto leona na rotina do sistema
     presto = new Game_functions; //instancia o objeto presto na rotina do sistema
     gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
+    gandalf->set_line_root_def(38);
+    leona->set_line_root_def(75);
     mover = new Mover; //instancia o objeto mover na rotina do sistema
     run_fuzzy = false; //flag da thread do fuzzy
     run_gandalf = false; //flag da thread da gandalf
@@ -216,17 +218,15 @@ void MainWindow::updateMoverRobots(Selector selec_robot){
         cout << "vels: " << team_robots[2].get_r_vel() << endl;
 
         // Troca de funções da estratégia 3
-        if ((fuzzy->get_strategy() == 3) && fabs(team_robots[1].get_l_vel()) < 0.05 && fabs(team_robots[1].get_r_vel()) < 0.05 && fabs(team_robots[2].get_l_vel()) < 0.05 && fabs(team_robots[2].get_r_vel()) < 0.05){
-            if(ui->actionSwap_Roles->isChecked()  || ui->cbSwap->isChecked()){
-                ui->actionSwap_Roles->setChecked(false);
-                ui->cbSwap->setChecked(false);
-                fuzzy->set_roles(false);
-            }else{
-                ui->actionSwap_Roles->setChecked(true);
-                ui->cbSwap->setChecked(true);
-                fuzzy->set_roles(true);
-            }
-        }
+//        if (fabs(team_robots[1].get_l_vel()) < 0.03 && fabs(team_robots[1].get_r_vel()) < 0.03 && fabs(team_robots[2].get_l_vel()) < 0.03 && fabs(team_robots[2].get_r_vel()) < 0.03){
+//            if(ui->actionSwap_Roles->isChecked()){
+//                ui->actionSwap_Roles->setChecked(false);
+//                fuzzy->set_roles(false);
+//            }else{
+//                ui->actionSwap_Roles->setChecked(true);
+//                fuzzy->set_roles(true);
+//            }
+//        }
 
     }else{
         Robot::send_velocities(team_robots[1].get_channel(), make_pair(0, 0));
@@ -556,6 +556,7 @@ void MainWindow::on_btn_startGame_clicked()
     ui->cbSwap->setVisible(true);
 
     if(!game_started){
+        mover->set_killer_direction(true);
         game_started = true;
         //Point convert_C_to_G(Point2d);
 

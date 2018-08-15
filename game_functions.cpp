@@ -15,6 +15,11 @@ Serial Game_functions::serial;
 Game_functions::Game_functions()
 {
     stop = true;
+    media_ball_v.resize(5);
+    for (int i = 0; i < 5; i++){
+        media_ball_v[i].x = 0;
+        media_ball_v[i].y = 0;
+    }
     game_functions_initialized = false;
     enemy_pos_grid = pVector(3);
     team_pos_grid = pVector(3);
@@ -223,40 +228,40 @@ void Game_functions::return2goal(){
         if (ball_pos.x < centroid_atk.x){
             if (ball_pos.x < 90){
                 if(ball_pos.y < 45){
-                    meta.x = centroid_def.x + 12.25;
+                    meta.x = centroid_def.x + 11.25;
                     meta.y = centroid_def.y - 20;
                 }
                 else if(ball_pos.y > 95){
-                    meta.x = centroid_def.x + 12.25;
+                    meta.x = centroid_def.x + 11.25;
                     meta.y = centroid_def.y + 20;
                 }
                 else{
-                    meta.x = centroid_def.x + 12.25;
+                    meta.x = centroid_def.x + 11.25;
                     meta.y = centroid_def.y;
                 }
             }
             else{
-                meta.x = centroid_def.x + 12.25;
+                meta.x = centroid_def.x + 11.25;
                 meta.y = centroid_def.y;
             }
         }
         if (ball_pos.x >= centroid_atk.x){
             if (ball_pos.x > 90){
                 if(ball_pos.y < 45){
-                    meta.x = centroid_def.x - 12.25;
+                    meta.x = centroid_def.x - 11.25;
                     meta.y = centroid_def.y - 20;
                 }
                 else if(ball_pos.y > 95){
-                    meta.x = centroid_def.x - 12.25;
+                    meta.x = centroid_def.x - 11.25;
                     meta.y = centroid_def.y + 20;
                 }
                 else{
-                    meta.x = centroid_def.x - 12.25;
+                    meta.x = centroid_def.x - 11.25;
                     meta.y = centroid_def.y;
                 }
             }
             else{
-                meta.x = centroid_def.x - 12.25;
+                meta.x = centroid_def.x - 11.25;
                 meta.y = centroid_def.y;
             }
         }
@@ -1623,6 +1628,23 @@ void Game_functions::robo_grid_position(Robot *robo_leona, Robot *robo_gandalf, 
 
 void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *vels)
 {
+    Point2d prevision;
+    Point2d ball_v;
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = ball_vel.second / 100;
+
+
+    for (int cont_vel = 0; cont_vel < 4; cont_vel ++){
+        media_ball_v[cont_vel] = media_ball_v[cont_vel+1];
+    }
+    media_ball_v[4] = ball_v;
+    ball_v = 0.35*media_ball_v[4]+0.25*media_ball_v[3]+0.2*media_ball_v[2]+0.15*media_ball_v[1]+0.05*media_ball_v[0];
+
+    prevision.x = ball_pos.x + ball_v.x*0;
+    prevision.y = ball_pos.y + ball_v.y*0;
+//    cout << "bposx " << ball_pos.x << " bposy " << ball_pos.y << endl;
+//    cout << "bnewposx " << ball_pos.x + ball_v.x*15 << " bnewposy " << ball_pos.y + ball_v.y*15 << endl;
+
     //Utiliza o robo amigo mais próximo para definição do epsilon
     Point2d enemy_prox,robo_pos,meta;
     Point meta_grid;
@@ -1721,10 +1743,40 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     //            meta = meiuca;
     //        }
     //    }
-    meta = ball_pos;
+    if(euclidean_dist(robo->get_pos(),ball_pos) > 20)
+    {
+        meta = prevision;
+        ang_ball_atk = vector_angle(prevision,centroid_atk);
+    }
+    else
+    {
+        meta = ball_pos;
+    }
+
+    meta = prevision;
+    ang_ball_atk = vector_angle(prevision,centroid_atk);
 
     set_g_size(meta,robo);
-
+    if(centroid_atk.x < centroid_def.x){
+        if(ball_pos.x > centroid_def.x - 35){
+            set_de(2);
+            set_kr(5);
+        }
+        else{
+            set_de(7);
+            set_kr(5);
+        }
+    }
+    else if(centroid_def.x < centroid_atk.x){
+        if(ball_pos.x < centroid_def.x + 35){
+            set_de(2);
+            set_kr(5);
+        }
+        else{
+            set_de(7);
+            set_kr(5);
+        }
+    }
     //univector_field(robo,enemy_prox,meta);
 
 
@@ -2009,11 +2061,11 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
 
         if (centroid_def.x < centroid_atk.x){
             if (ball_pos.x > centroid_def.x + line_root_defender){
-                if(ball_pos.y < centroid_def.y - 45){
+                if(ball_pos.y < centroid_def.y - line_root_defender - 10){
                     meta.x = centroid_def.x + line_root_defender;
                     meta.y = ball_pos.y;//centroid_def.y - 45;
                 }
-                else if(ball_pos.y > centroid_def.y + 45){
+                else if(ball_pos.y > centroid_def.y + line_root_defender + 10){
                     meta.x = centroid_def.x + line_root_defender;
                     meta.y = ball_pos.y;//centroid_def.y + 45;
                 }
@@ -2041,11 +2093,11 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
         }
         if (centroid_def.x >= centroid_atk.x){
             if (ball_pos.x < centroid_def.x - line_root_defender){
-                if(ball_pos.y < centroid_def.y - 45){
+                if(ball_pos.y < centroid_def.y - line_root_defender - 10){
                     meta.x = centroid_def.x - line_root_defender;
                     meta.y = ball_pos.y;//centroid_def.y - 45;
                 }
-                else if(ball_pos.y > centroid_def.y + 45){
+                else if(ball_pos.y > centroid_def.y + line_root_defender + 10){
                     meta.x = centroid_def.x - line_root_defender;
                     meta.y = ball_pos.y;//centroid_def.y + 45;
                 }
@@ -2224,4 +2276,8 @@ void Game_functions::Set_atk_situation_state(bool value){
 
 bool Game_functions::Get_atk_situation_state(){
     return atk_situation_state;
+}
+
+void Game_functions::set_line_root_def(double val){
+    line_root_defender = val;
 }

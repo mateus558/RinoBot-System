@@ -29,7 +29,7 @@ private:
     Point2d ball_pos; //posicao em cm da bola
     Point2d centroid_atk; //posicao em cm do centro da area de atk
     Point2d centroid_def; //posicao em cm do centro da area de def
-    double line_root_defender = 45;
+    double line_root_defender = 38;
     pVector def_area;
     pair<double, double> ball_vel;
     vector<pair<float, float> > vels;
@@ -43,6 +43,9 @@ private:
     bool killer_direction = 1; // frente = 1; tras = 0
     int cont_killer_obst = 0;
     int cont_killer_tempo = 0;
+    bool defender_direction = 1; // frente = 1; tras = 0
+    int cont_defender_obst = 0;
+    int cont_defender_tempo = 0;
     Point2d last_killer;
 
 
@@ -91,6 +94,7 @@ public:
     void set_ball_pos(Point2d);
     void set_centroid_atk(Point2d);
     void set_centroid_def(Point2d);
+    void set_killer_direction(bool a);
     Point convert_C_to_G(Point2d);
 
     void velocity_killer_cpu(Robot *, Game_functions  *, pair<float, float>*);
