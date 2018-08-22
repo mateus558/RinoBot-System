@@ -462,6 +462,8 @@ void Vision::run()
     int i = 0, itr = 0;
     bool init = false;
     double elapsed_secs;
+    double fpsmax = 30;
+    double tmax = 1/fpsmax;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
     clock_t begin, end;
@@ -518,7 +520,12 @@ void Vision::run()
                 //Compute the variation of time for physics computations
                 end = clock();
                 elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
                 deltaT = elapsed_secs;
+
+                if (elapsed_secs < tmax){
+                deltaT = tmax;
+                }
 
                 /***********************************
                  *     Physics Computations Step   *
@@ -613,7 +620,9 @@ void Vision::run()
         //cout<<"Ball: "<<info.ball_pos_cm << endl;
 
         FPS = 1.0/deltaT;
-
+        if (elapsed_secs < tmax){
+             msleep(tmax-elapsed_secs);
+        }
         //Sending information
         emit infoPercepted(info);
         emit processedImage(img);
@@ -622,7 +631,6 @@ void Vision::run()
             emit framesPerSecond(FPS);
         }
 
-        msleep(delay);
     }
 
 }
