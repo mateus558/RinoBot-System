@@ -275,9 +275,9 @@ void Game_functions::return2goal(){
             set_potential(meta_grid.y, meta_grid.x, 0);
         }
 
-        while(iterator_cph()>1E-6);
-        set_direction(centroid_atk,centroid_def);
-        set_grid_orientation(meta_grid);
+        //while(iterator_cph()>1E-6);
+        //set_direction(centroid_atk,centroid_def);
+        //set_grid_orientation(meta_grid);
     }
 }
 
@@ -452,20 +452,22 @@ void Game_functions::defender(Robot *robo, int num_Robo, pair<float, float> *vel
 
     if (centroid_atk.x > ball_pos.x){
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
-            avoid_penalties();
+            //avoid_penalties();
+            int jh = 1;
         else
             return2defense(robo);
     }
     else{
         if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
-            avoid_penalties();
+            //avoid_penalties();
+            int jh = 1;
         else
             return2defense(robo);
     }
 
 
-    while(iterator_cph()>1E-6);
-    set_direction(centroid_atk,centroid_def);
+   // while(iterator_cph()>1E-6);
+    //set_direction(centroid_atk,centroid_def);
 }
 
 void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float, float> *vels){
@@ -521,13 +523,15 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
 
             if (centroid_atk.x > ball_pos.x){
                 if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
-                    avoid_penalties();
+                   // avoid_penalties();
+                   int jh = 1;
                 else
                     return2defense(robo);
             }
             else{
                 if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
-                    avoid_penalties();
+//                    avoid_penalties();
+                    int jh = 1;
                 else
                     return2defense(robo);
             }
@@ -559,8 +563,8 @@ void Game_functions::defensive_midfielder(Robot *robo, int num_Robo, pair<float,
     }else{
         //tratar a bola aqui
     }*/
-    while(iterator_cph()>1E-6);
-    set_direction(centroid_atk,centroid_def);
+   // while(iterator_cph()>1E-6);
+    //set_direction(centroid_atk,centroid_def);
 }
 
 void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, float> *vels){
@@ -658,13 +662,15 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
 
             if (centroid_atk.x > ball_pos.x){
                 if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
-                    avoid_penalties();
+//                    avoid_penalties();
+int jh = 1;
                 else
                     return2defense(robo);
             }
             else{
                 if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
-                    avoid_penalties();
+//                    avoid_penalties();
+int jh = 1;
                 else
                     return2defense(robo);
             }
@@ -854,8 +860,8 @@ void Game_functions::ofensive_midfielder(Robot *robo, int num_Robo, pair<float, 
 
 
 
-    while(iterator_cpo()>1E-6);
-    set_direction(centroid_atk,centroid_def);
+  //  while(iterator_cpo()>1E-6);
+  //  set_direction(centroid_atk,centroid_def);
 }
 
 void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels){
@@ -1030,8 +1036,8 @@ void Game_functions::striker(Robot *robo, int num_Robo, pair<float, float> *vels
     }else{
         //tratar a bola aqui
     }
-    while(iterator_cpo()>1E-6);
-    set_direction(centroid_atk,centroid_def);
+   // while(iterator_cpo()>1E-6);
+   // set_direction(centroid_atk,centroid_def);
 }
 
 void Game_functions::guardian(Robot *robo, int num_Robo, pair<float,float> *vels){
@@ -1113,8 +1119,8 @@ void Game_functions::guardian(Robot *robo, int num_Robo, pair<float,float> *vels
     }
 
 
-    while(iterator_cph()>1E-6);
-    set_direction(centroid_atk,centroid_def);
+   // while(iterator_cph()>1E-6);
+  //  set_direction(centroid_atk,centroid_def);
 
 }
 
@@ -1200,8 +1206,8 @@ void Game_functions::killer(Robot *robo, int num_Robo, pair<float,float> *vels){
 
 
 
-    while(iterator_cpo()>1E-6);
-    set_direction(centroid_atk,centroid_def);
+   // while(iterator_cpo()>1E-6);
+   // set_direction(centroid_atk,centroid_def);
 
     // Seleciona entre CPH e CPO
     /*if(fabs(euclidean_dist(ball_pos,centroid_def)) < 100){
@@ -1334,38 +1340,39 @@ void Game_functions::test(Robot *robo, int num_Robo, pair<float,float> *vels){
     set_epsilon(0.5);
 
 
-    while(iterator_cph()>1E-6);
-    set_direction(centroid_atk,centroid_def);
+   // while(iterator_cph()>1E-6);
+   // set_direction(centroid_atk,centroid_def);
 }
 
 void Game_functions::avoid_penalties(){
     Point meta_grid;
 
-    if (centroid_atk.x > ball_pos.x){
-        //cout << "Reconheceu a area de defesa" << endl;
-        if(ball_pos.x > 0 && ball_pos.y > 0){
-            meta.x = centroid_def.x + 50;
-            meta.y = centroid_def.y;
-            meta_grid = convert_C_to_G(meta);
-            //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-            if (meta_grid.x > 0 && meta_grid.y > 0)
-                set_potential(meta_grid.y, meta_grid.x, 0);
-        }else{
-            //tratar a meta aqui
-        }
-    }
-    else{
-        if(ball_pos.x > 0 && ball_pos.y > 0){
-            meta.x = centroid_def.x - 50;
-            meta.y = centroid_def.y;
-            meta_grid = convert_C_to_G(meta);
-            //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
-            if (meta_grid.x > 0 && meta_grid.y > 0)
-                set_potential(meta_grid.y, meta_grid.x, 0);
-        }else{
-            //tratar a meta aqui
-        }
-    }
+//    if (centroid_atk.x > ball_pos.x){
+//        //cout << "Reconheceu a area de defesa" << endl;
+//        if(ball_pos.x > 0 && ball_pos.y > 0){
+//            meta.x = centroid_def.x + 50;
+//            meta.y = centroid_def.y;
+//            meta_grid = convert_C_to_G(meta);
+//            //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+//            if (meta_grid.x > 0 && meta_grid.y > 0)
+//                set_potential(meta_grid.y, meta_grid.x, 0);
+//        }else{
+//            //tratar a meta aqui
+//        }
+//    }
+//    else{
+//        if(ball_pos.x > 0 && ball_pos.y > 0){
+//            meta.x = centroid_def.x - 50;
+//            meta.y = centroid_def.y;
+//            meta_grid = convert_C_to_G(meta);
+//            //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
+//            if (meta_grid.x > 0 && meta_grid.y > 0)
+//                set_potential(meta_grid.y, meta_grid.x, 0);
+//        }else{
+//            //tratar a meta aqui
+//        }
+//    }
+
 }
 
 void Game_functions::return2defense(Robot *robo){
@@ -1808,8 +1815,9 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
 
     if (centroid_atk.x > centroid_def.x){
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
-            avoid_penalties();
-            while(iterator_cph()>1E-6);
+//            avoid_penalties();
+int jh = 1;
+//            while(iterator_cph()>1E-6);
             set_direction(centroid_atk,centroid_def);
         }
         else{
@@ -1878,14 +1886,15 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     }
     else{
         if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
-            avoid_penalties();
-            while(iterator_cph()>1E-6);
-            set_direction(centroid_atk,centroid_def);
+//            avoid_penalties();
+           //cout << " 1 " << endl;
+//            while(iterator_cph()>1E-6);
+            //set_direction(centroid_atk,centroid_def);
         }
         else{
 
             if (ball_pos.x > 125 || /*(ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) ||*/ ball_pos.y < 20  || ball_pos.y > 110){ //antes 15 e 115
-
+//cout << " 2 " << endl;
                 // CPH nos cantos
                 //                return2defense(robo);
                 //                while(iterator_cph()>1E-6);
@@ -1899,6 +1908,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
 
             }
             else{
+            //cout << " 3 " << endl;
                 /*/ Angulo robo bola
                 if (fabs(gol_y_limit - centroid_atk.y) < 22){
                     set_thetaDir(-ang_robot_ball*M_PI/180);
@@ -1949,7 +1959,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
 
 
     //    if (((ball_pos.x < 25 || ball_pos.x > 145) && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115){
-    //        while(iterator_cph()>1E-6);
+//            while(iterator_cph()>1E-6);
     //        set_direction(centroid_atk,centroid_def);
     //        //        cout << "CPH" << endl;
     //    }
@@ -1980,14 +1990,15 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
 
     if (centroid_atk.x > centroid_def.x){
         if(abs(ball_pos.y-centroid_def.y)<20 && ((centroid_atk.x - ball_pos.x)<26) && robo_pos.x < ball_pos.x - 3){
-            while(iterator_cph()>1E-6);
-            set_direction(centroid_atk,centroid_def);
+//            while(iterator_cph()>1E-6);
+           // set_direction(centroid_atk,centroid_def);
         }
     }
     else{
         if(abs(ball_pos.y-centroid_def.y) < 20 && ((ball_pos.x - centroid_atk.x) < 26) && robo_pos.x > ball_pos.x + 7){
-            while(iterator_cph()>1E-6);
-            set_direction(centroid_atk,centroid_def);
+          //cout << " 4 " << endl;
+//            while(iterator_cph()>1E-6);
+          //  set_direction(centroid_atk,centroid_def);
         }
     }
 

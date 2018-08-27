@@ -24,6 +24,7 @@ double Y_CONV_CONST;
 
 Vision::Vision(QObject *parent): QThread(parent)
 {
+    cv::setNumThreads(1);
     Point a, b;
     stop = true;
     showArea = sentPoints = teamsChanged = showErrors = showNames = ball_found = showCenters = trained= false;
@@ -462,7 +463,7 @@ void Vision::run()
     int i = 0, itr = 0;
     bool init = false;
     double elapsed_secs;
-    double fpsmax = 30;
+    double fpsmax = 50;
     double tmax = 1/fpsmax;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;

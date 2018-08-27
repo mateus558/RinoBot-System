@@ -2377,14 +2377,16 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     //CPH
     if (centroid_atk.x > ball_pos.x){ //Comentar tudo para ATK vs DEF
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
-            theta = pot_fields->get_direction(robot_grid);
+        cout << "Avoid" << endl;
+            //theta = pot_fields->get_direction(robot_grid);
         //        else
         //            if (ball_pos.x < 45 || (ball_pos.x > 145 && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
         //                theta = pot_fields->get_direction(robot_grid);
     }
     else{
         if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
-            theta = pot_fields->get_direction(robot_grid);
+        //    theta = pot_fields->get_direction(robot_grid);
+        cout << "Avoid" << endl;
         //        else{
         //            if (ball_pos.x > 125 || (ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
         //                theta = pot_fields->get_direction(robot_grid);
@@ -2393,14 +2395,14 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
 
     //Teste ataque
 
-    if (centroid_atk.x > centroid_def.x){
-        if(abs(ball_pos.y-centroid_def.y) < 20 && ((centroid_atk.x - ball_pos.x) < 26) && robo_pos.x < ball_pos.x - 7)
-            theta = pot_fields->get_direction(robot_grid);
-    }
-    else{
-        if(abs(ball_pos.y-centroid_def.y) < 20 && ((ball_pos.x - centroid_atk.x) < 26) && robo_pos.x > ball_pos.x + 7)
-            theta = pot_fields->get_direction(robot_grid);
-    }
+//    if (centroid_atk.x > centroid_def.x){
+//        if(abs(ball_pos.y-centroid_def.y) < 20 && ((centroid_atk.x - ball_pos.x) < 26) && robo_pos.x < ball_pos.x - 7)
+//            theta = pot_fields->get_direction(robot_grid);
+//    }
+//    else{
+//        if(abs(ball_pos.y-centroid_def.y) < 20 && ((ball_pos.x - centroid_atk.x) < 26) && robo_pos.x > ball_pos.x + 7)
+//            theta = pot_fields->get_direction(robot_grid);
+//    }
 
 
     theta = ajusta_angulo((theta));
