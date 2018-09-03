@@ -459,11 +459,12 @@ Mat Vision::setting_mode(Mat raw_frame, Mat vision_frame, vector<int> low, vecto
 
 void Vision::run()
 {
+
     int delay = (1000/this->FPS);
     int i = 0, itr = 0;
     bool init = false;
     double elapsed_secs;
-    double fpsmax = 50;
+    double fpsmax = 35;
     double tmax = 1/fpsmax;
     vector<pMatrix> obj_contours;
     vector<Point> to_transf, transf;
@@ -477,6 +478,7 @@ void Vision::run()
     transf.resize(6);
 
     while(!stop){
+    cv::setNumThreads(1);
         begin = clock();
         itr++;
 

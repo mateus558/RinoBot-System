@@ -190,6 +190,9 @@ void Mover::calcula_velocidades(Robot *r, Game_functions *potencial_fields, pair
     case 4:
         velocity_goalkeeper(r, potencial_fields , vels);
         break;
+    case 9:
+        velocity_fake9(r, potencial_fields , vels);  //velocity_killer
+        break;
     case 10:
         velocity_killer_cpu(r, potencial_fields , vels);  //velocity_killer
         break;
@@ -3515,6 +3518,60 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
 
 }
 
+void Mover::set_killer_direction(bool a)
+{
+    killer_direction = a;
+}
+
+// Novas Funções
+void Mover::velocity_fake9(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels)
+{
+    Point2d ball_v;
+    pair <double,double> vel;
+    double ang_vel;
+    double theta;
+    double alpha;
+    double last_phi=0;
+    double w,v;
+    Point2d meta;
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = -ball_vel.second / 100;
+
+
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
+
+    meta = pot_fields->meta_fake9;
+    theta = vector_angle(robo->get_pos(), meta);
+    alpha = theta - robo->get_angle();
+    alpha = ajusta_angulo(alpha);
+
+    //PID
+    if (fabs(alpha) <= limiar_theta ){
+         v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+         w = kp*alpha/180 + kd*(alpha-last_phi);
+         //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+         limiar_theta = 90 - delta_limiar;
+         //cout << "3" << endl;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+        w = kp*alpha/180 + kd*(alpha-last_phi);
+        //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+        limiar_theta = 90 + delta_limiar;
+        //cout << "4" << endl;
+    }
+    //Fim PID
+    last_phi = alpha;
+    vels->first = v-w*l;
+    vels->second = v+w*l;
+    cout << "Velocidade 1: " << v-w*l << endl;
+    cout << "Velocidade 2: " << v+w*l << endl;
+}
+//Fim Novas Funções
+
 void Mover::set_params(Robot * robo){
     switch(robo->get_channel())
     {
@@ -3544,7 +3601,7 @@ void Mover::set_params(Robot * robo){
         robo->set_l_size(0.033);
         break;
     case 9: //trocar roda
-        robo->set_kp(8.0);
+        robo->set_kp(6.85);
         robo->set_kd(0.0000);
         robo->set_l_size(0.034);
         break;
@@ -3564,9 +3621,4 @@ void Mover::set_params(Robot * robo){
         robo->set_l_size(0.034);
         break;
     }
-}
-
-void Mover::set_killer_direction(bool a)
-{
-    killer_direction = a;
 }

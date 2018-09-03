@@ -99,6 +99,11 @@ void Game_functions::run(){
         case 21:
             defender_root(&selec_robot.r3, 2, &vels[2]);
             break;
+        //Novas Funções
+        case 9:
+            fake9(&selec_robot.r3, 2, &vels[2]);
+            break;
+        //Fim Novas Funções
         case 100:
             test(&selec_robot.r3, 2, &vels[2]);
             break;
@@ -140,6 +145,11 @@ void Game_functions::run(){
         case 21:
             defender_root(&selec_robot.r1, 2, &vels[2]);
             break;
+        //Novas Funções
+        case 9:
+            fake9(&selec_robot.r1, 2, &vels[2]);
+            break;
+        //Fim Novas Funções
         case 100:
             test(&selec_robot.r1, 0, &vels[0]); //test
             break;
@@ -182,6 +192,11 @@ void Game_functions::run(){
         case 21:
             defender_root(&selec_robot.r2, 2, &vels[2]);
             break;
+        //Novas Funções
+        case 9:
+            fake9(&selec_robot.r2, 2, &vels[2]);
+            break;
+        //Fim Novas Funções
         case 100:
             test(&selec_robot.r2, 1, &vels[1]); //test
             break;
@@ -275,9 +290,9 @@ void Game_functions::return2goal(){
             set_potential(meta_grid.y, meta_grid.x, 0);
         }
 
-        //while(iterator_cph()>1E-6);
-        //set_direction(centroid_atk,centroid_def);
-        //set_grid_orientation(meta_grid);
+        while(iterator_cph()>1E-6);
+        set_direction(centroid_atk,centroid_def);
+        set_grid_orientation(meta_grid);
     }
 }
 
@@ -2303,4 +2318,31 @@ bool Game_functions::Get_atk_situation_state(){
 
 void Game_functions::set_line_root_def(double val){
     line_root_defender = val;
+}
+
+//Novas Funções
+
+void Game_functions::fake9(Robot *robo, int num_Robo, pair<float, float> *vels){
+    Point2d meta;
+    Point2d ball_v;
+    Robot killer;
+    double dist = 20;
+    if (selec_robot.r1.get_flag_fuzzy()==10)
+        killer=selec_robot.r1;
+    else if (selec_robot.r2.get_flag_fuzzy()==10)
+        killer=selec_robot.r2;
+    else if (selec_robot.r3.get_flag_fuzzy()==10)
+        killer=selec_robot.r3;
+
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = ball_vel.second / 100;
+    if (centroid_def.x<centroid_atk.x){
+        meta.x = killer.get_pos().x - dist;
+        meta.y = ball_pos.y;
+    }
+    if (centroid_def.x>centroid_atk.x){
+        meta.x = killer.get_pos().x + dist;
+        meta.y = ball_pos.y;
+    }
+    meta_fake9 = meta;
 }

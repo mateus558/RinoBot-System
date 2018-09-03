@@ -99,6 +99,9 @@ public:
 
     void velocity_killer_cpu(Robot *, Game_functions  *, pair<float, float>*);
     void velocity_defender_root(Robot *, Game_functions  *, pair<float, float>*);
+    // Novas Funções
+    void velocity_fake9(Robot *, Game_functions  *, pair<float, float>*);
+    // Fim Novas Funções
 
     void set_params(Robot *);
     ~Mover();

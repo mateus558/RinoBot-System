@@ -87,6 +87,11 @@ public:
 
     void killer_cpu(Robot *, int, pair<float, float>*);   // Univector Func
     void defender_root(Robot *, int, pair<float, float>*);   // Univector Func
+    //Novas funções
+    void fake9(Robot *, int, pair<float,float>*);
+    Point2d meta_fake9;
+    //Fim novas funções
+
     void Set_atk_situation_state(bool);
     bool Get_atk_situation_state();
 
