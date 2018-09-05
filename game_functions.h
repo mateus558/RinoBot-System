@@ -25,6 +25,7 @@ private:
     Point2d centroid_def; //posicao em cm do centro da area de def
     double line_root_defender = 38;
     pVector def_area;
+    double line_volante = 38;
     pair<double, double> ball_vel;
     vector<Point2d> media_ball_v;
     vector<pair<float, float> > vels;
@@ -90,6 +91,7 @@ public:
     //Novas funções
     void fake9(Robot *, int, pair<float,float>*);
     Point2d meta_fake9;
+    void volante(Robot *, int, pair<float, float>*);   // Univector Func
     //Fim novas funções
 
     void Set_atk_situation_state(bool);

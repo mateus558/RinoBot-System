@@ -51,8 +51,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ball = new BallDraw;
 
     //caso não seja selecionado nada na change strategy é forçada a nova estrategia
-    fuzzy->set_strategy(3);
+    fuzzy->set_strategy(4);
 
+    cout << fuzzy->get_strategy() << endl;
 
     /****************** SETS INFORMATION WINDOW DATA *******************/
     iWindowData.eye = eye;

@@ -56,6 +56,8 @@ private:
 
     Selector selec_robot; //estrutura de selecao dos robos que vao entrar no fuzzy
 
+    int gandalf_func, presto_func, leona_func;
+
 signals:
     void emitRobots(Selector);
 
@@ -91,6 +93,7 @@ public:
     void set_strategy(char);
     void set_roles(bool);
     Point convert_C_to_G(Point2d);
+    int get_strategy();
     ~Fuzzy();
 };
 

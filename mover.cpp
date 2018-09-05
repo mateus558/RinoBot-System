@@ -13,7 +13,7 @@ double limiar_theta = 90 + delta_limiar;
 //double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
-double v_max = 0.6; //0.75
+double v_max = 0.5; //0.75
 double v_delta = 0.2;
 double w_max = 7;
 double k = (w_max/v_max);
@@ -31,11 +31,16 @@ double w_max_gol = 5;
 double kgol = (w_max_gol/v_max_gol);
 double dist_giro_gol = 10.0;
 double vel_giro_gol = 1.0;
+double v_max_return = 0.8;
 
 // Constantes para a movimentação com PID
 double last_phi = 0; // Última orientação do robô
+double lalpha_killer = 0; // Última orientação do killer
 double last_theta_control = 0;
 double ka = 0.15;
+double lalpha_fake9 = 0;
+double lalpha_volante = 0;
+double lalpha_defender_root = 0;
 
 //double kp = 15;  // Ganho proporcional 13
 //double kd = 0.003;  // Ganho derivativo
@@ -202,13 +207,16 @@ void Mover::calcula_velocidades(Robot *r, Game_functions *potencial_fields, pair
     case 21:
         velocity_defender_root(r, potencial_fields , vels);
         break;
+    case 12:
+        velocity_volante(r, potencial_fields , vels);
+        break;
     case 100:
         velocity_test(r, potencial_fields , vels); //velocity_test
         break;
     }
 }
 
-void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
+void Mover:: velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
     Point2d robot_pos = robo->get_pos();
     double robot_angle = ajusta_angulo(robo->get_angle());
     Point robot_grid = convert_C_to_G(robot_pos);
@@ -360,6 +368,7 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
             else {
                 //Return2Goal
                 //v_max_gol = 0.5;
+
                 theta = pot_fields->get_direction(robot_grid);
                 alpha = theta - robot_angle;
                 alpha = ajusta_angulo(alpha);
@@ -368,7 +377,7 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
                 //PID
                 if (fabs(alpha) <= limiar_theta ){
                     //v = v_max;
-                    v = -v_delta_gol*fabs(alpha)/limiar_theta + v_max_gol;
+                    v = -v_delta_gol*fabs(alpha)/limiar_theta + v_max_return;
                     w = kp*alpha/180 + kd*(alpha - last_phi);
                     limiar_theta = 90 - delta_limiar;
                     ////cout << "Frente" << endl;
@@ -376,7 +385,7 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
                 else{
                     alpha = ajusta_angulo(alpha+180);
                     //v = - v_max;
-                    v = v_delta_gol*fabs(alpha)/limiar_theta - v_max_gol;
+                    v = v_delta_gol*fabs(alpha)/limiar_theta - v_max_return;
                     w = kp*alpha/180 + kd*(alpha - last_phi);
                     limiar_theta = 90 + delta_limiar;
                     ////cout << "Trás" << endl;
@@ -515,6 +524,7 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
             }
             else {
                 //Return2Goal
+
                 //v_max_gol = 0.5;
                 theta = pot_fields->get_direction(robot_grid);
                 alpha = theta - robot_angle;
@@ -523,7 +533,7 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
                 //PID
                 if (fabs(alpha) <= limiar_theta ){
                     //v = v_max;
-                    v = -v_delta_gol*fabs(alpha)/limiar_theta + v_max_gol;
+                    v = -v_delta_gol*fabs(alpha)/limiar_theta + v_max_return;
                     w = kp*alpha/180 + kd*(alpha - last_phi);
                     limiar_theta = 90 - delta_limiar;
                     ////cout << "Frente" << endl;
@@ -531,7 +541,7 @@ void Mover::velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<fl
                 else{
                     alpha = ajusta_angulo(alpha+180);
                     //v = - v_max;
-                    v = v_delta_gol*fabs(alpha)/limiar_theta - v_max_gol;
+                    v = v_delta_gol*fabs(alpha)/limiar_theta - v_max_return;
                     w = kp*alpha/180 + kd*(alpha - last_phi);
                     limiar_theta = 90 + delta_limiar;
                     ////cout << "Trás" << endl;
@@ -2440,13 +2450,13 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     //PID
     /*if (fabs(alpha) <= limiar_theta ){
         v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-        w = kp*alpha/180  + kd*(alpha-last_phi);
+        w = kp*alpha/180  + kd*(alpha-lalpha_killer);
         limiar_theta = 90 - delta_limiar;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
         v = v_delta*fabs(alpha)/limiar_theta - v_max;
-        w = kp*alpha/180 + kd*(alpha-last_phi);
+        w = kp*alpha/180 + kd*(alpha-lalpha_killer);
         limiar_theta = 90 + delta_limiar;
     }*/
 
@@ -2465,17 +2475,17 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
         if (killer_direction){
             v = -v_delta*fabs(alpha)/limiar_theta + v_max;
             //w = kp*alpha/180 + kd*(robo->get_angle() - last_angle);
-            //w = kp*alpha/180 + kd*(alpha-last_phi);
-            w = kp*alpha/180 + kd*(alpha-last_phi);
-            //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+            //w = kp*alpha/180 + kd*(alpha-lalpha_killer);
+            w = kp*alpha/180 + kd*(alpha-lalpha_killer);
+            //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_killer);
             limiar_theta = 90 - delta_limiar;
             //cout << "1" << endl;
         }
         else{
             alpha = ajusta_angulo(alpha+180);
             v = v_delta*fabs(alpha)/limiar_theta - v_max;
-            w = kp*alpha/180 + kd*(alpha-last_phi);
-            //            w = 7*alpha/180 + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+            w = kp*alpha/180 + kd*(alpha-lalpha_killer);
+            //            w = 7*alpha/180 + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_killer);
             limiar_theta = 90 + delta_limiar;
             // cout << "2" << endl;
         }
@@ -2487,16 +2497,16 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
         {
             if (fabs(alpha) <= limiar_theta ){
                 v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-                w = 4*alpha/180 + kd*(alpha-last_phi) + 2.5*diff_angle/180;;
-                //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+                w = 4*alpha/180 + kd*(alpha-lalpha_killer) + 2.5*diff_angle/180;;
+                //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_killer);
                 limiar_theta = 90 - delta_limiar;
                 //cout << "3" << endl;
             }
             else{
                 alpha = ajusta_angulo(alpha+180);
                 v = v_delta*fabs(alpha)/limiar_theta - v_max;
-                w = 4*alpha/180 + kd*(alpha-last_phi) + 2.5*diff_angle/180;;
-                //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+                w = 4*alpha/180 + kd*(alpha-lalpha_killer) + 2.5*diff_angle/180;;
+                //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_killer);
                 limiar_theta = 90 + delta_limiar;
                 //cout << "4" << endl;
             }
@@ -2506,16 +2516,16 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
             //alpha = ajusta_angulo(robo->get_angle() - vector_angle(ball_pos, robo_pos));
             if (fabs(alpha) <= limiar_theta ){
                 v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-                w = kp*alpha/180 + kd*(alpha-last_phi);
-                //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+                w = kp*alpha/180 + kd*(alpha-lalpha_killer);
+                //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_killer);
                 limiar_theta = 90 - delta_limiar;
                 //cout << "3" << endl;
             }
             else{
                 alpha = ajusta_angulo(alpha+180);
                 v = v_delta*fabs(alpha)/limiar_theta - v_max;
-                w = kp*alpha/180 + kd*(alpha-last_phi);
-                //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+                w = kp*alpha/180 + kd*(alpha-lalpha_killer);
+                //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_killer);
                 limiar_theta = 90 + delta_limiar;
                 //cout << "4" << endl;
             }
@@ -2526,7 +2536,7 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
 
 
     //    v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-    //    w = kp*alpha/180 + kd*(alpha-last_phi);
+    //    w = kp*alpha/180 + kd*(alpha-lalpha_killer);
 
 
     // //cout << "V: " << v << endl;
@@ -2584,8 +2594,13 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     //    last_robo_pos_x = robo_pos.x;
     //    last_robo_pos_y = robo_pos.y;
 
+    cout << "atual a " << alpha << endl;
+    cout << "anterior a " << lalpha_killer << endl;
+    cout << "diferenca " << alpha-lalpha_killer << endl << endl;
+
     last_theta_control = theta;
-    last_phi = alpha;
+    lalpha_killer = alpha;
+
 
     //    // Limitando o Matador
     //    if(centroid_atk.x > centroid_def.x){
@@ -2630,7 +2645,7 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
         }
     }
 
-    //rotate(robo, vels);
+    rotate(robo, vels);
     //kick_rotate(robo, vels);
     atk_situation(robo,pot_fields,vels); //Colocar a inv para ATK vs DEF
     //atk_situation_inv(robo,pot_fields,vels);
@@ -2658,8 +2673,8 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
 
     ////cout << "Linear Calculada:" << v << endl;
     ////cout << "Linear:" << mod_vel/100 << endl << endl << endl;
-    //    //cout << "Esquerda: " << vels->first << endl;
-    //    //cout << "Direita: " << vels->second << endl;
+        cout << "Esquerda: " << vels->first << endl;
+        cout << "Direita: " << vels->second << endl;
 
 
 }
@@ -2800,12 +2815,12 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
 
     //PID
     if (fabs(alpha) <= limiar_theta ){
-        w = kp*alpha/180 + kd*(alpha - last_phi);
+        w = kp*alpha/180 + kd*(alpha - lalpha_defender_root);
         limiar_theta = 90 - delta_limiar;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = kp*alpha/180 + kd*(alpha - last_phi);
+        w = kp*alpha/180 + kd*(alpha - lalpha_defender_root);
         limiar_theta = 90 + delta_limiar;
     }
 
@@ -2814,12 +2829,12 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
         alpha = ajusta_angulo(alpha);
         //PID
         if (fabs(alpha) <= limiar_theta ){
-            w = 17*alpha/180 + kd*(alpha - last_phi);
+            w = 17*alpha/180 + kd*(alpha - lalpha_defender_root);
             limiar_theta = 90 - delta_limiar;
         }
         else{
             alpha = ajusta_angulo(alpha+180);
-            w = 17*alpha/180 + kd*(alpha - last_phi);
+            w = 17*alpha/180 + kd*(alpha - lalpha_defender_root);
             limiar_theta = 90 + delta_limiar;
         }
         double tempo;
@@ -2864,12 +2879,12 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
                 alpha = ajusta_angulo(alpha);
                 //PID
                 if (fabs(alpha) <= limiar_theta ){
-                    w = 17*alpha/180 + kd*(alpha - last_phi);
+                    w = 17*alpha/180 + kd*(alpha - lalpha_defender_root);
                     limiar_theta = 90 - delta_limiar;
                 }
                 else{
                     alpha = ajusta_angulo(alpha+180);
-                    w = 17*alpha/180 + kd*(alpha - last_phi);
+                    w = 17*alpha/180 + kd*(alpha - lalpha_defender_root);
                     limiar_theta = 90 + delta_limiar;
                 }
                 //cout << "angle " << robot_angle << endl;
@@ -2912,7 +2927,7 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
             if (fabs(alpha) <= limiar_theta ){
                 //v = v_max;
                 v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-                w = kp*alpha/180 + kd*(alpha - last_phi);
+                w = kp*alpha/180 + kd*(alpha - lalpha_defender_root);
                 limiar_theta = 90 - delta_limiar;
                 ////cout << "Frente" << endl;
             }
@@ -2920,7 +2935,7 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
                 alpha = ajusta_angulo(alpha+180);
                 //v = - v_max;
                 v = v_delta*fabs(alpha)/limiar_theta - v_max;
-                w = kp*alpha/180 + kd*(alpha - last_phi);
+                w = kp*alpha/180 + kd*(alpha - lalpha_defender_root);
                 limiar_theta = 90 + delta_limiar;
                 ////cout << "Trás" << endl;
             }
@@ -2931,17 +2946,17 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
 //                if (defender_direction){
 //                    v = -v_delta*fabs(alpha)/limiar_theta + v_max;
 //                    //w = kp*alpha/180 + kd*(robo->get_angle() - last_angle);
-//                    //w = kp*alpha/180 + kd*(alpha-last_phi);
-//                    w = kp*alpha/180 + kd*(alpha-last_phi);
-//                    //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+//                    //w = kp*alpha/180 + kd*(alpha-lalpha_defender_root);
+//                    w = kp*alpha/180 + kd*(alpha-lalpha_defender_root);
+//                    //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_defender_root);
 //                    limiar_theta = 90 - delta_limiar;
 //                    //cout << "1" << endl;
 //                }
 //                else{
 //                    alpha = ajusta_angulo(alpha+180);
 //                    v = v_delta*fabs(alpha)/limiar_theta - v_max;
-//                    w = kp*alpha/180 + kd*(alpha-last_phi);
-//                    //            w = 7*alpha/180 + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+//                    w = kp*alpha/180 + kd*(alpha-lalpha_defender_root);
+//                    //            w = 7*alpha/180 + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_defender_root);
 //                    limiar_theta = 90 + delta_limiar;
 //                    // cout << "2" << endl;
 //                }
@@ -2984,12 +2999,12 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
         alpha = ajusta_angulo(alpha);
         //PID
         if (fabs(alpha) <= limiar_theta ){
-            w = 17*alpha/180 + kd*(alpha - last_phi);
+            w = 17*alpha/180 + kd*(alpha - lalpha_defender_root);
             limiar_theta = 90 - delta_limiar;
         }
         else{
             alpha = ajusta_angulo(alpha+180);
-            w = 17*alpha/180 + kd*(alpha - last_phi);
+            w = 17*alpha/180 + kd*(alpha - lalpha_defender_root);
             limiar_theta = 90 + delta_limiar;
         }
         double tempo;
@@ -3036,12 +3051,12 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
             alpha = ajusta_angulo(alpha);
             //PID
             if (fabs(alpha) <= limiar_theta ){
-                w = 17*alpha/180 + kd*(alpha - last_phi);
+                w = 17*alpha/180 + kd*(alpha - lalpha_defender_root);
                 limiar_theta = 90 - delta_limiar;
             }
             else{
                 alpha = ajusta_angulo(alpha+180);
-                w = 17*alpha/180 + kd*(alpha - last_phi);
+                w = 17*alpha/180 + kd*(alpha - lalpha_defender_root);
                 limiar_theta = 90 + delta_limiar;
             }
 
@@ -3088,7 +3103,7 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
             if (fabs(alpha) <= limiar_theta ){
                 //v = v_max;
                 v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-                w = kp*alpha/180 + kd*(alpha - last_phi);
+                w = kp*alpha/180 + kd*(alpha - lalpha_defender_root);
                 limiar_theta = 90 - delta_limiar;
                 ////cout << "Frente" << endl;
             }
@@ -3096,7 +3111,7 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
                 alpha = ajusta_angulo(alpha+180);
                 //v = - v_max;
                 v = v_delta*fabs(alpha)/limiar_theta - v_max;
-                w = kp*alpha/180 + kd*(alpha - last_phi);
+                w = kp*alpha/180 + kd*(alpha - lalpha_defender_root);
                 limiar_theta = 90 + delta_limiar;
                 ////cout << "Trás" << endl;
             }
@@ -3106,17 +3121,17 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
 //                if (defender_direction){
 //                    v = -v_delta*fabs(alpha)/limiar_theta + v_max;
 //                    //w = kp*alpha/180 + kd*(robo->get_angle() - last_angle);
-//                    //w = kp*alpha/180 + kd*(alpha-last_phi);
-//                    w = kp*alpha/180 + kd*(alpha-last_phi);
-//                    //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+//                    //w = kp*alpha/180 + kd*(alpha-lalpha_defender_root);
+//                    w = kp*alpha/180 + kd*(alpha-lalpha_defender_root);
+//                    //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_defender_root);
 //                    limiar_theta = 90 - delta_limiar;
 //                    //cout << "1" << endl;
 //                }
 //                else{
 //                    alpha = ajusta_angulo(alpha+180);
 //                    v = v_delta*fabs(alpha)/limiar_theta - v_max;
-//                    w = kp*alpha/180 + kd*(alpha-last_phi);
-//                    //            w = 7*alpha/180 + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+//                    w = kp*alpha/180 + kd*(alpha-lalpha_defender_root);
+//                    //            w = 7*alpha/180 + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_defender_root);
 //                    limiar_theta = 90 + delta_limiar;
 //                    // cout << "2" << endl;
 //                }
@@ -3156,7 +3171,7 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
         }
     }
 
-    last_phi = alpha;
+    lalpha_defender_root = alpha;
     rotate(robo, vels);
     kick_rotate(robo, vels);
 
@@ -3208,12 +3223,12 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
 
     //PID
     if (fabs(alpha) <= limiar_theta ){
-        w = 11*alpha/180 + 0.0*(alpha - last_phi);
+        w = 11*alpha/180 + 0.0*(alpha - lalpha_defender_root);
         limiar_theta = 90 - delta_limiar;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
-        w = 11*alpha/180 + 0.0*(alpha - last_phi);
+        w = 11*alpha/180 + 0.0*(alpha - lalpha_defender_root);
         limiar_theta = 90 + delta_limiar;
     }
 
@@ -3281,13 +3296,13 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
             // PID
             if (fabs(alpha) <= limiar_theta ){
                 v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-                w = kp*alpha/180 + kd*(alpha - last_phi);
+                w = kp*alpha/180 + kd*(alpha - lalpha_defender_root);
                 limiar_theta = 90 - delta_limiar;
             }
             else{
                 alpha = ajusta_angulo(alpha+180);
                 v = v_delta*fabs(alpha)/limiar_theta - v_max;
-                w = kp*alpha/180 + kd*(alpha - last_phi);
+                w = kp*alpha/180 + kd*(alpha - lalpha_defender_root);
                 limiar_theta = 90 + delta_limiar;
             }
 
@@ -3401,13 +3416,13 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
             // PID
             if (fabs(alpha) <= limiar_theta ){
                 v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-                w = kp*alpha/180 + kd*(alpha - last_phi);
+                w = kp*alpha/180 + kd*(alpha - lalpha_defender_root);
                 limiar_theta = 90 - delta_limiar;
             }
             else{
                 alpha = ajusta_angulo(alpha+180);
                 v = v_delta*fabs(alpha)/limiar_theta - v_max;
-                w = kp*alpha/180 + kd*(alpha - last_phi);
+                w = kp*alpha/180 + kd*(alpha - lalpha_defender_root);
                 limiar_theta = 90 + delta_limiar;
             }
 
@@ -3457,12 +3472,12 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
 
     //                //PID
     //                if (fabs(alpha) <= limiar_theta ){
-    //                    w = 13*alpha/180 + kd*(alpha - last_phi);
+    //                    w = 13*alpha/180 + kd*(alpha - lalpha_defender_root);
     //                    limiar_theta = 90 - delta_limiar;
     //                }
     //                else{
     //                    alpha = ajusta_angulo(alpha+180);
-    //                    w = 13*alpha/180 + kd*(alpha - last_phi);
+    //                    w = 13*alpha/180 + kd*(alpha - lalpha_defender_root);
     //                    limiar_theta = 90 + delta_limiar;
     //                }
 
@@ -3501,8 +3516,9 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
 
     //cout << "vr" <<vels->first << endl;
     //cout << "ve" <<vels->second << endl;
-    last_phi = alpha;
+    lalpha_defender_root = alpha;
 
+    double lalpha_fake9=0;
 
     //rotate(robo, vels);
     if(pot_fields->flag_return!=2)
@@ -3524,6 +3540,451 @@ void Mover::set_killer_direction(bool a)
 }
 
 // Novas Funções
+
+
+void Mover::velocity_volante(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
+
+    Point2d meta = pot_fields->get_meta_defender_root();
+    Point2d robot_pos = robo->get_pos();
+    Point robot_grid = convert_C_to_G(robot_pos);
+    double robot_angle = ajusta_angulo(robo->get_angle());
+
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
+
+    Point2d ball_v;
+
+    double v,w,theta,alpha;
+    pair<float, float> vel;
+
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = -ball_vel.second / 100;
+
+
+    //Troca de direcoes
+    Point2d obst_prox;
+    Point2d wall_1 = robo->get_pos();
+    Point2d wall_2 = robo->get_pos();
+    Point2d wall_3 = robo->get_pos();
+    Point2d wall_4 = robo->get_pos();
+
+    wall_1.x = 160;
+    wall_2.x = 10;
+    wall_3.y = 0;
+    wall_4.y = 130;
+
+    double d0 = euclidean_dist(robo->get_pos(), enemy_pos[0]);
+    double d1 = euclidean_dist(robo->get_pos(), enemy_pos[1]);
+    double d2 = euclidean_dist(robo->get_pos(), enemy_pos[2]);
+    double d3 = euclidean_dist(robo->get_pos(), selec_robot.r1.get_pos()); //Gandalf
+    double d4 = euclidean_dist(robo->get_pos(), selec_robot.r2.get_pos()); // Presto
+    double d5 = euclidean_dist(robo->get_pos(), selec_robot.r3.get_pos()); //Leona
+    double d6 = euclidean_dist(robo->get_pos(), wall_1);
+    double d7 = euclidean_dist(robo->get_pos(), wall_2);
+    double d8 = euclidean_dist(robo->get_pos(), wall_3);
+    double d9 = euclidean_dist(robo->get_pos(), wall_4);
+    double distancia_permitida = 15;
+    double distancia_obst;
+
+    // Distancia com o mesmo time
+    if (robo->get_pos().x == selec_robot.r1.get_pos().x && robo->get_pos().y == selec_robot.r1.get_pos().y ){
+        d3 = 1000;
+    }
+
+    if (robo->get_pos().x == selec_robot.r2.get_pos().x && robo->get_pos().y == selec_robot.r2.get_pos().y ){
+        d4 = 1000;
+    }
+
+    if (robo->get_pos().x == selec_robot.r3.get_pos().x && robo->get_pos().y == selec_robot.r3.get_pos().y ){
+        d5 = 1000;
+    }
+
+
+    // Distancia com os amigos
+
+    if (d3 <= d4 && d3 <= d5){
+        obst_prox = selec_robot.r1.get_pos();
+    }
+    if (d4 <= d3 && d4 <= d5){
+        obst_prox = selec_robot.r2.get_pos();
+    }
+    if (d5 <= d3 && d5 <= d4){
+        obst_prox = selec_robot.r3.get_pos();
+    }
+
+    distancia_obst = euclidean_dist(robo->get_pos(), obst_prox);
+
+    //cout << "robo x " << robo->get_pos().x << " robo y " << robo->get_pos().y << endl;
+    //cout << "obj x " << obst_prox.x << " obj y " << obst_prox.y << endl;
+
+    double angle = vector_angle(robo->get_pos(),obst_prox);
+    double another_ang = fabs(robo->get_angle() - angle);
+    if(another_ang > 180){
+        another_ang -= 360;
+    }
+    if(another_ang < -180)
+    {
+        another_ang += 360;
+    }
+
+    //Restricao de posicao
+    if (distancia_obst < distancia_permitida){
+        if(defender_direction && distancia_obst < distancia_permitida && fabs(another_ang) < 40){
+            if (cont_defender_obst > 5){
+                defender_direction = false;
+                cont_defender_obst = 0;
+                cont_defender_tempo = 0;
+            }
+            else{
+                cont_defender_obst = cont_defender_obst + 1;
+            }
+        }
+        else if(!defender_direction && distancia_obst < distancia_permitida && fabs(another_ang) > 180 - 40){
+            if (cont_defender_obst > 5){
+                defender_direction = true;
+                cont_defender_obst = 0;
+                cont_defender_tempo = 0;
+            }
+            else{
+                cont_defender_obst = cont_defender_obst + 1;
+            }
+        }
+    }
+    else{
+        cont_defender_obst = cont_defender_obst - 1;
+        if (cont_defender_obst < 0){
+            cont_defender_obst = 0;
+        }
+    }
+
+
+
+    for (int cont_vel = 0; cont_vel < 4; cont_vel ++){
+        media_ball_v[cont_vel] = media_ball_v[cont_vel+1];
+    }
+    media_ball_v[4] = ball_v;
+    ball_v = 0.35*media_ball_v[4]+0.25*media_ball_v[3]+0.2*media_ball_v[2]+0.15*media_ball_v[1]+0.05*media_ball_v[0];
+    ////cout << ball_v.x << endl;
+
+    ////cout << "x " << ball_pos.x << "   y " << ball_pos.y << endl;
+
+    //vels->first = 0;
+    //vels->second = 0;
+
+    alpha = 90 - robo->get_angle();
+    alpha = ajusta_angulo(alpha);
+
+
+    //PID
+    if (fabs(alpha) <= limiar_theta ){
+        w = kp*alpha/180 + kd*(alpha - lalpha_volante);
+        limiar_theta = 90 - delta_limiar;
+    }
+    else{
+        alpha = ajusta_angulo(alpha+180);
+        w = kp*alpha/180 + kd*(alpha - lalpha_volante);
+        limiar_theta = 90 + delta_limiar;
+    }
+
+    if (centroid_def.x < centroid_atk.x){
+        alpha = 90 - robot_angle;
+        alpha = ajusta_angulo(alpha);
+        //PID
+        if (fabs(alpha) <= limiar_theta ){
+            w = 17*alpha/180 + kd*(alpha - lalpha_volante);
+            limiar_theta = 90 - delta_limiar;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            w = 17*alpha/180 + kd*(alpha - lalpha_volante);
+            limiar_theta = 90 + delta_limiar;
+        }
+        double tempo;
+        double aux_position_y;
+        tempo = (robot_pos.x + 4.5 - ball_pos.x)/ball_v.x;
+        aux_position_y = ball_pos.y - tempo*ball_v.y;
+        if(aux_position_y < 0){
+            aux_position_y = 0;
+        }
+        if(aux_position_y > 130){
+            aux_position_y = 130;
+        }
+        //previsao de bola
+        if (ball_v.x < 0 && ball_pos.x > centroid_def.x + line_root_defender){
+            if (robot_angle > 0){
+                v = -0.8*(aux_position_y-robot_pos.y)/tempo;
+                if(v > 0.6){
+                    v = 0.6;
+                }
+                else if (v < -0.6){
+                    v = -0.6;
+                }
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+            else if (robot_angle < 0){
+                v = 0.8*(aux_position_y-robot_pos.y)/tempo;
+                if(v > 0.6){
+                    v = 0.6;
+                }
+                else if(v < -0.6){
+                    v = -0.6;
+                }
+
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+        }
+        else if (ball_pos.x > centroid_def.x + line_root_defender && robo->get_pos().x < centroid_def.x + line_root_defender + 10 && robo->get_pos().x > centroid_def.x + line_root_defender - 10){
+            //FollowBall
+                alpha = 90 - robot_angle;
+                alpha = ajusta_angulo(alpha);
+                //PID
+                if (fabs(alpha) <= limiar_theta ){
+                    w = 17*alpha/180 + kd*(alpha - lalpha_volante);
+                    limiar_theta = 90 - delta_limiar;
+                }
+                else{
+                    alpha = ajusta_angulo(alpha+180);
+                    w = 17*alpha/180 + kd*(alpha - lalpha_volante);
+                    limiar_theta = 90 + delta_limiar;
+                }
+                //cout << "angle " << robot_angle << endl;
+                //ball_v.y = (ball_v.y / fabs(ball_v.y)) * 0.4;
+                if(fabs(robo->get_pos().y-ball_pos.y) < 3){
+                    v = 0;
+                }
+                else if (robot_angle > 0 && ball_pos.y < robot_pos.y ){
+                    v = 0.33; // Cinemática 0.005
+                    //  cout << "1" << endl;
+                }
+                else if (robot_angle > 0 && ball_pos.y > robot_pos.y){
+                    v = -0.33; //PID 0.03
+                    // cout << "2" << endl;
+                }
+                else if (robot_angle < 0 && ball_pos.y < robot_pos.y ){
+                    v = -0.33;
+                    //cout << "3" << endl;
+                }
+                else if (robot_angle < 0 && ball_pos.y > robot_pos.y ){
+                    v = 0.33;
+                    //cout << "4" << endl;
+                }
+                if(v > v_max_gol_ef){
+                    v = v_max_gol_ef;
+                }
+                else if(v < -v_max_gol_ef){
+                    v = -v_max_gol_ef;
+                }
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+        }
+        else{
+            //Return2Goal
+            theta = vector_angle(robo->get_pos(),meta);
+            alpha = theta - robo->get_angle();
+            alpha = ajusta_angulo(alpha);
+
+            //PID
+            if (fabs(alpha) <= limiar_theta ){
+                //v = v_max;
+                v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+                w = kp*alpha/180 + kd*(alpha - lalpha_volante);
+                limiar_theta = 90 - delta_limiar;
+                ////cout << "Frente" << endl;
+            }
+            else{
+                alpha = ajusta_angulo(alpha+180);
+                //v = - v_max;
+                v = v_delta*fabs(alpha)/limiar_theta - v_max;
+                w = kp*alpha/180 + kd*(alpha - lalpha_volante);
+                limiar_theta = 90 + delta_limiar;
+                ////cout << "Trás" << endl;
+            }
+
+
+
+            if (fabs(alpha) > 65 && fabs(alpha) < 115){
+                v = 0;
+            }
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
+            }
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
+            }
+            vels->first = v - w*l;
+            vels->second = v + w*l;
+
+            //AdjustRobo
+            if((euclidean_dist(robot_pos, pot_fields->get_meta_defender_root()) < 7.5) && (fabs(robo->get_angle()) > 85) && (fabs(robo->get_angle()) < 95)){
+                vels->first = 0;
+                vels->second = 0;
+            }
+            else if (euclidean_dist(robot_pos, pot_fields->get_meta_defender_root()) < 7.5){
+                goalkeeper_orientation(robo,vels);
+
+                ////cout << "AdjustRobo" << endl;
+            }
+        }
+    }else{
+        alpha = 90 - robot_angle;
+        alpha = ajusta_angulo(alpha);
+        //PID
+        if (fabs(alpha) <= limiar_theta ){
+            w = 17*alpha/180 + kd*(alpha - lalpha_volante);
+            limiar_theta = 90 - delta_limiar;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            w = 17*alpha/180 + kd*(alpha - lalpha_volante);
+            limiar_theta = 90 + delta_limiar;
+        }
+        double tempo;
+        double aux_position_y;
+        tempo = (robot_pos.x - 4.5 - ball_pos.x)/ball_v.x;
+        aux_position_y = ball_pos.y - tempo*ball_v.y;
+        if(aux_position_y < 0){
+            aux_position_y = 0;
+        }
+        if(aux_position_y > 130){
+            aux_position_y = 130;
+        }
+        //previsao de bola
+
+        if (ball_v.x > 0 && ball_pos.x < centroid_def.x - line_root_defender){
+
+            if (robot_angle > 0){
+                v = -(aux_position_y-robot_pos.y)/tempo;
+                if(v > v_max_gol_ef){
+                    v = v_max_gol_ef;
+                }
+                else if(v < -v_max_gol_ef){
+                    v = -v_max_gol_ef;
+                }
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+            else if (robot_angle < 0){
+                v = (aux_position_y-robot_pos.y)/tempo;
+                if(v > v_max_gol_ef){
+                    v = v_max_gol_ef;
+                }
+                else if(v < -v_max_gol_ef){
+                    v = -v_max_gol_ef;
+                }
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+            // //cout << "prevision" << endl;
+        }
+        else if (ball_pos.x < centroid_def.x - line_root_defender && robo->get_pos().x < centroid_def.x - line_root_defender + 10 && robo->get_pos().x > centroid_def.x - line_root_defender - 10){
+            //FollowBall
+            alpha = 90 - robot_angle;
+            alpha = ajusta_angulo(alpha);
+            //PID
+            if (fabs(alpha) <= limiar_theta ){
+                w = 17*alpha/180 + kd*(alpha - lalpha_volante);
+                limiar_theta = 90 - delta_limiar;
+            }
+            else{
+                alpha = ajusta_angulo(alpha+180);
+                w = 17*alpha/180 + kd*(alpha - lalpha_volante);
+                limiar_theta = 90 + delta_limiar;
+            }
+
+            //cout << "angle " << robot_angle << endl;
+            //ball_v.y = (ball_v.y / fabs(ball_v.y)) * 0.4;
+            if(fabs(robo->get_pos().y-ball_pos.y) < 3){
+                v = 0;
+            }
+            else if (robot_angle > 0 && ball_pos.y < robot_pos.y ){
+                v = 0.33; // Cinemática 0.005
+                //  cout << "1" << endl;
+            }
+            else if (robot_angle > 0 && ball_pos.y > robot_pos.y){
+                v = -0.33; //PID 0.03
+                // cout << "2" << endl;
+            }
+            else if (robot_angle < 0 && ball_pos.y < robot_pos.y ){
+                v = -0.33;
+                //cout << "3" << endl;
+            }
+            else if (robot_angle < 0 && ball_pos.y > robot_pos.y ){
+                v = 0.33;
+                //cout << "4" << endl;
+            }
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
+            }
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
+            }
+            vels->first = v - w*l;
+            vels->second = v + w*l;
+
+
+        }
+        else{
+            // //cout << "return to meta" << endl;
+            //Return2Goal
+            theta = vector_angle(robo->get_pos(),meta);
+            alpha = theta - robo->get_angle();
+            alpha = ajusta_angulo(alpha);
+
+            //PID
+            if (fabs(alpha) <= limiar_theta ){
+                //v = v_max;
+                v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+                w = kp*alpha/180 + kd*(alpha - lalpha_volante);
+                limiar_theta = 90 - delta_limiar;
+                ////cout << "Frente" << endl;
+            }
+            else{
+                alpha = ajusta_angulo(alpha+180);
+                //v = - v_max;
+                v = v_delta*fabs(alpha)/limiar_theta - v_max;
+                w = kp*alpha/180 + kd*(alpha - lalpha_volante);
+                limiar_theta = 90 + delta_limiar;
+                ////cout << "Trás" << endl;
+            }
+
+
+            if (fabs(alpha) > 65 && fabs(alpha) < 115){
+                v = 0;
+            }
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
+            }
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
+            }
+            vels->first = v - w*l;
+            vels->second = v + w*l;
+
+            //AdjustRobo
+            if((euclidean_dist(robot_pos, pot_fields->get_meta_defender_root()) < 7.5) && (fabs(robo->get_angle()) > 85) && (fabs(robo->get_angle()) < 95)){
+                vels->first = 0;
+                vels->second = 0;
+            }
+            else if (euclidean_dist(robot_pos, pot_fields->get_meta_defender_root()) < 7.5){
+                goalkeeper_orientation(robo,vels);
+
+                ////cout << "AdjustRobo" << endl;
+            }
+        }
+    }
+
+    lalpha_volante = alpha;
+    rotate(robo, vels);
+    kick_rotate(robo, vels);
+}
+
+
+
+
+
 void Mover::velocity_fake9(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels)
 {
     Point2d ball_v;
@@ -3531,7 +3992,6 @@ void Mover::velocity_fake9(Robot *robo, Game_functions *pot_fields, pair<float, 
     double ang_vel;
     double theta;
     double alpha;
-    double last_phi=0;
     double w,v;
     Point2d meta;
     ball_v.x = ball_vel.first / 100;
@@ -3543,32 +4003,40 @@ void Mover::velocity_fake9(Robot *robo, Game_functions *pot_fields, pair<float, 
     double l = robo->get_l_size();
 
     meta = pot_fields->meta_fake9;
-    theta = vector_angle(robo->get_pos(), meta);
+    //theta = vector_angle(robo->get_pos(), meta);
+    theta = pot_fields->get_direction_CPU()*180/M_PI;
     alpha = theta - robo->get_angle();
     alpha = ajusta_angulo(alpha);
 
     //PID
     if (fabs(alpha) <= limiar_theta ){
          v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-         w = kp*alpha/180 + kd*(alpha-last_phi);
-         //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+         w = kp*alpha/180 + kd*(alpha-lalpha_fake9);
+         //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_fake9);
          limiar_theta = 90 - delta_limiar;
          //cout << "3" << endl;
     }
     else{
         alpha = ajusta_angulo(alpha+180);
         v = v_delta*fabs(alpha)/limiar_theta - v_max;
-        w = kp*alpha/180 + kd*(alpha-last_phi);
-        //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - last_phi);
+        w = kp*alpha/180 + kd*(alpha-lalpha_fake9);
+        //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_fake9);
         limiar_theta = 90 + delta_limiar;
         //cout << "4" << endl;
     }
     //Fim PID
-    last_phi = alpha;
+    lalpha_fake9 = alpha;
+
     vels->first = v-w*l;
     vels->second = v+w*l;
-    cout << "Velocidade 1: " << v-w*l << endl;
-    cout << "Velocidade 2: " << v+w*l << endl;
+
+    if(euclidean_dist(robo->get_pos(),meta) < 10){
+        vels->first = 0;
+        vels->second = 0;
+    }
+
+    //cout << "Velocidade 1: " << vels->first << endl;
+    //cout << "Velocidade 2: " << vels->second << endl;
 }
 //Fim Novas Funções
 
@@ -3601,8 +4069,8 @@ void Mover::set_params(Robot * robo){
         robo->set_l_size(0.033);
         break;
     case 9: //trocar roda
-        robo->set_kp(6.85);
-        robo->set_kd(0.0000);
+        robo->set_kp(7.25);
+        robo->set_kd(0.002);
         robo->set_l_size(0.034);
         break;
     case 10:

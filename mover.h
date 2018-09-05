@@ -29,7 +29,7 @@ private:
     Point2d ball_pos; //posicao em cm da bola
     Point2d centroid_atk; //posicao em cm do centro da area de atk
     Point2d centroid_def; //posicao em cm do centro da area de def
-    double line_root_defender = 38;
+    double line_root_defender = 45;
     pVector def_area;
     pair<double, double> ball_vel;
     vector<pair<float, float> > vels;
@@ -101,6 +101,7 @@ public:
     void velocity_defender_root(Robot *, Game_functions  *, pair<float, float>*);
     // Novas Funções
     void velocity_fake9(Robot *, Game_functions  *, pair<float, float>*);
+    void velocity_volante(Robot *, Game_functions  *, pair<float, float>*);
     // Fim Novas Funções
 
     void set_params(Robot *);

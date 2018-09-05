@@ -648,45 +648,44 @@ float Navigation::get_de(){
 }
 
 float Navigation::repulsive_Math(Robot *robo, Point2d obj, Point2d ball){
-float rot_angle = pi/2;
-float k_const = 1 , k_larg = 0.05;
-float m = (ball.y-obj.y)/(ball.x-obj.x);
-float norm, psi;
-int a;
-Point2d vec_out, vec_tan, vec, robo_pos;
-MatrixXd rot(2,2);
-MatrixXd vec_tan_aux(2,1), vec_aux(2,1);
+    float rot_angle = pi/2;
+    float k_const = 1 , k_larg = 0.05;
+    float m = (ball.y-obj.y)/(ball.x-obj.x);
+    float norm, psi;
+    int a;
+    Point2d vec_out, vec_tan, vec, robo_pos;
+    MatrixXd rot(2,2);
+    MatrixXd vec_tan_aux(2,1), vec_aux(2,1);
 
-robo_pos = robo->get_pos();
-norm = sqrt(pow(obj.x - robo_pos.x,2) + pow(obj.y - robo_pos.y,2));
-k_const = k_larg*norm;
+    robo_pos = robo->get_pos();
+    norm = sqrt(pow(obj.x - robo_pos.x,2) + pow(obj.y - robo_pos.y,2));
+    k_const = k_larg*norm;
 
-        if(obj.x <= ball.x){
-            if(robo_pos.y-obj.y > m*(robo_pos.x-obj.x))
+    if(obj.x <= ball.x){
+        if(robo_pos.y-obj.y > m*(robo_pos.x-obj.x))
             a = -1;
-            else
+        else
             a = 1;
-        }
-        else {
-            if(robo_pos.y-obj.y > m*(robo_pos.x-obj.x))
+    }
+    else {
+        if(robo_pos.y-obj.y > m*(robo_pos.x-obj.x))
             a = 1;
-            else
+        else
             a = -1;
-        }
- a= 1;
+    }
 
-        vec_out.x = ball.x - robo_pos.x;
-        vec_out.y = ball.y - robo_pos.y;
+    vec_out.x = ball.x - robo_pos.x;
+    vec_out.y = ball.y - robo_pos.y;
 
-        rot << cos(a*rot_angle), sin(a*rot_angle), -sin(a*rot_angle), cos(a*rot_angle);
-        vec_aux << vec_out.x, vec_out.y;
-        vec_tan_aux = rot*vec_aux;
-        vec_tan.x = vec_tan_aux(0);
-        vec_tan.y = vec_tan_aux(1);
+    rot << cos(a*rot_angle), sin(a*rot_angle), -sin(a*rot_angle), cos(a*rot_angle);
+    vec_aux << vec_out.x, vec_out.y;
+    vec_tan_aux = rot*vec_aux;
+    vec_tan.x = vec_tan_aux(0);
+    vec_tan.y = vec_tan_aux(1);
 
-        vec.x = vec_tan.x + k_const*vec_out.x;
-        vec.y = vec_tan.y + k_const*vec_out.y;
+    vec.x = vec_tan.x + k_const*vec_out.x;
+    vec.y = vec_tan.y + k_const*vec_out.y;
 
-        psi = atan2(vec.y,vec.x);
-        return -psi;
+    psi = atan2(vec.y,vec.x);
+    return -psi;
 }
