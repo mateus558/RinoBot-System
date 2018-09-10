@@ -1674,6 +1674,7 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     ball_v.x = ball_vel.first / 100;
     ball_v.y = ball_vel.second / 100;
 
+    float ang_avoid = 0;
 
     for (int cont_vel = 0; cont_vel < 4; cont_vel ++){
         media_ball_v[cont_vel] = media_ball_v[cont_vel+1];
@@ -1784,22 +1785,23 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     //            meta = meiuca;
     //        }
     //    }
-    if(euclidean_dist(robo->get_pos(),ball_pos) > 20)
-    {
-        meta = prevision;
-        ang_ball_atk = vector_angle(prevision,centroid_atk);
-    }
-    else
-    {
-        meta = ball_pos;
-    }
+//    if(euclidean_dist(robo->get_pos(),ball_pos) > 20)
+//    {
+//        meta = prevision;
+//        ang_ball_atk = vector_angle(prevision,centroid_atk);
+//    }
+//    else
+//    {
+//        meta = ball_pos;
+//    }
 
     meta = prevision;
     ang_ball_atk = vector_angle(prevision,centroid_atk);
 
     set_g_size(meta,robo);
     if(centroid_atk.x < centroid_def.x){
-        if(ball_pos.x > centroid_def.x - 35){
+        if(ball_pos.x > centroid_def.x - 35)
+        {
             set_de(2);
             set_kr(5);
         }
@@ -1808,12 +1810,15 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
             set_kr(5);
         }
     }
-    else if(centroid_def.x < centroid_atk.x){
-        if(ball_pos.x < centroid_def.x + 35){
+    else if(centroid_def.x < centroid_atk.x)
+    {
+        if(ball_pos.x < centroid_def.x + 35)
+        {
             set_de(2);
             set_kr(5);
         }
-        else{
+        else
+        {
             set_de(7);
             set_kr(5);
         }
@@ -1822,12 +1827,15 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
 
 
     //Chama o CPH nos cantos
-    if(meta.x > 0 && meta.y > 0){
+    if(meta.x > 0 && meta.y > 0)
+    {
         meta_grid = convert_C_to_G(meta);
         //cout<<"Bola "<<ball_pos_grid.x<<" "<<ball_pos_grid.y<<endl;
         if (meta_grid.x > 0 && meta_grid.y > 0)
             set_potential(meta_grid.y, meta_grid.x, 0);
-    }else{
+    }
+    else
+    {
         //tratar a meta aqui
     }
 
@@ -1836,14 +1844,22 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     double def_area_y2 = def_area[6].y*Y_CONV_CONST;
 
 
-    if (centroid_atk.x > centroid_def.x){
-        if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
+    if (centroid_atk.x > centroid_def.x)
+    {
+        if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
+        {
             //            avoid_penalties();
-            int jh = 1;
+            meta.x = centroid_def.x + 50; //nova avoid penalty+
+            meta.y = centroid_def.y + 30;
+
+            ang_avoid = vector_angle(robo_pos, meta);
+            set_thetaDir(ang_avoid*pi/180);
+
             //            while(iterator_cph()>1E-6);
             set_direction(centroid_atk,centroid_def);
         }
-        else{
+        else
+        {
             if (ball_pos.x < 45 || /*(ball_pos.x > 145 && (ball_pos.y < 35 || ball_pos.y > 100)) ||*/ ball_pos.y < 20  || ball_pos.y > 110){
 
                 //CPH nos cantos
@@ -1857,7 +1873,8 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 if(ball_pos.y>centroid_atk.y /*&& robo_pos.y>centroid_atk.y*/)
                     set_thetaDir(30*pi/180);
             }
-            else{
+            else
+            {
                 /*/ Angulo robo bola
                 if (fabs(gol_y_limit - centroid_atk.y) < 22){ //22 é o limite comparado ao centro, tem que arrumar para o centro do gol em y
                     set_thetaDir(-ang_robot_ball*M_PI/180);
@@ -1894,11 +1911,14 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
                 //cout << "X: " << ang_point.x << endl;
                 //cout << "Y: " << ang_point.y << endl;
 
-                if((ang_point.y < 85) && (ang_point.y > 45) && robo_pos.x < ball_pos.x){   // !!!!!!!!!!!!!!!!
+                if((ang_point.y < 85) && (ang_point.y > 45) && robo_pos.x < ball_pos.x)
+                {   // !!!!!!!!!!!!!!!!
                     set_thetaDir(alpha*M_PI/180);
                     //                    set_thetaDir(-ang_ball_atk*M_PI/180);
                     Set_atk_situation_state(true);
-                }else{
+                }
+                else
+                {
                     set_thetaDir(-ang_ball_atk*M_PI/180);
                     Set_atk_situation_state(false);
                 }
@@ -1907,14 +1927,22 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
 
         }
     }
-    else{
-        if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2){
+    else
+    {
+        if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
+        {
             //            avoid_penalties();
             //cout << " 1 " << endl;
             //            while(iterator_cph()>1E-6);
             //set_direction(centroid_atk,centroid_def);
+            meta.x = centroid_def.x - 50;
+            meta.y = centroid_def.y + 30;
+
+            ang_avoid = vector_angle(robo_pos, meta);
+            set_thetaDir(ang_avoid*pi/180);
         }
-        else{
+        else
+        {
 
             if (ball_pos.x > 125 || /*(ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) ||*/ ball_pos.y < 20  || ball_pos.y > 110){ //antes 15 e 115
                 //cout << " 2 " << endl;
@@ -2024,6 +2052,8 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
             //  set_direction(centroid_atk,centroid_def);
         }
     }
+
+    set_meta_cpu(meta);
 
     univector_field(robo,enemy_prox,meta);
 
@@ -2462,4 +2492,14 @@ void Game_functions::fake9(Robot *robo, int num_Robo, pair<float, float> *vels){
     meta_fake9 = meta;
 
     the_fih = repulsive_Math(robo, ball_pos, meta);
+}
+
+Point2d Game_functions::get_meta_cpu()
+{
+    return meta_cpu;
+}
+
+void Game_functions::set_meta_cpu(Point2d qqr)
+{
+    meta_cpu = qqr;
 }

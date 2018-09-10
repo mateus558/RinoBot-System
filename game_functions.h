@@ -99,6 +99,10 @@ public:
 
     void set_g_size(Point2d meta, Robot *robo);
 
+    Point2d meta_cpu;
+    Point2d get_meta_cpu();
+    void set_meta_cpu(Point2d);
+
     ~Game_functions();
 };
 

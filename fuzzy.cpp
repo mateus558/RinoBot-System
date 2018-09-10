@@ -662,7 +662,7 @@ void Fuzzy::set_objectives(){
         {
             if(euclidean_dist(selec_robot.r1.get_pos(), ball_pos) < euclidean_dist(selec_robot.r2.get_pos(), ball_pos))
             {
-                if(selec_robot.r1.get_pos().x < ball_pos.x)
+                if(selec_robot.r1.get_pos().x < (ball_pos.x + 7.5))
                 {
                     gandalf_func = 10;
                     presto_func = 9;
@@ -675,7 +675,7 @@ void Fuzzy::set_objectives(){
             }
             else
             {
-                if(selec_robot.r2.get_pos().x < ball_pos.x)
+                if(selec_robot.r2.get_pos().x < (ball_pos.x - 7.5))
                 {
                     gandalf_func = 9;
                     presto_func = 10;
@@ -683,7 +683,8 @@ void Fuzzy::set_objectives(){
                 else
                 {
                     gandalf_func = 10;
-                    presto_func = 9;                }
+                    presto_func = 9;
+                }
             }
 
             if(ball_pos.x < (centroid_atk.x+centroid_def.x)/2){
@@ -906,5 +907,5 @@ void Fuzzy::set_roles(bool checked){
 
 int Fuzzy::get_strategy()
 {
-    return num_strategy;
+    return this->num_strategy;
 }

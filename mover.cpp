@@ -14,7 +14,7 @@ double limiar_theta = 90 + delta_limiar;
 
 // Constantes para robôs de linha
 double v_max = 0.5; //0.75
-double v_delta = 0.2;
+double v_delta = 0.3;
 double w_max = 7;
 double k = (w_max/v_max);
 double dist_giro = 10.0;
@@ -2388,23 +2388,23 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     double def_area_y2 = def_area[6].y*Y_CONV_CONST;
 
     //CPH
-    if (centroid_atk.x > ball_pos.x){ //Comentar tudo para ATK vs DEF
-        if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
-        cout << "Avoid" << endl;
-            //theta = pot_fields->get_direction(robot_grid);
-        //        else
-        //            if (ball_pos.x < 45 || (ball_pos.x > 145 && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
-        //                theta = pot_fields->get_direction(robot_grid);
-    }
-    else{
-        if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
-        //    theta = pot_fields->get_direction(robot_grid);
-        cout << "Avoid" << endl;
-        //        else{
-        //            if (ball_pos.x > 125 || (ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
-        //                theta = pot_fields->get_direction(robot_grid);
-        //        }
-    }
+//    if (centroid_atk.x > ball_pos.x){ //Comentar tudo para ATK vs DEF
+//        if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
+//        cout << "Avoid" << endl;
+//            //theta = pot_fields->get_direction(robot_grid);
+//        //        else
+//        //            if (ball_pos.x < 45 || (ball_pos.x > 145 && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
+//        //                theta = pot_fields->get_direction(robot_grid);
+//    }
+//    else{
+//        if(ball_pos.x > def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
+//        //    theta = pot_fields->get_direction(robot_grid);
+//        cout << "Avoid" << endl;
+//        //        else{
+//        //            if (ball_pos.x > 125 || (ball_pos.x < 25  && (ball_pos.y < 35 || ball_pos.y > 100)) || ball_pos.y < 15  || ball_pos.y > 115)
+//        //                theta = pot_fields->get_direction(robot_grid);
+//        //        }
+//    }
 
     //Teste ataque
 
@@ -2630,20 +2630,27 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
 //        if(ball_pos.x < centroid_def.x + 35 && ball_pos.x < robo_pos.x)
 //            v = 0;
 //    }
-
-    vels->first = v-w*l;
-    vels->second = v+w*l;
-
-    if(centroid_atk.x < centroid_def.x){
-        if(ball_pos.x > 45){
-            rotate(robo, vels); //Colocar a inv para ATK vs DEF
-        }
+    if((pot_fields->get_meta_cpu()  != ball_pos) && (euclidean_dist(robo_pos, pot_fields->get_meta_cpu()) <= 10))
+    {
+        vels->first = 0;
+        vels->second = 0;
     }
-    else if(centroid_def.x < centroid_atk.x){
-        if(ball_pos.x < 135){
-            rotate(robo, vels); //Colocar a inv para ATK vs DEF
-        }
+    else
+    {
+        vels->first = v-w*l;
+        vels->second = v+w*l;
     }
+
+//    if(centroid_atk.x < centroid_def.x){
+//        if(ball_pos.x > 45){
+//            rotate(robo, vels); //Colocar a inv para ATK vs DEF
+//        }
+//    }
+//    else if(centroid_def.x < centroid_atk.x){
+//        if(ball_pos.x < 135){
+//            rotate(robo, vels); //Colocar a inv para ATK vs DEF
+//        }
+//    }
 
     rotate(robo, vels);
     //kick_rotate(robo, vels);
@@ -4002,30 +4009,199 @@ void Mover::velocity_fake9(Robot *robo, Game_functions *pot_fields, pair<float, 
     double kd = robo->get_kd();
     double l = robo->get_l_size();
 
+
+     //Troca de direcoes
+    Point2d obst_prox;
+    Point2d wall_1 = robo->get_pos();
+    Point2d wall_2 = robo->get_pos();
+    Point2d wall_3 = robo->get_pos();
+    Point2d wall_4 = robo->get_pos();
+
+    wall_1.x = 160;
+    wall_2.x = 10;
+    wall_3.y = 0;
+    wall_4.y = 130;
+
+    double d0 = euclidean_dist(robo->get_pos(), enemy_pos[0]);
+    double d1 = euclidean_dist(robo->get_pos(), enemy_pos[1]);
+    double d2 = euclidean_dist(robo->get_pos(), enemy_pos[2]);
+    double d3 = euclidean_dist(robo->get_pos(), selec_robot.r1.get_pos()); //Gandalf
+    double d4 = euclidean_dist(robo->get_pos(), selec_robot.r2.get_pos()); // Presto
+    double d5 = euclidean_dist(robo->get_pos(), selec_robot.r3.get_pos()); //Leona
+    double d6 = euclidean_dist(robo->get_pos(), wall_1);
+    double d7 = euclidean_dist(robo->get_pos(), wall_2);
+    double d8 = euclidean_dist(robo->get_pos(), wall_3);
+    double d9 = euclidean_dist(robo->get_pos(), wall_4);
+    double distancia_permitida = 15;
+    double distancia_obst;
+
+    // Distancia com o mesmo time
+    if (robo->get_pos().x == selec_robot.r1.get_pos().x && robo->get_pos().y == selec_robot.r1.get_pos().y ){
+        d3 = 1000;
+    }
+
+    if (robo->get_pos().x == selec_robot.r2.get_pos().x && robo->get_pos().y == selec_robot.r2.get_pos().y ){
+        d4 = 1000;
+    }
+
+    if (robo->get_pos().x == selec_robot.r3.get_pos().x && robo->get_pos().y == selec_robot.r3.get_pos().y ){
+        d5 = 1000;
+    }
+
+
+    // Distancia com os adversarios
+    if (d0 <= d1 && d0 <= d2 && d0 <= d3 && d0 <= d4 && d0 <= d5 && d0 <= d6 && d0 <= d7 && d0 <= d8 && d0 <= d9 && d0 > 0){
+        obst_prox = enemy_pos[0];
+    }
+    if (d1 <= d0 && d1 <= d2 && d1 <= d3 && d1 <= d4 && d1 <= d5 && d1 <= d6 && d1 <= d7 && d1 <= d8 && d1 <= d9 && d1 > 0){
+        obst_prox = enemy_pos[1];
+    }
+    if (d2 <= d0 && d2 <= d1 && d2 <= d3 && d2 <= d4 && d2 <= d5 && d2 <= d6 && d2 <= d7 && d2 <= d8 && d2 <= d9 && d2 > 0){
+        obst_prox = enemy_pos[2];
+    }
+
+    if (d3 <= d0 && d3 <= d1 && d3 <= d2 && d3 <= d4 && d3 <= d5 && d3 <= d6 && d3 <= d7 && d3 <= d8 && d3 <= d9 && d3 > 0){
+        obst_prox = selec_robot.r1.get_pos();
+    }
+    if (d4 <= d0 && d4 <= d1 && d4 <= d2 && d4 <= d3 && d4 <= d5 && d4 <= d6 && d4 <= d7 && d4 <= d8 && d4 <= d9 && d4 > 0){
+        obst_prox = selec_robot.r2.get_pos();
+    }
+    if (d5 <= d0 && d5 <= d1 && d5 <= d2 && d5 <= d3 && d5 <= d4 && d5 <= d6 && d5 <= d7 && d5 <= d8 && d5 <= d9 && d5 > 0){
+        obst_prox = selec_robot.r3.get_pos();
+    }
+
+    // Distancia com as barreiras
+    if (d6 <= d0 && d6 <= d1 && d6 <= d2 && d6 <= d3 && d6 <= d4 && d6 <= d5 && d6 <= d7 && d6 <= d8 && d6 <= d9 && d6 > 0){
+        obst_prox = wall_1;
+    }
+    if (d7 <= d0 && d7 <= d1 && d7 <= d2 && d7 <= d3 && d7 <= d4 && d7 <= d5 && d7 <= d6 && d7 <= d8 && d7 <= d9 && d7 > 0){
+        obst_prox = wall_2;
+    }
+    if (d8 <= d0 && d8 <= d1 && d8 <= d2 && d8 <= d3 && d8 <= d4 && d8 <= d5 && d8 <= d6 && d8 <= d7 && d8 <= d9 && d8 > 0){
+        obst_prox = wall_3;
+    }
+    if (d9 <= d0 && d9 <= d1 && d9 <= d2 && d9 <= d3 && d9 <= d4 && d9 <= d5 && d9 <= d6 && d9 <= d7 && d9 <= d8 && d9 > 0){
+        obst_prox = wall_4;
+    }
+    distancia_obst = euclidean_dist(robo->get_pos(), obst_prox);
+
+    //cout << "robo x " << robo->get_pos().x << " robo y " << robo->get_pos().y << endl;
+    //cout << "obj x " << obst_prox.x << " obj y " << obst_prox.y << endl;
+
+    double angle = vector_angle(robo->get_pos(),obst_prox);
+    double another_ang = fabs(robo->get_angle() - angle);
+    if(another_ang > 180){
+        another_ang -= 360;
+    }
+    if(another_ang < -180)
+    {
+        another_ang += 360;
+    }
+
+    //Restricao de posicao
+    if (distancia_obst < distancia_permitida){
+        if(fake9_direction && distancia_obst < distancia_permitida && fabs(another_ang) < 40){
+            if (cont_fake9_obst > 5){
+                fake9_direction = false;
+                cont_fake9_obst = 0;
+                cont_fake9_tempo = 0;
+            }
+            else{
+                cont_fake9_obst = cont_fake9_obst + 1;
+            }
+        }
+        else if(!fake9_direction && distancia_obst < distancia_permitida && fabs(another_ang) > 180 - 40){
+            if (cont_fake9_obst > 5){
+                fake9_direction = true;
+                cont_fake9_obst = 0;
+                cont_fake9_tempo = 0;
+            }
+            else{
+                cont_fake9_obst = cont_fake9_obst + 1;
+            }
+        }
+    }
+    else{
+        cont_fake9_obst = cont_fake9_obst - 1;
+        if (cont_fake9_obst < 0){
+            cont_fake9_obst = 0;
+        }
+    }
+
+    //Restricao de tempo
+    if(fabs(robo->get_pos().x - last_fake9.x) < 0.05 && fabs(robo->get_pos().y - last_fake9.y) < 0.05){
+        cont_fake9_tempo = cont_fake9_tempo + 1;
+        if (cont_fake9_tempo > 15){
+            if(fake9_direction){
+                fake9_direction = false;
+            }
+            else if(!fake9_direction){
+                fake9_direction = true;
+            }
+
+            cont_fake9_tempo = 0;
+            cont_fake9_obst = 0;
+            //cout << "Trocou direcao" << endl;
+        }
+    }
+    else{
+        cont_fake9_tempo = cont_fake9_tempo - 1;
+        if (cont_fake9_tempo < 0){
+            cont_fake9_tempo = 0;
+        }
+    }
+    //    cout << "COntador tempo " << cont_fake9_tempo << endl;
+    last_fake9 = robo->get_pos();
+
+    // Fim da Troca
+
+// Calcula Velocidades
+
     meta = pot_fields->meta_fake9;
     //theta = vector_angle(robo->get_pos(), meta);
     theta = pot_fields->get_direction_CPU()*180/M_PI;
     alpha = theta - robo->get_angle();
     alpha = ajusta_angulo(alpha);
 
-    //PID
-    if (fabs(alpha) <= limiar_theta ){
-         v = -v_delta*fabs(alpha)/limiar_theta + v_max;
-         w = kp*alpha/180 + kd*(alpha-lalpha_fake9);
-         //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_fake9);
-         limiar_theta = 90 - delta_limiar;
-         //cout << "3" << endl;
-    }
-    else{
-        alpha = ajusta_angulo(alpha+180);
-        v = v_delta*fabs(alpha)/limiar_theta - v_max;
-        w = kp*alpha/180 + kd*(alpha-lalpha_fake9);
-        //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_fake9);
-        limiar_theta = 90 + delta_limiar;
-        //cout << "4" << endl;
-    }
+//    //PID NORMAL
+//    if (fabs(alpha) <= limiar_theta ){
+//         v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+//         w = kp*alpha/180 + kd*(alpha-lalpha_fake9);
+//         //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_fake9);
+//         limiar_theta = 90 - delta_limiar;
+//         //cout << "3" << endl;
+//    }
+//    else{
+//        alpha = ajusta_angulo(alpha+180);
+//        v = v_delta*fabs(alpha)/limiar_theta - v_max;
+//        w = kp*alpha/180 + kd*(alpha-lalpha_fake9);
+//        //            w = 7*alpha/180  + 0.0015*(theta-last_theta_control) + 0*(alpha - lalpha_fake9);
+//        limiar_theta = 90 + delta_limiar;
+//        //cout << "4" << endl;
+//    }
+//        lalpha_fake9 = alpha;
+
     //Fim PID
+
+
+    // PD COM TROCA DE LADO
+
+        if (fake9_direction){
+            v = -v_delta*fabs(alpha)/limiar_theta + v_max;
+            w = kp*alpha/180 + kd*(alpha-lalpha_fake9);
+            limiar_theta = 90 - delta_limiar;
+            //cout << "1" << endl;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            v = v_delta*fabs(alpha)/limiar_theta - v_max;
+            w = kp*alpha/180 + kd*(alpha-lalpha_fake9);
+            limiar_theta = 90 + delta_limiar;
+            // cout << "2" << endl;
+        }
     lalpha_fake9 = alpha;
+
+    //Fim PD
 
     vels->first = v-w*l;
     vels->second = v+w*l;

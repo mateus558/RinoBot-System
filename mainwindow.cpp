@@ -9,6 +9,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
 
+    fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
+    //caso não seja selecionado nada na change strategy é forçada a nova estrategia
+    fuzzy->set_strategy(4);
+
+    //QString current_strategy = "Current: Strategy " + QString::number(fuzzy->get_strategy());
 
     int i;
     qRegisterMetaType<Vision::Perception>("Vision::Perception");
@@ -18,12 +23,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-
-    ui->currentStrategylbl->setText("Current: 3");
-    ui->cbox_strategyOptions->addItem("Strategy 3");
-    ui->cbox_strategyOptions->addItem("Strategy 2");
+    ui->currentStrategylbl->setText("Current: Strategy " + QString::number(fuzzy->get_strategy()));
     ui->cbox_strategyOptions->addItem("Strategy 1");
+    ui->cbox_strategyOptions->addItem("Strategy 2");
+    ui->cbox_strategyOptions->addItem("Strategy 3");
+    ui->cbox_strategyOptions->addItem("Strategy 4");
     ui->cbox_strategyOptions->addItem("- Strategy Test -");
+    ui->cbox_strategyOptions->setCurrentIndex(3);
 
     QPixmap pix("rino.png");
     ui->logo->setPixmap(pix);
@@ -33,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent) :
     iWindow = new InformationWindow;
     area_read = false;
     eye = new Vision;
-    fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
     leona = new Game_functions; //instancia o objeto leona na rotina do sistema
     presto = new Game_functions; //instancia o objeto presto na rotina do sistema
     gandalf = new Game_functions; //instancia o objeto gandalf na rotina do sistema
@@ -50,10 +55,9 @@ MainWindow::MainWindow(QWidget *parent) :
     field = new FieldDraw;
     ball = new BallDraw;
 
-    //caso não seja selecionado nada na change strategy é forçada a nova estrategia
-    fuzzy->set_strategy(4);
 
-    cout << fuzzy->get_strategy() << endl;
+
+    cout << "Current estrategy: " << fuzzy->get_strategy() << endl;
 
     /****************** SETS INFORMATION WINDOW DATA *******************/
     iWindowData.eye = eye;
@@ -584,8 +588,6 @@ void MainWindow::on_btn_changeStrategy_clicked()
 {
     string strategy = ui->cbox_strategyOptions->currentText().toUtf8().constData();
 
-    cout << strategy << endl;
-
     char num_strategy;
 
     if(strategy == "Test")
@@ -596,24 +598,33 @@ void MainWindow::on_btn_changeStrategy_clicked()
         num_strategy = 2;
     else if (strategy == "Strategy 3")
         num_strategy = 3;
+    else if (strategy == "Strategy 4")
+        num_strategy = 4;
 
     fuzzy->set_strategy(num_strategy);
 
-    switch(ui->cbox_strategyOptions->currentIndex())
-    {
-    case 0:
-        ui->currentStrategylbl->setText("Current: 3");
-        break;
-    case 1:
-        ui->currentStrategylbl->setText("Current: 2");
-        break;
-    case 2:
-        ui->currentStrategylbl->setText("Current: 1");
-        break;
-    case 3:
-        ui->currentStrategylbl->setText("Current: Text");
-        break;
-    }
+//    switch(ui->cbox_strategyOptions->currentIndex())
+//    {
+//    case 1:
+//        ui->currentStrategylbl->setText("Current: 1" );
+//        break;
+//    case 2:
+//        ui->currentStrategylbl->setText("Current: 2");
+//        break;
+//    case 3:
+//        ui->currentStrategylbl->setText("Current: 3");
+//        break;
+//    case 4:
+//        ui->currentStrategylbl->setText("Current: Anti-Inatel Strategy (4)");
+//        break;
+//    case 5:
+//        ui->currentStrategylbl->setText("Current: Test");
+//        break;
+//    }
+
+    //QString current_strategy = "Current: " + QString::number(fuzzy->get_strategy());
+    ui->currentStrategylbl->setText("Current: Strategy " + QString::number(fuzzy->get_strategy()));
+    cout << "Current estratégia: " << fuzzy->get_strategy() << endl;
 }
 
 void MainWindow::on_actionSwap_Teams_triggered()
