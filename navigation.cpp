@@ -649,7 +649,7 @@ float Navigation::get_de(){
 
 float Navigation::repulsive_Math(Robot *robo, Point2d obj, Point2d ball){
     float rot_angle = pi/2;
-    float k_const = 1 , k_larg = 0.05;
+    float k_const = 1 , k_larg = 0.3; // k_larg [ 0.1 , 1 ] -> quanto maior mais desvia
     float m = (ball.y-obj.y)/(ball.x-obj.x);
     float norm, psi;
     int a;

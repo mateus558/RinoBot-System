@@ -14,7 +14,7 @@ double limiar_theta = 90 + delta_limiar;
 
 // Constantes para robôs de linha
 double v_max = 0.75; //0.75
-double v_delta = 0.2;
+double v_delta = 0.5;
 double w_max = 7;
 double k = (w_max/v_max);
 double dist_giro = 10.0;
@@ -401,7 +401,8 @@ void Mover:: velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<f
                 //Return2Goal
                 //v_max_gol = 0.5;
 
-                theta = pot_fields->get_direction(robot_grid);
+//                theta = pot_fields->get_direction(robot_grid);
+                theta = pot_fields->get_direction_CPU()*180/M_PI;
                 alpha = theta - robot_angle;
                 alpha = ajusta_angulo(alpha);
 
@@ -565,7 +566,8 @@ void Mover:: velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<f
 
 
                 //v_max_gol = 0.5;
-                theta = pot_fields->get_direction(robot_grid);
+                //theta = pot_fields->get_direction(robot_grid);
+                theta = pot_fields->get_direction_CPU()*180/M_PI;
                 alpha = theta - robot_angle;
                 alpha = ajusta_angulo(alpha);
 
@@ -4291,18 +4293,18 @@ void Mover::set_params(Robot * robo){
         robo->set_l_size(0.034);
         break;
     case 10:
-        robo->set_kp(13.75);//15
-        robo->set_kd(0.125);//0.09
+        robo->set_kp(15.0);//15
+        robo->set_kd(0.09);//0.09
         robo->set_l_size(0.034);
         break;
     case 11:
-        robo->set_kp(13.75); //8.3
-        robo->set_kd(.125);
+        robo->set_kp(15.0); //8.3
+        robo->set_kd(0.09);
         robo->set_l_size(0.034);
         break;
     case 12: //Ganhos não ajustados ainda
-        robo->set_kp(7.1);
-        robo->set_kd(0);
+        robo->set_kp(15.00);
+        robo->set_kd(0.09);
         robo->set_l_size(0.034);
         break;
     }

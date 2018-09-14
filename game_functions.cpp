@@ -252,7 +252,7 @@ void Game_functions::team_changed()
 
 void Game_functions::return2goal(){
     Point2d meta;
-    Point meta_grid;
+    //Point meta_grid;
     if(ball_pos.x > 0 && ball_pos.y > 0){
         if (ball_pos.x < centroid_atk.x){
             if (ball_pos.x < 90){
@@ -297,14 +297,15 @@ void Game_functions::return2goal(){
         meta_goalkeeper = meta;
 
 
-        meta_grid = convert_C_to_G(meta); //cm to grid
-        if (meta_grid.x > 0 && meta_grid.y > 0){
-            set_potential(meta_grid.y, meta_grid.x, 0);
-        }
 
-        while(iterator_cph()>1E-6);
-        set_direction(centroid_atk,centroid_def);
-        set_grid_orientation(meta_grid);
+        //        meta_grid = convert_C_to_G(meta); //cm to grid
+        //        if (meta_grid.x > 0 && meta_grid.y > 0){
+        //            set_potential(meta_grid.y, meta_grid.x, 0);
+        //        }
+
+        //        while(iterator_cph()>1E-6);
+        //        set_direction(centroid_atk,centroid_def);
+        //        set_grid_orientation(meta_grid);
     }
 }
 
@@ -351,9 +352,22 @@ Point2d Game_functions::prevision_atk(Robot *robo)
 void Game_functions::goalkeeper(Robot *robo, int num_Robo, pair<float, float> *vels)
 {
     // Gera o grid
-    init_grid();
+    //init_grid();
+    Robot defender;
 
     return2goal();
+
+
+    if (selec_robot.r1.get_flag_fuzzy() == 21)
+        defender = selec_robot.r1;
+    else if (selec_robot.r2.get_flag_fuzzy() == 21)
+        defender = selec_robot.r2;
+    else if (selec_robot.r3.get_flag_fuzzy() == 21)
+        defender = selec_robot.r3;
+
+    the_fih = repulsive_Math(robo, defender.get_pos(), meta_goalkeeper);
+
+
     //    cout << "Rx: " << robo->get_pos().x << " Ry: " << robo->get_pos().y << endl;
     //    cout << "Mx: " << meta_goalkeeper.x << " My: " << meta_goalkeeper.y << endl;
 
@@ -1827,15 +1841,15 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
     //            meta = meiuca;
     //        }
     //    }
-//    if(euclidean_dist(robo->get_pos(),ball_pos) > 20)
-//    {
-//        meta = prevision;
-//        ang_ball_atk = vector_angle(prevision,centroid_atk);
-//    }
-//    else
-//    {
-//        meta = ball_pos;
-//    }
+    //    if(euclidean_dist(robo->get_pos(),ball_pos) > 20)
+    //    {
+    //        meta = prevision;
+    //        ang_ball_atk = vector_angle(prevision,centroid_atk);
+    //    }
+    //    else
+    //    {
+    //        meta = ball_pos;
+    //    }
 
     meta = prevision;
     ang_ball_atk = vector_angle(prevision,centroid_atk);
