@@ -8,10 +8,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
     fuzzy = new Fuzzy; //instancia o objeto fuzzy na rotina do sistema
     //caso não seja selecionado nada na change strategy é forçada a nova estrategia
-    fuzzy->set_strategy(4);
+    fuzzy->set_strategy(3);
 
     //QString current_strategy = "Current: Strategy " + QString::number(fuzzy->get_strategy());
 
@@ -19,7 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
     qRegisterMetaType<Vision::Perception>("Vision::Perception");
     qRegisterMetaType<Selector>("Selector");
     //qRegisterMetaType<rVector>("rVector");
-
 
     ui->setupUi(this);
 
@@ -29,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->cbox_strategyOptions->addItem("Strategy 3");
     ui->cbox_strategyOptions->addItem("Strategy 4");
     ui->cbox_strategyOptions->addItem("- Strategy Test -");
-    ui->cbox_strategyOptions->setCurrentIndex(3);
+    ui->cbox_strategyOptions->setCurrentIndex(2);
 
     QPixmap pix("rino.png");
     ui->logo->setPixmap(pix);
@@ -55,9 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
     field = new FieldDraw;
     ball = new BallDraw;
 
-
-
-    cout << "Current estrategy: " << fuzzy->get_strategy() << endl;
+    cout << "Current estrategia: " << fuzzy->get_strategy() << endl;
 
     /****************** SETS INFORMATION WINDOW DATA *******************/
     iWindowData.eye = eye;
@@ -119,8 +115,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(updateInformationWindow(InfoParameters)), iWindow, SLOT(updateData(InfoParameters)));
 
     qRegisterMetaType<SettingsDialog::Settings>("SettingsDialog::Settings");
-
-
 }
 
 MainWindow::~MainWindow()

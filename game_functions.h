@@ -103,6 +103,8 @@ public:
     Point2d get_meta_cpu();
     void set_meta_cpu(Point2d);
 
+
+
     ~Game_functions();
 };
 

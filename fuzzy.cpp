@@ -660,74 +660,53 @@ void Fuzzy::set_objectives(){
 
         if(centroid_def.x < centroid_atk.x)
         {
-            if(euclidean_dist(selec_robot.r1.get_pos(), ball_pos) < euclidean_dist(selec_robot.r2.get_pos(), ball_pos))
+            if(ball_pos.x < (centroid_atk.x+centroid_def.x)/2)
             {
-                if(selec_robot.r1.get_pos().x < (ball_pos.x + 7.5))
+                if(euclidean_dist(selec_robot.r1.get_pos(), centroid_def) < euclidean_dist(selec_robot.r2.get_pos(), centroid_def))
                 {
-                    gandalf_func = 10;
-                    presto_func = 9;
+                    gandalf_func = 4;
+                    presto_func = 10;
                 }
                 else
                 {
-                    gandalf_func = 9;
-                    presto_func = 10;
+                    presto_func = 4;
+                    gandalf_func = 10;
                 }
             }
             else
             {
-                if(selec_robot.r2.get_pos().x < (ball_pos.x - 7.5))
+                if(euclidean_dist(selec_robot.r1.get_pos(), ball_pos) < euclidean_dist(selec_robot.r2.get_pos(), ball_pos))
                 {
-                    gandalf_func = 9;
-                    presto_func = 10;
+                    if(selec_robot.r1.get_pos().x < (ball_pos.x + 7.5))
+                    {
+                        gandalf_func = 10;
+                        presto_func = 9;
+                    }
+                    else
+                    {
+                        gandalf_func = 9;
+                        presto_func = 10;
+                    }
                 }
                 else
                 {
-                    gandalf_func = 10;
-                    presto_func = 9;
-                }
-            }
-
-            if(ball_pos.x < (centroid_atk.x+centroid_def.x)/2){
-                if(euclidean_dist(selec_robot.r1.get_pos(), centroid_def) < euclidean_dist(selec_robot.r2.get_pos(), centroid_def)){
-                    gandalf_func = 4;
-                    presto_func = 10;
-                }
-                else{
-                    presto_func = 4;
-                    gandalf_func = 10;
+                    if(selec_robot.r2.get_pos().x < (ball_pos.x - 7.5))
+                    {
+                        gandalf_func = 9;
+                        presto_func = 10;
+                    }
+                    else
+                    {
+                        gandalf_func = 10;
+                        presto_func = 9;
+                    }
                 }
             }
         }
         else
         {
-            if(euclidean_dist(selec_robot.r1.get_pos(), ball_pos) < euclidean_dist(selec_robot.r2.get_pos(), ball_pos))
+            if(ball_pos.x > (centroid_atk.x+centroid_def.x)/2)
             {
-                if(selec_robot.r1.get_pos().x > ball_pos.x)
-                {
-                   gandalf_func = 10;
-                    presto_func = 9;
-                }
-                else
-                {
-                    gandalf_func = 9;
-                    presto_func = 10;
-                }
-            }
-            else
-            {
-                if(selec_robot.r2.get_pos().x > ball_pos.x)
-                {
-                    gandalf_func = 9;
-                    presto_func = 10;
-                }
-                else
-                {
-                    gandalf_func = 10;
-                    presto_func = 9;
-                }
-            }
-
-            if(ball_pos.x > (centroid_atk.x+centroid_def.x)/2){
                 if(euclidean_dist(selec_robot.r1.get_pos(), centroid_def) < euclidean_dist(selec_robot.r2.get_pos(), centroid_def)){
                     gandalf_func = 4;
                     presto_func = 10;
@@ -737,12 +716,40 @@ void Fuzzy::set_objectives(){
                     gandalf_func = 10;
                 }
             }
+            else
+            {
+                if(euclidean_dist(selec_robot.r1.get_pos(), ball_pos) < euclidean_dist(selec_robot.r2.get_pos(), ball_pos))
+                {
+                    if(selec_robot.r1.get_pos().x > ball_pos.x)
+                    {
+                        gandalf_func = 10;
+                        presto_func = 9;
+                    }
+                    else
+                    {
+                        gandalf_func = 9;
+                        presto_func = 10;
+                    }
+                }
+                else
+                {
+                    if(selec_robot.r2.get_pos().x > ball_pos.x)
+                    {
+                        gandalf_func = 9;
+                        presto_func = 10;
+                    }
+                    else
+                    {
+                        gandalf_func = 10;
+                        presto_func = 9;
+                    }
+                }
+            }
         }
 
-
-        cout << "presto: " << presto_func << endl;
-        cout << "gandalf: " << gandalf_func << endl;
-        cout << "leona: " << leona_func << endl;
+        //cout << "presto: " << presto_func << endl;
+        //cout << "gandalf: " << gandalf_func << endl;
+        //cout << "leona: " << leona_func << endl;
 
         selec_robot.r1.set_flag_fuzzy(gandalf_func, centroid_atk, centroid_def, ball_pos); //gandalf
         selec_robot.r2.set_flag_fuzzy(presto_func, centroid_atk, centroid_def, ball_pos); //presto

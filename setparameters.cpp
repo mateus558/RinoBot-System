@@ -19,10 +19,12 @@ SetParameters::SetParameters(QWidget *parent) : QMainWindow(parent),    ui(new U
     serial_settings_dialog = new SettingsDialog;
     calib_camera = new video4linuxConfig;
 
+    //cam_id = ui->spinBox->value(); // cam inicializado para pegar valor atual da camera antes de qualquer coisa e evita que ele pegue um valor aleatorio
+    cam_id = 0;
     eye->set_mode(0);
     ui->setupUi(this);
     ui->spinBox->setValue(0);
-    eye->set_camid(ui->spinBox->value());
+    eye->set_camid(0);
     connect(ui->configRobots, SIGNAL(clicked(bool)), this, SLOT(on_configRobots_clicked()));
     connect(serial_settings_dialog, SIGNAL(serial_settings(SettingsDialog::Settings)), this, SLOT(updateSerialSettings(SettingsDialog::Settings)));
     connect(eye, SIGNAL(processedImage(QImage)), this, SLOT(updateVisionUI(QImage)));
@@ -72,7 +74,7 @@ void SetParameters::updateFPS(double val)
 
 void SetParameters::on_initCapture_clicked()
 {
-    cam_id = ui->spinBox->value();
+
     if(eye->isStopped()){
         if(!eye->open_camera(cam_id)){
             QMessageBox msgBox;
@@ -333,6 +335,8 @@ void SetParameters::on_config_serial_clicked()
 
 SetParameters::~SetParameters()
 {
+    eye->Stop();
+    eye->release_cam();
     delete eye;
     delete conf;
     delete serial_settings_dialog;
