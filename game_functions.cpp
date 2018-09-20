@@ -1905,14 +1905,14 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
         {
             //            avoid_penalties();
-            meta.x = centroid_def.x + 50; //nova avoid penalty+
-            meta.y = centroid_def.y + 30;
+//            meta.x = centroid_def.x + 50; //nova avoid penalty+
+//            meta.y = centroid_def.y + 30;
 
-            ang_avoid = vector_angle(robo_pos, meta);
-            set_thetaDir(ang_avoid*pi/180);
+//            ang_avoid = vector_angle(robo_pos, meta);
+//            set_thetaDir(ang_avoid*pi/180);
 
             //            while(iterator_cph()>1E-6);
-            set_direction(centroid_atk,centroid_def);
+            //set_direction(centroid_atk,centroid_def);
         }
         else
         {
@@ -1991,11 +1991,11 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
             //cout << " 1 " << endl;
             //            while(iterator_cph()>1E-6);
             //set_direction(centroid_atk,centroid_def);
-            meta.x = centroid_def.x - 50;
-            meta.y = centroid_def.y + 30;
+//            meta.x = centroid_def.x - 50;
+//            meta.y = centroid_def.y + 30;
 
-            ang_avoid = vector_angle(robo_pos, meta);
-            set_thetaDir(ang_avoid*pi/180);
+//            ang_avoid = vector_angle(robo_pos, meta);
+//            set_thetaDir(ang_avoid*pi/180);
         }
         else
         {
@@ -2119,9 +2119,13 @@ Point2d Game_functions::get_meta_defender_root(){
     return meta_defender_root;
 }
 
+Point2d Game_functions::get_meta_volante(){
+    return meta_volante;
+}
+
 void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float> *vels)
 {
-    init_grid();
+    //init_grid();
     Point2d enemy_prox;
     Point2d robo_pos = robo->get_pos();
 
@@ -2438,7 +2442,7 @@ void Game_functions::set_line_root_def(double val)
 
 void Game_functions::volante(Robot *robo, int num_Robo, pair<float, float> *vels)
 {
-    init_grid();
+    //init_grid();
     Point2d enemy_prox;
     Point2d robo_pos = robo->get_pos();
 
@@ -2446,25 +2450,12 @@ void Game_functions::volante(Robot *robo, int num_Robo, pair<float, float> *vels
 
     if(ball_pos.x > 0 && ball_pos.y > 0)
     {
-
         if (centroid_def.x < centroid_atk.x)
         {
             if (ball_pos.x > centroid_def.x + line_volante)
             {
-                if(ball_pos.y < centroid_def.y - line_volante - 10)
-                {
-                    meta.x = centroid_def.x + line_volante;
-                    meta.y = ball_pos.y;//centroid_def.y - 45;
-                }
-                else if(ball_pos.y > centroid_def.y + line_volante + 10)
-                {
-                    meta.x = centroid_def.x + line_volante;
-                    meta.y = ball_pos.y;//centroid_def.y + 45;
-                }
-                else{
-                    meta.x = centroid_def.x + line_volante;
-                    meta.y = ball_pos.y;//centroid_def.y;
-                }
+                meta.x = centroid_def.x + line_volante;
+                meta.y = ball_pos.y;//centroid_def.y;
             }
             else
             {
@@ -2487,25 +2478,12 @@ void Game_functions::volante(Robot *robo, int num_Robo, pair<float, float> *vels
                 }
             }
         }
-        if (centroid_def.x >= centroid_atk.x)
+        else if (centroid_def.x >= centroid_atk.x)
         {
             if (ball_pos.x < centroid_def.x - line_volante)
             {
-                if(ball_pos.y < centroid_def.y - line_volante - 10)
-                {
-                    meta.x = centroid_def.x - line_volante;
-                    meta.y = ball_pos.y;//centroid_def.y - 45;
-                }
-                else if(ball_pos.y > centroid_def.y + line_volante + 10)
-                {
-                    meta.x = centroid_def.x - line_volante;
-                    meta.y = ball_pos.y;//centroid_def.y + 45;
-                }
-                else
-                {
-                    meta.x = centroid_def.x - line_volante;
-                    meta.y = ball_pos.y;//centroid_def.y;
-                }
+                meta.x = centroid_def.x - line_volante;
+                meta.y = ball_pos.y;//centroid_def.y;
             }
             else
             {
@@ -2521,14 +2499,15 @@ void Game_functions::volante(Robot *robo, int num_Robo, pair<float, float> *vels
                     meta.y = centroid_def.y + 45;
                     set_thetaDir(0);
                 }
-                else{
+                else
+                {
                     meta.x = centroid_def.x - line_volante;
                     meta.y = centroid_def.y;
                 }
             }
         }
 
-        meta_defender_root = meta;
+        meta_volante = meta;
     }
 }
 
@@ -2562,17 +2541,23 @@ void Game_functions::fake9(Robot *robo, int num_Robo, pair<float, float> *vels)
     {
         meta.y = ball_pos.y;
     }
-
+     cout << "CDX: " << centroid_def.x << "  CDY: " << centroid_def.y << endl;
+          cout << "CAX: " << centroid_atk.x << "  CAY: " << centroid_atk.y << endl;
     if (centroid_def.x < centroid_atk.x)
     {
         meta.x = killer.get_pos().x - dist;
+        cout << "1 ->   X: " << meta.x << "  Y: " << meta.y << endl;
     }
     else if (centroid_def.x > centroid_atk.x)
     {
         meta.x = killer.get_pos().x + dist;
+        cout << "2 ->   X: " << meta.x << "  Y: " << meta.y << endl;
     }
 
     meta_fake9 = meta;
+
+    cout << "KX: " << killer.get_pos().x << "  KY: " << killer.get_pos().y << endl;
+    cout << "RX: " << robo->get_pos().x << "  RY: " << robo->get_pos().y << endl;
 
     the_fih = repulsive_Math(robo, ball_pos, meta);
 }

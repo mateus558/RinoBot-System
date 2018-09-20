@@ -267,8 +267,8 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
         // NÂO APAGAR - Killer Atacando contra o goleiro
         //  *Trocar Centroids do presto
 
-        presto->set_centroid_atk(centroid_atk); //salva a area de atk para o presto
-        presto->set_centroid_def(centroid_def); //salva a area de def para o presto
+        presto->set_centroid_atk(centroid_def); //salva a area de atk para o presto
+        presto->set_centroid_def(centroid_atk); //salva a area de def para o presto
         presto->set_def_area(def_area);
 
         gandalf->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf

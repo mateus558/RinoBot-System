@@ -14,6 +14,7 @@ class Game_functions: public Navigation
 private:
     Point2d meta_goalkeeper;
     Point2d meta_defender_root;
+    Point2d meta_volante;
     Point2d meta;
     p2dVector team_pos;
     Point ball_pos_grid;
@@ -25,7 +26,7 @@ private:
     Point2d centroid_def; //posicao em cm do centro da area de def
     double line_root_defender = 38;
     pVector def_area;
-    double line_volante = 38;
+    double line_volante = 25;
     pair<double, double> ball_vel;
     vector<Point2d> media_ball_v;
     vector<pair<float, float> > vels;
@@ -80,6 +81,7 @@ public:
     void team_changed();
     Point2d get_meta_goalkeeper();
     Point2d get_meta_defender_root();
+    Point2d get_meta_volante();
     Point2d get_meta();
     Point convert_C_to_G(Point2d);
     int flag_return;
