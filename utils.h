@@ -57,4 +57,6 @@ Point Low_pass_filter_Centroid(Point centroid, Point last_centroid, Point last_p
 double Low_pass_filter_Theta(double angle, double last_angle, double last_proc_angle, pair<double, double> coeff); // Low Pass Filter
 double sign(double);
 
+void cachacoWrite(vector<Point2d> matrizCachaco);
+
 #endif // UTILS_H

@@ -211,7 +211,8 @@ void MainWindow::updateMoverRobots(Selector selec_robot){
         Robot::send_velocities(team_robots[1].get_channel(),make_pair(team_robots[1].get_r_vel(), team_robots[1].get_l_vel()));
         Robot::send_velocities(team_robots[2].get_channel(),make_pair(team_robots[2].get_r_vel(), team_robots[2].get_l_vel()));
         Robot::send_velocities(team_robots[0].get_channel(),make_pair(team_robots[0].get_r_vel(), team_robots[0].get_l_vel()));
-
+        //cout << "esquerda " << team_robots[2].get_l_vel() << endl;
+        //cout << "direita " << team_robots[2].get_r_vel() << endl;
         // Troca de funções da estratégia 3
 //        if (fabs(team_robots[1].get_l_vel()) < 0.03 && fabs(team_robots[1].get_r_vel()) < 0.03 && fabs(team_robots[2].get_l_vel()) < 0.03 && fabs(team_robots[2].get_r_vel()) < 0.03){
 //            if(ui->actionSwap_Roles->isChecked()){
@@ -267,8 +268,8 @@ void MainWindow::updatePerceptionInfo(Vision::Perception percep_info){
         // NÂO APAGAR - Killer Atacando contra o goleiro
         //  *Trocar Centroids do presto
 
-        presto->set_centroid_atk(centroid_def); //salva a area de atk para o presto
-        presto->set_centroid_def(centroid_atk); //salva a area de def para o presto
+        presto->set_centroid_atk(centroid_atk); //salva a area de atk para o presto
+        presto->set_centroid_def(centroid_def); //salva a area de def para o presto
         presto->set_def_area(def_area);
 
         gandalf->set_centroid_atk(centroid_atk); //salva a area de atk para o gandalf

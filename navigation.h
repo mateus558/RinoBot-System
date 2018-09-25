@@ -6,13 +6,15 @@
 #include <vector>
 #include "robot.h" //Robot class
 #include "utils.h" //Utils library
-#define pi 3.1415
+
+//#define pi 3.1415
 
 
 class Navigation : public QThread
 {
     Q_OBJECT
 protected:
+    const int pi = 3.1415;
     static const int dx = 5;
     static const int dy = 5;
     int i;

@@ -4,10 +4,16 @@
 #include "game_functions.h"
 #include "robot.h"
 #include "utils.h"
+//Cachaco
+#include <QString>
+#include <QFile>
+#include <QTextStream>
+#include <QDebug>
 
 int state_return_to_def = 0;
 int state_escanteio = 0;
 int cont_corner = 0;
+
 using namespace std;
 
 Serial Game_functions::serial;
@@ -20,6 +26,7 @@ Game_functions::Game_functions()
         media_ball_v[i].x = 0;
         media_ball_v[i].y = 0;
     }
+
     game_functions_initialized = false;
     enemy_pos_grid = pVector(3);
     team_pos_grid = pVector(3);
@@ -34,6 +41,7 @@ Game_functions::Game_functions()
     pGrid = dMatrix(28, vector<double>(36, 0.0));
     tGrid = dMatrix(28, vector<double>(36, 0.0));
     atk_situation_state = false;
+
 }
 
 Game_functions::~Game_functions(){
@@ -1905,11 +1913,11 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
         if(ball_pos.x < def_area_x && ball_pos.y < def_area_y1 && ball_pos.y > def_area_y2)
         {
             //            avoid_penalties();
-//            meta.x = centroid_def.x + 50; //nova avoid penalty+
-//            meta.y = centroid_def.y + 30;
+            //            meta.x = centroid_def.x + 50; //nova avoid penalty+
+            //            meta.y = centroid_def.y + 30;
 
-//            ang_avoid = vector_angle(robo_pos, meta);
-//            set_thetaDir(ang_avoid*pi/180);
+            //            ang_avoid = vector_angle(robo_pos, meta);
+            //            set_thetaDir(ang_avoid*pi/180);
 
             //            while(iterator_cph()>1E-6);
             //set_direction(centroid_atk,centroid_def);
@@ -1991,11 +1999,11 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
             //cout << " 1 " << endl;
             //            while(iterator_cph()>1E-6);
             //set_direction(centroid_atk,centroid_def);
-//            meta.x = centroid_def.x - 50;
-//            meta.y = centroid_def.y + 30;
+            //            meta.x = centroid_def.x - 50;
+            //            meta.y = centroid_def.y + 30;
 
-//            ang_avoid = vector_angle(robo_pos, meta);
-//            set_thetaDir(ang_avoid*pi/180);
+            //            ang_avoid = vector_angle(robo_pos, meta);
+            //            set_thetaDir(ang_avoid*pi/180);
         }
         else
         {
@@ -2129,6 +2137,11 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
     Point2d enemy_prox;
     Point2d robo_pos = robo->get_pos();
 
+
+    //   cout << "Pos: " << robo->get_pos() << endl;
+    //  cout << "Centroid def: " << centroid_def << endl;
+
+
     //    // Calcula Adsversario mais próximo
     //    if ((euclidean_dist(robo_pos,enemy_pos[0]) <= euclidean_dist(robo_pos,enemy_pos[1])) && (euclidean_dist(robo_pos,enemy_pos[0]) <= euclidean_dist(robo_pos,enemy_pos[2])))
     //        enemy_prox = enemy_pos[0];
@@ -2199,20 +2212,10 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
         {
             if (ball_pos.x > centroid_def.x + line_root_defender)
             {
-                if(ball_pos.y < centroid_def.y - line_root_defender - 10)
-                {
-                    meta.x = centroid_def.x + line_root_defender;
-                    meta.y = ball_pos.y;//centroid_def.y - 45;
-                }
-                else if(ball_pos.y > centroid_def.y + line_root_defender + 10)
-                {
-                    meta.x = centroid_def.x + line_root_defender;
-                    meta.y = ball_pos.y;//centroid_def.y + 45;
-                }
-                else{
-                    meta.x = centroid_def.x + line_root_defender;
-                    meta.y = ball_pos.y;//centroid_def.y;
-                }
+
+                meta.x = centroid_def.x + line_root_defender;
+                meta.y = ball_pos.y;//centroid_def.y;
+
             }
             else
             {
@@ -2238,21 +2241,8 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
         {
             if (ball_pos.x < centroid_def.x - line_root_defender)
             {
-                if(ball_pos.y < centroid_def.y - line_root_defender - 10)
-                {
-                    meta.x = centroid_def.x - line_root_defender;
-                    meta.y = ball_pos.y;//centroid_def.y - 45;
-                }
-                else if(ball_pos.y > centroid_def.y + line_root_defender + 10)
-                {
-                    meta.x = centroid_def.x - line_root_defender;
-                    meta.y = ball_pos.y;//centroid_def.y + 45;
-                }
-                else
-                {
-                    meta.x = centroid_def.x - line_root_defender;
-                    meta.y = ball_pos.y;//centroid_def.y;
-                }
+                meta.x = centroid_def.x - line_root_defender;
+                meta.y = ball_pos.y;//centroid_def.y;
             }
             else
             {
@@ -2276,7 +2266,42 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
             }
         }
 
+        meta_defender_root = meta;
 
+        Robot goalk;
+        if (selec_robot.r1.get_flag_fuzzy()==4)
+            goalk=selec_robot.r1;
+        else if (selec_robot.r2.get_flag_fuzzy()==4)
+            goalk=selec_robot.r2;
+        else if (selec_robot.r3.get_flag_fuzzy()==4)
+            goalk=selec_robot.r3;
+
+        Point2d goalk_pos = goalk.get_pos();
+        //cout << "Goalk " << goalk_pos << endl;
+
+        if(centroid_atk.x < centroid_def.x)
+        {
+            if(robo_pos.x > centroid_def.x - 15)
+            {
+                the_fih = repulsive_Math(robo, goalk_pos, meta_defender_root);
+            }
+            else
+            {
+                the_fih = vector_angle(robo->get_pos(),meta);
+            }
+        }
+        else if (centroid_atk.x > centroid_def.x)
+        {
+            if(robo_pos.x < centroid_def.x + 15)
+            {
+                the_fih = repulsive_Math(robo, goalk_pos, meta_defender_root);
+            }
+            else
+            {
+                the_fih = vector_angle(robo->get_pos(),meta);
+            }
+        }
+        the_fih = repulsive_Math(robo, goalk_pos, meta_defender_root);
         /*if (centroid_def.x > centroid_atk.x){
 
         //Variável que determina onde o robô irá se posicionar em x
@@ -2382,7 +2407,7 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
 
         }*/
 
-        meta_defender_root = meta;
+
         // cout <<"Meta x: "<<meta.x<<endl;
         // cout<< "Meta y: "<<meta.y<<endl;
 
@@ -2400,9 +2425,6 @@ void Game_functions::defender_root(Robot *robo, int num_Robo, pair<float, float>
         //        univector_field(robo,enemy_prox,meta_defender_root);
     }
 }
-
-
-
 
 void Game_functions::set_g_size(Point2d meta , Robot *robo)
 {
@@ -2445,6 +2467,10 @@ void Game_functions::volante(Robot *robo, int num_Robo, pair<float, float> *vels
     //init_grid();
     Point2d enemy_prox;
     Point2d robo_pos = robo->get_pos();
+
+    //cachaco
+    int cachacoX, cachacoY;
+    //-cachaco
 
     flag_return = 2;
 
@@ -2506,9 +2532,12 @@ void Game_functions::volante(Robot *robo, int num_Robo, pair<float, float> *vels
                 }
             }
         }
-
         meta_volante = meta;
     }
+
+    matrizCachaco.push_back(robo_pos);
+    cachacoWrite(matrizCachaco);
+
 }
 
 void Game_functions::fake9(Robot *robo, int num_Robo, pair<float, float> *vels)
@@ -2517,7 +2546,9 @@ void Game_functions::fake9(Robot *robo, int num_Robo, pair<float, float> *vels)
     Point2d ball_v;
     Robot killer;
     Point2d enemy;
-    double dist = 35;
+    double dist = 40;
+
+    Point2d robo_pos = robo->get_pos();
 
     if (selec_robot.r1.get_flag_fuzzy()==10)
         killer=selec_robot.r1;
@@ -2541,23 +2572,23 @@ void Game_functions::fake9(Robot *robo, int num_Robo, pair<float, float> *vels)
     {
         meta.y = ball_pos.y;
     }
-     cout << "CDX: " << centroid_def.x << "  CDY: " << centroid_def.y << endl;
-          cout << "CAX: " << centroid_atk.x << "  CAY: " << centroid_atk.y << endl;
+    // cout << "CDX: " << centroid_def.x << "  CDY: " << centroid_def.y << endl;
+    //      cout << "CAX: " << centroid_atk.x << "  CAY: " << centroid_atk.y << endl;
     if (centroid_def.x < centroid_atk.x)
     {
         meta.x = killer.get_pos().x - dist;
-        cout << "1 ->   X: " << meta.x << "  Y: " << meta.y << endl;
+        //cout << "1 ->   X: " << meta.x << "  Y: " << meta.y << endl;
     }
     else if (centroid_def.x > centroid_atk.x)
     {
         meta.x = killer.get_pos().x + dist;
-        cout << "2 ->   X: " << meta.x << "  Y: " << meta.y << endl;
+        // cout << "2 ->   X: " << meta.x << "  Y: " << meta.y << endl;
     }
 
     meta_fake9 = meta;
 
-    cout << "KX: " << killer.get_pos().x << "  KY: " << killer.get_pos().y << endl;
-    cout << "RX: " << robo->get_pos().x << "  RY: " << robo->get_pos().y << endl;
+    //cout << "KX: " << killer.get_pos().x << "  KY: " << killer.get_pos().y << endl;
+    //cout << "RX: " << robo->get_pos().x << "  RY: " << robo->get_pos().y << endl;
 
     the_fih = repulsive_Math(robo, ball_pos, meta);
 }
@@ -2570,4 +2601,124 @@ Point2d Game_functions::get_meta_cpu()
 void Game_functions::set_meta_cpu(Point2d qqr)
 {
     meta_cpu = qqr;
+}
+
+void Game_functions::guerreiro(Robot *robo, int num_Robo, pair<float, float> *vels)
+{
+    Point2d enemy_prox;
+    Point2d robo_pos = robo->get_pos();
+
+    flag_return = 2;
+
+    cout << "Pos x: " << robo->get_pos().x << endl;
+    cout << "Centroid def: " << centroid_def.x << endl;
+
+
+    //    if(ball_pos.x > 0 && ball_pos.y > 0)
+    //    {
+    //        if (centroid_def.x < centroid_atk.x)
+    //        {
+    //            if(ball_pos.x < (centroid_atk.x + centroid_def.x)/2)
+    //            {
+    //                if (ball_pos.x > centroid_def.x + line_guerreiro)
+    //                {
+    //                    meta.x = centroid_def.x + line_guerreiro;
+    //                    meta.y = ball_pos.y;
+    //                }
+    //                else
+    //                {
+    //                    if(ball_pos.y < centroid_def.y - 35)
+    //                    {
+    //                        meta.x = centroid_def.x + 8;
+    //                        meta.y = centroid_def.y - 45;
+    //                        set_thetaDir(M_PI);
+    //                    }
+    //                    else if(ball_pos.y > centroid_def.y + 35)
+    //                    {
+    //                        meta.x = centroid_def.x + 8;
+    //                        meta.y = centroid_def.y + 45;
+    //                        set_thetaDir(M_PI);
+    //                    }
+    //                    else{
+    //                        meta.x = centroid_def.x + line_guerreiro;
+    //                        meta.y = centroid_def.y;
+    //                    }
+    //                }
+    //            }
+    //            else
+    //            {
+    //                meta.x = (centroid_atk.x+centroid_def.x)/2;
+    //                meta.y = centroid_atk.y;
+    //            }
+
+    //            else
+    //            {
+    //                if(ball_pos.x < (centroid_atk.x+centroid_def.x)/2)
+    //                {
+
+    //                }
+    //                else
+    //                {
+
+    //                }
+    //                if(ball_pos.y < centroid_def.y - 35)
+    //                {
+    //                    meta.x = centroid_def.x + 8;
+    //                    meta.y = centroid_def.y - 45;
+    //                    set_thetaDir(M_PI);
+    //                }
+    //                else if(ball_pos.y > centroid_def.y + 35)
+    //                {
+    //                    meta.x = centroid_def.x + 8;
+    //                    meta.y = centroid_def.y + 45;
+    //                    set_thetaDir(M_PI);
+    //                }
+    //                else{
+    //                    meta.x = centroid_def.x + line_root_defender;
+    //                    meta.y = centroid_def.y;
+    //                }
+    //            }
+    //        }
+    //        if (centroid_def.x >= centroid_atk.x)
+    //        {
+    //            if (ball_pos.x < centroid_def.x - line_root_defender)
+    //            {
+    //                if(ball_pos.y < centroid_def.y - line_root_defender - 10)
+    //                {
+    //                    meta.x = centroid_def.x - line_root_defender;
+    //                    meta.y = ball_pos.y;
+    //                }
+    //                else if(ball_pos.y > centroid_def.y + line_root_defender + 10)
+    //                {
+    //                    meta.x = centroid_def.x - line_root_defender;
+    //                    meta.y = ball_pos.y;
+    //                }
+    //                else
+    //                {
+    //                    meta.x = centroid_def.x - line_root_defender;
+    //                    meta.y = ball_pos.y;
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if(ball_pos.y < centroid_def.y - 35)
+    //                {
+    //                    meta.x = centroid_def.x - 8;
+    //                    meta.y = centroid_def.y - 45;
+    //                    set_thetaDir(0);
+    //                }
+    //                else if(ball_pos.y > centroid_def.y + 35)
+    //                {
+    //                    meta.x = centroid_def.x - 8;
+    //                    meta.y = centroid_def.y + 45;
+    //                    set_thetaDir(0);
+    //                }
+    //                else
+    //                {
+    //                    meta.x = centroid_def.x - line_root_defender;
+    //                    meta.y = centroid_def.y;
+    //                }
+    //            }
+    //        }
+    //    }
 }

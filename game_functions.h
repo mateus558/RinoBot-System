@@ -24,7 +24,8 @@ private:
     Point2d ball_pos; //posicao em cm da bola
     Point2d centroid_atk; //posicao em cm do centro da area de atk
     Point2d centroid_def; //posicao em cm do centro da area de def
-    double line_root_defender = 38;
+    double line_root_defender = 15;
+    double line_guerreiro = 50;
     pVector def_area;
     double line_volante = 25;
     pair<double, double> ball_vel;
@@ -105,7 +106,9 @@ public:
     Point2d get_meta_cpu();
     void set_meta_cpu(Point2d);
 
+    void guerreiro(Robot *, int, pair<float, float>*);
 
+    vector<Point2d> matrizCachaco;
 
     ~Game_functions();
 };

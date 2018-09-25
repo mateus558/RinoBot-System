@@ -607,7 +607,7 @@ float Navigation::whirlpool_repulsive(Robot *robot, Point2d meta, Point2d obstac
     float alpha,omega,zeta,dist_robo_obst;
     int rot;
     omega = repulsive_angle(robot->get_pos().x,robot->get_pos().y,meta);  // Angulo entre o robo e a bola
-    zeta = repulsive_angle(obstaculo.x,obstaculo.y,meta);                  // Angulo entre o obstaculo e a bola
+    zeta = repulsive_angle(obstaculo.x,obstaculo.y,meta);                 // Angulo entre o obstaculo e a bola
 
     rot = -pi/4;
 
@@ -647,9 +647,10 @@ float Navigation::get_de(){
     return de;
 }
 
-float Navigation::repulsive_Math(Robot *robo, Point2d obj, Point2d ball){
+float Navigation::repulsive_Math(Robot *robo, Point2d obj, Point2d ball) // Repulsivo do Mito
+{
     float rot_angle = pi/2;
-    float k_const = 1 , k_larg = 0.3; // k_larg [ 0.1 , 1 ] -> quanto maior mais desvia
+    float k_const = 1 , k_larg = 0.06; // k_larg: Quanto menor mais desvia [0.1 , 0.01]
     float m = (ball.y-obj.y)/(ball.x-obj.x);
     float norm, psi;
     int a;

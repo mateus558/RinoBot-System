@@ -3,6 +3,12 @@
 #include <cmath>
 #include <fstream>
 #include "utils.h"
+//Cachaco
+#include <QString>
+#include <QFile>
+#include <QTextStream>
+#include <QDebug>
+//-Cachaco
 
 using namespace std;
 using namespace Eigen;
@@ -260,7 +266,34 @@ double sign(double aux){
 
 }
 
+void cachacoWrite(vector<Point2d> matrizCachaco)
+{
+    QFile file("/home/rinobot/Desktop/cachaco/testecsv/testecsv2.txt");
 
+    cout << endl << "-----Cachaco volante-----" << endl;
+//    matrizCachaco(cachacoX, cachacoY) = matrizCachaco(cachacoX, cachacoY)+1;
+
+    cout << matrizCachaco[matrizCachaco.size()-1].x << " " << matrizCachaco[matrizCachaco.size()-1].y << " " << endl;
+
+    cout << "-----Cachaco-----" << endl;
+
+    if(!file.open(QFile::WriteOnly |
+                  QFile::Text))
+    {
+        qDebug() << " Could not open file for writing";
+        return;
+    }
+
+    QTextStream out(&file);
+    for(int i = 0; i < matrizCachaco.size(); i++)
+    {
+        out << matrizCachaco[i].x << " " << matrizCachaco[i].y << endl;
+    }
+
+    //file.flush();
+    //file.close();
+
+}
 
 
 
