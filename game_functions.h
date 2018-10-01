@@ -24,10 +24,10 @@ private:
     Point2d ball_pos; //posicao em cm da bola
     Point2d centroid_atk; //posicao em cm do centro da area de atk
     Point2d centroid_def; //posicao em cm do centro da area de def
-    double line_root_defender = 15;
+    double line_root_defender = 38;
     double line_guerreiro = 50;
     pVector def_area;
-    double line_volante = 25;
+    double line_volante = 38;
     pair<double, double> ball_vel;
     vector<Point2d> media_ball_v;
     vector<pair<float, float> > vels;
@@ -83,6 +83,7 @@ public:
     Point2d get_meta_goalkeeper();
     Point2d get_meta_defender_root();
     Point2d get_meta_volante();
+    Point2d get_meta_guerreiro();
     Point2d get_meta();
     Point convert_C_to_G(Point2d);
     int flag_return;
@@ -95,6 +96,7 @@ public:
     void fake9(Robot *, int, pair<float,float>*);
     Point2d meta_fake9;
     void volante(Robot *, int, pair<float, float>*);   // Univector Func
+    void guerreiro(Robot *, int, pair<float, float>*);
     //Fim novas funções
 
     void Set_atk_situation_state(bool);
@@ -106,7 +108,6 @@ public:
     Point2d get_meta_cpu();
     void set_meta_cpu(Point2d);
 
-    void guerreiro(Robot *, int, pair<float, float>*);
 
     vector<Point2d> matrizCachaco;
 

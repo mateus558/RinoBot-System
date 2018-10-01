@@ -270,12 +270,12 @@ void cachacoWrite(vector<Point2d> matrizCachaco)
 {
     QFile file("/home/rinobot/Desktop/cachaco/testecsv/testecsv2.txt");
 
-    cout << endl << "-----Cachaco volante-----" << endl;
+//    cout << endl << "-----Cachaco-----" << endl;
 //    matrizCachaco(cachacoX, cachacoY) = matrizCachaco(cachacoX, cachacoY)+1;
 
     cout << matrizCachaco[matrizCachaco.size()-1].x << " " << matrizCachaco[matrizCachaco.size()-1].y << " " << endl;
 
-    cout << "-----Cachaco-----" << endl;
+//    cout << "-----Cachaco-----" << endl;
 
     if(!file.open(QFile::WriteOnly |
                   QFile::Text))

@@ -13,7 +13,7 @@ double limiar_theta = 90 + delta_limiar;
 //double l = 0.028; // caso mudar de robo trocar esse valor (robo antigo 0.0275 - robo novo 0.028)
 
 // Constantes para robôs de linha
-double v_max = 0.75; //0.75
+double v_max = 0.6; //0.75
 double v_delta = 0.5;
 double w_max = 7;
 double k = (w_max/v_max);
@@ -22,22 +22,22 @@ double vel_giro_lado = 1.6;
 double vel_giro_atk = 0.5;
 double v_atk = 1.5;
 double last_angle = 0;
-double v_follow = 0.4;
+double v_follow = 0.7;
 
 // Constantes para o goleiro
-double v_max_gol = 0.38;  //0.5
-double v_delta_gol = 0.15;
-double v_max_gol_ef = 0.7;
+double v_max_gol = 1.25;  //0.5
+double v_delta_gol = 0.3;
+double v_max_gol_ef = 1.5;
 double w_max_gol = 5;
 double kgol = (w_max_gol/v_max_gol);
 double dist_giro_gol = 10.0;
 double vel_giro_gol = 1.0;
-double v_max_return = 0.65;
+double v_max_return = 1.25;
 float kp_goalkepper = 8;
 
 // Constantes para o zagueiro
-double k_prevision = 0.8;
-double v_max_prevision = 1.5;
+double k_prevision = 1.5;
+double v_max_prevision = 2.5;
 float kp_defender = 8;
 
 // Constantes para a movimentação com PID
@@ -48,6 +48,7 @@ double ka = 0.15;
 double lalpha_fake9 = 0;
 double lalpha_volante = 0;
 double lalpha_defender_root = 0;
+double lalpha_guerreiro = 0;
 
 //double kp = 15;  // Ganho proporcional 13
 //double kd = 0.003;  // Ganho derivativo
@@ -62,7 +63,6 @@ double k_distance = 0.5;
 double last_theta;
 double Rm = v_max*w_max;
 int test = 0;
-
 
 Serial Mover::serial;
 
@@ -116,8 +116,9 @@ void Mover::run(){
         //init_mover();
         mover_initialized = true;
     }
-    line_root_defender = 35;
-    line_volante = 25;
+    line_root_defender = 38;
+    line_volante = 38;
+    line_guerreiro = 50;
     //Pro primeiro robô - Gandalf
     calcula_velocidades(&selec_robot.r1,selec_iterador.gandalf, &vels[0]);
     selec_robot.r1.set_lin_vel(vels[0]);
@@ -209,6 +210,9 @@ void Mover::calcula_velocidades(Robot *r, Game_functions *potencial_fields, pair
         break;
     case 4:
         velocity_goalkeeper(r, potencial_fields , vels);
+        break;
+    case 8:
+        velocity_guerreiro(r, potencial_fields , vels);
         break;
     case 9:
         velocity_fake9(r, potencial_fields , vels);  //velocity_killer
@@ -303,7 +307,7 @@ void Mover:: velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<f
 
         tempo = (robot_pos.x + 4.5 - ball_pos.x)/ball_v.x;
         aux_position_y = ball_pos.y - tempo*ball_v.y;
-        //previsao de bola
+        //Ball Prevision
         if (ball_v.x < 0 && (aux_position_y > centroid_def.y-25) && (aux_position_y < centroid_def.y+25))
         {
             if (robot_angle > 0)
@@ -499,7 +503,7 @@ void Mover:: velocity_goalkeeper(Robot *robo, Game_functions *pot_fields, pair<f
             v_max_return = 0.4;
         }
 
-        //previsao de bola
+        //Ball Prevision
 
         if (ball_v.x > 0 && (aux_position_y > centroid_def.y-25) && (aux_position_y < centroid_def.y+25)){
 
@@ -2688,6 +2692,10 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     //        if(ball_pos.x < centroid_def.x + 35 && ball_pos.x < robo_pos.x)
     //            v = 0;
     //    }
+
+    cout << "direita: " << v-w*l << endl;
+    cout << "esquerda: " << v+w*l << endl << endl;
+
     if((pot_fields->get_meta_cpu()  != ball_pos) && (euclidean_dist(robo_pos, pot_fields->get_meta_cpu()) <= 10))
     {
         vels->first = 0;
@@ -2710,18 +2718,18 @@ void Mover::velocity_killer_cpu(Robot *robo, Game_functions *pot_fields, pair<fl
     //        }
     //    }
 
-    rotate_inv(robo, vels);
+    rotate(robo, vels);
     //kick_rotate(robo, vels);
     //atk_situation(robo,pot_fields,vels); //Colocar a inv para ATK vs DEF
-    atk_situation_inv(robo,pot_fields,vels);
+    atk_situation(robo,pot_fields,vels);
 
     // cout << " Velocidade esquerda: " << vels->first << endl;
     // cout << " Velocidade direita: " << vels->second << endl;
 
-//    if(pot_fields->Get_atk_situation_state() == true) // Atk_situation for any point of goal
-//    {
-//        atk_situation_any_point(robo,pot_fields,vels);
-//    }
+    //    if(pot_fields->Get_atk_situation_state() == true) // Atk_situation for any point of goal
+    //    {
+    //        atk_situation_any_point(robo,pot_fields,vels);
+    //    }
 
     //cout << "Esquerda: " << vels->first << endl; //Cout ativo
     //cout << "Direita: " << vels->second << endl; //Cout ativo
@@ -2916,7 +2924,7 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
         if(aux_position_y > 130){
             aux_position_y = 130;
         }
-        //previsao de bola
+        //Ball Prevision
         if (ball_v.x < 0 && ball_pos.x > centroid_def.x + line_root_defender){
             if (robot_angle > 0){
                 v = -k_prevision*(aux_position_y-robot_pos.y)/tempo;
@@ -3087,7 +3095,7 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
         if(aux_position_y > 130){
             aux_position_y = 130;
         }
-        //previsao de bola
+        //Ball Prevision
 
         if (ball_v.x > 0 && ball_pos.x < centroid_def.x - line_root_defender){
 
@@ -3601,9 +3609,9 @@ void Mover::velocity_defender_root(Robot *robo, Game_functions *pot_fields, pair
     //cout << "Ball x " << ball_pos.x << endl;
     //cout << "Ball y " << ball_pos.y << endl;*/
 
-//    cout << endl << "-----Cachaco velocity defender root-----" << endl;
-//    cout << robo->get_pos() << endl;
-//    cout << "-----Cachaco-----" << endl << endl;
+    //    cout << endl << "-----Cachaco velocity defender root-----" << endl;
+    //    cout << robo->get_pos() << endl;
+    //    cout << "-----Cachaco-----" << endl << endl;
 
 }
 
@@ -3634,114 +3642,114 @@ void Mover::velocity_volante(Robot *robo, Game_functions *pot_fields, pair<float
     ball_v.x = ball_vel.first / 100;
     ball_v.y = -ball_vel.second / 100;
 
-//    cout << endl << "-----Cachaco velocity volante-----" << endl;
-//    cout << robo->get_pos() << endl;
-//    cout << "-----Cachaco-----" << endl << endl;
+    //    cout << endl << "-----Cachaco velocity volante-----" << endl;
+    //    cout << robo->get_pos() << endl;
+    //    cout << "-----Cachaco-----" << endl << endl;
 
 
-//    //Troca de direcoes
-//    Point2d obst_prox;
-//    Point2d wall_1 = robo->get_pos();
-//    Point2d wall_2 = robo->get_pos();
-//    Point2d wall_3 = robo->get_pos();
-//    Point2d wall_4 = robo->get_pos();
+    //    //Troca de direcoes
+    //    Point2d obst_prox;
+    //    Point2d wall_1 = robo->get_pos();
+    //    Point2d wall_2 = robo->get_pos();
+    //    Point2d wall_3 = robo->get_pos();
+    //    Point2d wall_4 = robo->get_pos();
 
-//    wall_1.x = 160;
-//    wall_2.x = 10;
-//    wall_3.y = 0;
-//    wall_4.y = 130;
+    //    wall_1.x = 160;
+    //    wall_2.x = 10;
+    //    wall_3.y = 0;
+    //    wall_4.y = 130;
 
-//    double d0 = euclidean_dist(robo->get_pos(), enemy_pos[0]);
-//    double d1 = euclidean_dist(robo->get_pos(), enemy_pos[1]);
-//    double d2 = euclidean_dist(robo->get_pos(), enemy_pos[2]);
-//    double d3 = euclidean_dist(robo->get_pos(), selec_robot.r1.get_pos()); //Gandalf
-//    double d4 = euclidean_dist(robo->get_pos(), selec_robot.r2.get_pos()); // Presto
-//    double d5 = euclidean_dist(robo->get_pos(), selec_robot.r3.get_pos()); //Leona
-//    double d6 = euclidean_dist(robo->get_pos(), wall_1);
-//    double d7 = euclidean_dist(robo->get_pos(), wall_2);
-//    double d8 = euclidean_dist(robo->get_pos(), wall_3);
-//    double d9 = euclidean_dist(robo->get_pos(), wall_4);
-//    double distancia_permitida = 15;
-//    double distancia_obst;
+    //    double d0 = euclidean_dist(robo->get_pos(), enemy_pos[0]);
+    //    double d1 = euclidean_dist(robo->get_pos(), enemy_pos[1]);
+    //    double d2 = euclidean_dist(robo->get_pos(), enemy_pos[2]);
+    //    double d3 = euclidean_dist(robo->get_pos(), selec_robot.r1.get_pos()); //Gandalf
+    //    double d4 = euclidean_dist(robo->get_pos(), selec_robot.r2.get_pos()); // Presto
+    //    double d5 = euclidean_dist(robo->get_pos(), selec_robot.r3.get_pos()); //Leona
+    //    double d6 = euclidean_dist(robo->get_pos(), wall_1);
+    //    double d7 = euclidean_dist(robo->get_pos(), wall_2);
+    //    double d8 = euclidean_dist(robo->get_pos(), wall_3);
+    //    double d9 = euclidean_dist(robo->get_pos(), wall_4);
+    //    double distancia_permitida = 15;
+    //    double distancia_obst;
 
-//    // Distancia com o mesmo time
-//    if (robo->get_pos().x == selec_robot.r1.get_pos().x && robo->get_pos().y == selec_robot.r1.get_pos().y ){
-//        d3 = 1000;
-//    }
+    //    // Distancia com o mesmo time
+    //    if (robo->get_pos().x == selec_robot.r1.get_pos().x && robo->get_pos().y == selec_robot.r1.get_pos().y ){
+    //        d3 = 1000;
+    //    }
 
-//    if (robo->get_pos().x == selec_robot.r2.get_pos().x && robo->get_pos().y == selec_robot.r2.get_pos().y ){
-//        d4 = 1000;
-//    }
+    //    if (robo->get_pos().x == selec_robot.r2.get_pos().x && robo->get_pos().y == selec_robot.r2.get_pos().y ){
+    //        d4 = 1000;
+    //    }
 
-//    if (robo->get_pos().x == selec_robot.r3.get_pos().x && robo->get_pos().y == selec_robot.r3.get_pos().y ){
-//        d5 = 1000;
-//    }
-
-
-//    // Distancia com os amigos
-
-//    if (d3 <= d4 && d3 <= d5){
-//        obst_prox = selec_robot.r1.get_pos();
-//    }
-//    if (d4 <= d3 && d4 <= d5){
-//        obst_prox = selec_robot.r2.get_pos();
-//    }
-//    if (d5 <= d3 && d5 <= d4){
-//        obst_prox = selec_robot.r3.get_pos();
-//    }
-
-//    distancia_obst = euclidean_dist(robo->get_pos(), obst_prox);
-
-//    //cout << "robo x " << robo->get_pos().x << " robo y " << robo->get_pos().y << endl;
-//    //cout << "obj x " << obst_prox.x << " obj y " << obst_prox.y << endl;
-
-//    double angle = vector_angle(robo->get_pos(),obst_prox);
-//    double another_ang = fabs(robo->get_angle() - angle);
-//    if(another_ang > 180){
-//        another_ang -= 360;
-//    }
-//    if(another_ang < -180)
-//    {
-//        another_ang += 360;
-//    }
-
-//    //Restricao de posicao
-//    if (distancia_obst < distancia_permitida){
-//        if(defender_direction && distancia_obst < distancia_permitida && fabs(another_ang) < 40){
-//            if (cont_defender_obst > 5){
-//                defender_direction = false;
-//                cont_defender_obst = 0;
-//                cont_defender_tempo = 0;
-//            }
-//            else{
-//                cont_defender_obst = cont_defender_obst + 1;
-//            }
-//        }
-//        else if(!defender_direction && distancia_obst < distancia_permitida && fabs(another_ang) > 180 - 40){
-//            if (cont_defender_obst > 5){
-//                defender_direction = true;
-//                cont_defender_obst = 0;
-//                cont_defender_tempo = 0;
-//            }
-//            else{
-//                cont_defender_obst = cont_defender_obst + 1;
-//            }
-//        }
-//    }
-//    else{
-//        cont_defender_obst = cont_defender_obst - 1;
-//        if (cont_defender_obst < 0){
-//            cont_defender_obst = 0;
-//        }
-//    }
+    //    if (robo->get_pos().x == selec_robot.r3.get_pos().x && robo->get_pos().y == selec_robot.r3.get_pos().y ){
+    //        d5 = 1000;
+    //    }
 
 
+    //    // Distancia com os amigos
 
-//    for (int cont_vel = 0; cont_vel < 4; cont_vel ++){
-//        media_ball_v[cont_vel] = media_ball_v[cont_vel+1];
-//    }
-//    media_ball_v[4] = ball_v;
-//    ball_v = 0.35*media_ball_v[4]+0.25*media_ball_v[3]+0.2*media_ball_v[2]+0.15*media_ball_v[1]+0.05*media_ball_v[0];
+    //    if (d3 <= d4 && d3 <= d5){
+    //        obst_prox = selec_robot.r1.get_pos();
+    //    }
+    //    if (d4 <= d3 && d4 <= d5){
+    //        obst_prox = selec_robot.r2.get_pos();
+    //    }
+    //    if (d5 <= d3 && d5 <= d4){
+    //        obst_prox = selec_robot.r3.get_pos();
+    //    }
+
+    //    distancia_obst = euclidean_dist(robo->get_pos(), obst_prox);
+
+    //    //cout << "robo x " << robo->get_pos().x << " robo y " << robo->get_pos().y << endl;
+    //    //cout << "obj x " << obst_prox.x << " obj y " << obst_prox.y << endl;
+
+    //    double angle = vector_angle(robo->get_pos(),obst_prox);
+    //    double another_ang = fabs(robo->get_angle() - angle);
+    //    if(another_ang > 180){
+    //        another_ang -= 360;
+    //    }
+    //    if(another_ang < -180)
+    //    {
+    //        another_ang += 360;
+    //    }
+
+    //    //Restricao de posicao
+    //    if (distancia_obst < distancia_permitida){
+    //        if(defender_direction && distancia_obst < distancia_permitida && fabs(another_ang) < 40){
+    //            if (cont_defender_obst > 5){
+    //                defender_direction = false;
+    //                cont_defender_obst = 0;
+    //                cont_defender_tempo = 0;
+    //            }
+    //            else{
+    //                cont_defender_obst = cont_defender_obst + 1;
+    //            }
+    //        }
+    //        else if(!defender_direction && distancia_obst < distancia_permitida && fabs(another_ang) > 180 - 40){
+    //            if (cont_defender_obst > 5){
+    //                defender_direction = true;
+    //                cont_defender_obst = 0;
+    //                cont_defender_tempo = 0;
+    //            }
+    //            else{
+    //                cont_defender_obst = cont_defender_obst + 1;
+    //            }
+    //        }
+    //    }
+    //    else{
+    //        cont_defender_obst = cont_defender_obst - 1;
+    //        if (cont_defender_obst < 0){
+    //            cont_defender_obst = 0;
+    //        }
+    //    }
+
+
+
+    //    for (int cont_vel = 0; cont_vel < 4; cont_vel ++){
+    //        media_ball_v[cont_vel] = media_ball_v[cont_vel+1];
+    //    }
+    //    media_ball_v[4] = ball_v;
+    //    ball_v = 0.35*media_ball_v[4]+0.25*media_ball_v[3]+0.2*media_ball_v[2]+0.15*media_ball_v[1]+0.05*media_ball_v[0];
     ////cout << ball_v.x << endl;
 
     ////cout << "x " << ball_pos.x << "   y " << ball_pos.y << endl;
@@ -3764,7 +3772,7 @@ void Mover::velocity_volante(Robot *robo, Game_functions *pot_fields, pair<float
             limiar_theta = 90 + delta_limiar;
         }
 
-     //---------------- Previsao de bola -------------------//
+        //---------------- Ball Prevision -------------------//
         double tempo;
         double aux_position_y;
         tempo = (robot_pos.x + 4.5 - ball_pos.x)/ball_v.x;
@@ -3802,7 +3810,7 @@ void Mover::velocity_volante(Robot *robo, Game_functions *pot_fields, pair<float
             }
         }
 
-     // ---------------------------- FollowBall ------------------------------//
+        // ---------------------------- FollowBall ------------------------------//
         else if (ball_pos.x > centroid_def.x + line_volante && robo->get_pos().x < centroid_def.x + line_volante + 10 && robo->get_pos().x > centroid_def.x + line_volante - 10){
 
             alpha = 90 - robot_angle;
@@ -4274,26 +4282,26 @@ void Mover::velocity_fake9(Robot *robo, Game_functions *pot_fields, pair<float, 
         vels->first = -w*l;
         vels->second = w*l;
 
-//        if(fabs(ajusta_angulo(robo->get_angle()) - vector_angle(meta, robo->get_pos()) ) >= 20 )
-//        {
-//            v = 0;
-//            alpha = ajusta_angulo(vector_angle(meta, robo->get_pos()) - robo->get_angle());
-//            cout << "ang: " << alpha << endl;
-//            if (fabs(alpha) <= limiar_theta ){
-//                w = 2*kp*alpha/180;// + kd*(alpha-lalpha_killer);
-//                limiar_theta = 90 - delta_limiar;
-//            }
-//            else{
-//                alpha = ajusta_angulo(alpha+180);
-//                w = 2*kp*alpha/180;// + kd*(alpha-lalpha_killer);
-//                limiar_theta = 90 + delta_limiar;
-//            }
-//        }
-//        else
-//        {
-//            v = 0;
-//            w = 0;
-//        }
+        //        if(fabs(ajusta_angulo(robo->get_angle()) - vector_angle(meta, robo->get_pos()) ) >= 20 )
+        //        {
+        //            v = 0;
+        //            alpha = ajusta_angulo(vector_angle(meta, robo->get_pos()) - robo->get_angle());
+        //            cout << "ang: " << alpha << endl;
+        //            if (fabs(alpha) <= limiar_theta ){
+        //                w = 2*kp*alpha/180;// + kd*(alpha-lalpha_killer);
+        //                limiar_theta = 90 - delta_limiar;
+        //            }
+        //            else{
+        //                alpha = ajusta_angulo(alpha+180);
+        //                w = 2*kp*alpha/180;// + kd*(alpha-lalpha_killer);
+        //                limiar_theta = 90 + delta_limiar;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            v = 0;
+        //            w = 0;
+        //        }
     }
 
     lalpha_fake9 = alpha;
@@ -4303,6 +4311,322 @@ void Mover::velocity_fake9(Robot *robo, Game_functions *pot_fields, pair<float, 
 
     //cout << "Velocidade 1: " << vels->first << endl;
     //cout << "Velocidade 2: " << vels->second << endl;
+}
+
+void Mover::velocity_guerreiro(Robot *robo, Game_functions *pot_fields, pair<float, float> *vels){
+
+    Point2d meta = pot_fields->get_meta_guerreiro();
+    Point2d robot_pos = robo->get_pos();
+    Point robot_grid = convert_C_to_G(robot_pos);
+    double robot_angle = ajusta_angulo(robo->get_angle());
+
+    double kp = robo->get_kp();
+    double kd = robo->get_kd();
+    double l = robo->get_l_size();
+
+    Point2d ball_v;
+
+    double v,w,theta,alpha;
+    pair<float, float> vel;
+
+    ball_v.x = ball_vel.first / 100;
+    ball_v.y = -ball_vel.second / 100;
+
+    if (centroid_def.x < centroid_atk.x){
+        alpha = 90 - robot_angle;
+        alpha = ajusta_angulo(alpha);
+
+        //PID
+        if (fabs(alpha) <= limiar_theta ){
+            w = kp_defender*alpha/180 + kd*(alpha - lalpha_guerreiro);
+            limiar_theta = 90 - delta_limiar;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            w = kp_defender*alpha/180 + kd*(alpha - lalpha_guerreiro);
+            limiar_theta = 90 + delta_limiar;
+        }
+
+        //---------------- Ball Prevision -------------------//
+        double tempo;
+        double aux_position_y;
+        tempo = (robot_pos.x + 4.5 - ball_pos.x)/ball_v.x;
+        aux_position_y = ball_pos.y - tempo*ball_v.y;
+        if(aux_position_y < 0){
+            aux_position_y = 0;
+        }
+        if(aux_position_y > 130){
+            aux_position_y = 130;
+        }
+
+        if (ball_v.x < 0 && ball_pos.x > centroid_def.x + line_guerreiro){
+            if (robot_angle > 0){
+                v = -k_prevision*(aux_position_y-robot_pos.y)/tempo;
+                if(v > v_max_prevision){
+                    v = v_max_prevision;
+                }
+                else if (v < -v_max_prevision){
+                    v = -v_max_prevision;
+                }
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+            else if (robot_angle < 0){
+                v = k_prevision*(aux_position_y-robot_pos.y)/tempo;
+                if(v > v_max_prevision){
+                    v = v_max_prevision;
+                }
+                else if(v < -v_max_prevision){
+                    v = -v_max_prevision;
+                }
+
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+        }
+
+        // ---------------------------- FollowBall ------------------------------//
+        else if (ball_pos.x > centroid_def.x + line_guerreiro && robo->get_pos().x < centroid_def.x + line_guerreiro + 10 && robo->get_pos().x > centroid_def.x + line_guerreiro - 10){
+
+            alpha = 90 - robot_angle;
+            alpha = ajusta_angulo(alpha);
+            //PID
+            if (fabs(alpha) <= limiar_theta ){
+                w = kp_defender*alpha/180 + kd*(alpha - lalpha_guerreiro);
+                limiar_theta = 90 - delta_limiar;
+            }
+            else{
+                alpha = ajusta_angulo(alpha+180);
+                w = kp_defender*alpha/180 + kd*(alpha - lalpha_guerreiro);
+                limiar_theta = 90 + delta_limiar;
+            }
+            //cout << "angle " << robot_angle << endl;
+            //ball_v.y = (ball_v.y / fabs(ball_v.y)) * 0.4;
+            if(fabs(robo->get_pos().y-ball_pos.y) < 3){
+                v = 0;
+            }
+            else if (robot_angle > 0 && ball_pos.y < robot_pos.y ){
+                v = v_follow; // Cinemática 0.005
+                //  cout << "1" << endl;
+            }
+            else if (robot_angle > 0 && ball_pos.y > robot_pos.y){
+                v = -v_follow; //PID 0.03
+                // cout << "2" << endl;
+            }
+            else if (robot_angle < 0 && ball_pos.y < robot_pos.y ){
+                v = -v_follow;
+                //cout << "3" << endl;
+            }
+            else if (robot_angle < 0 && ball_pos.y > robot_pos.y ){
+                v = v_follow;
+                //cout << "4" << endl;
+            }
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
+            }
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
+            }
+            vels->first = v - w*l;
+            vels->second = v + w*l;
+        }
+        // --------------------------- Return2Goal ----------------------------//
+        else{
+            theta = vector_angle(robo->get_pos(),meta);
+            alpha = theta - robo->get_angle();
+            alpha = ajusta_angulo(alpha);
+
+            //PID
+            if (fabs(alpha) <= limiar_theta ){
+                //v = 0.4;
+                v = -v_delta*fabs(alpha)/limiar_theta + 0.4;
+                w = kp*alpha/180 + kd*(alpha - lalpha_guerreiro);
+                limiar_theta = 90 - delta_limiar;
+                ////cout << "Frente" << endl;
+            }
+            else{
+                alpha = ajusta_angulo(alpha+180);
+                //v = - 0.4;
+                v = v_delta*fabs(alpha)/limiar_theta - 0.4;
+                w = kp*alpha/180 + kd*(alpha - lalpha_guerreiro);
+                limiar_theta = 90 + delta_limiar;
+                ////cout << "Trás" << endl;
+            }
+
+            if (fabs(alpha) > 65 && fabs(alpha) < 115){
+                v = 0;
+            }
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
+            }
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
+            }
+            vels->first = v - w*l;
+            vels->second = v + w*l;
+
+            //AdjustRobo
+            if((euclidean_dist(robot_pos, pot_fields->get_meta_defender_root()) < 6) && (fabs(robo->get_angle()) > 85) && (fabs(robo->get_angle()) < 95)){
+                vels->first = 0;
+                vels->second = 0;
+            }
+            else if (euclidean_dist(robot_pos, pot_fields->get_meta_defender_root()) < 6){
+                goalkeeper_orientation(robo,vels);
+
+                ////cout << "AdjustRobo" << endl;
+            }
+        }
+    }else{
+
+        alpha = 90 - robot_angle;
+        alpha = ajusta_angulo(alpha);
+        //PID
+        if (fabs(alpha) <= limiar_theta ){
+            w = kp_defender*alpha/180 + kd*(alpha - lalpha_guerreiro);
+            limiar_theta = 90 - delta_limiar;
+        }
+        else{
+            alpha = ajusta_angulo(alpha+180);
+            w = kp_defender*alpha/180 + kd*(alpha - lalpha_guerreiro);
+            limiar_theta = 90 + delta_limiar;
+        }
+
+
+        // --------------------------- Prevision ----------------------------//
+        double tempo;
+        double aux_position_y;
+        tempo = (robot_pos.x - 4.5 - ball_pos.x)/ball_v.x;
+        aux_position_y = ball_pos.y - tempo*ball_v.y;
+        if(aux_position_y < 0){
+            aux_position_y = 0;
+        }
+        if(aux_position_y > 130){
+            aux_position_y = 130;
+        }
+
+        if (ball_v.x > 0 && ball_pos.x < centroid_def.x - line_guerreiro){
+
+            if (robot_angle > 0){
+                v = -k_prevision*(aux_position_y-robot_pos.y)/tempo;
+                if(v > v_max_prevision){
+                    v = v_max_prevision;
+                }
+                else if (v < -v_max_prevision){
+                    v = -v_max_prevision;
+                }
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+            else if (robot_angle < 0){
+                v = (aux_position_y-robot_pos.y)/tempo;
+                if(v > v_max_gol_ef){
+                    v = v_max_gol_ef;
+                }
+                else if(v < -v_max_gol_ef){
+                    v = -v_max_gol_ef;
+                }
+                vels->first = v - w*l;
+                vels->second = v + w*l;
+            }
+            // //cout << "prevision" << endl;
+        }
+
+        // --------------------------- FollowBall ----------------------------//
+        else if (ball_pos.x < centroid_def.x - line_guerreiro && robo->get_pos().x < centroid_def.x - line_guerreiro + 10 && robo->get_pos().x > centroid_def.x - line_guerreiro - 10){
+
+            alpha = 90 - robot_angle;
+            alpha = ajusta_angulo(alpha);
+            //PID
+            if (fabs(alpha) <= limiar_theta ){
+                w = kp_defender*alpha/180 + kd*(alpha - lalpha_guerreiro);
+                limiar_theta = 90 - delta_limiar;
+            }
+            else{
+                alpha = ajusta_angulo(alpha+180);
+                w = kp_defender*alpha/180 + kd*(alpha - lalpha_guerreiro);
+                limiar_theta = 90 + delta_limiar;
+            }
+
+            //cout << "angle " << robot_angle << endl;
+            //ball_v.y = (ball_v.y / fabs(ball_v.y)) * 0.4;
+            if(fabs(robo->get_pos().y-ball_pos.y) < 3){
+                v = 0;
+            }
+            else if (robot_angle > 0 && ball_pos.y < robot_pos.y ){
+                v = v_follow; // Cinemática 0.005
+                //  cout << "1" << endl;
+            }
+            else if (robot_angle > 0 && ball_pos.y > robot_pos.y){
+                v = -v_follow; //PID 0.03
+                // cout << "2" << endl;
+            }
+            else if (robot_angle < 0 && ball_pos.y < robot_pos.y ){
+                v = -v_follow;
+                //cout << "3" << endl;
+            }
+            else if (robot_angle < 0 && ball_pos.y > robot_pos.y ){
+                v = v_follow;
+                //cout << "4" << endl;
+            }
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
+            }
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
+            }
+            vels->first = v - w*l;
+            vels->second = v + w*l;
+
+        }
+
+        // --------------------------- Return2Goal ----------------------------//
+        else{
+            theta = vector_angle(robo->get_pos(),meta);
+            alpha = theta - robo->get_angle();
+            alpha = ajusta_angulo(alpha);
+
+            //PID
+            if (fabs(alpha) <= limiar_theta ){
+                //v = 0.4;
+                v = -v_delta*fabs(alpha)/limiar_theta + 0.4;
+                w = kp*alpha/180 + kd*(alpha - lalpha_guerreiro);
+                limiar_theta = 90 - delta_limiar;
+                ////cout << "Frente" << endl;
+            }
+            else{
+                alpha = ajusta_angulo(alpha+180);
+                //v = - 0.4;
+                v = v_delta*fabs(alpha)/limiar_theta - 0.4;
+                w = kp*alpha/180 + kd*(alpha - lalpha_guerreiro);
+                limiar_theta = 90 + delta_limiar;
+                ////cout << "Trás" << endl;
+            }
+
+            if(v > v_max_gol_ef){
+                v = v_max_gol_ef;
+            }
+            else if(v < -v_max_gol_ef){
+                v = -v_max_gol_ef;
+            }
+            vels->first = v - w*l;
+            vels->second = v + w*l;
+
+            //AdjustRobo
+            if((euclidean_dist(robot_pos, pot_fields->get_meta_defender_root()) < 6) && (fabs(robo->get_angle()) > 85) && (fabs(robo->get_angle()) < 95)){
+                vels->first = 0;
+                vels->second = 0;
+            }
+            else if (euclidean_dist(robot_pos, pot_fields->get_meta_defender_root()) < 6){
+                goalkeeper_orientation(robo,vels);
+
+                ////cout << "AdjustRobo" << endl;
+            }
+        }
+    }
+
+    lalpha_guerreiro = alpha;
+    rotate(robo, vels);
+    kick_rotate(robo, vels);
 }
 //Fim Novas Funções
 
@@ -4351,7 +4675,7 @@ void Mover::set_params(Robot * robo){
         break;
     case 12: //Ganhos não ajustados ainda
         robo->set_kp(15.00);
-        robo->set_kd(0.09);
+        robo->set_kd(0);
         robo->set_l_size(0.034);
         break;
     }

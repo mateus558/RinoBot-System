@@ -82,7 +82,8 @@ void Game_functions::run(){
     if (calc_Leona){
         int r3_flag = selec_robot.r3.get_flag_fuzzy();
         //cout << "Leona: " << r3_flag << endl;
-        switch (r3_flag){
+        switch (r3_flag)
+        {
         case 0:
             defender(&selec_robot.r3, 2, &vels[2]);
             break;
@@ -108,6 +109,9 @@ void Game_functions::run(){
             defender_root(&selec_robot.r3, 2, &vels[2]);
             break;
             //Novas Funções
+        case 8:
+            guerreiro(&selec_robot.r3, 2, &vels[2]);
+            break;
         case 9:
             fake9(&selec_robot.r3, 2, &vels[2]);
             break;
@@ -2121,6 +2125,9 @@ void Game_functions::killer_cpu(Robot *robo, int num_Robo, pair<float, float> *v
 
     univector_field(robo,enemy_prox,meta);
 
+    matrizCachaco.push_back(robo_pos);
+    cachacoWrite(matrizCachaco);
+
 }
 
 Point2d Game_functions::get_meta_defender_root(){
@@ -2503,40 +2510,44 @@ void Game_functions::volante(Robot *robo, int num_Robo, pair<float, float> *vels
                     meta.y = centroid_def.y;
                 }
             }
+
         }
-        else if (centroid_def.x >= centroid_atk.x)
+    }
+    else if (centroid_def.x >= centroid_atk.x)
+    {
+        if (ball_pos.x < centroid_def.x - line_volante)
         {
-            if (ball_pos.x < centroid_def.x - line_volante)
+            meta.x = centroid_def.x - line_volante;
+            meta.y = ball_pos.y;//centroid_def.y;
+        }
+        else
+        {
+            if(ball_pos.y < centroid_def.y - 35)
             {
-                meta.x = centroid_def.x - line_volante;
-                meta.y = ball_pos.y;//centroid_def.y;
+                meta.x = centroid_def.x - 8;
+                meta.y = centroid_def.y - 45;
+                set_thetaDir(0);
+            }
+            else if(ball_pos.y > centroid_def.y + 35)
+            {
+                meta.x = centroid_def.x - 8;
+                meta.y = centroid_def.y + 45;
+                set_thetaDir(0);
             }
             else
             {
-                if(ball_pos.y < centroid_def.y - 35)
-                {
-                    meta.x = centroid_def.x - 8;
-                    meta.y = centroid_def.y - 45;
-                    set_thetaDir(0);
-                }
-                else if(ball_pos.y > centroid_def.y + 35)
-                {
-                    meta.x = centroid_def.x - 8;
-                    meta.y = centroid_def.y + 45;
-                    set_thetaDir(0);
-                }
-                else
-                {
-                    meta.x = centroid_def.x - line_volante;
-                    meta.y = centroid_def.y;
-                }
+                meta.x = centroid_def.x - line_volante;
+                meta.y = centroid_def.y;
             }
         }
-        meta_volante = meta;
     }
 
-    matrizCachaco.push_back(robo_pos);
-    cachacoWrite(matrizCachaco);
+
+    meta_volante = meta;
+}
+
+matrizCachaco.push_back(robo_pos);
+cachacoWrite(matrizCachaco);
 
 }
 
@@ -2608,117 +2619,87 @@ void Game_functions::guerreiro(Robot *robo, int num_Robo, pair<float, float> *ve
     Point2d enemy_prox;
     Point2d robo_pos = robo->get_pos();
 
+    double dx = 8; // Constante da meta em x
+    double dy = 45; // Constante da meta em y
+    double ay = 35; // Constante condicional em y
+
     flag_return = 2;
 
     cout << "Pos x: " << robo->get_pos().x << endl;
     cout << "Centroid def: " << centroid_def.x << endl;
 
+    if(ball_pos.x > 0 && ball_pos.y > 0)
+    {
+        if (centroid_def.x < centroid_atk.x)
+        {
+            if (ball_pos.x > centroid_def.x + line_guerreiro)
+            {
+                meta.x = centroid_def.x + line_guerreiro;
+                meta.y = ball_pos.y;//centroid_def.y;
+            }
+            else
+            {
+                if(ball_pos.y < centroid_def.y - ay)
+                {
+                    meta.x = centroid_def.x + dx;
+                    meta.y = centroid_def.y - dy;
+                    set_thetaDir(M_PI);
+                }
+                else if(ball_pos.y > centroid_def.y + ay)
+                {
+                    meta.x = centroid_def.x + dx;
+                    meta.y = centroid_def.y + dy;
+                    set_thetaDir(M_PI);
+                }
+                else
+                {
+                    meta.x = centroid_def.x + line_guerreiro;
+                    meta.y = centroid_def.y;
+                }
+            }
 
-    //    if(ball_pos.x > 0 && ball_pos.y > 0)
-    //    {
-    //        if (centroid_def.x < centroid_atk.x)
-    //        {
-    //            if(ball_pos.x < (centroid_atk.x + centroid_def.x)/2)
-    //            {
-    //                if (ball_pos.x > centroid_def.x + line_guerreiro)
-    //                {
-    //                    meta.x = centroid_def.x + line_guerreiro;
-    //                    meta.y = ball_pos.y;
-    //                }
-    //                else
-    //                {
-    //                    if(ball_pos.y < centroid_def.y - 35)
-    //                    {
-    //                        meta.x = centroid_def.x + 8;
-    //                        meta.y = centroid_def.y - 45;
-    //                        set_thetaDir(M_PI);
-    //                    }
-    //                    else if(ball_pos.y > centroid_def.y + 35)
-    //                    {
-    //                        meta.x = centroid_def.x + 8;
-    //                        meta.y = centroid_def.y + 45;
-    //                        set_thetaDir(M_PI);
-    //                    }
-    //                    else{
-    //                        meta.x = centroid_def.x + line_guerreiro;
-    //                        meta.y = centroid_def.y;
-    //                    }
-    //                }
-    //            }
-    //            else
-    //            {
-    //                meta.x = (centroid_atk.x+centroid_def.x)/2;
-    //                meta.y = centroid_atk.y;
-    //            }
+            if (ball_pos.x > (centroid_atk.x+centroid_def.x)/2)
+            {
+                meta.x = (centroid_atk.x+centroid_def.x)/2 -10;
+                meta.y = centroid_atk.y;
+            }
+        }
+    }
+    else if (centroid_def.x >= centroid_atk.x)
+    {
+        if (ball_pos.x < centroid_def.x - line_guerreiro)
+        {
+            meta.x = centroid_def.x - line_guerreiro;
+            meta.y = ball_pos.y;//centroid_def.y;
+        }
+        else
+        {
+            if(ball_pos.y < centroid_def.y - ay)
+            {
+                meta.x = centroid_def.x - dx;
+                meta.y = centroid_def.y - dy;
+                set_thetaDir(0);
+            }
+            else if(ball_pos.y > centroid_def.y + ay)
+            {
+                meta.x = centroid_def.x - dx;
+                meta.y = centroid_def.y + dy;
+                set_thetaDir(0);
+            }
+            else
+            {
+                meta.x = centroid_def.x - line_guerreiro;
+                meta.y = centroid_def.y;
+            }
+        }
+        if (ball_pos.x < (centroid_atk.x+centroid_def.x)/2)
+        {
+            meta.x = (centroid_atk.x+centroid_def.x)/2 +10;
+            meta.y = centroid_atk.y;
+        }
+    }
 
-    //            else
-    //            {
-    //                if(ball_pos.x < (centroid_atk.x+centroid_def.x)/2)
-    //                {
 
-    //                }
-    //                else
-    //                {
-
-    //                }
-    //                if(ball_pos.y < centroid_def.y - 35)
-    //                {
-    //                    meta.x = centroid_def.x + 8;
-    //                    meta.y = centroid_def.y - 45;
-    //                    set_thetaDir(M_PI);
-    //                }
-    //                else if(ball_pos.y > centroid_def.y + 35)
-    //                {
-    //                    meta.x = centroid_def.x + 8;
-    //                    meta.y = centroid_def.y + 45;
-    //                    set_thetaDir(M_PI);
-    //                }
-    //                else{
-    //                    meta.x = centroid_def.x + line_root_defender;
-    //                    meta.y = centroid_def.y;
-    //                }
-    //            }
-    //        }
-    //        if (centroid_def.x >= centroid_atk.x)
-    //        {
-    //            if (ball_pos.x < centroid_def.x - line_root_defender)
-    //            {
-    //                if(ball_pos.y < centroid_def.y - line_root_defender - 10)
-    //                {
-    //                    meta.x = centroid_def.x - line_root_defender;
-    //                    meta.y = ball_pos.y;
-    //                }
-    //                else if(ball_pos.y > centroid_def.y + line_root_defender + 10)
-    //                {
-    //                    meta.x = centroid_def.x - line_root_defender;
-    //                    meta.y = ball_pos.y;
-    //                }
-    //                else
-    //                {
-    //                    meta.x = centroid_def.x - line_root_defender;
-    //                    meta.y = ball_pos.y;
-    //                }
-    //            }
-    //            else
-    //            {
-    //                if(ball_pos.y < centroid_def.y - 35)
-    //                {
-    //                    meta.x = centroid_def.x - 8;
-    //                    meta.y = centroid_def.y - 45;
-    //                    set_thetaDir(0);
-    //                }
-    //                else if(ball_pos.y > centroid_def.y + 35)
-    //                {
-    //                    meta.x = centroid_def.x - 8;
-    //                    meta.y = centroid_def.y + 45;
-    //                    set_thetaDir(0);
-    //                }
-    //                else
-    //                {
-    //                    meta.x = centroid_def.x - line_root_defender;
-    //                    meta.y = centroid_def.y;
-    //                }
-    //            }
-    //        }
-    //    }
+    meta_guerreiro = meta;
 }
+

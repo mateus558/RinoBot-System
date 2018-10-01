@@ -31,6 +31,7 @@ private:
     Point2d centroid_def; //posicao em cm do centro da area de def
     float line_root_defender;
     float line_volante;
+    float line_guerreiro;
     pVector def_area;
     pair<double, double> ball_vel;
     vector<pair<float, float> > vels;
@@ -109,6 +110,7 @@ public:
     // Novas Funções
     void velocity_fake9(Robot *, Game_functions  *, pair<float, float>*);
     void velocity_volante(Robot *, Game_functions  *, pair<float, float>*);
+    void velocity_guerreiro(Robot *, Game_functions  *, pair<float, float>*);
     // Fim Novas Funções
 
     void set_params(Robot *);
